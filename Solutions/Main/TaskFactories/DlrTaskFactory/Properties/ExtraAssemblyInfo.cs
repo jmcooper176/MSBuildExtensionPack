@@ -3,8 +3,4 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Reflection;
-
-[assembly: AssemblyTitle("MSBuild.ExtensionPack.TaskFactory.Dlr")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: CLSCompliant(true)]

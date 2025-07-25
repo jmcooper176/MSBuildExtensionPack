@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="IHostsFile.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Computer
+namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
 {
     using System;
     using System.Collections.Generic;
@@ -56,16 +56,16 @@ namespace MSBuild.ExtensionPack.Computer
                 hostEntries = new string[0];
             }
 
-            this.hosts = new Dictionary<string, HostsEntry>(hostEntries.Length);
+            hosts = new Dictionary<string, HostsEntry>(hostEntries.Length);
 
             if (truncate)
             {
-                this.hostsFileLines = new List<string>();
+                hostsFileLines = new List<string>();
                 foreach (var line in hostEntries)
                 {
                     if (line.StartsWith("#", StringComparison.OrdinalIgnoreCase))
                     {
-                        this.hostsFileLines.Add(line);
+                        hostsFileLines.Add(line);
                     }
                     else
                     {
@@ -73,23 +73,23 @@ namespace MSBuild.ExtensionPack.Computer
                     }
                 }
 
-                this.hostsFileLines.Add(string.Empty);
-                this.SetHostEntry("localhost", "127.0.0.1");
+                hostsFileLines.Add(string.Empty);
+                SetHostEntry("localhost", "127.0.0.1");
                 return;
             }
 
-            this.hostsFileLines = new List<string>(hostEntries);
+            hostsFileLines = new List<string>(hostEntries);
             var lineNum = 0;
-            foreach (var line in this.hostsFileLines)
+            foreach (var line in hostsFileLines)
             {
-                var match = this.hostsEntryRegex.Match(line);
+                var match = hostsEntryRegex.Match(line);
                 if (match.Success)
                 {
                     var hostsEntry = new HostsEntry(lineNum, match.Groups["HostName"].Value, match.Groups["Tail"].Value);
                     var hostsEntryKey = hostsEntry.HostName.ToLower(CultureInfo.InvariantCulture);
-                    if (!this.hosts.ContainsKey(hostsEntryKey))
+                    if (!hosts.ContainsKey(hostsEntryKey))
                     {
-                        this.hosts[hostsEntryKey] = hostsEntry;
+                        hosts[hostsEntryKey] = hostsEntry;
                     }
                 }
 
@@ -99,23 +99,23 @@ namespace MSBuild.ExtensionPack.Computer
 
         public void SetHostEntry(string hostName, string ipAddress)
         {
-            this.SetHostEntry(hostName, ipAddress, string.Empty);
+            SetHostEntry(hostName, ipAddress, string.Empty);
         }
 
         public void SetHostEntry(string hostName, string ipAddress, string comment)
         {
             string hostsKey = hostName.ToLower(CultureInfo.InvariantCulture);
-            string tail = string.IsNullOrEmpty(comment) ? null : ("\t# " + comment);
+            string tail = string.IsNullOrEmpty(comment) ? null : "\t# " + comment;
             string hostsLine = PadIPAddress(ipAddress) + Separator + hostName;
-            if (this.hosts.ContainsKey(hostsKey))
+            if (hosts.ContainsKey(hostsKey))
             {
-                HostsEntry hostEntry = this.hosts[hostsKey];
-                this.hostsFileLines[hostEntry.LineNumber] = hostsLine + (tail ?? hostEntry.Tail);
+                HostsEntry hostEntry = hosts[hostsKey];
+                hostsFileLines[hostEntry.LineNumber] = hostsLine + (tail ?? hostEntry.Tail);
             }
             else
             {
-                this.hostsFileLines.Add(hostsLine + tail);
-                this.hosts[hostsKey] = new HostsEntry(this.hostsFileLines.Count - 1, hostName, tail);
+                hostsFileLines.Add(hostsLine + tail);
+                hosts[hostsKey] = new HostsEntry(hostsFileLines.Count - 1, hostName, tail);
             }
         }
 
@@ -123,7 +123,7 @@ namespace MSBuild.ExtensionPack.Computer
         {
             if (sw != null)
             {
-                foreach (string s in this.hostsFileLines)
+                foreach (string s in hostsFileLines)
                 {
                     sw.WriteLine(s);
                 }
@@ -141,9 +141,9 @@ namespace MSBuild.ExtensionPack.Computer
         {
             public HostsEntry(int lineNumber, string hostName, string tail)
             {
-                this.LineNumber = lineNumber;
-                this.HostName = hostName;
-                this.Tail = tail;
+                LineNumber = lineNumber;
+                HostName = hostName;
+                Tail = tail;
             }
 
             public string HostName { get; }

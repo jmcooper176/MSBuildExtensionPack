@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="VBPProject.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.VisualStudio.Extended
+namespace MSBuild.ExtensionPack.VisualStudio
 {
     using System;
     using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
 
         public VBPProject(string projectFileExt)
         {
-            this.ProjectFile = projectFileExt;
+            ProjectFile = projectFileExt;
         }
 
         public FileInfo ArtifactFile
@@ -28,18 +28,18 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
             get
             {
                 string artifactFileName = null;
-                if (!this.GetProjectProperty("ExeName32", ref artifactFileName))
+                if (!GetProjectProperty("ExeName32", ref artifactFileName))
                 {
                     throw new ApplicationException("'ExeName32' Property not found");
                 }
 
                 artifactFileName = artifactFileName.Replace("\"", string.Empty);
 
-                FileInfo projectFileInfo = new FileInfo(this.ProjectFile);
+                FileInfo projectFileInfo = new FileInfo(ProjectFile);
 
                 string artifactPath = projectFileInfo.Directory.FullName;
                 string path32 = null;
-                if (this.GetProjectProperty("Path32", ref path32))
+                if (GetProjectProperty("Path32", ref path32))
                 {
                     path32 = path32.Replace("\"", string.Empty);
                     artifactPath = Path.Combine(artifactPath, path32);
@@ -52,7 +52,7 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
 
         public string ProjectFile
         {
-            get => this.projectFile;
+            get => projectFile;
 
             set
             {
@@ -61,13 +61,13 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
                     throw new Exception("Project file name does not exist");
                 }
 
-                this.projectFile = value;
+                projectFile = value;
             }
         }
 
         public bool Load()
         {
-            if (string.IsNullOrEmpty(this.ProjectFile))
+            if (string.IsNullOrEmpty(ProjectFile))
             {
                 return false;
             }
@@ -75,10 +75,10 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
             StreamReader lineStream = null;
             try
             {
-                lineStream = new StreamReader(this.projectFile, Encoding.Default);
+                lineStream = new StreamReader(projectFile, Encoding.Default);
                 while (!lineStream.EndOfStream)
                 {
-                    this.lines.Add(lineStream.ReadLine());
+                    lines.Add(lineStream.ReadLine());
                 }
             }
             catch
@@ -95,7 +95,7 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
 
         public bool Save()
         {
-            if (string.IsNullOrEmpty(this.projectFile) | this.lines.Count == 0)
+            if (string.IsNullOrEmpty(projectFile) | lines.Count == 0)
             {
                 return false;
             }
@@ -104,14 +104,14 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
             bool readOnly = false;
             try
             {
-                if ((File.GetAttributes(this.projectFile) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                if ((File.GetAttributes(projectFile) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
                     readOnly = true;
-                    File.SetAttributes(this.projectFile, FileAttributes.Normal);
+                    File.SetAttributes(projectFile, FileAttributes.Normal);
                 }
 
-                lineStream = new StreamWriter(this.projectFile, false, Encoding.Default);
-                foreach (string line in this.lines)
+                lineStream = new StreamWriter(projectFile, false, Encoding.Default);
+                foreach (string line in lines)
                 {
                     lineStream.WriteLine(line);
                 }
@@ -126,7 +126,7 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
 
                 if (readOnly)
                 {
-                    File.SetAttributes(this.projectFile, FileAttributes.ReadOnly);
+                    File.SetAttributes(projectFile, FileAttributes.ReadOnly);
                 }
             }
 
@@ -142,20 +142,20 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
 
             int index;
 
-            for (index = 0; index <= this.lines.Count - 1; index++)
+            for (index = 0; index <= lines.Count - 1; index++)
             {
-                string buffer = this.lines[index].ToUpper(CultureInfo.InvariantCulture);
+                string buffer = lines[index].ToUpper(CultureInfo.InvariantCulture);
 
                 if (buffer.StartsWith(name.ToUpper(CultureInfo.InvariantCulture) + "=", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.lines[index] = this.lines[index].Substring(0, (name + "=").Length) + value;
+                    lines[index] = lines[index].Substring(0, (name + "=").Length) + value;
                     return true;
                 }
             }
 
             if (addProp)
             {
-                this.lines.Add(name + "=" + value);
+                lines.Add(name + "=" + value);
                 return true;
             }
 
@@ -164,7 +164,7 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
 
         public bool GetProjectProperty(string name, ref string value)
         {
-            foreach (string line in this.lines)
+            foreach (string line in lines)
             {
                 string buffer = line.ToUpper(CultureInfo.InvariantCulture);
 
@@ -181,8 +181,8 @@ namespace MSBuild.ExtensionPack.VisualStudio.Extended
         public List<FileInfo> GetFiles()
         {
             List<FileInfo> retVal = new List<FileInfo>();
-            FileInfo projectFileInfo = new FileInfo(this.projectFile);
-            foreach (var line in this.lines)
+            FileInfo projectFileInfo = new FileInfo(projectFile);
+            foreach (var line in lines)
             {
                 var splittedLine = line.Split('=');
                 switch (splittedLine[0])

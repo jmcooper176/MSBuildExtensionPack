@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="FtpDirectoryInfo.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Communication.Extended
+namespace MSBuild.ExtensionPack.Communication.FTP
 {
     using System;
     using System.IO;
@@ -19,8 +19,8 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         
         public FtpDirectoryInfo(FtpConnection ftp, string path)
         {
-            this.FtpConnection = ftp;
-            this.FullPath = path;
+            FtpConnection = ftp;
+            FullPath = path;
         }
         
         protected FtpDirectoryInfo(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -31,58 +31,58 @@ namespace MSBuild.ExtensionPack.Communication.Extended
 
         public new DateTime? LastAccessTime
         {
-            get => this.lastAccessTime.HasValue ? (DateTime?)this.lastAccessTime.Value : null;
-            internal set => this.lastAccessTime = value;
+            get => lastAccessTime.HasValue ? lastAccessTime.Value : null;
+            internal set => lastAccessTime = value;
         }
 
         public new DateTime? CreationTime
         {
-            get => this.creationTime.HasValue ? (DateTime?)this.creationTime.Value : null;
-            internal set => this.creationTime = value;
+            get => creationTime.HasValue ? creationTime.Value : null;
+            internal set => creationTime = value;
         }
 
         public new DateTime? LastWriteTime
         {
-            get => this.lastWriteTime.HasValue ? (DateTime?)this.lastWriteTime.Value : null;
-            internal set => this.lastWriteTime = value;
+            get => lastWriteTime.HasValue ? lastWriteTime.Value : null;
+            internal set => lastWriteTime = value;
         }
 
-        public new DateTime? LastAccessTimeUtc => this.lastAccessTime?.ToUniversalTime();
+        public new DateTime? LastAccessTimeUtc => lastAccessTime?.ToUniversalTime();
 
-        public new DateTime? CreationTimeUtc => this.creationTime?.ToUniversalTime();
+        public new DateTime? CreationTimeUtc => creationTime?.ToUniversalTime();
 
-        public new DateTime? LastWriteTimeUtc => this.lastWriteTime?.ToUniversalTime();
+        public new DateTime? LastWriteTimeUtc => lastWriteTime?.ToUniversalTime();
 
         public new FileAttributes Attributes { get; set; }
 
-        public override bool Exists => this.FtpConnection.DirectoryExists(this.FullName);
+        public override bool Exists => FtpConnection.DirectoryExists(FullName);
 
-        public override string Name => Path.GetFileName(this.FullPath);
+        public override string Name => Path.GetFileName(FullPath);
 
         public override void Delete()
         {
-            this.FtpConnection.DeleteDirectory(this.Name);
+            FtpConnection.DeleteDirectory(Name);
         }
 
         public FtpDirectoryInfo[] GetDirectories()
         {
-            return this.FtpConnection.GetDirectories(this.FullPath);
+            return FtpConnection.GetDirectories(FullPath);
         }
 
         public FtpDirectoryInfo[] GetDirectories(string path)
         {
-            path = Path.Combine(this.FullPath, path);
-            return this.FtpConnection.GetDirectories(path);
+            path = Path.Combine(FullPath, path);
+            return FtpConnection.GetDirectories(path);
         }
 
         public FtpFileInfo[] GetFiles()
         {
-            return this.GetFiles(this.FtpConnection.GetCurrentDirectory());
+            return GetFiles(FtpConnection.GetCurrentDirectory());
         }
 
         public FtpFileInfo[] GetFiles(string mask)
         {
-            return this.FtpConnection.GetFiles(mask);
+            return FtpConnection.GetFiles(mask);
         }
 
         /// <summary>

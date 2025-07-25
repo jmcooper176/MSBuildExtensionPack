@@ -2,7 +2,7 @@
 // <copyright file="Version.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 // This task is based on the AssemblyInfo task written by Neil Enns (http://code.msdn.microsoft.com/AssemblyInfoTaskvers). It is used here with permission.
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Framework
+namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 {
     using System;
     using System.Globalization;
@@ -14,10 +14,10 @@ namespace MSBuild.ExtensionPack.Framework
 
         public Version()
         {
-            this.MajorVersion = "1";
-            this.MinorVersion = "0";
-            this.BuildNumber = "0";
-            this.Revision = "0";
+            MajorVersion = "1";
+            MinorVersion = "0";
+            BuildNumber = "0";
+            Revision = "0";
         }
 
         public Version(string version) : this(version, false)
@@ -28,18 +28,18 @@ namespace MSBuild.ExtensionPack.Framework
         {
             if (isAssemblyVersion)
             {
-                this.ParseAssemblyVersion(version);
+                ParseAssemblyVersion(version);
             }
             else
             {
-                this.ParseVersion(version);
+                ParseVersion(version);
             }
         }
 
         public string VersionString
         {
-            get => this.versionString;
-            set => this.ParseVersion(value);
+            get => versionString;
+            set => ParseVersion(value);
         }
 
         public string MajorVersion { get; set; }
@@ -52,7 +52,7 @@ namespace MSBuild.ExtensionPack.Framework
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}.{3}", this.MajorVersion, this.MinorVersion, this.BuildNumber, this.Revision);
+            return string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}.{3}", MajorVersion, MinorVersion, BuildNumber, Revision);
         }
 
         private static string ValidateAssemblyVersionPart(string part)
@@ -70,11 +70,11 @@ namespace MSBuild.ExtensionPack.Framework
                 throw new ArgumentException($"The specified string \"{version}\" is not a valid AssemblyVersion number", nameof(version));
             }
 
-            this.MajorVersion = matches[0].Groups["majorVersion"].Value;
-            this.MinorVersion = matches[0].Groups["minorVersion"].Value;
-            this.BuildNumber = ValidateAssemblyVersionPart(matches[0].Groups["buildNumber"].Value);
-            this.Revision = ValidateAssemblyVersionPart(matches[0].Groups["revision"].Value);
-            this.versionString = version;
+            MajorVersion = matches[0].Groups["majorVersion"].Value;
+            MinorVersion = matches[0].Groups["minorVersion"].Value;
+            BuildNumber = ValidateAssemblyVersionPart(matches[0].Groups["buildNumber"].Value);
+            Revision = ValidateAssemblyVersionPart(matches[0].Groups["revision"].Value);
+            versionString = version;
         }
 
         private void ParseVersion(string version)
@@ -87,11 +87,11 @@ namespace MSBuild.ExtensionPack.Framework
                 throw new ArgumentException($"The specified string \"{version}\" is not a valid version number", nameof(version));
             }
 
-            this.MajorVersion = matches[0].Groups["majorVersion"].Value;
-            this.MinorVersion = matches[0].Groups["minorVersion"].Value;
-            this.BuildNumber = matches[0].Groups["buildNumber"].Value;
-            this.Revision = matches[0].Groups["revision"].Value;
-            this.versionString = version; // Very important that this is a little v, not big v, otherwise you get infinite recursion!
+            MajorVersion = matches[0].Groups["majorVersion"].Value;
+            MinorVersion = matches[0].Groups["minorVersion"].Value;
+            BuildNumber = matches[0].Groups["buildNumber"].Value;
+            Revision = matches[0].Groups["revision"].Value;
+            versionString = version; // Very important that this is a little v, not big v, otherwise you get infinite recursion!
         }
     }
 }

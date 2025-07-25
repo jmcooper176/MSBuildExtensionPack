@@ -2,7 +2,7 @@
 // <copyright file="AssemblyInfoWrapper.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 // This task is based on the AssemblyInfo task written by Neil Enns (http://code.msdn.microsoft.com/AssemblyInfoTaskvers). It is used here with permission.
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Framework
+namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
 {
     using System;
     using System.Collections.Generic;
@@ -34,17 +34,17 @@ namespace MSBuild.ExtensionPack.Framework
 
                 while ((input = reader.ReadLine()) != null)
                 {
-                    this.rawFileLines.Add(input);
+                    rawFileLines.Add(input);
 
                     // Skip single comment lines
-                    if (this.singleLineCSharpCommentPattern.IsMatch(input) || this.singleLineVbCommentPattern.IsMatch(input))
+                    if (singleLineCSharpCommentPattern.IsMatch(input) || singleLineVbCommentPattern.IsMatch(input))
                     {
                         lineNumber++;
                         continue;
                     }
 
                     // Skip multi-line C# comments
-                    if (this.multilineCSharpCommentStartPattern.IsMatch(input))
+                    if (multilineCSharpCommentStartPattern.IsMatch(input))
                     {
                         lineNumber++;
                         skipLine = true;
@@ -52,7 +52,7 @@ namespace MSBuild.ExtensionPack.Framework
                     }
 
                     // Stop skipping when we're at the end of a C# multiline comment
-                    if (this.multilineCSharpCommentEndPattern.IsMatch(input) && skipLine)
+                    if (multilineCSharpCommentEndPattern.IsMatch(input) && skipLine)
                     {
                         lineNumber++;
                         skipLine = false;
@@ -69,12 +69,12 @@ namespace MSBuild.ExtensionPack.Framework
                     // Check to see if the current line is an attribute on the assembly info.
                     // If so we need to keep the line number in our dictionary so we can go
                     // back later and get it when this class is accessed through its indexer.
-                    var matches = this.attributeNamePattern.Matches(input);
+                    var matches = attributeNamePattern.Matches(input);
                     if (matches.Count > 0)
                     {
-                        if (this.attributeIndex.ContainsKey(matches[0].Groups["attributeName"].Value) == false)
+                        if (attributeIndex.ContainsKey(matches[0].Groups["attributeName"].Value) == false)
                         {
-                            this.attributeIndex.Add(matches[0].Groups["attributeName"].Value, lineNumber);
+                            attributeIndex.Add(matches[0].Groups["attributeName"].Value, lineNumber);
                         }
                     }
 
@@ -87,20 +87,20 @@ namespace MSBuild.ExtensionPack.Framework
         {
             get
             {
-                if (!this.attributeIndex.ContainsKey(attribute))
+                if (!attributeIndex.ContainsKey(attribute))
                 {
                     return null;
                 }
 
                 // Try to match string properties first
-                MatchCollection matches = this.attributeStringValuePattern.Matches(this.rawFileLines[this.attributeIndex[attribute]]);
+                MatchCollection matches = attributeStringValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
                 if (matches.Count > 0)
                 {
                     return matches[0].Groups["attributeValue"].Value;
                 }
 
                 // If that fails, try to match a boolean value
-                matches = this.attributeBooleanValuePattern.Matches(this.rawFileLines[this.attributeIndex[attribute]]);
+                matches = attributeBooleanValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
                 if (matches.Count > 0)
                 {
                     return matches[0].Groups["attributeValue"].Value;
@@ -113,31 +113,31 @@ namespace MSBuild.ExtensionPack.Framework
             {
                 // The set case requires fancy footwork. In this case we actually replace the attribute
                 // value in the string using a regex to the value that was passed in.
-                if (!this.attributeIndex.ContainsKey(attribute))
+                if (!attributeIndex.ContainsKey(attribute))
                 {
                     throw new ArgumentOutOfRangeException(nameof(attribute), string.Format(CultureInfo.CurrentCulture, "{0} is not an attribute in the specified AssemblyInfo.cs file", attribute));
                 }
 
                 // Try setting it as a string property first
-                MatchCollection matches = this.attributeStringValuePattern.Matches(this.rawFileLines[this.attributeIndex[attribute]]);
+                MatchCollection matches = attributeStringValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
                 if (matches.Count > 0)
                 {
-                    this.rawFileLines[this.attributeIndex[attribute]] = this.attributeStringValuePattern.Replace(this.rawFileLines[this.attributeIndex[attribute]], "\"" + value + "\"");
+                    rawFileLines[attributeIndex[attribute]] = attributeStringValuePattern.Replace(rawFileLines[attributeIndex[attribute]], "\"" + value + "\"");
                     return;
                 }
 
                 // If that fails try setting it as a boolean property
-                matches = this.attributeBooleanValuePattern.Matches(this.rawFileLines[this.attributeIndex[attribute]]);
+                matches = attributeBooleanValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
                 if (matches.Count > 0)
                 {
-                    this.rawFileLines[this.attributeIndex[attribute]] = this.attributeBooleanValuePattern.Replace(this.rawFileLines[this.attributeIndex[attribute]], "(" + value + ")");
+                    rawFileLines[attributeIndex[attribute]] = attributeBooleanValuePattern.Replace(rawFileLines[attributeIndex[attribute]], "(" + value + ")");
                 }
             }
         }
 
         public void Write(TextWriter streamWriter)
         {
-            foreach (string line in this.rawFileLines)
+            foreach (string line in rawFileLines)
             {
                 streamWriter.WriteLine(line);
             }

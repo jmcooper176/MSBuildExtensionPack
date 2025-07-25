@@ -1,98 +1,49 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="WshShell.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of CycloneDX CLI Tool
+//
+// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
+// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
 namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
     using System.IO;
-    using IWshRuntimeLibrary;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>CreateShortcut</i> (<b>Required: </b> Name, FilePath <b>Optional: </b>Arguments, ShortcutPath, Description, WorkingDirectory, IconLocation)</para>
+    /// <para>
+    /// <i>CreateShortcut</i> ( <b>Required:</b> Name, FilePath <b>Optional:</b> Arguments, ShortcutPath, Description,
+    /// WorkingDirectory, IconLocation)
+    /// </para>
     /// <para><b>Remote Execution Support:</b> No</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <Target Name="Default">
-    ///         <!-- Create a shortcut -->
-    ///         <MSBuild.ExtensionPack.Computer.WshShell TaskAction="CreateShortcut" Name="My Calculator.lnk" FilePath="C:\Windows\System32\calc.exe"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>    
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<Target Name="Default">
+    ///<!-- Create a shortcut -->
+    ///<MSBuild.ExtensionPack.Computer.WshShell TaskAction="CreateShortcut" Name="My Calculator.lnk" FilePath="C:\Windows\System32\calc.exe"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class WshShell : BaseTask
     {
         private const string CreateShortcutTaskAction = "CreateShortcut";
-
-        /// <summary>
-        /// Sets the FilePath
-        /// </summary>
-        public string FilePath { get; set; }
-
-        /// <summary>
-        /// Sets the ShortcutPath. For CreateShortcut defaults defaults to Desktop of the current user
-        /// </summary>
-        public string ShortcutPath { get; set; }
-
-        /// <summary>
-        /// Sets the Name
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Sets the IconLocation
-        /// </summary>
-        public string IconLocation { get; set; }
-
-        /// <summary>
-        /// Sets the Description. For CreateShortcut defaults to 'Launch [Name]'
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Sets the Arguments for the shortcut
-        /// </summary>
-        public string Arguments { get; set; }
-
-        /// <summary>
-        /// Sets the WorkingDirectory
-        /// </summary>
-        public string WorkingDirectory { get; set; }
-
-        /// <summary>
-        /// Sets the WindowStyle.
-        /// <para/>
-        /// 1 - Activates and displays a window. If the window is minimized or maximized, the system restores it to its original size and position.
-        /// <para/>
-        /// 3 - Activates the window and displays it as a maximized window.
-        /// <para/>
-        /// 7 - Minimizes the window and activates the next top-level window.
-        /// </summary>
-        public int WindowStyle { get; set; }
-        
-        /// <summary>
-        /// Performs the action of this task.
-        /// </summary>
-        protected override void InternalExecute()
-        {
-            switch (this.TaskAction)
-            {
-                case CreateShortcutTaskAction:
-                    this.CreateShortcut();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
 
         private void CreateShortcut()
         {
@@ -115,7 +66,7 @@ namespace MSBuild.ExtensionPack.Computer
 
             if (string.IsNullOrEmpty(this.Description))
             {
-                this.Description = string.Format(CultureInfo.InvariantCulture, "Launch {0}", this.Name.Replace(".lnk", string.Empty));
+                this.Description = string.Format(CultureInfo.InvariantCulture, "Launch {0}", this.Name.Replace(".lnk", string.Empty, StringComparison.InvariantCulture));
             }
 
             this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating Shortcut: {0}", Path.Combine(this.ShortcutPath, this.Name)));
@@ -125,8 +76,8 @@ namespace MSBuild.ExtensionPack.Computer
             {
                 shortcutToCreate.TargetPath = this.FilePath;
                 shortcutToCreate.Description = this.Description;
-                
-                if (!string.IsNullOrEmpty(this.Arguments))                   
+
+                if (!string.IsNullOrEmpty(this.Arguments))
                 {
                     shortcutToCreate.Arguments = this.Arguments;
                 }
@@ -157,9 +108,73 @@ namespace MSBuild.ExtensionPack.Computer
                 {
                     shortcutToCreate.WindowStyle = this.WindowStyle;
                 }
-                
+
                 shortcutToCreate.Save();
             }
         }
+
+        /// <summary>
+        /// Performs the action of this task.
+        /// </summary>
+        protected override void InternalExecute()
+        {
+            switch (this.TaskAction)
+            {
+                case CreateShortcutTaskAction:
+                    this.CreateShortcut();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Sets the Arguments for the shortcut
+        /// </summary>
+        public string Arguments { get; set; }
+
+        /// <summary>
+        /// Sets the Description. For CreateShortcut defaults to 'Launch [Name]'
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Sets the FilePath
+        /// </summary>
+        public string FilePath { get; set; }
+
+        /// <summary>
+        /// Sets the IconLocation
+        /// </summary>
+        public string IconLocation { get; set; }
+
+        /// <summary>
+        /// Sets the Name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Sets the ShortcutPath. For CreateShortcut defaults defaults to Desktop of the current user
+        /// </summary>
+        public string ShortcutPath { get; set; }
+
+        /// <summary>
+        /// Sets the WindowStyle.
+        /// <para/>
+        /// 1 - Activates and displays a window. If the window is minimized or maximized, the system restores it to its original
+        /// size and position.
+        /// <para/>
+        /// 3 - Activates the window and displays it as a maximized window.
+        /// <para/>
+        /// 7 - Minimizes the window and activates the next top-level window.
+        /// </summary>
+        public int WindowStyle { get; set; }
+
+        /// <summary>
+        /// Sets the WorkingDirectory
+        /// </summary>
+        public string WorkingDirectory { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="SqlCmdWrapper.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.SqlServer.Extended
+namespace MSBuild.ExtensionPack.SqlServer
 {
     using System.Collections.Specialized;
     using System.Diagnostics;
@@ -13,20 +13,20 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
 
         internal SqlCmdWrapper(string executable, string arguments, string workingDirectory)
         {
-            this.Arguments = arguments;
-            this.Executable = executable;
-            this.WorkingDirectory = workingDirectory;
+            Arguments = arguments;
+            Executable = executable;
+            WorkingDirectory = workingDirectory;
         }
 
         /// <summary>
         /// Gets the standard output.
         /// </summary>
-        internal string StandardOutput => this.stdOut.ToString();
+        internal string StandardOutput => stdOut.ToString();
 
         /// <summary>
         /// Gets the standard error.
         /// </summary>
-        internal string StandardError => this.stdError.ToString();
+        internal string StandardError => stdError.ToString();
 
         /// <summary>
         /// Gets the exit code.
@@ -60,18 +60,18 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
             {
                 try
                 {
-                    var startInfo = new ProcessStartInfo(this.Executable, this.Arguments)
+                    var startInfo = new ProcessStartInfo(Executable, Arguments)
                                         {
                                             CreateNoWindow = true,
                                             RedirectStandardError = true,
                                             RedirectStandardOutput = true,
                                             UseShellExecute = false,
-                                            WorkingDirectory = this.WorkingDirectory
-                                        };
+                                            WorkingDirectory = WorkingDirectory
+                    };
 
-                    foreach (string key in this.EnvironmentVariables)
+                    foreach (string key in EnvironmentVariables)
                     {
-                        startInfo.EnvironmentVariables[key] = this.EnvironmentVariables[key];
+                        startInfo.EnvironmentVariables[key] = EnvironmentVariables[key];
                     }
 
                     sqlCmdProcess.StartInfo = startInfo;
@@ -80,14 +80,14 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
                     // we use synchronous calls we may deadlock when the StandardOut/Error buffer
                     // gets filled (only 4k size) and the called app blocks until the buffer
                     // is flushed.  This stops the buffers from getting full and blocking.
-                    sqlCmdProcess.OutputDataReceived += this.StandardOutHandler;
-                    sqlCmdProcess.ErrorDataReceived += this.StandardErrorHandler;
+                    sqlCmdProcess.OutputDataReceived += StandardOutHandler;
+                    sqlCmdProcess.ErrorDataReceived += StandardErrorHandler;
 
                     sqlCmdProcess.Start();
                     sqlCmdProcess.BeginOutputReadLine();
                     sqlCmdProcess.BeginErrorReadLine();
                     sqlCmdProcess.WaitForExit(int.MaxValue);
-                    this.ExitCode = sqlCmdProcess.ExitCode;
+                    ExitCode = sqlCmdProcess.ExitCode;
                 }
                 finally
                 {
@@ -112,7 +112,7 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
                 }
             }
 
-            return this.ExitCode;
+            return ExitCode;
         }
 
         private void StandardErrorHandler(object sendingProcess, DataReceivedEventArgs lineReceived)
@@ -121,7 +121,7 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
             if (!string.IsNullOrEmpty(lineReceived.Data))
             {
                 // Add the text to the collected errors.
-                this.stdError.AppendLine(lineReceived.Data);
+                stdError.AppendLine(lineReceived.Data);
             }
         }
 
@@ -131,7 +131,7 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
             if (!string.IsNullOrEmpty(lineReceived.Data))
             {
                 // Add the text to the collected output.
-                this.stdOut.AppendLine(lineReceived.Data);
+                stdOut.AppendLine(lineReceived.Data);
             }
         }
     }

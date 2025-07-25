@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MSBuild.ExtensionPack.Loggers</name>
+    </assembly>
+    <members>
+        <member name="T:MSBuild.ExtensionPack.Loggers.SecureFileLogger">
+            <summary>
+            <para>This logger can be used to replace text that is logged with hashes (#) based on a set of Regular Expression matches</para>
+            <para><b>Syntax:</b></para>
+            <para>/l:SecureFileLogger,MSBuild.ExtensionPack.Loggers.dll;logfile=YOURLOGFILE;rulefile=YOURRULEFILE;append=BOOL;verbosity=YOURVERBOSITY;encoding=YOURENCODING</para>
+            <para><b>Parameters:</b></para>
+            <para>Logfile: A optional parameter that specifies the file in which to store the log information. Defaults to securemsbuild.log</para>
+            <para>
+            RuleFile: A optional parameter that specifies the file in which to read regular expressions from. Use one Regular Expression
+            per line. Defaults to (?i:.*password.*)
+            </para>
+            <para>
+            Append: An optional boolean parameter that indicates whether or not to append the log to the specified file: true to add the
+            log to the text already present in the file; false to overwrite the contents of the file. The default is false.
+            </para>
+            <para>
+            Verbosity: An optional parameter that overrides the global verbosity setting for this file logger only. This enables you to
+            log to several loggers, each with a different verbosity.
+            </para>
+            <para>Encoding: An optional parameter that specifies the encoding for the file, for example, UTF-8.</para>
+            </summary>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.SecureFileLogger.Initialize(Microsoft.Build.Framework.IEventSource)">
+            <summary>
+            Initialize Override
+            </summary>
+            <param name="eventSource">IEventSource</param>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.SecureFileLogger.Shutdown">
+            <summary>
+            Shutdown() is guaranteed to be called by MSBuild at the end of the build, after all events have been raised.
+            </summary>
+        </member>
+        <member name="T:MSBuild.ExtensionPack.Loggers.SqlLogger">
+             <summary>
+             <para>The SqlLogger can be used to log the output of builds to Microsoft SQLServer database</para>
+             <para><b>Syntax:</b></para>
+             <para>/l:SqlLogger,MSBuild.ExtensionPack.Loggers.dll;BID=123;BN=YOURBuild;DS=MyServer;IC=YOURTable;SP=YOUrProcedure;CL;Verbosity=YOURVERBOSITY</para>
+             <para><b>Parameters:</b></para>
+             <para>BID (BUILDID/BUILDIDENTIFIER): An optional parameter that specifies the Build ID to associate with the build.</para>
+             <para>BN (BUILDNAME): An optional parameter that specifies the Build Name to associate with the build.</para>
+             <para>
+             DS (DATASOURCE): An optional parameter that specifies the DataSource to use in the connectionstring. Defaults to "." (i.e. local).
+             </para>
+             <para>
+             IC (INITIALCATALOG): An optional parameter that specifies the InitialCatalog to use in the connectionstring. Defaults to "MSBuildLogs".
+             </para>
+             <para>SP (STOREDPROCEDURE): An optional parameter that specifies the Stored Procedure to call. Defaults to "msbep_SqlLogger".</para>
+             <para>CL (CLEARLOG): An optional parameter that clears the log for the specified BID before logging starts.</para>
+             <para>Verbosity: An optional parameter that overrides the global verbosity setting for this logger only.</para>
+             </summary>
+             <example>
+             <code lang="sql">
+            <![CDATA[
+            -- This script creates a sample database, table and procedure to be used by the SqlLogger
+            -- Drop the database if it exists
+            IF EXISTS (SELECT name FROM sys.databases WHERE name = N'MSBuildLogs')
+            BEGIN
+            EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'MSBuildLogs'
+            USE [master]
+            ALTER DATABASE [MSBuildLogs] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+            ALTER DATABASE [MSBuildLogs] SET SINGLE_USER
+            DROP DATABASE [MSBuildLogs]
+            END
+            -- Create the database. Alter the paths as necessary to suite your environment
+            CREATE DATABASE [MSBuildLogs] ON PRIMARY
+            ( NAME = N'MSBuildLogs', FILENAME = N'C:\a\MSBuildLogs.mdf' , SIZE = 3072KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+            LOG ON
+            ( NAME = N'MSBuildLogs_log', FILENAME = N'C:\a\MSBuildLogs_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+            GO
+            SET ANSI_NULLS ON
+            GO
+            SET QUOTED_IDENTIFIER ON
+            GO
+            -- Create the table
+            USE [MSBuildLogs]
+            GO
+            CREATE TABLE [MSBuildLogs].[dbo].[BuildLogs](
+            [id]        [int]            IDENTITY(1,1) NOT NULL,
+            [BuildId]    [int]            NULL,
+            [BuildName]    [nvarchar](100)    NULL,
+            [Event]        [nvarchar](50)    NOT NULL,
+            [Message]    [nvarchar](1500) NULL,
+            [EventTime]    [datetime]        NOT NULL
+            ) ON [PRIMARY]
+            GO
+            -- Create a clustered index on the colums this table is likely to be searched on
+            CREATE CLUSTERED INDEX [cidx_BuildId,EventTime] ON [MSBuildLogs].[dbo].[BuildLogs]
+            (
+            [BuildId] ASC,
+            [EventTime] ASC
+            )WITH (STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+            GO
+            -- Create the stored procedure
+            CREATE PROCEDURE [dbo].[msbep_SqlLogger]
+            @BuildId    int = NULL,
+            @BuildName    nvarchar(50) = NULL,
+            @Event        nvarchar(50),
+            @Message    nvarchar(1000) = NULL,
+            @ClearLog    bit = 0
+            AS
+            BEGIN
+            DECLARE @EventTime DATETIME;
+            SET @EventTime = GETDATE();
+            IF ( @ClearLog = 1)
+            BEGIN
+            DELETE FROM [dbo].BuildLogs
+            WHERE BuildId = @BuildId
+            END
+            INSERT INTO [dbo].BuildLogs (BuildId, BuildName, [Event], [Message], EventTime)
+            VALUES    (@BuildId, @BuildName, @Event, @Message, @EventTime)
+            END
+            ]]>
+             </code>
+             </example>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.SqlLogger.Initialize(Microsoft.Build.Framework.IEventSource)">
+            <summary>
+            Initialize Override
+            </summary>
+            <param name="eventSource">IEventSource</param>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.SqlLogger.Shutdown">
+            <summary>
+            Shutdown() is guaranteed to be called by MSBuild at the end of the build, after all events have been raised.
+            </summary>
+        </member>
+        <member name="T:MSBuild.ExtensionPack.Loggers.StringExtensions">
+            <summary>
+            StringExtensions
+            </summary>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.StringExtensions.Repeat(System.Char,System.Int32)">
+            <summary>
+            Repeat a character
+            </summary>
+            <param name="chatToRepeat">The charToRepeat</param>
+            <param name="repeat">The number of times to repeat</param>
+            <returns>Repeated chatToRepeat</returns>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.StringExtensions.Repeat(System.String,System.Int32)">
+            <summary>
+            Repeat a string
+            </summary>
+            <param name="stringToRepeat">The stringToRepeat</param>
+            <param name="repeat">The number of times to repeat</param>
+            <returns>Repeated stringToRepeat</returns>
+        </member>
+        <member name="T:MSBuild.ExtensionPack.Loggers.XmlFileLogger">
+            <summary>
+            <para>This logger can be used to log in xml format</para>
+            <para><b>Syntax:</b></para>
+            <para>/l:XmlFileLogger,MSBuild.ExtensionPack.Loggers.dll;logfile=YOURLOGFILE;verbosity=YOURVERBOSITY;encoding=YOURENCODING</para>
+            <para><b>Parameters:</b></para>
+            <para>Logfile: A optional parameter that specifies the file in which to store the log information. Defaults to msbuild.xml</para>
+            <para>
+            Verbosity: An optional parameter that overrides the global verbosity setting for this file logger only. This enables you to
+                       log to several loggers, each with a different verbosity. The verbosity setting is case sensitive.
+            </para>
+            <para>Encoding: An optional parameter that specifies the encoding for the file, for example, UTF-8.</para>
+            </summary>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.XmlFileLogger.Initialize(Microsoft.Build.Framework.IEventSource)">
+            <summary>
+            Initialize Override
+            </summary>
+            <param name="eventSource">IEventSource</param>
+        </member>
+        <member name="M:MSBuild.ExtensionPack.Loggers.XmlFileLogger.Shutdown">
+            <summary>
+            Shutdown() is guaranteed to be called by MSBuild at the end of the build, after all events have been raised.
+            </summary>
+        </member>
+    </members>
+</doc>

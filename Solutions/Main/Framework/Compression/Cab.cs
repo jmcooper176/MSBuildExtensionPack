@@ -1,8 +1,20 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="Cab.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of CycloneDX CLI Tool
+//
+// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
+// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
 namespace MSBuild.ExtensionPack.Compression
 {
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
     using System;
     using System.Diagnostics;
     using System.Globalization;
@@ -10,135 +22,48 @@ namespace MSBuild.ExtensionPack.Compression
     using System.Linq;
     using System.Management;
     using System.Text;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>AddFile</i> (<b>Required: </b>NewFile, CabFile, CabExePath, ExtractExePath, NewFileDestination)</para>
-    /// <para><i>Create</i> (<b>Required: </b>PathToCab or FilesToCab, CabFile, ExePath. <b>Optional: </b>PreservePaths, StripPrefixes, Recursive)</para>
-    /// <para><i>Extract</i> (<b>Required: </b>CabFile, ExtractExePath, ExtractTo <b>Optional:</b> ExtractFile)</para>
+    /// <para><i>AddFile</i> ( <b>Required:</b> NewFile, CabFile, CabExePath, ExtractExePath, NewFileDestination)</para>
+    /// <para>
+    /// <i>Create</i> ( <b>Required:</b> PathToCab or FilesToCab, CabFile, ExePath. <b>Optional:</b> PreservePaths, StripPrefixes, Recursive)
+    /// </para>
+    /// <para><i>Extract</i> ( <b>Required:</b> CabFile, ExtractExePath, ExtractTo <b>Optional:</b> ExtractFile)</para>
     /// <para><b>Compatible with:</b></para>
-    ///     <para>Microsoft (R) Cabinet Tool (cabarc.exe) - Version 5.2.3790.0</para>
-    ///     <para>Microsoft (R) CAB File Extract Utility (extrac32.exe)- Version 5.2.3790.0</para>
+    /// <para>Microsoft (R) Cabinet Tool (cabarc.exe) - Version 5.2.3790.0</para>
+    /// <para>Microsoft (R) CAB File Extract Utility (extrac32.exe)- Version 5.2.3790.0</para>
     /// <para><b>Remote Execution Support:</b> No</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <Target Name="Default">
-    ///         <ItemGroup>
-    ///             <!-- Create a collection of files to CAB -->
-    ///             <Files Include="C:\ddd\**\*"/>
-    ///         </ItemGroup>
-    ///         <!-- Create the CAB using the File collection and preserve the paths whilst stripping a prefix -->
-    ///         <MSBuild.ExtensionPack.Compression.Cab TaskAction="Create" FilesToCab="@(Files)" CabExePath="D:\BuildTools\CabArc.Exe" CabFile="C:\newcabbyitem.cab" PreservePaths="true" StripPrefixes="ddd\"/>
-    ///         <!-- Create the same CAB but this time based on the Path. Note that Recursive is required -->
-    ///         <MSBuild.ExtensionPack.Compression.Cab TaskAction="Create" PathToCab="C:\ddd" CabExePath="D:\BuildTools\CabArc.Exe" CabFile="C:\newcabbypath.cab" PreservePaths="true" StripPrefixes="ddd\" Recursive="true"/>
-    ///         <!-- Add a file to the CAB -->
-    ///         <MSBuild.ExtensionPack.Compression.Cab TaskAction="AddFile" NewFile="c:\New Text Document.txt" CabExePath="D:\BuildTools\CabArc.Exe" ExtractExePath="D:\BuildTools\Extrac32.EXE" CabFile="C:\newcabbyitem.cab" NewFileDestination="\Any Path"/>
-    ///         <!-- Extract a CAB-->
-    ///         <MSBuild.ExtensionPack.Compression.Cab TaskAction="Extract" ExtractTo="c:\a111" ExtractExePath="D:\BuildTools\Extrac32.EXE" CabFile="C:\newcabbyitem.cab"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>    
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<Target Name="Default">
+    ///<ItemGroup>
+    ///<!-- Create a collection of files to CAB -->
+    ///<Files Include="C:\ddd\**\*"/>
+    ///</ItemGroup>
+    ///<!-- Create the CAB using the File collection and preserve the paths whilst stripping a prefix -->
+    ///<MSBuild.ExtensionPack.Compression.Cab TaskAction="Create" FilesToCab="@(Files)" CabExePath="D:\BuildTools\CabArc.Exe" CabFile="C:\newcabbyitem.cab" PreservePaths="true" StripPrefixes="ddd\"/>
+    ///<!-- Create the same CAB but this time based on the Path. Note that Recursive is required -->
+    ///<MSBuild.ExtensionPack.Compression.Cab TaskAction="Create" PathToCab="C:\ddd" CabExePath="D:\BuildTools\CabArc.Exe" CabFile="C:\newcabbypath.cab" PreservePaths="true" StripPrefixes="ddd\" Recursive="true"/>
+    ///<!-- Add a file to the CAB -->
+    ///<MSBuild.ExtensionPack.Compression.Cab TaskAction="AddFile" NewFile="c:\New Text Document.txt" CabExePath="D:\BuildTools\CabArc.Exe" ExtractExePath="D:\BuildTools\Extrac32.EXE" CabFile="C:\newcabbyitem.cab" NewFileDestination="\Any Path"/>
+    ///<!-- Extract a CAB-->
+    ///<MSBuild.ExtensionPack.Compression.Cab TaskAction="Extract" ExtractTo="c:\a111" ExtractExePath="D:\BuildTools\Extrac32.EXE" CabFile="C:\newcabbyitem.cab"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class Cab : BaseTask
     {
-        /// <summary>
-        /// Sets the path to extract to
-        /// </summary>
-        public ITaskItem ExtractTo { get; set; }
-
-        /// <summary>
-        /// Sets the CAB file. Required.
-        /// </summary>
-        [Required]
-        public ITaskItem CabFile { get; set; }
-
-        /// <summary>
-        /// Sets the path to cab
-        /// </summary>
-        public ITaskItem PathToCab { get; set; }
-
-        /// <summary>
-        /// Sets whether to add files and folders recursively if PathToCab is specified.
-        /// </summary>
-        public bool Recursive { get; set; }
-        
-        /// <summary>
-        /// Sets the files to cab
-        /// </summary>
-        public ITaskItem[] FilesToCab { get; set; }
-
-        /// <summary>
-        /// Sets the path to CabArc.Exe
-        /// </summary>
-        public ITaskItem CabExePath { get; set; }
-
-        /// <summary>
-        /// Sets the path to extrac32.exe
-        /// </summary>
-        public ITaskItem ExtractExePath { get; set; }
-
-        /// <summary>
-        /// Sets the files to extract. Default is /E, which is all.
-        /// </summary>
-        public string ExtractFile { get; set; } = "/E";
-
-        /// <summary>
-        /// Sets a value indicating whether [preserve paths]
-        /// </summary>
-        public bool PreservePaths { get; set; }
-
-        /// <summary>
-        /// Sets the prefixes to strip. Delimit with ';'
-        /// </summary>
-        public string StripPrefixes { get; set; }
-
-        /// <summary>
-        /// Sets the new file to add to the Cab File
-        /// </summary>
-        public ITaskItem NewFile { get; set; }
-
-        /// <summary>
-        /// Sets the path to add the file to
-        /// </summary>
-        public string NewFileDestination { get; set; }
-
-        /// <summary>
-        /// Performs the action of this task.
-        /// </summary>
-        protected override void InternalExecute()
-        {
-            if (!this.TargetingLocalMachine())
-            {
-                return;
-            }
-
-            // Resolve TaskAction
-            switch (this.TaskAction)
-            {
-                case "Create":
-                    this.Create();
-                    break;
-                case "Extract":
-                    this.Extract();
-                    break;
-                case "AddFile":
-                    this.AddFile();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
-
         /// <summary>
         /// Adds the file.
         /// </summary>
@@ -203,7 +128,7 @@ namespace MSBuild.ExtensionPack.Compression
                 options.AppendFormat(CultureInfo.CurrentCulture, " -P \"{0}\"\\", dirInfo.FullName.Remove(dirInfo.FullName.Length - 1).Replace(@"C:\", string.Empty));
                 cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"{0} N ""{1}"" ""{2}""", options, this.CabFile.GetMetadata("FullPath"), "\"" + dirInfo.FullName + "*.*\"" + " ");
                 this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Calling {0} with {1}", this.CabExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments));
-                
+
                 // start the process
                 cabProcess.Start();
 
@@ -239,6 +164,87 @@ namespace MSBuild.ExtensionPack.Compression
                 else
                 {
                     this.Log.LogError("The ManagementObject call to invoke Delete returned null.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates this instance.
+        /// </summary>
+        private void Create()
+        {
+            // Validation
+            if (System.IO.File.Exists(this.CabExePath.GetMetadata("FullPath")) == false)
+            {
+                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Executable not found: {0}", this.CabExePath.GetMetadata("FullPath")));
+                return;
+            }
+
+            using (Process cabProcess = new Process())
+            {
+                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating Cab: {0}", this.CabFile.GetMetadata("FullPath")));
+                cabProcess.StartInfo.FileName = this.CabExePath.GetMetadata("FullPath");
+                cabProcess.StartInfo.UseShellExecute = false;
+                cabProcess.StartInfo.RedirectStandardOutput = true;
+
+                StringBuilder options = new StringBuilder();
+                if (this.PreservePaths)
+                {
+                    options.Append("-p");
+                }
+
+                if (this.PathToCab != null && this.Recursive)
+                {
+                    options.Append(" -r ");
+                }
+
+                // Could be more than one prefix to strip...
+                if (string.IsNullOrEmpty(this.StripPrefixes) == false)
+                {
+                    string[] prefixes = this.StripPrefixes.Split(';');
+                    foreach (string prefix in prefixes)
+                    {
+                        options.AppendFormat(CultureInfo.CurrentCulture, " -P {0}", prefix);
+                    }
+                }
+
+                string files = string.Empty;
+                if ((this.FilesToCab == null || this.FilesToCab.Count() == 0) && this.PathToCab == null)
+                {
+                    this.Log.LogError("FilesToCab or PathToCab must be supplied");
+                    return;
+                }
+
+                if (this.PathToCab != null)
+                {
+                    files = this.PathToCab.GetMetadata("FullPath");
+                    if (!files.EndsWith(@"\*", StringComparison.OrdinalIgnoreCase))
+                    {
+                        files += @"\*";
+                    }
+                }
+                else
+                {
+                    files = this.FilesToCab.Aggregate(files, (current, file) => current + ("\"" + file.ItemSpec + "\"" + " "));
+                }
+
+                cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"{0} N ""{1}"" ""{2}""", options, this.CabFile.GetMetadata("FullPath"), files);
+                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Calling {0} with {1}", this.CabExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments));
+
+                // start the process
+                cabProcess.Start();
+
+                // Read any messages from CABARC...and log them
+                string output = cabProcess.StandardOutput.ReadToEnd();
+                cabProcess.WaitForExit();
+
+                if (output.Contains("Completed successfully"))
+                {
+                    this.LogTaskMessage(MessageImportance.Low, output);
+                }
+                else
+                {
+                    this.Log.LogError(output);
                 }
             }
         }
@@ -312,84 +318,95 @@ namespace MSBuild.ExtensionPack.Compression
         }
 
         /// <summary>
-        /// Creates this instance.
+        /// Performs the action of this task.
         /// </summary>
-        private void Create()
+        protected override void InternalExecute()
         {
-            // Validation
-            if (System.IO.File.Exists(this.CabExePath.GetMetadata("FullPath")) == false)
+            if (!this.TargetingLocalMachine())
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Executable not found: {0}", this.CabExePath.GetMetadata("FullPath")));
                 return;
             }
 
-            using (Process cabProcess = new Process())
+            // Resolve TaskAction
+            switch (this.TaskAction)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating Cab: {0}", this.CabFile.GetMetadata("FullPath")));
-                cabProcess.StartInfo.FileName = this.CabExePath.GetMetadata("FullPath");
-                cabProcess.StartInfo.UseShellExecute = false;
-                cabProcess.StartInfo.RedirectStandardOutput = true;
+                case "Create":
+                    this.Create();
+                    break;
 
-                StringBuilder options = new StringBuilder();
-                if (this.PreservePaths)
-                {
-                    options.Append("-p");
-                }
+                case "Extract":
+                    this.Extract();
+                    break;
 
-                if (this.PathToCab != null && this.Recursive)
-                {
-                    options.Append(" -r ");
-                }
+                case "AddFile":
+                    this.AddFile();
+                    break;
 
-                // Could be more than one prefix to strip...
-                if (string.IsNullOrEmpty(this.StripPrefixes) == false)
-                {
-                    string[] prefixes = this.StripPrefixes.Split(';');
-                    foreach (string prefix in prefixes)
-                    {
-                        options.AppendFormat(CultureInfo.CurrentCulture, " -P {0}", prefix);
-                    }
-                }
-
-                string files = string.Empty;
-                if ((this.FilesToCab == null || this.FilesToCab.Length == 0) && this.PathToCab == null)
-                {
-                    this.Log.LogError("FilesToCab or PathToCab must be supplied");
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
-                }
-
-                if (this.PathToCab != null)
-                {
-                    files = this.PathToCab.GetMetadata("FullPath");
-                    if (!files.EndsWith(@"\*", StringComparison.OrdinalIgnoreCase))
-                    {
-                        files += @"\*";
-                    }
-                }
-                else
-                {
-                    files = this.FilesToCab.Aggregate(files, (current, file) => current + ("\"" + file.ItemSpec + "\"" + " "));
-                }
-
-                cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"{0} N ""{1}"" ""{2}""", options, this.CabFile.GetMetadata("FullPath"), files);
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Calling {0} with {1}", this.CabExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments));
-
-                // start the process
-                cabProcess.Start();
-
-                // Read any messages from CABARC...and log them
-                string output = cabProcess.StandardOutput.ReadToEnd();
-                cabProcess.WaitForExit();
-
-                if (output.Contains("Completed successfully"))
-                {
-                    this.LogTaskMessage(MessageImportance.Low, output);
-                }
-                else
-                {
-                    this.Log.LogError(output);
-                }
             }
         }
+
+        /// <summary>
+        /// Sets the path to CabArc.Exe
+        /// </summary>
+        public ITaskItem CabExePath { get; set; }
+
+        /// <summary>
+        /// Sets the CAB file. Required.
+        /// </summary>
+        [Required]
+        public ITaskItem CabFile { get; set; }
+
+        /// <summary>
+        /// Sets the path to extrac32.exe
+        /// </summary>
+        public ITaskItem ExtractExePath { get; set; }
+
+        /// <summary>
+        /// Sets the files to extract. Default is /E, which is all.
+        /// </summary>
+        public string ExtractFile { get; set; } = "/E";
+
+        /// <summary>
+        /// Sets the path to extract to
+        /// </summary>
+        public ITaskItem ExtractTo { get; set; }
+
+        /// <summary>
+        /// Sets the files to cab
+        /// </summary>
+        public IEnumerable<ITaskItem> FilesToCab { get; set; }
+
+        /// <summary>
+        /// Sets the new file to add to the Cab File
+        /// </summary>
+        public ITaskItem NewFile { get; set; }
+
+        /// <summary>
+        /// Sets the path to add the file to
+        /// </summary>
+        public string NewFileDestination { get; set; }
+
+        /// <summary>
+        /// Sets the path to cab
+        /// </summary>
+        public ITaskItem PathToCab { get; set; }
+
+        /// <summary>
+        /// Sets a value indicating whether [preserve paths]
+        /// </summary>
+        public bool PreservePaths { get; set; }
+
+        /// <summary>
+        /// Sets whether to add files and folders recursively if PathToCab is specified.
+        /// </summary>
+        public bool Recursive { get; set; }
+
+        /// <summary>
+        /// Sets the prefixes to strip. Delimit with ';'
+        /// </summary>
+        public string StripPrefixes { get; set; }
     }
 }

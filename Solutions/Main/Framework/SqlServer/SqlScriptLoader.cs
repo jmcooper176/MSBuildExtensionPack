@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="SqlScriptLoader.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.SqlServer.Extended
+namespace MSBuild.ExtensionPack.SqlServer
 {
     using System;
     using System.IO;
@@ -32,9 +32,9 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
                 throw new ArgumentNullException(nameof(reader));
             }
 
-            this.strip = stripMultiLineComments;
+            strip = stripMultiLineComments;
             this.reader = reader;
-            this.contents = new StringBuilder();
+            contents = new StringBuilder();
         }
 
         /// <summary>
@@ -43,76 +43,76 @@ namespace MSBuild.ExtensionPack.SqlServer.Extended
         /// <returns>string</returns>
         public string ReadToEnd()
         {
-            if (this.reader.EndOfStream)
+            if (reader.EndOfStream)
             {
-                return this.contents.ToString();
+                return contents.ToString();
             }
 
-            if (this.strip)
+            if (strip)
             {
-                this.commentDepth = 0;
-                while (!this.reader.EndOfStream)
+                commentDepth = 0;
+                while (!reader.EndOfStream)
                 {
-                    if (!this.Read())
+                    if (!Read())
                     {
                         break;
                     }
 
-                    if (this.inComment && this.currentChar == '*' && this.Peek() && this.nextChar == '/')
+                    if (inComment && currentChar == '*' && Peek() && nextChar == '/')
                     {
-                        this.commentDepth--;
-                        this.Read();
+                        commentDepth--;
+                        Read();
 
-                        if (this.commentDepth == 0)
+                        if (commentDepth == 0)
                         {
-                            this.inComment = false;
+                            inComment = false;
                             continue;
                         }
                     }
 
-                    if (this.currentChar == '/' && this.Peek() && this.nextChar == '*')
+                    if (currentChar == '/' && Peek() && nextChar == '*')
                     {
-                        this.inComment = true;
-                        this.commentDepth++;
-                        this.Read();
+                        inComment = true;
+                        commentDepth++;
+                        Read();
                         continue;
                     }
 
-                    if (!this.inComment)
+                    if (!inComment)
                     {
-                        this.contents.Append(this.currentChar);
+                        contents.Append(currentChar);
                     }
                 }
             }
             else
             {
-                this.contents.Append(this.reader.ReadToEnd());
+                contents.Append(reader.ReadToEnd());
             }
 
-            return this.contents.ToString();
+            return contents.ToString();
         }
 
         private bool Read()
         {
-            int nextByte = this.reader.Read();
+            int nextByte = reader.Read();
             if (nextByte == -1)
             {
                 return false;
             }
 
-            this.currentChar = Convert.ToChar(nextByte);
+            currentChar = Convert.ToChar(nextByte);
             return true;
         }
 
         private bool Peek()
         {
-            int nextByte = this.reader.Peek();
+            int nextByte = reader.Peek();
             if (nextByte == -1)
             {
                 return false;
             }
 
-            this.nextChar = Convert.ToChar(nextByte);
+            nextChar = Convert.ToChar(nextByte);
             return true;
         }
     }

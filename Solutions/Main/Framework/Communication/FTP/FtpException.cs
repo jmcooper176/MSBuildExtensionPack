@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="FtpException.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Communication.Extended
+namespace MSBuild.ExtensionPack.Communication.FTP
 {
     using System;
     using System.Runtime.Serialization;
@@ -16,7 +16,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
 
         public FtpException()
         {
-            this.ftpError = 0;            
+            ftpError = 0;            
         }
 
         public FtpException(string message) : this(-1, message)
@@ -25,7 +25,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         
         public FtpException(int error, string message) : base(message)
         {
-            this.ftpError = error;
+            ftpError = error;
         }
 
         public FtpException(string message, Exception innerException) : base(message, innerException)
@@ -36,7 +36,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         {         
         }
 
-        public int ErrorCode => this.ftpError;
+        public int ErrorCode => ftpError;
 
         /// <summary>
         /// No specific impelementation is needed of the GetObjectData to serialize this object

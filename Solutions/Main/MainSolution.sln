@@ -1,15 +1,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{06FDB13A-E163-49EE-AC60-4EF4085DADC5}"
 	ProjectSection(SolutionItems) = preProject
 		Common\BaseAppDomainIsolatedTask.cs = Common\BaseAppDomainIsolatedTask.cs
 		Common\BaseTask.cs = Common\BaseTask.cs
-		Common\MSBuild.ExtensionPack.ruleset = Common\MSBuild.ExtensionPack.ruleset
 		Common\MSBuild.ExtensionPack.tasks = Common\MSBuild.ExtensionPack.tasks
 		SetEnv.cmd = SetEnv.cmd
-		Settings.StyleCop = Settings.StyleCop
 		Common\StringExtension.cs = Common\StringExtension.cs
 	EndProjectSection
 EndProject
@@ -132,6 +130,9 @@ Global
 		{9C416E27-110F-460A-B088-84735F430078} = {147B0947-7CB4-4F4C-BCB3-57CE32115453}
 		{245D5E04-D203-42F9-B6EB-09B7FE0DBF15} = {A3842673-8A5B-4EA7-972F-7A723BF24450}
 		{095E4A10-7EA0-4A1F-BB4C-2955FB743BC2} = {5909040A-8319-49A2-858B-BD3A1A9EE7B0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C39A906F-E0E6-4D50-B7E1-9472EA64004B}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = MainSolution.vsmdi

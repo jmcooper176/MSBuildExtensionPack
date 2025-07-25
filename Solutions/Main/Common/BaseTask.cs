@@ -1,129 +1,84 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="BaseTask.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of CycloneDX CLI Tool
+//
+// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
+// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
 namespace MSBuild.ExtensionPack
 {
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
     using System;
     using System.Globalization;
     using System.Management;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// Provides a common task for all the MSBuildExtensionPack Tasks
     /// </summary>
     public abstract class BaseTask : Task
     {
-        private string machineName;
         private AuthenticationLevel authenticationLevel = System.Management.AuthenticationLevel.Default;
+        private string machineName;
 
-        /// <summary>
-        /// Sets the TaskAction.
-        /// </summary>
-        public virtual string TaskAction { get; set; }
-
-        /// <summary>
-        /// Sets the MachineName.
-        /// </summary>
-        public virtual string MachineName
+        private void DetermineLogging()
         {
-            get { return this.machineName ?? Environment.MachineName; }
-            set { this.machineName = value; }
+            string s = Environment.GetEnvironmentVariable("SuppressTaskMessages", EnvironmentVariableTarget.Machine);
+
+            if (!string.IsNullOrEmpty(s))
+            {
+                this.SuppressTaskMessages = Convert.ToBoolean(s, CultureInfo.CurrentCulture);
+            }
+        }
+
+        private void GetExceptionLevel()
+        {
+            string s = Environment.GetEnvironmentVariable("LogExceptionStack", EnvironmentVariableTarget.Machine);
+
+            if (!string.IsNullOrEmpty(s))
+            {
+                this.LogExceptionStack = Convert.ToBoolean(s, CultureInfo.CurrentCulture);
+            }
         }
 
         /// <summary>
-        /// Sets the UserName
+        /// This is the main InternalExecute method that all tasks should implement
         /// </summary>
-        public virtual string UserName { get; set; }
-
-        /// <summary>
-        /// Sets the UserPassword.
-        /// </summary>
-        public virtual string UserPassword { get; set; }
-
-        /// <summary>
-        /// Sets the authority to be used to authenticate the specified user.
-        /// </summary>
-        public string Authority { get; set; }
-
-        /// <summary>
-        /// Sets the authentication level to be used to connect to WMI. Default is Default. Also supports: Call, Connect, None, Packet, PacketIntegrity, PacketPrivacy, Unchanged
-        /// </summary>
-        public string AuthenticationLevel
-        {
-            get { return this.authenticationLevel.ToString(); }
-            set { this.authenticationLevel = (AuthenticationLevel)Enum.Parse(typeof(AuthenticationLevel), value); }
-        }
-
-        /// <summary>
-        /// Set to true to log the full Exception Stack to the console.
-        /// </summary>
-        public bool LogExceptionStack { get; set; }
-
-        /// <summary>
-        /// Set to true to suppress all Message logging by tasks. Errors and Warnings are not affected.
-        /// </summary>
-        public bool SuppressTaskMessages { get; set; }
-
-        /// <summary>
-        /// Set to true to error if the task has been deprecated
-        /// </summary>
-        public bool ErrorOnDeprecated { get; set; }
+        /// <remarks>LogError should be thrown in the event of errors</remarks>
+        protected abstract void InternalExecute();
 
         internal ManagementScope Scope { get; set; }
 
-        /// <summary>
-        /// Executes this instance.
-        /// </summary>
-        /// <returns>bool</returns>
-        public override sealed bool Execute()
+        internal void GetManagementScope(string wmiNamespace)
         {
-            this.DetermineLogging();
-            try
+            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
+            if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                this.InternalExecute();
-                return !this.Log.HasLoggedErrors;
+                this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace);
             }
-            catch (Exception ex)
+            else
             {
-                this.GetExceptionLevel();
-                this.Log.LogErrorFromException(ex, this.LogExceptionStack, true, null);
-                return !this.Log.HasLoggedErrors;
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the task is targeting the local machine
-        /// </summary>
-        /// <returns>bool</returns>
-        internal bool TargetingLocalMachine()
-        {
-            return this.TargetingLocalMachine(false);
-        }
-
-        /// <summary>
-        /// Determines whether the task is targeting the local machine
-        /// </summary>
-        /// <param name="canExecuteRemotely">True if the current TaskAction can run against a remote machine</param>
-        /// <returns>bool</returns>
-        internal bool TargetingLocalMachine(bool canExecuteRemotely)
-        {
-            if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) != 0)
-            {
-                if (!canExecuteRemotely)
+                ConnectionOptions options = new()
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "This task does not support remote execution. Please remove the MachineName: {0}", this.MachineName));
-                }
-
-                return false;
+                    Authentication = this.authenticationLevel,
+                    Username = this.UserName,
+                    Password = this.UserPassword,
+                    Authority = this.Authority
+                };
+                this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace, options);
             }
-
-            return true;
         }
 
-        internal void LogTaskWarning(string message)
+        internal void GetManagementScope(string wmiNamespace, ConnectionOptions options)
         {
-            this.Log.LogWarning(message);
+            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
+            this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace, options);
         }
 
         internal void LogTaskMessage(MessageImportance messageImportance, string message)
@@ -156,57 +111,111 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        internal void GetManagementScope(string wmiNamespace)
+        internal void LogTaskWarning(string message)
         {
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
-            if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) == 0)
-            {
-                this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace);
-            }
-            else
-            {
-                ConnectionOptions options = new ConnectionOptions
-                {
-                    Authentication = this.authenticationLevel,
-                    Username = this.UserName,
-                    Password = this.UserPassword,
-                    Authority = this.Authority
-                };
-                this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace, options);
-            }
-        }
-
-        internal void GetManagementScope(string wmiNamespace, ConnectionOptions options)
-        {
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
-            this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace, options);
+            this.Log.LogWarning(message);
         }
 
         /// <summary>
-        /// This is the main InternalExecute method that all tasks should implement
+        /// Determines whether the task is targeting the local machine
         /// </summary>
-        /// <remarks>
-        /// LogError should be thrown in the event of errors
-        /// </remarks>
-        protected abstract void InternalExecute();
-
-        private void GetExceptionLevel()
+        /// <returns>bool</returns>
+        internal bool TargetingLocalMachine()
         {
-            string s = Environment.GetEnvironmentVariable("LogExceptionStack", EnvironmentVariableTarget.Machine);
-
-            if (!string.IsNullOrEmpty(s))
-            {
-                this.LogExceptionStack = Convert.ToBoolean(s, CultureInfo.CurrentCulture);
-            }
+            return this.TargetingLocalMachine(false);
         }
 
-        private void DetermineLogging()
+        /// <summary>
+        /// Determines whether the task is targeting the local machine
+        /// </summary>
+        /// <param name="canExecuteRemotely">True if the current TaskAction can run against a remote machine</param>
+        /// <returns>bool</returns>
+        internal bool TargetingLocalMachine(bool canExecuteRemotely)
         {
-            string s = Environment.GetEnvironmentVariable("SuppressTaskMessages", EnvironmentVariableTarget.Machine);
-
-            if (!string.IsNullOrEmpty(s))
+            if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) != 0)
             {
-                this.SuppressTaskMessages = Convert.ToBoolean(s, CultureInfo.CurrentCulture);
+                if (!canExecuteRemotely)
+                {
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "This task does not support remote execution. Please remove the MachineName: {0}", this.MachineName));
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the authentication level to be used to connect to WMI. Default is Default. Also supports: Call, Connect, None,
+        /// Packet, PacketIntegrity, PacketPrivacy, Unchanged
+        /// </summary>
+        public string AuthenticationLevel
+        {
+            get { return this.authenticationLevel.ToString(); }
+            set { this.authenticationLevel = (AuthenticationLevel)Enum.Parse(typeof(AuthenticationLevel), value); }
+        }
+
+        /// <summary>
+        /// Sets the authority to be used to authenticate the specified user.
+        /// </summary>
+        public string Authority { get; set; }
+
+        /// <summary>
+        /// Set to true to error if the task has been deprecated
+        /// </summary>
+        public bool ErrorOnDeprecated { get; set; }
+
+        /// <summary>
+        /// Set to true to log the full Exception Stack to the console.
+        /// </summary>
+        public bool LogExceptionStack { get; set; }
+
+        /// <summary>
+        /// Sets the MachineName.
+        /// </summary>
+        public virtual string MachineName
+        {
+            get { return this.machineName ?? Environment.MachineName; }
+            set { this.machineName = value; }
+        }
+
+        /// <summary>
+        /// Set to true to suppress all Message logging by tasks. Errors and Warnings are not affected.
+        /// </summary>
+        public bool SuppressTaskMessages { get; set; }
+
+        /// <summary>
+        /// Sets the TaskAction.
+        /// </summary>
+        public virtual string TaskAction { get; set; }
+
+        /// <summary>
+        /// Sets the UserName
+        /// </summary>
+        public virtual string UserName { get; set; }
+
+        /// <summary>
+        /// Sets the UserPassword.
+        /// </summary>
+        public virtual string UserPassword { get; set; }
+
+        /// <summary>
+        /// Executes this instance.
+        /// </summary>
+        /// <returns>bool</returns>
+        public override sealed bool Execute()
+        {
+            this.DetermineLogging();
+            try
+            {
+                this.InternalExecute();
+                return !this.Log.HasLoggedErrors;
+            }
+            catch (Exception ex)
+            {
+                this.GetExceptionLevel();
+                this.Log.LogErrorFromException(ex, this.LogExceptionStack, true, null);
+                return !this.Log.HasLoggedErrors;
             }
         }
     }

@@ -8,8 +8,8 @@ namespace MSBuild.ExtensionPack.VisualStudio
     using System.Globalization;
     using System.IO;
     using System.Linq;
+
     using Microsoft.Build.Framework;
-    using MSBuild.ExtensionPack.VisualStudio.Extended;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>

@@ -1,7 +1,9 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="FtpConnection.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Communication.Extended
+using MSBuild.ExtensionPack.Communication.Extended;
+
+namespace MSBuild.ExtensionPack.Communication.FTP
 {
     using System;
     using System.Collections.Generic;
@@ -21,8 +23,8 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         private readonly string ftpUserName;
         private readonly string ftpPassword;
 
-        private IntPtr connectionHandle;
-        private IntPtr internetHandle;
+        private nint connectionHandle;
+        private nint internetHandle;
 
         #region Constructors
         /// <summary>
@@ -31,7 +33,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="host">The host name of the ftp site where the connection would be made.</param>
         public FtpConnection(string host) : this(host, NativeMethods.InternetDefaultFtpPort, string.Empty, string.Empty)
         {
-            this.ftpHost = host;
+            ftpHost = host;
         }
 
         /// <summary>
@@ -62,10 +64,10 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="password">The Password used to make the FTP connection</param>
         public FtpConnection(string host, int port, string userName, string password)
         {
-            this.ftpHost = host;
-            this.ftpPort = port;
-            this.ftpUserName = userName;
-            this.ftpPassword = password;
+            ftpHost = host;
+            ftpPort = port;
+            ftpUserName = userName;
+            ftpPassword = password;
         }
         #endregion
 
@@ -76,14 +78,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// </summary>
         ~FtpConnection()
         {
-            this.Dispose(false);
+            Dispose(false);
         }                                                                                                    
         #endregion
 
         #region Properties
-        public int Port => this.ftpPort;
+        public int Port => ftpPort;
 
-        public string FtpHost => this.ftpHost;
+        public string FtpHost => ftpHost;
 
         #endregion
 
@@ -95,7 +97,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         {
             if (Directory.Exists(directory))
             {
-                System.Environment.CurrentDirectory = directory;
+                Environment.CurrentDirectory = directory;
             }
             else
             {
@@ -108,7 +110,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// </summary>
         public void LogOn()
         {
-            this.LogOn(this.ftpUserName, this.ftpPassword);
+            LogOn(ftpUserName, ftpPassword);
         }
         
         /// <summary>
@@ -117,12 +119,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="directory">The directory path to set on the FTP site.</param>
         public void SetCurrentDirectory(string directory)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
                 
-            if (NativeMethods.FtpSetCurrentDirectory(this.connectionHandle, directory) == 0)
+            if (NativeMethods.FtpSetCurrentDirectory(connectionHandle, directory) == 0)
             {
                 Error();
             }
@@ -134,14 +136,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>The path of the current directory</returns>
         public string GetCurrentDirectory()
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
             int buffLength = NativeMethods.MaxPath + 1;
             StringBuilder str = new StringBuilder(buffLength);
-            if (NativeMethods.FtpGetCurrentDirectory(this.connectionHandle, str, ref buffLength) == 0)
+            if (NativeMethods.FtpGetCurrentDirectory(connectionHandle, str, ref buffLength) == 0)
             {
                 Error();
                 return null;
@@ -156,7 +158,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>A FtpDirectoryInfo object containing information of the current directory.</returns>
         public FtpDirectoryInfo GetCurrentDirectoryInfo()
         {
-            return new FtpDirectoryInfo(this, this.GetCurrentDirectory());
+            return new FtpDirectoryInfo(this, GetCurrentDirectory());
         }
 
         /// <summary>
@@ -166,7 +168,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="failIfExists">Flag to indicate whether to overwrite the file if it exists already in local directory.</param>
         public void GetFile(string remoteFile, bool failIfExists)
         {
-            this.GetFile(remoteFile, remoteFile, failIfExists);
+            GetFile(remoteFile, remoteFile, failIfExists);
         }
 
         /// <summary>
@@ -177,12 +179,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="failIfExists">Flag to indicate whether to overwrite the file if it exists already in local directory.</param>
         public void GetFile(string remoteFile, string localFile, bool failIfExists)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            if (NativeMethods.FtpGetFile(this.connectionHandle, remoteFile, localFile, failIfExists, NativeMethods.FileAttributeNormal, NativeMethods.FtpTransferTypeBinary, IntPtr.Zero) == 0)
+            if (NativeMethods.FtpGetFile(connectionHandle, remoteFile, localFile, failIfExists, NativeMethods.FileAttributeNormal, NativeMethods.FtpTransferTypeBinary, nint.Zero) == 0)
             {
                 Error();
             }
@@ -194,12 +196,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="fileName">The name of the file to be uploaded.</param>
         public void PutFile(string fileName)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            this.PutFile(fileName, Path.GetFileName(fileName));
+            PutFile(fileName, Path.GetFileName(fileName));
         }
 
         /// <summary>
@@ -209,12 +211,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="remoteFile">The remote name of the file.</param>
         public void PutFile(string localFile, string remoteFile)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            if (NativeMethods.FtpPutFile(this.connectionHandle, localFile, remoteFile, NativeMethods.FtpTransferTypeBinary, IntPtr.Zero) == 0)
+            if (NativeMethods.FtpPutFile(connectionHandle, localFile, remoteFile, NativeMethods.FtpTransferTypeBinary, nint.Zero) == 0)
             {
                 Error();
             }
@@ -227,12 +229,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="newFileName">The name the file needs to be renamed to.</param>
         public void RenameFile(string fileName, string newFileName)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            int ret = NativeMethods.FtpRenameFile(this.connectionHandle, fileName, newFileName);
+            int ret = NativeMethods.FtpRenameFile(connectionHandle, fileName, newFileName);
             if (ret == 0)
             {
                 Error();
@@ -245,12 +247,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="fileName">The name of the file to be deleted.</param>        
         public void DeleteFile(string fileName)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            int ret = NativeMethods.FtpDeleteFile(this.connectionHandle, fileName);
+            int ret = NativeMethods.FtpDeleteFile(connectionHandle, fileName);
             if (ret == 0)
             {
                 Error();
@@ -263,12 +265,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="directory">The name of the file to be deleted.</param>        
         public void DeleteDirectory(string directory)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            int ret = NativeMethods.FtpRemoveDirectory(this.connectionHandle, directory);
+            int ret = NativeMethods.FtpRemoveDirectory(connectionHandle, directory);
             if (ret == 0)
             {
                 Error();
@@ -281,12 +283,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>Returns the list of files present in the current ftp directory.</returns>
         public FtpFileInfo[] GetFiles()
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            return this.GetFiles(this.GetCurrentDirectory());
+            return GetFiles(GetCurrentDirectory());
         }
 
         /// <summary>
@@ -296,18 +298,18 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>Returns the list of files present in the current ftp directory.</returns>        
         public FtpFileInfo[] GetFiles(string mask)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
             NativeMethods.WIN32_FIND_DATA findData = new NativeMethods.WIN32_FIND_DATA();
 
-            IntPtr fileHandle = NativeMethods.FtpFindFirstFile(this.connectionHandle, mask, ref findData, NativeMethods.InternetFlagNoCacheWrite, IntPtr.Zero);
+            nint fileHandle = NativeMethods.FtpFindFirstFile(connectionHandle, mask, ref findData, NativeMethods.InternetFlagNoCacheWrite, nint.Zero);
             try
             {
                 List<FtpFileInfo> files = new List<FtpFileInfo>();
-                if (fileHandle == IntPtr.Zero)
+                if (fileHandle == nint.Zero)
                 {
                     if (Marshal.GetLastWin32Error() == NativeMethods.ErrorNoMoreFiles)
                     {
@@ -347,7 +349,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             }
             finally
             {
-                if (fileHandle != IntPtr.Zero)
+                if (fileHandle != nint.Zero)
                 {
                     NativeMethods.InternetCloseHandle(fileHandle);
                 }
@@ -360,7 +362,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>Returns the list of diretories present in the current ftp directory.</returns>
         public FtpDirectoryInfo[] GetDirectories()
         {
-            return this.GetDirectories(this.GetCurrentDirectory());
+            return GetDirectories(GetCurrentDirectory());
         }
 
         /// <summary>
@@ -370,19 +372,19 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>Returns the list of diretories present in the given ftp directory.</returns>
         public FtpDirectoryInfo[] GetDirectories(string path)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
             NativeMethods.WIN32_FIND_DATA findData = new NativeMethods.WIN32_FIND_DATA();
 
-            IntPtr fileHandle = NativeMethods.FtpFindFirstFile(this.connectionHandle, path, ref findData, NativeMethods.InternetFlagNoCacheWrite, IntPtr.Zero);
+            nint fileHandle = NativeMethods.FtpFindFirstFile(connectionHandle, path, ref findData, NativeMethods.InternetFlagNoCacheWrite, nint.Zero);
             try
             {
                 List<FtpDirectoryInfo> directories = new List<FtpDirectoryInfo>();
 
-                if (fileHandle == IntPtr.Zero)
+                if (fileHandle == nint.Zero)
                 {
                     if (Marshal.GetLastWin32Error() == NativeMethods.ErrorNoMoreFiles)
                     {
@@ -423,7 +425,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             }
             finally
             {
-                if (fileHandle != IntPtr.Zero)
+                if (fileHandle != nint.Zero)
                 {
                     NativeMethods.InternetCloseHandle(fileHandle);
                 }
@@ -436,12 +438,12 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <param name="path">The path of the ftp directory.</param>        
         public void CreateDirectory(string path)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
-            if (NativeMethods.FtpCreateDirectory(this.connectionHandle, path) == 0)
+            if (NativeMethods.FtpCreateDirectory(connectionHandle, path) == 0)
             {
                 Error();
             }
@@ -454,14 +456,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>True if the directory exists, false otherwise</returns>
         public bool DirectoryExists(string path)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
             NativeMethods.WIN32_FIND_DATA findData = new NativeMethods.WIN32_FIND_DATA();
-            IntPtr fileHandle = NativeMethods.FtpFindFirstFile(this.connectionHandle, path, ref findData, NativeMethods.InternetFlagNoCacheWrite, IntPtr.Zero);
-            return fileHandle != IntPtr.Zero || Marshal.GetLastWin32Error() == NativeMethods.ErrorNoMoreFiles;            
+            nint fileHandle = NativeMethods.FtpFindFirstFile(connectionHandle, path, ref findData, NativeMethods.InternetFlagNoCacheWrite, nint.Zero);
+            return fileHandle != nint.Zero || Marshal.GetLastWin32Error() == NativeMethods.ErrorNoMoreFiles;            
         }
 
         /// <summary>
@@ -471,14 +473,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// <returns>True if the file exists, false otherwise</returns>
         public bool FileExists(string path)
         {
-            if (this.connectionHandle == IntPtr.Zero)
+            if (connectionHandle == nint.Zero)
             {
                 throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
             }
 
             NativeMethods.WIN32_FIND_DATA findData = new NativeMethods.WIN32_FIND_DATA();
-            IntPtr fileHandle = NativeMethods.FtpFindFirstFile(this.connectionHandle, path, ref findData, NativeMethods.InternetFlagNoCacheWrite, IntPtr.Zero);
-            return fileHandle != IntPtr.Zero;            
+            nint fileHandle = NativeMethods.FtpFindFirstFile(connectionHandle, path, ref findData, NativeMethods.InternetFlagNoCacheWrite, nint.Zero);
+            return fileHandle != nint.Zero;            
         }
 
         /// <summary>
@@ -489,14 +491,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         public string SendCommand(string cmd)
         {
             int result;
-            IntPtr dataSocket = new IntPtr();
+            nint dataSocket = new nint();
             switch (cmd)
             {
                 case "PASV":
-                    result = NativeMethods.FtpCommand(this.connectionHandle, false, NativeMethods.FtpTransferTypeAscii, cmd, IntPtr.Zero, ref dataSocket);
+                    result = NativeMethods.FtpCommand(connectionHandle, false, NativeMethods.FtpTransferTypeAscii, cmd, nint.Zero, ref dataSocket);
                     break;
                 default:
-                    result = NativeMethods.FtpCommand(this.connectionHandle, false, NativeMethods.FtpTransferTypeAscii, cmd, IntPtr.Zero, ref dataSocket);
+                    result = NativeMethods.FtpCommand(connectionHandle, false, NativeMethods.FtpTransferTypeAscii, cmd, nint.Zero, ref dataSocket);
                     break;
             }
 
@@ -506,7 +508,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             {
                 Error();
             }
-            else if (dataSocket != IntPtr.Zero)
+            else if (dataSocket != nint.Zero)
             {
                 StringBuilder buffer = new StringBuilder(BUFFER_SIZE);
                 int bytesRead = 0;
@@ -528,11 +530,11 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// </summary>
         public void Close()
         {
-            NativeMethods.InternetCloseHandle(this.connectionHandle);
-            this.connectionHandle = IntPtr.Zero;
+            NativeMethods.InternetCloseHandle(connectionHandle);
+            connectionHandle = nint.Zero;
 
-            NativeMethods.InternetCloseHandle(this.internetHandle);
-            this.internetHandle = IntPtr.Zero;
+            NativeMethods.InternetCloseHandle(internetHandle);
+            internetHandle = nint.Zero;
         }
         
         #region IDisposable
@@ -541,7 +543,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -552,14 +554,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
                 // free managed resource
             }
 
-            if (this.connectionHandle != IntPtr.Zero)
+            if (connectionHandle != nint.Zero)
             {
-                NativeMethods.InternetCloseHandle(this.connectionHandle);
+                NativeMethods.InternetCloseHandle(connectionHandle);
             }
 
-            if (this.internetHandle != IntPtr.Zero)
+            if (internetHandle != nint.Zero)
             {
-                NativeMethods.InternetCloseHandle(this.internetHandle);
+                NativeMethods.InternetCloseHandle(internetHandle);
             }
         }
         #endregion
@@ -584,14 +586,14 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             }
 
             // If there is no connection open, Open a new connection
-            if (this.internetHandle == IntPtr.Zero)
+            if (internetHandle == nint.Zero)
             {
-                this.Open();
+                Open();
             }
 
             // Connect to the Internet using Ftp Credentials
-            this.connectionHandle = NativeMethods.InternetConnect(this.internetHandle, this.ftpHost, this.ftpPort, userName, password, NativeMethods.InternetServiceFtp, NativeMethods.InternetFlagPassive, IntPtr.Zero);
-            if (this.connectionHandle == IntPtr.Zero)
+            connectionHandle = NativeMethods.InternetConnect(internetHandle, ftpHost, ftpPort, userName, password, NativeMethods.InternetServiceFtp, NativeMethods.InternetFlagPassive, nint.Zero);
+            if (connectionHandle == nint.Zero)
             {
                 Error();
             }
@@ -632,13 +634,13 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         /// </summary>
         private void Open()
         {
-            if (string.IsNullOrEmpty(this.ftpHost))
+            if (string.IsNullOrEmpty(ftpHost))
             {
-                throw new ArgumentNullException(this.ftpHost);
+                throw new ArgumentNullException(ftpHost);
             }
 
-            this.internetHandle = NativeMethods.InternetOpen(System.Environment.UserName, NativeMethods.InternetOpenTypePreconfig, null, null, NativeMethods.InternetFlagSync);
-            if (this.internetHandle == IntPtr.Zero)
+            internetHandle = NativeMethods.InternetOpen(Environment.UserName, NativeMethods.InternetOpenTypePreconfig, null, null, NativeMethods.InternetFlagSync);
+            if (internetHandle == nint.Zero)
             {
                 Error();
             }

@@ -1,7 +1,7 @@
 ﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // <copyright file="FtpFileInfo.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-namespace MSBuild.ExtensionPack.Communication.Extended
+namespace MSBuild.ExtensionPack.Communication.FTP
 {
     using System;
     using System.IO;
@@ -27,51 +27,51 @@ namespace MSBuild.ExtensionPack.Communication.Extended
                 throw new ArgumentNullException("filePath");
             }
 
-            this.OriginalPath = filePath;
-            this.FullPath = filePath;
-            this.ftpConnection = ftp;
-            this.fileName = Path.GetFileName(filePath);
+            OriginalPath = filePath;
+            FullPath = filePath;
+            ftpConnection = ftp;
+            fileName = Path.GetFileName(filePath);
         }
 
         private FtpFileInfo(SerializationInfo info, StreamingContext context) : base(info, context)
         {         
         }
 
-        public FtpConnection FtpConnection => this.ftpConnection;
+        public FtpConnection FtpConnection => ftpConnection;
 
         public new DateTime? LastAccessTime
         {
-            get { return this.lastAccessTime.HasValue ? (DateTime?)this.lastAccessTime.Value : null; }
-            internal set => this.lastAccessTime = value;
+            get { return lastAccessTime.HasValue ? lastAccessTime.Value : null; }
+            internal set => lastAccessTime = value;
         }
 
         public new DateTime? CreationTime
         {
-            get => this.creationTime.HasValue ? (DateTime?)this.creationTime.Value : null;
-            internal set => this.creationTime = value;
+            get => creationTime.HasValue ? creationTime.Value : null;
+            internal set => creationTime = value;
         }
 
         public new DateTime? LastWriteTime
         {
-            get => this.lastWriteTime.HasValue ? (DateTime?)this.lastWriteTime.Value : null;
-            internal set => this.lastWriteTime = value;
+            get => lastWriteTime.HasValue ? lastWriteTime.Value : null;
+            internal set => lastWriteTime = value;
         }
 
-        public new DateTime? LastAccessTimeUtc => this.lastAccessTime?.ToUniversalTime();
+        public new DateTime? LastAccessTimeUtc => lastAccessTime?.ToUniversalTime();
 
-        public new DateTime? CreationTimeUtc => this.creationTime?.ToUniversalTime();
+        public new DateTime? CreationTimeUtc => creationTime?.ToUniversalTime();
 
-        public new DateTime? LastWriteTimeUtc => this.lastWriteTime?.ToUniversalTime();
+        public new DateTime? LastWriteTimeUtc => lastWriteTime?.ToUniversalTime();
 
         public new FileAttributes Attributes { get; internal set; }
 
-        public override string Name => this.fileName;
+        public override string Name => fileName;
 
-        public override bool Exists => this.FtpConnection.FileExists(this.FullName);
+        public override bool Exists => FtpConnection.FileExists(FullName);
 
         public override void Delete()
         {
-            this.FtpConnection.DeleteDirectory(this.FullName);
+            FtpConnection.DeleteDirectory(FullName);
         }
 
         /// <summary>
