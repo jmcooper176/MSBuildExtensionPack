@@ -1,111 +1,75 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="VB6.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.VisualStudio
 {
+    using Microsoft.Build.Framework;
+
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
 
-    using Microsoft.Build.Framework;
-
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>Build</i> (<b>Required: </b> Projects <b>Optional: </b>VB6Path, StopOnError)</para>
+    /// <para><i>Build</i> ( <b>Required:</b> Projects <b>Optional:</b> VB6Path, StopOnError)</para>
     /// <para><b>Remote Execution Support:</b> NA</para>
     /// <para/>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///   <PropertyGroup>
-    ///     <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///     <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///   </PropertyGroup>
-    ///   <Import Project="$(TPath)"/>
-    ///   <ItemGroup>
-    ///     <ProjectsToBuild Include="C:\MyVB6Project.vbp">
-    ///       <OutDir>c:\output</OutDir>
-    ///       <!-- Note the special use of ChgPropVBP metadata to change project properties at Build Time -->
-    ///       <ChgPropVBP>RevisionVer=4;CompatibleMode="0"</ChgPropVBP>
-    ///     </ProjectsToBuild>
-    ///     <ProjectsToBuild Include="C:\MyVB6Project2.vbp"/>
-    ///   </ItemGroup>
-    ///   <Target Name="Default">
-    ///       <!-- Build a collection of VB6 projects -->
-    ///     <MSBuild.ExtensionPack.VisualStudio.VB6 TaskAction="Build" Projects="@(ProjectsToBuild)"/>
-    ///   </Target>
-    /// </Project>
-    /// ]]></code>
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<ItemGroup>
+    ///<ProjectsToBuild Include="C:\MyVB6Project.vbp">
+    ///<OutDir>c:\output</OutDir>
+    ///<!-- Note the special use of ChgPropVBP metadata to change project properties at Build Time -->
+    ///<ChgPropVBP>RevisionVer=4;CompatibleMode="0"</ChgPropVBP>
+    ///</ProjectsToBuild>
+    ///<ProjectsToBuild Include="C:\MyVB6Project2.vbp"/>
+    ///</ItemGroup>
+    ///<Target Name="Default">
+    ///<!-- Build a collection of VB6 projects -->
+    ///<MSBuild.ExtensionPack.VisualStudio.VB6 TaskAction="Build" Projects="@(ProjectsToBuild)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class VB6 : BaseTask
     {
+        #region Private Fields
+
         private const char Separator = ';';
 
-        /// <summary>
-        /// Sets the VB6Path. Default is [Program Files]\Microsoft Visual Studio\VB98\VB6.exe
-        /// </summary>
-        public string VB6Path { get; set; }
+        #endregion Private Fields
 
-        /// <summary>
-        /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.
-        /// </summary>
-        public bool StopOnError { get; set; }
-
-        /// <summary>
-        /// Only build if any referenced source file is newer then the build output
-        /// </summary>
-        public bool IfModificationExists { get; set; }
-
-        /// <summary>
-        /// Sets the projects. Use an 'OutDir' metadata item to specify the output directory. The OutDir will be created if it does not exist.
-        /// </summary>
-        [Required]
-        public ITaskItem[] Projects { get; set; }
-
-        protected override void InternalExecute()
-        {
-            if (!this.TargetingLocalMachine())
-            {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(this.VB6Path))
-            {
-                string programFilePath = Environment.GetEnvironmentVariable("ProgramFiles");
-                if (string.IsNullOrEmpty(programFilePath))
-                {
-                    this.Log.LogError("Failed to read a value from the ProgramFiles Environment Variable");
-                    return;
-                }
-
-                if (File.Exists(programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe"))
-                {
-                    this.VB6Path = programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe";
-                }
-                else
-                {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "VB6.exe was not found in the default location. Use VB6Path to specify it. Searched at: {0}", programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe"));
-                    return;
-                }
-            }
-
-            switch (this.TaskAction)
-            {
-                case "Build":
-                    this.Build();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
+        #region Private Methods
 
         private void Build()
         {
-            if (this.Projects == null)
+            if (this.Projects is null)
             {
                 this.Log.LogError("The collection passed to Projects is empty");
                 return;
@@ -256,7 +220,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
                     return false;
                 }
 
-                if (artifactFileInfo != null)
+                if (artifactFileInfo is not null)
                 {
                     var myNow = DateTime.Now;
                     artifactFileInfo.LastWriteTime = myNow;
@@ -266,5 +230,76 @@ namespace MSBuild.ExtensionPack.VisualStudio
                 return true;
             }
         }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        protected override void InternalExecute()
+        {
+            if (!this.TargetingLocalMachine())
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(this.VB6Path))
+            {
+                string programFilePath = Environment.GetEnvironmentVariable("ProgramFiles");
+                if (string.IsNullOrEmpty(programFilePath))
+                {
+                    this.Log.LogError("Failed to read a value from the ProgramFiles Environment Variable");
+                    return;
+                }
+
+                if (File.Exists(programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe"))
+                {
+                    this.VB6Path = programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe";
+                }
+                else
+                {
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "VB6.exe was not found in the default location. Use VB6Path to specify it. Searched at: {0}", programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe"));
+                    return;
+                }
+            }
+
+            switch (this.TaskAction)
+            {
+                case "Build":
+                    this.Build();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// Only build if any referenced source file is newer then the build output
+        /// </summary>
+        public bool IfModificationExists { get; set; }
+
+        /// <summary>
+        /// Sets the projects. Use an 'OutDir' metadata item to specify the output directory. The OutDir will be created if it does
+        /// not exist.
+        /// </summary>
+        [Required]
+        public ITaskItem[] Projects { get; set; }
+
+        /// <summary>
+        /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.
+        /// </summary>
+        public bool StopOnError { get; set; }
+
+        /// <summary>
+        /// Sets the VB6Path. Default is [Program Files]\Microsoft Visual Studio\VB98\VB6.exe
+        /// </summary>
+        public string VB6Path { get; set; }
+
+        #endregion Public Properties
     }
 }

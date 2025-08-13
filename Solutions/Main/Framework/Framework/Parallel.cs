@@ -1,190 +1,135 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="Parallel.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Framework
 {
+    using Microsoft.Build.Framework;
+
     using System;
     using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Microsoft.Build.Framework;
-
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>BuildTargetsInParallel</i> (<b>Required: </b> Targets <b>Optional:</b> AdditionalProperties, ProjectFile, WaitAll, WorkingDirectory, MultiLog, MultiLogOpenOnFailure, MultiLogVerbosity, MultiLogResponseVerbosity, MultiProc, MaxCpuCount, NodeReuse)</para>
-    /// <para><i>BuildTargetSetsInParallel</i> (<b>Required: </b> Targets <b>Optional:</b> AdditionalProperties, ProjectFile, WaitAll, WorkingDirectory, MultiLog, MultiLogOpenOnFailure, MultiLogVerbosity, MultiLogResponseVerbosity, MultiProc, MaxCpuCount, NodeReuse)</para>
+    /// <para>
+    /// <i>BuildTargetsInParallel</i> ( <b>Required:</b> Targets <b>Optional:</b> AdditionalProperties, ProjectFile, WaitAll,
+    /// WorkingDirectory, MultiLog, MultiLogOpenOnFailure, MultiLogVerbosity, MultiLogResponseVerbosity, MultiProc, MaxCpuCount, NodeReuse)
+    /// </para>
+    /// <para>
+    /// <i>BuildTargetSetsInParallel</i> ( <b>Required:</b> Targets <b>Optional:</b> AdditionalProperties, ProjectFile, WaitAll,
+    /// WorkingDirectory, MultiLog, MultiLogOpenOnFailure, MultiLogVerbosity, MultiLogResponseVerbosity, MultiProc, MaxCpuCount, NodeReuse)
+    /// </para>
     /// <para><b>Remote Execution Support:</b> NA</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" InitialTargets="Throttle" DefaultTargets="Normal;BuildTargetSetsInParallel;BuildTargetsInParallel" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <ItemGroup>
-    ///         <MyTargetSets Include="1">
-    ///             <LogFilePath>C:\b</LogFilePath>
-    ///             <LogFileName>Target1yahoo.txt</LogFileName>
-    ///             <Targets>Target1;Target2</Targets>
-    ///             <Properties>MyPropValue=MyPropValue1</Properties>
-    ///         </MyTargetSets>
-    ///         <MyTargetSets Include="2">
-    ///             <Targets>Target3</Targets>
-    ///         </MyTargetSets>
-    ///         <MyTargets Include="Target1">
-    ///             <Properties>MyPropValue=MyPropValue1</Properties>
-    ///         </MyTargets>
-    ///         <MyTargets Include="Target2;Target3">
-    ///             <LogFilePath>C:\b</LogFilePath>
-    ///         </MyTargets>
-    ///     </ItemGroup>
-    ///     <Target Name="Normal" DependsOnTargets="Target1;Target2;Target3"/>
-    ///     <Target Name="BuildTargetSetsInParallel">
-    ///         <MSBuild.ExtensionPack.Framework.Parallel MultiLog="$(MultiLog)" MultiLogAppend="$(MultiLogAppend)" MultiLogOpenOnFailure="$(MultiLogOpenOnFailure)" TaskAction="BuildTargetSetsInParallel" Targets="@(MyTargetSets)"  AdditionalProperties="SkipInitial=true"/>
-    ///     </Target>
-    ///     <Target Name="BuildTargetsInParallel">
-    ///         <MSBuild.ExtensionPack.Framework.Parallel MultiLog="$(MultiLog)" MultiLogAppend="$(MultiLogAppend)" MultiLogOpenOnFailure="$(MultiLogOpenOnFailure)" TaskAction="BuildTargetsInParallel" Targets="@(MyTargets)" AdditionalProperties="SkipInitial=true"/>
-    ///     </Target>
-    ///     <Target Name="Target1">
-    ///         <MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="1000"/>
-    ///         <Message Text="MyPropValue = $(MyPropValue)" Importance="High"/>
-    ///     </Target>
-    ///     <Target Name="Target2">
-    ///         <MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="4000"/>
-    ///     </Target>
-    ///     <Target Name="Target3">
-    ///         <MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="2000"/>
-    ///     </Target>
-    ///     <Target Name="Throttle" Condition="$(SkipInitial) != 'true'">
-    ///         <MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="1000"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" InitialTargets="Throttle" DefaultTargets="Normal;BuildTargetSetsInParallel;BuildTargetsInParallel" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<ItemGroup>
+    ///<MyTargetSets Include="1">
+    ///<LogFilePath>C:\b</LogFilePath>
+    ///<LogFileName>Target1yahoo.txt</LogFileName>
+    ///<Targets>Target1;Target2</Targets>
+    ///<Properties>MyPropValue=MyPropValue1</Properties>
+    ///</MyTargetSets>
+    ///<MyTargetSets Include="2">
+    ///<Targets>Target3</Targets>
+    ///</MyTargetSets>
+    ///<MyTargets Include="Target1">
+    ///<Properties>MyPropValue=MyPropValue1</Properties>
+    ///</MyTargets>
+    ///<MyTargets Include="Target2;Target3">
+    ///<LogFilePath>C:\b</LogFilePath>
+    ///</MyTargets>
+    ///</ItemGroup>
+    ///<Target Name="Normal" DependsOnTargets="Target1;Target2;Target3"/>
+    ///<Target Name="BuildTargetSetsInParallel">
+    ///<MSBuild.ExtensionPack.Framework.Parallel MultiLog="$(MultiLog)" MultiLogAppend="$(MultiLogAppend)" MultiLogOpenOnFailure="$(MultiLogOpenOnFailure)" TaskAction="BuildTargetSetsInParallel" Targets="@(MyTargetSets)"  AdditionalProperties="SkipInitial=true"/>
+    ///</Target>
+    ///<Target Name="BuildTargetsInParallel">
+    ///<MSBuild.ExtensionPack.Framework.Parallel MultiLog="$(MultiLog)" MultiLogAppend="$(MultiLogAppend)" MultiLogOpenOnFailure="$(MultiLogOpenOnFailure)" TaskAction="BuildTargetsInParallel" Targets="@(MyTargets)" AdditionalProperties="SkipInitial=true"/>
+    ///</Target>
+    ///<Target Name="Target1">
+    ///<MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="1000"/>
+    ///<Message Text="MyPropValue = $(MyPropValue)" Importance="High"/>
+    ///</Target>
+    ///<Target Name="Target2">
+    ///<MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="4000"/>
+    ///</Target>
+    ///<Target Name="Target3">
+    ///<MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="2000"/>
+    ///</Target>
+    ///<Target Name="Throttle" Condition="$(SkipInitial) != 'true'">
+    ///<MSBuild.ExtensionPack.Framework.Thread TaskAction="Sleep" Timeout="1000"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class Parallel : BaseTask
     {
-        private const string BuildTargetsInParallelTaskAction = "BuildTargetsInParallel";
+        #region Private Fields
+
         private const string BuildTargetSetsInParallelTaskAction = "BuildTargetSetsInParallel";
-
-        private LoggerVerbosity multiLogVerbosity = LoggerVerbosity.Diagnostic;
+        private const string BuildTargetsInParallelTaskAction = "BuildTargetsInParallel";
         private LoggerVerbosity multiLogResponseVerbosity = LoggerVerbosity.Minimal;
-
+        private LoggerVerbosity multiLogVerbosity = LoggerVerbosity.Diagnostic;
         private string multiprocparameter = string.Empty;
 
-        /// <summary>
-        /// Specifies whether or not to use the /m multiproc parameter. If you include this switch without specifying a value for MaxCpuCount, MSBuild will use up to the number of processors in the computer. Default is false.
-        /// </summary>
-        public bool MultiProc { get; set; }
+        #endregion Private Fields
 
-        /// <summary>
-        /// Specifies the maximum number of concurrent processes to use when building. Use this with MultiProc parameter. Default is 0.
-        /// </summary>
-        public int MaxCpuCount { get; set; }
+        #region Private Methods
 
-        /// <summary>
-        /// Enable or disable the re-use of MSBuild nodes when using MultiProc. Default is false
-        /// </summary>
-        public bool NodeReuse { get; set; }
-
-        /// <summary>
-        /// Specifies whether to wait for all Targets to complete execution before returning to MSBuild or whether to wait for all to complete. Default is true.
-        /// </summary>
-        public bool WaitAll { get; set; } = true;
-
-        /// <summary>
-        /// Specifies the working directory. Default is null and MSBuild is resolved to the Path environment variable.
-        /// </summary>
-        public string WorkingDirectory { get; set; }
-
-        /// <summary>
-        /// Specifies whether each parallel execution should log to it's own log file rather than the parent. Default is false.
-        /// For BuildTargetsInParallel you can specify a LogFilePath metadata value to define the root path to log to, 
-        /// otherwise they are written to the directory of the calling project. The name of the target is used as the file name.
-        /// For BuildTargetSetsInParallel you can specify a LogFilePath and a LogFileName metatdatavalue. If LogFileName is not passed, the target name is used.
-        /// </summary>
-        public bool MultiLog { get; set; }
-
-        /// <summary>
-        /// Specifies whether to open the log file containing the error info on failure. Default is false
-        /// </summary>
-        public bool MultiLogOpenOnFailure { get; set; }
-
-        /// <summary>
-        /// Specifies whether to append to existing log files. Default is false
-        /// </summary>
-        public bool MultiLogAppend { get; set; }
-
-        /// <summary>
-        /// Specifies the verbosity to log to the individual files with. Default is Diagnostic. Note this is case sensitive.
-        /// </summary>
-        public string MultiLogVerbosity
+        private void BuildTargetSetsInParallel()
         {
-            get => this.multiLogVerbosity.ToString();
-            set => this.multiLogVerbosity = (LoggerVerbosity)Enum.Parse(typeof(LoggerVerbosity), value);
-        }
-
-        /// <summary>
-        /// Specifies the verbosity of logging fed back to the calling task. Default is Minimal
-        /// </summary>
-        public string MultiLogResponseVerbosity
-        {
-            get => this.multiLogResponseVerbosity.ToString();
-            set => this.multiLogResponseVerbosity = (LoggerVerbosity)Enum.Parse(typeof(LoggerVerbosity), value);
-        }
-
-        /// <summary>
-        /// Speficies the MSBuild project to use. Defaults to the calling MSBuild file.
-        /// </summary>
-        public ITaskItem ProjectFile { get; set; }
-
-        /// <summary>
-        /// Specifies the Targets to execute. Properties and Targets metadata can be set depending on the TaskAction. See the samples.
-        /// </summary>
-        [Required]
-        public ITaskItem[] Targets { get; set; }
-
-        /// <summary>
-        /// Specifies additional properties to pass through to the new parallel instances of MSBuild.
-        /// </summary>
-        public string AdditionalProperties { get; set; }
-        
-        protected override void InternalExecute()
-        {
-            if (!this.TargetingLocalMachine())
+            try
             {
-                return;
-            }
-
-            if (!this.MultiLog)
-            {
-                this.multiLogResponseVerbosity = LoggerVerbosity.Normal;
-            }
-
-            if (this.MultiProc)
-            {
-                this.multiprocparameter = " /m";
-
-                if (this.MaxCpuCount > 0)
+                Task[] tasks = new Task[this.Targets.Length];
+                for (int i = 0; i < this.Targets.Length; i++)
                 {
-                    this.multiprocparameter = " /m:" + this.MaxCpuCount;
+                    int i1 = i;
+                    tasks[i] = System.Threading.Tasks.Task.Factory.StartNew(() => this.ExecuteTargetSet(this.Targets[i1]));
+                }
+
+                if (this.WaitAll)
+                {
+                    // Block until all tasks complete.
+                    System.Threading.Tasks.Task.WaitAll(tasks);
+                }
+                else
+                {
+                    // Exit after first task completes
+                    System.Threading.Tasks.Task.WaitAny(tasks);
                 }
             }
-
-            switch (this.TaskAction)
+            catch (AggregateException ae)
             {
-                case BuildTargetsInParallelTaskAction:
-                    this.BuildTargetsInParallel();
-                    break;
-                case BuildTargetSetsInParallelTaskAction:
-                    this.BuildTargetSetsInParallel();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
+                foreach (var ex in ae.InnerExceptions)
+                {
+                    this.Log.LogError(ex.Message);
+                }
             }
         }
 
@@ -235,7 +180,7 @@ namespace MSBuild.ExtensionPack.Framework
                 properties += " /p:" + this.AdditionalProperties;
             }
 
-            string projectFile = this.ProjectFile == null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
+            string projectFile = this.ProjectFile is null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
             string logginginfo = string.Empty;
             string logfileName = item.GetMetadata("LogFilePath");
             if (string.IsNullOrEmpty(logfileName))
@@ -254,7 +199,8 @@ namespace MSBuild.ExtensionPack.Framework
 
             if (this.MultiLog)
             {
-                // note there is a bug in MSBuild loggers whereby the logger will append whenever it sees append in the arguments, so you can's say append=false.
+                // note there is a bug in MSBuild loggers whereby the logger will append whenever it sees append in the arguments,
+                // so you can's say append=false.
                 string append = string.Empty;
                 if (this.MultiLogAppend)
                 {
@@ -263,7 +209,7 @@ namespace MSBuild.ExtensionPack.Framework
 
                 logginginfo = string.Format(CultureInfo.CurrentCulture, "/l:FileLogger,Microsoft.Build.Engine;{0}verbosity={1};logfile=\"{2}\"", append, this.MultiLogVerbosity, logfileName);
             }
-            
+
             var exec = new ShellWrapper("msbuild.exe", "\"" + projectFile + "\" /v:" + this.MultiLogResponseVerbosity + " /t:" + item.ItemSpec + properties + this.multiprocparameter + " /nr:" + this.NodeReuse + " " + logginginfo);
             if (string.IsNullOrEmpty(this.WorkingDirectory) == false)
             {
@@ -275,7 +221,7 @@ namespace MSBuild.ExtensionPack.Framework
             // stderr is logged as errors
             exec.ErrorDataReceived += (sender, e) =>
                                           {
-                                              if (e.Data != null)
+                                              if (e.Data is not null)
                                               {
                                                   this.Log.LogError(e.Data);
                                               }
@@ -283,12 +229,12 @@ namespace MSBuild.ExtensionPack.Framework
 
             exec.OutputDataReceived += (sender, e) =>
                 {
-                    if (e.Data == null)
+                    if (e.Data is null)
                     {
                         return;
                     }
 
-                    if (this.Log != null)
+                    if (this.Log is not null)
                     {
                         try
                         {
@@ -296,7 +242,8 @@ namespace MSBuild.ExtensionPack.Framework
                         }
                         catch
                         {
-                            // do nothing. We have a race condition here with the MSBuild host being killed and the logging still trying to occur.
+                            // do nothing. We have a race condition here with the MSBuild host being killed and the logging still
+                            // trying to occur.
                         }
                     }
                 };
@@ -318,37 +265,6 @@ namespace MSBuild.ExtensionPack.Framework
                 {
                     FileInfo f = new FileInfo(this.BuildEngine.ProjectFileOfTaskNode);
                     System.Diagnostics.Process.Start(System.IO.Path.Combine(f.Directory.FullName, logfileName));
-                }
-            }
-        }
-
-        private void BuildTargetSetsInParallel()
-        {
-            try
-            {
-                Task[] tasks = new Task[this.Targets.Length];
-                for (int i = 0; i < this.Targets.Length; i++)
-                {
-                    int i1 = i;
-                    tasks[i] = System.Threading.Tasks.Task.Factory.StartNew(() => this.ExecuteTargetSet(this.Targets[i1]));
-                }
-
-                if (this.WaitAll)
-                {
-                    // Block until all tasks complete.
-                    System.Threading.Tasks.Task.WaitAll(tasks);
-                }
-                else
-                {
-                    // Exit after first task completes
-                    System.Threading.Tasks.Task.WaitAny(tasks);
-                }
-            }
-            catch (AggregateException ae)
-            {
-                foreach (var ex in ae.InnerExceptions)
-                {
-                    this.Log.LogError(ex.Message);
                 }
             }
         }
@@ -373,8 +289,8 @@ namespace MSBuild.ExtensionPack.Framework
                 properties += " /p:" + this.AdditionalProperties;
             }
 
-            string projectFile = this.ProjectFile == null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
-            
+            string projectFile = this.ProjectFile is null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
+
             string logginginfo = string.Empty;
             string logfileName = item.GetMetadata("LogFileName");
             if (string.IsNullOrEmpty(logfileName))
@@ -397,7 +313,8 @@ namespace MSBuild.ExtensionPack.Framework
 
             if (this.MultiLog)
             {
-                // note there is a bug in MSBuild loggers whereby the logger will append whenever it sees append in the arguments, so you can's say append=false.
+                // note there is a bug in MSBuild loggers whereby the logger will append whenever it sees append in the arguments,
+                // so you can's say append=false.
                 string append = string.Empty;
                 if (this.MultiLogAppend)
                 {
@@ -418,7 +335,7 @@ namespace MSBuild.ExtensionPack.Framework
             // stderr is logged as errors
             exec.ErrorDataReceived += (sender, e) =>
                                           {
-                                              if (e.Data != null)
+                                              if (e.Data is not null)
                                               {
                                                   this.Log.LogError(e.Data);
                                               }
@@ -426,9 +343,9 @@ namespace MSBuild.ExtensionPack.Framework
 
             exec.OutputDataReceived += (sender, e) =>
                 {
-                    if (e.Data != null)
+                    if (e.Data is not null)
                     {
-                        if (this.Log != null)
+                        if (this.Log is not null)
                         {
                             try
                             {
@@ -436,7 +353,8 @@ namespace MSBuild.ExtensionPack.Framework
                             }
                             catch
                             {
-                                // do nothing. We have a race condition here with the MSBuild host being killed and the logging still trying to occur.
+                                // do nothing. We have a race condition here with the MSBuild host being killed and the logging
+                                // still trying to occur.
                             }
                         }
                     }
@@ -461,5 +379,133 @@ namespace MSBuild.ExtensionPack.Framework
                 }
             }
         }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        protected override void InternalExecute()
+        {
+            if (!this.TargetingLocalMachine())
+            {
+                return;
+            }
+
+            if (!this.MultiLog)
+            {
+                this.multiLogResponseVerbosity = LoggerVerbosity.Normal;
+            }
+
+            if (this.MultiProc)
+            {
+                this.multiprocparameter = " /m";
+
+                if (this.MaxCpuCount > 0)
+                {
+                    this.multiprocparameter = " /m:" + this.MaxCpuCount;
+                }
+            }
+
+            switch (this.TaskAction)
+            {
+                case BuildTargetsInParallelTaskAction:
+                    this.BuildTargetsInParallel();
+                    break;
+
+                case BuildTargetSetsInParallelTaskAction:
+                    this.BuildTargetSetsInParallel();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// Specifies additional properties to pass through to the new parallel instances of MSBuild.
+        /// </summary>
+        public string AdditionalProperties { get; set; }
+
+        /// <summary>
+        /// Specifies the maximum number of concurrent processes to use when building. Use this with MultiProc parameter. Default is 0.
+        /// </summary>
+        public int MaxCpuCount { get; set; }
+
+        /// <summary>
+        /// Specifies whether each parallel execution should log to it's own log file rather than the parent. Default is false. For
+        /// BuildTargetsInParallel you can specify a LogFilePath metadata value to define the root path to log to, otherwise they
+        /// are written to the directory of the calling project. The name of the target is used as the file name. For
+        /// BuildTargetSetsInParallel you can specify a LogFilePath and a LogFileName metatdatavalue. If LogFileName is not passed,
+        /// the target name is used.
+        /// </summary>
+        public bool MultiLog { get; set; }
+
+        /// <summary>
+        /// Specifies whether to append to existing log files. Default is false
+        /// </summary>
+        public bool MultiLogAppend { get; set; }
+
+        /// <summary>
+        /// Specifies whether to open the log file containing the error info on failure. Default is false
+        /// </summary>
+        public bool MultiLogOpenOnFailure { get; set; }
+
+        /// <summary>
+        /// Specifies the verbosity of logging fed back to the calling task. Default is Minimal
+        /// </summary>
+        public string MultiLogResponseVerbosity
+        {
+            get => this.multiLogResponseVerbosity.ToString();
+            set => this.multiLogResponseVerbosity = (LoggerVerbosity)Enum.Parse(typeof(LoggerVerbosity), value);
+        }
+
+        /// <summary>
+        /// Specifies the verbosity to log to the individual files with. Default is Diagnostic. Note this is case sensitive.
+        /// </summary>
+        public string MultiLogVerbosity
+        {
+            get => this.multiLogVerbosity.ToString();
+            set => this.multiLogVerbosity = (LoggerVerbosity)Enum.Parse(typeof(LoggerVerbosity), value);
+        }
+
+        /// <summary>
+        /// Specifies whether or not to use the /m multiproc parameter. If you include this switch without specifying a value for
+        /// MaxCpuCount, MSBuild will use up to the number of processors in the computer. Default is false.
+        /// </summary>
+        public bool MultiProc { get; set; }
+
+        /// <summary>
+        /// Enable or disable the re-use of MSBuild nodes when using MultiProc. Default is false
+        /// </summary>
+        public bool NodeReuse { get; set; }
+
+        /// <summary>
+        /// Speficies the MSBuild project to use. Defaults to the calling MSBuild file.
+        /// </summary>
+        public ITaskItem ProjectFile { get; set; }
+
+        /// <summary>
+        /// Specifies the Targets to execute. Properties and Targets metadata can be set depending on the TaskAction. See the samples.
+        /// </summary>
+        [Required]
+        public ITaskItem[] Targets { get; set; }
+
+        /// <summary>
+        /// Specifies whether to wait for all Targets to complete execution before returning to MSBuild or whether to wait for all
+        /// to complete. Default is true.
+        /// </summary>
+        public bool WaitAll { get; set; } = true;
+
+        /// <summary>
+        /// Specifies the working directory. Default is null and MSBuild is resolved to the Path environment variable.
+        /// </summary>
+        public string WorkingDirectory { get; set; }
+
+        #endregion Public Properties
     }
 }

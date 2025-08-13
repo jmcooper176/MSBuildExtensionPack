@@ -1,73 +1,120 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileVersion.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.FileSystem
 {
+    using Microsoft.Build.Framework;
+
     using System;
     using System.Globalization;
     using System.IO;
     using System.Text;
-    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>Increment</i> (<b>Required: </b>File <b>Optional: </b>Increment <b>Output: </b>Value)</para>
-    /// <para><i>Reset</i> (<b>Required: </b>File <b>Optional: </b>Value <b>Output: </b>Value)</para>
+    /// <para><i>Increment</i> ( <b>Required:</b> File <b>Optional:</b> Increment <b>Output:</b> Value)</para>
+    /// <para><i>Reset</i> ( <b>Required:</b> File <b>Optional:</b> Value <b>Output:</b> Value)</para>
     /// <para><b>Remote Execution Support:</b> No</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <Target Name="Default">
-    ///         <!-- Perform a default increment of 1 -->
-    ///         <MSBuild.ExtensionPack.FileSystem.FileVersion TaskAction="Increment" File="C:\a\MyVersionfile.txt">
-    ///             <Output TaskParameter="Value" PropertyName="NewValue"/>
-    ///         </MSBuild.ExtensionPack.FileSystem.FileVersion>
-    ///         <Message Text="$(NewValue)"/>
-    ///         <!-- Perform an increment of 5 -->
-    ///         <MSBuild.ExtensionPack.FileSystem.FileVersion TaskAction="Increment" File="C:\a\MyVersionfile2.txt" Increment="5">
-    ///             <Output TaskParameter="Value" PropertyName="NewValue"/>
-    ///         </MSBuild.ExtensionPack.FileSystem.FileVersion>
-    ///         <Message Text="$(NewValue)"/>
-    ///         <!-- Reset a file value -->
-    ///         <MSBuild.ExtensionPack.FileSystem.FileVersion TaskAction="Reset" File="C:\a\MyVersionfile3.txt" Value="10">
-    ///             <Output TaskParameter="Value" PropertyName="NewValue"/>
-    ///         </MSBuild.ExtensionPack.FileSystem.FileVersion>
-    ///         <Message Text="$(NewValue)"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<Target Name="Default">
+    ///<!-- Perform a default increment of 1 -->
+    ///<MSBuild.ExtensionPack.FileSystem.FileVersion TaskAction="Increment" File="C:\a\MyVersionfile.txt">
+    ///<Output TaskParameter="Value" PropertyName="NewValue"/>
+    ///</MSBuild.ExtensionPack.FileSystem.FileVersion>
+    ///<Message Text="$(NewValue)"/>
+    ///<!-- Perform an increment of 5 -->
+    ///<MSBuild.ExtensionPack.FileSystem.FileVersion TaskAction="Increment" File="C:\a\MyVersionfile2.txt" Increment="5">
+    ///<Output TaskParameter="Value" PropertyName="NewValue"/>
+    ///</MSBuild.ExtensionPack.FileSystem.FileVersion>
+    ///<Message Text="$(NewValue)"/>
+    ///<!-- Reset a file value -->
+    ///<MSBuild.ExtensionPack.FileSystem.FileVersion TaskAction="Reset" File="C:\a\MyVersionfile3.txt" Value="10">
+    ///<Output TaskParameter="Value" PropertyName="NewValue"/>
+    ///</MSBuild.ExtensionPack.FileSystem.FileVersion>
+    ///<Message Text="$(NewValue)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class FileVersion : BaseTask
     {
+        #region Private Fields
+
         private const string IncrementTaskAction = "Increment";
         private const string ResetTaskAction = "Reset";
-        private FileInfo versionFile;
-
         private bool changedAttribute;
         private Encoding fileEncoding = Encoding.UTF8;
+        private FileInfo versionFile;
 
-        /// <summary>
-        /// The file to store the incrementing version in.
-        /// </summary>
-        public ITaskItem File { get; set; }
+        #endregion Private Fields
 
-        /// <summary>
-        /// Value to increment by. Default is 1.
-        /// </summary>
-        public int Increment { get; set; } = 1;
+        #region Private Methods
 
-        /// <summary>
-        /// Gets value returned from the file, or used to reset the value in the file. Default is 0.
-        /// </summary>
-        [Output]
-        public int Value { get; set; }
-      
+        private void IncrementValue()
+        {
+            int currentValue;
+
+            using (StreamReader streamReader = new StreamReader(this.versionFile.FullName, this.fileEncoding, true))
+            {
+                currentValue = Convert.ToInt32(streamReader.ReadLine(), CultureInfo.InvariantCulture);
+                if (this.fileEncoding is null)
+                {
+                    this.fileEncoding = streamReader.CurrentEncoding;
+                }
+            }
+
+            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Read: {0} from: {1}", currentValue, this.versionFile.FullName));
+            this.Value = currentValue + this.Increment;
+            if (currentValue != this.Value)
+            {
+                this.WriteFile();
+            }
+        }
+
+        private void ResetValue()
+        {
+            this.WriteFile();
+        }
+
+        private void WriteFile()
+        {
+            // Write out the new file.
+            using (StreamWriter streamWriter = new StreamWriter(this.versionFile.FullName, false, this.fileEncoding))
+            {
+                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Writing: {0} to: {1}", this.Value, this.versionFile.FullName));
+                streamWriter.Write(this.Value);
+            }
+        }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -98,15 +145,17 @@ namespace MSBuild.ExtensionPack.FileSystem
                 System.IO.File.SetAttributes(this.versionFile.FullName, fileAttributes ^ FileAttributes.ReadOnly);
                 this.changedAttribute = true;
             }
-            
+
             switch (this.TaskAction)
             {
                 case IncrementTaskAction:
                     this.IncrementValue();
                     break;
+
                 case ResetTaskAction:
                     this.ResetValue();
                     break;
+
                 default:
                     this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
@@ -119,40 +168,26 @@ namespace MSBuild.ExtensionPack.FileSystem
             }
         }
 
-        private void ResetValue()
-        {
-            this.WriteFile();
-        }
+        #endregion Protected Methods
 
-        private void IncrementValue()
-        {
-            int currentValue;
+        #region Public Properties
 
-            using (StreamReader streamReader = new StreamReader(this.versionFile.FullName, this.fileEncoding, true))
-            {
-                currentValue = Convert.ToInt32(streamReader.ReadLine(), CultureInfo.InvariantCulture);
-                if (this.fileEncoding == null)
-                {
-                    this.fileEncoding = streamReader.CurrentEncoding;
-                }
-            }
+        /// <summary>
+        /// The file to store the incrementing version in.
+        /// </summary>
+        public ITaskItem File { get; set; }
 
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Read: {0} from: {1}", currentValue, this.versionFile.FullName));
-            this.Value = currentValue + this.Increment;
-            if (currentValue != this.Value)
-            {
-                this.WriteFile();
-            }
-        }
+        /// <summary>
+        /// Value to increment by. Default is 1.
+        /// </summary>
+        public int Increment { get; set; } = 1;
 
-        private void WriteFile()
-        {
-            // Write out the new file.
-            using (StreamWriter streamWriter = new StreamWriter(this.versionFile.FullName, false, this.fileEncoding))
-            {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Writing: {0} to: {1}", this.Value, this.versionFile.FullName));
-                streamWriter.Write(this.Value);
-            }    
-        }
+        /// <summary>
+        /// Gets value returned from the file, or used to reset the value in the file. Default is 0.
+        /// </summary>
+        [Output]
+        public int Value { get; set; }
+
+        #endregion Public Properties
     }
 }

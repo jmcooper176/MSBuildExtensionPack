@@ -1,122 +1,83 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="HttpWebRequest.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Web
 {
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
     using System;
     using System.Globalization;
     using System.IO;
     using System.Net;
     using System.Text;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
+
     using Thread = System.Threading.Thread;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>GetResponse</i> (<b>Required: </b> Url <b>Optional: </b>ContentType, Timeout, SkipSslCertificateValidation, Retries, RetryInterval, UseIntegratedAuthentication, UserName, UserPassword <b>Output:</b> Response, Status)</para>
-    /// <para><i>Post</i> (<b>Required: </b> Url <b>Optional: </b>ContentType, Timeout, RequestContent, SkipSslCertificateValidation, Retries, RetryInterval, UseIntegratedAuthentication, UserName, UserPassword <b>Output:</b> Response, Status)</para>
+    /// <para>
+    /// <i>GetResponse</i> ( <b>Required:</b> Url <b>Optional:</b> ContentType, Timeout, SkipSslCertificateValidation, Retries,
+    /// RetryInterval, UseIntegratedAuthentication, UserName, UserPassword <b>Output:</b> Response, Status)
+    /// </para>
+    /// <para>
+    /// <i>Post</i> ( <b>Required:</b> Url <b>Optional:</b> ContentType, Timeout, RequestContent, SkipSslCertificateValidation,
+    /// Retries, RetryInterval, UseIntegratedAuthentication, UserName, UserPassword <b>Output:</b> Response, Status)
+    /// </para>
     /// <para><b>Remote Execution Support:</b> NA</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <Target Name="Default">
-    ///         <MSBuild.ExtensionPack.Web.HttpWebRequest TaskAction="GetResponse" Url="http://www.freetodev.com">
-    ///             <Output TaskParameter="Response" ItemName="ResponseDetail"/>
-    ///             <Output TaskParameter="Status" PropertyName="ResponseStatus"/>
-    ///         </MSBuild.ExtensionPack.Web.HttpWebRequest>
-    ///         <Message Text="Status: $(ResponseStatus)"/>
-    ///         <Message Text="StatusDescription: %(ResponseDetail.StatusDescription)"/>
-    ///         <Message Text="StatusCode: %(ResponseDetail.StatusCode)"/>
-    ///         <Message Text="CharacterSet: %(ResponseDetail.CharacterSet)"/>
-    ///         <Message Text="ProtocolVersion: %(ResponseDetail.ProtocolVersion)"/>
-    ///         <Message Text="ResponseUri: %(ResponseDetail.ResponseUri)"/>
-    ///         <Message Text="Server: %(ResponseDetail.Server)"/>
-    ///         <Message Text="ResponseText: %(ResponseDetail.ResponseText)"/>        
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>    
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<Target Name="Default">
+    ///<MSBuild.ExtensionPack.Web.HttpWebRequest TaskAction="GetResponse" Url="http://www.freetodev.com">
+    ///<Output TaskParameter="Response" ItemName="ResponseDetail"/>
+    ///<Output TaskParameter="Status" PropertyName="ResponseStatus"/>
+    ///</MSBuild.ExtensionPack.Web.HttpWebRequest>
+    ///<Message Text="Status: $(ResponseStatus)"/>
+    ///<Message Text="StatusDescription: %(ResponseDetail.StatusDescription)"/>
+    ///<Message Text="StatusCode: %(ResponseDetail.StatusCode)"/>
+    ///<Message Text="CharacterSet: %(ResponseDetail.CharacterSet)"/>
+    ///<Message Text="ProtocolVersion: %(ResponseDetail.ProtocolVersion)"/>
+    ///<Message Text="ResponseUri: %(ResponseDetail.ResponseUri)"/>
+    ///<Message Text="Server: %(ResponseDetail.Server)"/>
+    ///<Message Text="ResponseText: %(ResponseDetail.ResponseText)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class HttpWebRequest : BaseTask
     {
+        #region Private Fields
+
         private const string GetResponseTaskAction = "GetResponse";
         private const string PostTaskAction = "Post";
 
-        /// <summary>
-        /// Sets the number of milliseconds to wait before the request times out. The default value is 100,000 milliseconds (100 seconds).
-        /// </summary>
-        public int Timeout { get; set; } = 100000;
+        #endregion Private Fields
 
-        /// <summary>
-        /// Sets the name of the AppPool. Required.
-        /// </summary>
-        [Required]
-        public string Url { get; set; }
-
-        /// <summary>
-        /// Set to true to accept all SSL certificates.
-        /// </summary>
-        public bool SkipSslCertificateValidation { get; set; }
-
-        [Output]
-        public ITaskItem Response { get; set; }
-
-        /// <summary>
-        /// The number of times the request should be retried before failing.
-        /// </summary>
-        public int Retries { get; set; }
-
-        /// <summary>
-        /// The number of milliseconds between retry attempts.  Default is 0.
-        /// </summary>
-        public int RetryInterval { get; set; }
-        
-        /// <summary>
-        /// The number of milliseconds between retry attempts.  Default is 0.
-        /// </summary>
-        public bool UseIntegratedAuthentication { get; set; }
-
-        /// <summary>
-        /// Contains the StatusDescription for successful requests. Contains the Status when encountering a WebException.
-        /// </summary>
-        [Output]
-        public string Status { get; set; }
-
-        /// <summary>
-        /// The content type of the request. By default, it is "application/x-www-form-urlencoded" (used for classic HTTP POST) for Post and null for GetResponse.
-        /// </summary>
-        public string ContentType { get; set; }
-
-        /// <summary>
-        /// The content of the request. For classic HTTP POST, format is several [key]=[value] separated by "&amp;". Could be SOAP for example if ContentType is SOAP.
-        /// </summary>
-        public string RequestContent { get; set; }
-
-        /// <summary>
-        /// When overridden in a derived class, executes the task.
-        /// </summary>
-        protected override void InternalExecute()
-        {
-            switch (this.TaskAction)
-            {
-                case GetResponseTaskAction:
-                    this.GetResponse(this.CreateRequest);
-                    break;
-                case PostTaskAction:
-                    this.GetResponse(this.CreatePostRequest);
-                    break;
-                default:
-                    this.Log.LogError(
-                        string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
+        #region Private Methods
 
         private System.Net.HttpWebRequest CreatePostRequest()
         {
@@ -150,7 +111,7 @@ namespace MSBuild.ExtensionPack.Web
         {
             System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             var request = WebRequest.Create(new Uri(this.Url)) as System.Net.HttpWebRequest;
-            if (request == null)
+            if (request is null)
             {
                 return null;
             }
@@ -186,7 +147,7 @@ namespace MSBuild.ExtensionPack.Web
             {
                 tries++;
                 var request = createRequestMethod();
-                if (request == null)
+                if (request is null)
                 {
                     this.Log.LogError("Failed to create request against: {0}.", this.Url);
                     return;
@@ -214,7 +175,7 @@ namespace MSBuild.ExtensionPack.Web
                 {
                     var failureMessage = string.Format(CultureInfo.CurrentCulture, "{0}. Status: {1}", ex.Message, ex.Status);
                     var responseBody = new StringBuilder();
-                    if (ex.Response != null)
+                    if (ex.Response is not null)
                     {
                         using (var responseReader = new StreamReader(ex.Response.GetResponseStream()))
                         {
@@ -243,5 +204,89 @@ namespace MSBuild.ExtensionPack.Web
                 }
             }
         }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        /// When overridden in a derived class, executes the task.
+        /// </summary>
+        protected override void InternalExecute()
+        {
+            switch (this.TaskAction)
+            {
+                case GetResponseTaskAction:
+                    this.GetResponse(this.CreateRequest);
+                    break;
+
+                case PostTaskAction:
+                    this.GetResponse(this.CreatePostRequest);
+                    break;
+
+                default:
+                    this.Log.LogError(
+                        string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// The content type of the request. By default, it is "application/x-www-form-urlencoded" (used for classic HTTP POST) for
+        /// Post and null for GetResponse.
+        /// </summary>
+        public string ContentType { get; set; }
+
+        /// <summary>
+        /// The content of the request. For classic HTTP POST, format is several [key]=[value] separated by "&amp;". Could be SOAP
+        /// for example if ContentType is SOAP.
+        /// </summary>
+        public string RequestContent { get; set; }
+
+        [Output]
+        public ITaskItem Response { get; set; }
+
+        /// <summary>
+        /// The number of times the request should be retried before failing.
+        /// </summary>
+        public int Retries { get; set; }
+
+        /// <summary>
+        /// The number of milliseconds between retry attempts. Default is 0.
+        /// </summary>
+        public int RetryInterval { get; set; }
+
+        /// <summary>
+        /// Set to true to accept all SSL certificates.
+        /// </summary>
+        public bool SkipSslCertificateValidation { get; set; }
+
+        /// <summary>
+        /// Contains the StatusDescription for successful requests. Contains the Status when encountering a WebException.
+        /// </summary>
+        [Output]
+        public string Status { get; set; }
+
+        /// <summary>
+        /// Sets the number of milliseconds to wait before the request times out. The default value is 100,000 milliseconds (100 seconds).
+        /// </summary>
+        public int Timeout { get; set; } = 100000;
+
+        /// <summary>
+        /// Sets the name of the AppPool. Required.
+        /// </summary>
+        [Required]
+        public string Url { get; set; }
+
+        /// <summary>
+        /// The number of milliseconds between retry attempts. Default is 0.
+        /// </summary>
+        public bool UseIntegratedAuthentication { get; set; }
+
+        #endregion Public Properties
     }
 }

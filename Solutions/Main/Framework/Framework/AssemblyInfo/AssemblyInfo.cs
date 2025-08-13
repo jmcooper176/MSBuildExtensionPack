@@ -1,15 +1,21 @@
-// This file is part of CycloneDX CLI Tool
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
 //
-// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
-// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
-// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 {
     using Microsoft.Build.Framework;
@@ -173,13 +179,19 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
     /// </example>
     public class AssemblyInfo : Task
     {
+        #region Private Fields
+
         private AssemblyVersionSettings assemblyFileVersionSettings;
         private AssemblyVersionSettings assemblyVersionSettings;
         private Encoding fileEncoding = Encoding.UTF8;
-        private string maxAssemblyFileVersion;
-        private string maxAssemblyVersion;
+        private string? maxAssemblyFileVersion;
+        private string? maxAssemblyVersion;
 
-        private static Encoding GetTextEncoding(string enc)
+        #endregion Private Fields
+
+        #region Private Methods
+
+        private static Encoding? GetTextEncoding(string enc)
         {
             switch (enc)
             {
@@ -213,7 +225,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 
         private static void UpdateMaxVersion(ref string maxVersion, string newVersion)
         {
-            if (newVersion == null)
+            if (newVersion is null)
             {
                 return;
             }
@@ -227,7 +239,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
         }
 
-        private FileInfo GetTemporaryFileInfo()
+        private FileInfo? GetTemporaryFileInfo()
         {
             FileInfo myFileInfo;
             try
@@ -276,7 +288,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             string enumNames = string.Join(", ", Enum.GetNames<IncrementMethod>());
 
             // Handle AssemblyBuildNumberType
-            if (AssemblyBuildNumberType == null)
+            if (AssemblyBuildNumberType is null)
             {
                 assemblyVersionSettings.BuildNumberType = IncrementMethod.NoIncrement;
             }
@@ -293,7 +305,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
 
             // Handle AssemblyRevisionNumberType
-            if (AssemblyRevisionType == null)
+            if (AssemblyRevisionType is null)
             {
                 assemblyVersionSettings.RevisionType = IncrementMethod.NoIncrement;
             }
@@ -310,7 +322,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
 
             // Handle AssemblyRevisionRevisionReset
-            if (AssemblyRevisionReset == null)
+            if (AssemblyRevisionReset is null)
             {
                 assemblyVersionSettings.RevisionReset = true;
             }
@@ -325,7 +337,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
 
             // Handle AssemblyFileBuildNumberType
-            if (AssemblyFileBuildNumberType == null)
+            if (AssemblyFileBuildNumberType is null)
             {
                 assemblyFileVersionSettings.BuildNumberType = IncrementMethod.NoIncrement;
             }
@@ -342,7 +354,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
 
             // Handle AssemblyFileRevisionReset
-            if (AssemblyFileRevisionReset == null)
+            if (AssemblyFileRevisionReset is null)
             {
                 assemblyFileVersionSettings.RevisionReset = true;
             }
@@ -357,7 +369,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
 
             // Handle AssemblyFileRevisionType
-            if (AssemblyFileRevisionType == null)
+            if (AssemblyFileRevisionType is null)
             {
                 assemblyFileVersionSettings.RevisionType = IncrementMethod.NoIncrement;
             }
@@ -379,19 +391,19 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         private void UpdateAssemblyVersion(Version versionToUpdate, AssemblyVersionSettings requestedVersion)
         {
             // The string version of the assembly goes first, so the others can override it.
-            if (requestedVersion.Version != null)
+            if (requestedVersion.Version is not null)
             {
                 Log.LogMessage(MessageImportance.Low, "\tUpdating assembly version to {0}", requestedVersion.Version);
                 versionToUpdate.VersionString = requestedVersion.Version;
             }
 
-            if (requestedVersion.MajorVersion != null)
+            if (requestedVersion.MajorVersion is not null)
             {
                 Log.LogMessage(MessageImportance.Low, "\tUpdating major version to {0}", requestedVersion.MajorVersion);
                 versionToUpdate.MajorVersion = requestedVersion.MajorVersion;
             }
 
-            if (requestedVersion.MinorVersion != null)
+            if (requestedVersion.MinorVersion is not null)
             {
                 Log.LogMessage(MessageImportance.Low, "\tUpdating minor version to {0}", requestedVersion.MinorVersion);
                 versionToUpdate.MinorVersion = requestedVersion.MinorVersion;
@@ -427,12 +439,13 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 
         private void UpdateProperty(Framework.AssemblyInfo.AssemblyInfo.AssemblyInfoWrapper assemblyInfo, string propertyName)
         {
-            PropertyInfo propInfo = GetType().GetProperty(propertyName);
-            if (propInfo != null)
-            {
-                string value = (string)propInfo.GetValue(this, null);
+            PropertyInfo? propInfo = GetType().GetProperty(propertyName);
 
-                if (value != null)
+            if (propInfo is not null)
+            {
+                string? value = (string?)propInfo.GetValue(this, null);
+
+                if (value is not null)
                 {
                     assemblyInfo[propertyName] = value;
                     Log.LogMessage(MessageImportance.Low, "\tUpdating {0} to \"{1}\"", propertyName, value);
@@ -451,7 +464,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             switch (method)
             {
                 case IncrementMethod.NoIncrement:
-                    if (value == null)
+                    if (value is null)
                     {
                         return versionNumber;
                     }
@@ -494,26 +507,27 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             }
         }
 
-        // There's an inherent limitation to this task in that it can only replace content for attributes already present in the
-        // assemblyinfo file. If the stub isn't there then it can't be set. This method goes through and validates that a stub is
-        // present in the file for any of the properties that were set on the task.
+        /// <summary>There's an inherent limitation to this task in that it can only replace content for attributes already present
+        /// in the <see cref=AssemblyInfo"/> file. </summary> <param name="assemblyInfo"></param> <param name="fileName"></param>
+        /// <remarks>If the stub isn't there then it can't be set. This method goes through and validates that a stub is present in
+        /// the file for any of the properties that were set on the task.</remarks>
         private bool ValidateFileEntries(Framework.AssemblyInfo.AssemblyInfo.AssemblyInfoWrapper assemblyInfo, string fileName)
         {
-            if ((AssemblyBuildNumber != null ||
-                 AssemblyRevision != null ||
-                 AssemblyMajorVersion != null ||
-                 AssemblyMinorVersion != null) &&
-                assemblyInfo["AssemblyVersion"] == null)
+            if ((AssemblyBuildNumber is not null ||
+                 AssemblyRevision is not null ||
+                 AssemblyMajorVersion is not null ||
+                 AssemblyMinorVersion is not null) &&
+                assemblyInfo["AssemblyVersion"] is null)
             {
                 Log.LogError("Unable to update the AssemblyVersion for {0}: No stub entry for AssemblyVersion was found in the AssemblyInfo file.", fileName);
                 return false;
             }
 
-            if ((AssemblyFileBuildNumber != null ||
-                 AssemblyFileRevision != null ||
-                 AssemblyFileMajorVersion != null ||
-                 AssemblyFileMinorVersion != null) &&
-                assemblyInfo["AssemblyFileVersion"] == null)
+            if ((AssemblyFileBuildNumber is not null ||
+                 AssemblyFileRevision is not null ||
+                 AssemblyFileMajorVersion is not null ||
+                 AssemblyFileMinorVersion is not null) &&
+                assemblyInfo["AssemblyFileVersion"] is null)
             {
                 Log.LogError("Unable to update the AssemblyFileVersion for {0}: No stub entry for AssemblyFileVersion was found in the AssemblyInfo file.", fileName);
                 return false;
@@ -580,11 +594,11 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             return true;
         }
 
-        // This validates a single attribute in the file given the value passed into the task, and the file attribute to look up.
-        // The filename is only used for making the error message pretty.
-        private bool ValidateFileEntry(string taskAttributeValue, Framework.AssemblyInfo.AssemblyInfo.AssemblyInfoWrapper assemblyInfo, string fileAttribute, string fileName)
+        /// This validates a single attribute in the file given the value passed into the task, and the file attribute to look up.
+        /// The filename is only used for making the error message pretty.
+        private bool ValidateFileEntry(string? taskAttributeValue, Framework.AssemblyInfo.AssemblyInfo.AssemblyInfoWrapper assemblyInfo, string fileAttribute, string fileName)
         {
-            if (taskAttributeValue != null && assemblyInfo[fileAttribute] == null)
+            if (taskAttributeValue is not null && assemblyInfo[fileAttribute] is null)
             {
                 Log.LogError("Unable to update the {0} for {1}: No stub entry for {0} was found in the AssemblyInfo file.", fileAttribute, fileName);
                 return false;
@@ -595,25 +609,25 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 
         private bool ValidateIncrementProperties()
         {
-            if (assemblyVersionSettings.BuildNumberType == IncrementMethod.DateString && assemblyVersionSettings.BuildNumberFormat == null)
+            if (assemblyVersionSettings.BuildNumberType == IncrementMethod.DateString && assemblyVersionSettings.BuildNumberFormat is null)
             {
                 Log.LogError("The version increment method for AssemblyBuildNumber was set to DateString, but AssemblyBuildNumberFormat was not specified. Both properties must be set to use a date string as a build number.");
                 return false;
             }
 
-            if (assemblyVersionSettings.RevisionType == IncrementMethod.DateString && assemblyVersionSettings.RevisionFormat == null)
+            if (assemblyVersionSettings.RevisionType == IncrementMethod.DateString && assemblyVersionSettings.RevisionFormat is null)
             {
                 Log.LogError("The version increment method for AssemblyRevision was set to DateString, but AssemblyRevisionFormat was not specified. Both properties must be set to use a date string as a revision.");
                 return false;
             }
 
-            if (assemblyFileVersionSettings.BuildNumberType == IncrementMethod.DateString && AssemblyFileBuildNumberFormat == null)
+            if (assemblyFileVersionSettings.BuildNumberType == IncrementMethod.DateString && AssemblyFileBuildNumberFormat is null)
             {
                 Log.LogError("The version increment method for AssemblyFileBuildNumber was set to DateString, but AssemblyFileBuildNumberFormat was not specified. Both properties must be set to use a date string as a build number.");
                 return false;
             }
 
-            if (assemblyFileVersionSettings.RevisionType == IncrementMethod.DateString && AssemblyFileRevisionFormat == null)
+            if (assemblyFileVersionSettings.RevisionType == IncrementMethod.DateString && AssemblyFileRevisionFormat is null)
             {
                 Log.LogError("The version increment method for AssemblyFileRevision was set to DateString, but AssemblyFileRevisionFormat was not specified. Both properties must be set to use a date string as a revision.");
                 return false;
@@ -622,8 +636,14 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             return true;
         }
 
+        #endregion Private Methods
+
+        #region Private Structs
+
         private struct AssemblyVersionSettings
         {
+            #region Public Fields
+
             public string BuildNumber;
             public string BuildNumberFormat;
             public IncrementMethod BuildNumberType;
@@ -634,7 +654,13 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
             public bool RevisionReset;
             public IncrementMethod RevisionType;
             public string Version;
+
+            #endregion Public Fields
         }
+
+        #endregion Private Structs
+
+        #region Public Properties
 
         /// <summary>
         /// The build number of the assembly.
@@ -709,7 +735,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </example>
         /// <seealso cref="AssemblyBuildNumberFormat"/>
         /// <seealso cref="IncrementMethod"/>
-        public string AssemblyBuildNumberType { get; set; }
+        public string? AssemblyBuildNumberType { get; set; }
 
         /// <summary>
         /// The company that created the assembly.
@@ -726,7 +752,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyCompany&gt;Microsoft Corporation&lt;/AssemblyCompany&gt;
         /// </code>
         /// </example>
-        public string AssemblyCompany { get; set; }
+        public string? AssemblyCompany { get; set; }
 
         /// <summary>
         /// The configuration of the assembly.
@@ -745,7 +771,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyConfiguration&gt;Debug&lt;/AssemblyConfiguration&gt;
         /// </code>
         /// </example>
-        public string AssemblyConfiguration { get; set; }
+        public string? AssemblyConfiguration { get; set; }
 
         /// <summary>
         /// The copyright information for the assembly.
@@ -766,7 +792,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyCopyright&gt; Microsoft Corporation. All rights reserved.&lt;/AssemblyCopyright&gt;
         /// </code>
         /// </example>
-        public string AssemblyCopyright { get; set; }
+        public string? AssemblyCopyright { get; set; }
 
         /// <summary>
         /// The culture information for the assembly.
@@ -783,7 +809,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyCulture&gt;en&lt;/AssemblyCulture&gt;
         /// </code>
         /// </example>
-        public string AssemblyCulture { get; set; }
+        public string? AssemblyCulture { get; set; }
 
         /// <summary>
         /// Controls delay signing of the assembly.
@@ -799,7 +825,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyDelaySign&gt;false&lt;/AssemblyDelaySign&gt;
         /// </code>
         /// </example>
-        public string AssemblyDelaySign { get; set; }
+        public string? AssemblyDelaySign { get; set; }
 
         /// <summary>
         /// The description of the assembly.
@@ -818,7 +844,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyDescription&gt;Microsoft Visual Studio 2005&lt;/AssemblyDescription&gt;
         /// </code>
         /// </example>
-        public string AssemblyDescription { get; set; }
+        public string? AssemblyDescription { get; set; }
 
         /// <summary>
         /// The build number of the assembly file.
@@ -894,7 +920,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </example>
         /// <seealso cref="AssemblyFileBuildNumberFormat"/>
         /// <seealso cref="IncrementMethod"/>
-        public string AssemblyFileBuildNumberType { get; set; }
+        public string? AssemblyFileBuildNumberType { get; set; }
 
         /// <summary>
         /// The major version of the assembly file.
@@ -1012,7 +1038,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// <seealso cref="AssemblyRevisionFormat"/>
         /// <seealso cref="AssemblyRevisionType"/>
         /// <seealso cref="IncrementMethod"/>
-        public string AssemblyFileRevisionReset { get; set; }
+        public string? AssemblyFileRevisionReset { get; set; }
 
         /// <summary>
         /// The type of update to use when setting the <see cref="AssemblyFileRevision">AssemblyFileRevision</see> property.
@@ -1035,7 +1061,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </example>
         /// <seealso cref="AssemblyFileRevisionFormat"/>
         /// <seealso cref="IncrementMethod"/>
-        public string AssemblyFileRevisionType { get; set; }
+        public string? AssemblyFileRevisionType { get; set; }
 
         /// <summary>
         /// The complete version of the assembly file.
@@ -1143,7 +1169,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyInformationalVersion&gt;1.2.3.4&lt;/AssemblyInformationalVersion&gt;
         /// </code>
         /// </example>
-        public string AssemblyInformationalVersion { get; set; }
+        public string? AssemblyInformationalVersion { get; set; }
 
         /// <summary>
         /// Specifies the key file used to sign the assembly.
@@ -1157,7 +1183,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyKeyFile&gt;c:\key.snk&lt;/AssemblyKeyFile&gt;
         /// </code>
         /// </example>
-        public string AssemblyKeyFile { get; set; }
+        public string? AssemblyKeyFile { get; set; }
 
         /// <summary>
         /// Specifies the name of a key container within the CSP containing the key pair used to generate a strong name.
@@ -1171,7 +1197,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyKeyName&gt;myContainer&lt;/AssemblyKeyName&gt;
         /// </code>
         /// </example>
-        public string AssemblyKeyName { get; set; }
+        public string? AssemblyKeyName { get; set; }
 
         /// <summary>
         /// The major version of the assembly.
@@ -1235,7 +1261,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyProduct&gt;Microsoft Visual Studio 2005&lt;/AssemblyProduct&gt;
         /// </code>
         /// </example>
-        public string AssemblyProduct { get; set; }
+        public string? AssemblyProduct { get; set; }
 
         /// <summary>
         /// The revision of the assembly.
@@ -1307,7 +1333,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// <seealso cref="AssemblyRevisionFormat"/>
         /// <seealso cref="AssemblyRevisionType"/>
         /// <seealso cref="IncrementMethod"/>
-        public string AssemblyRevisionReset { get; set; }
+        public string? AssemblyRevisionReset { get; set; }
 
         /// <summary>
         /// The type of update to use when setting the <see cref="AssemblyRevision">AssemblyRevision</see> property.
@@ -1330,7 +1356,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </example>
         /// <seealso cref="AssemblyRevisionFormat"/>
         /// <seealso cref="IncrementMethod"/>
-        public string AssemblyRevisionType { get; set; }
+        public string? AssemblyRevisionType { get; set; }
 
         /// <summary>
         /// The title of the assembly.
@@ -1347,7 +1373,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyTitle&gt;Microsoft Visual Studio 2005&lt;/AssemblyTitle&gt;
         /// </code>
         /// </example>
-        public string AssemblyTitle { get; set; }
+        public string? AssemblyTitle { get; set; }
 
         /// <summary>
         /// The trademark information for the assembly.
@@ -1366,7 +1392,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyTrademark&gt;Microsoft Corporation&lt;/AssemblyTrademark&gt;
         /// </code>
         /// </example>
-        public string AssemblyTrademark { get; set; }
+        public string? AssemblyTrademark { get; set; }
 
         /// <summary>
         /// The complete version of the assembly.
@@ -1420,7 +1446,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyComVisible&gt;myContainer&lt;/AssemblyComVisible&gt;
         /// </code>
         /// </example>
-        public string ComVisible { get; set; }
+        public string? ComVisible { get; set; }
 
         /// <summary>
         /// Set the first day of the week for IncrementMethod.YearWeekDay. Defaults to Monday
@@ -1439,7 +1465,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         ///&lt;AssemblyGuid&gt;56269a04-c55a-4c5a-92ba-dfdb569bc708&lt;/AssemblyGuid&gt;
         /// </code>
         /// </example>
-        public string Guid { get; set; }
+        public string? Guid { get; set; }
 
         /// <summary>
         /// Returns the largest assembly file version set by the task.
@@ -1456,7 +1482,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </para>
         /// </remarks>
         [Output]
-        public string MaxAssemblyFileVersion
+        public string? MaxAssemblyFileVersion
         {
             get => maxAssemblyFileVersion;
             set => maxAssemblyFileVersion = value;
@@ -1477,7 +1503,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </para>
         /// </remarks>
         [Output]
-        public string MaxAssemblyVersion
+        public string? MaxAssemblyVersion
         {
             get => maxAssemblyVersion;
             set => maxAssemblyVersion = value;
@@ -1506,7 +1532,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// <summary>
         /// The encoding to write the new file in. The default is UTF8
         /// </summary>
-        public string TextEncoding { get; set; }
+        public string? TextEncoding { get; set; }
 
         /// <summary>
         /// Set to true to update the AssemblyInformationalVersion.
@@ -1518,13 +1544,17 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// </summary>
         public bool UseUtc { get; set; }
 
+        #endregion Public Properties
+
+        #region Public Methods
+
         /// <summary>
         /// Executes the AssemblyInfo task.
         /// </summary>
         /// <returns>True if the task was run sucecssfully. False if the task failed.</returns>
         public override bool Execute()
         {
-            FileInfo writerInfo = null;
+            FileInfo? writerInfo = null;
 
             // Try and parse all the increment properties to ensure they are valid for the increment enum. If not, bail out.
             if (!ParseIncrementProperties())
@@ -1622,7 +1652,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
                     {
                         try
                         {
-                            fileEncoding = GetTextEncoding(TextEncoding);
+                            fileEncoding = GetTextEncoding(TextEncoding) ?? Encoding.Default;
                         }
                         catch (ArgumentException)
                         {
@@ -1631,7 +1661,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
                         }
                     }
 
-                    using (StreamWriter writer = new(writerInfo.OpenWrite(), fileEncoding))
+                    using (StreamWriter writer = new(writerInfo!.OpenWrite(), fileEncoding))
                     {
                         assemblyInfo.Write(writer);
                     }
@@ -1665,5 +1695,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 
             return true;
         }
+
+        #endregion Public Methods
     }
 }

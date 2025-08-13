@@ -1,167 +1,122 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="Wmi.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Management
 {
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Management;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>Execute</i> (<b>Required: </b> Class, Namespace, Method <b> Optional: </b>Instance, MethodParameters <b>Output: </b>ReturnValue)</para>
-    /// <para><i>Query</i> (<b>Required: </b> Class, Properties <b>Output: </b>Info (ITaskItem))</para>
+    /// <para>
+    /// <i>Execute</i> ( <b>Required:</b> Class, Namespace, Method <b>Optional:</b> Instance, MethodParameters <b>Output:</b> ReturnValue)
+    /// </para>
+    /// <para><i>Query</i> ( <b>Required:</b> Class, Properties <b>Output:</b> Info (ITaskItem))</para>
     /// <para><b>Remote Execution Support:</b> Yes</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <Target Name="Default">
-    ///         <ItemGroup>
-    ///             <WmiProps Include="BIOSVersion"/>
-    ///             <WmiProps Include="CurrentLanguage"/>
-    ///             <WmiProps Include="Manufacturer"/>
-    ///             <WmiProps Include="SerialNumber"/>
-    ///             <Wmi2Props Include="InstanceName"/>
-    ///             <!-- Note that #~# is used as a separator-->
-    ///             <WmiExec Include="Description#~#ExtensionPack Description"/>
-    ///             <WmiExec2 Include="Name#~#MyNewShare;Path#~#C:\demo;Type#~#0"/>
-    ///             <WmiExec3 Include="CommandLine#~#calc.exe"/>
-    ///         </ItemGroup>
-    ///         <!-- Start the Calculator -->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Process" Method="Create" MethodParameters="@(WmiExec3)" Namespace="\root\CIMV2">
-    ///             <Output TaskParameter="ReturnValue" PropertyName="Rval2"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="ReturnValue: $(Rval2)"/>
-    ///         <!-- Create a share -->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Share" Method="Create" MethodParameters="@(WmiExec2)" Namespace="\root\CIMV2">
-    ///             <Output TaskParameter="ReturnValue" PropertyName="Rval2"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="ReturnValue: $(Rval2)"/>
-    ///         <!-- Set share details using the WmiExec ItemGroup info-->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Share" Method="SetShareInfo" Instance="Name='ashare'" MethodParameters="@(WmiExec)" Namespace="\root\CIMV2">
-    ///             <Output TaskParameter="ReturnValue" PropertyName="Rval"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="ReturnValue: $(Rval)"/>
-    ///         <!-- Stop a service -->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Service" Method="StopService" Instance="Name='SQLSERVERAGENT'" Namespace="\root\CIMV2">
-    ///             <Output TaskParameter="ReturnValue" PropertyName="Rval2"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="ReturnValue: $(Rval2)"/>
-    ///         <!-- Query the Bios properties -->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" Class="Win32_BIOS" Properties="@(WmiProps)" Namespace="\root\cimv2">
-    ///             <Output TaskParameter="Info" ItemName="Info"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="WMI Info for Win32_BIOS on %(Info.Identity): BIOSVersion=%(Info.BIOSVersion), CurrentLanguage=%(Info.CurrentLanguage), Manufacturer=%(Info.Manufacturer), SerialNumber=%(Info.SerialNumber)"/>
-    ///         <!-- Query the server settings properties -->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" Class="ServerSettings" Properties="@(Wmi2Props)" Namespace="\root\Microsoft\SqlServer\ComputerManagement">
-    ///             <Output TaskParameter="Info" ItemName="Info2"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="WMI Info for ServerSettings on %(Info2.Identity): InstanceName=%(Info2.InstanceName)"/>
-    ///         <!-- Query a remote server -->
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" MachineName="AREMOTESERVER" UserName="ADOMAIN\AUSERNAME" UserPassword="APASSWORD" Class="Win32_BIOS" Properties="@(WmiProps)" Namespace="\root\cimv2">
-    ///             <Output TaskParameter="Info" ItemName="Info2"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="WMI Info for %(Info2.Identity): BIOSVersion=%(Info2.BIOSVersion), CurrentLanguage=%(Info2.CurrentLanguage), Manufacturer=%(Info2.Manufacturer), SerialNumber=%(Info2.SerialNumber)"/>
-    ///         <!-- Let's stop Paint.net -->
-    ///         <ItemGroup>
-    ///             <WmiProps2 Include="Name"/>
-    ///             <WmiProps2 Include="ProcessID"/>
-    ///         </ItemGroup>
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" Class="Win32_Process WHERE Name='paintdotnet.exe'" Namespace="\root\CIMV2" Properties="@(WmiProps2)" MachineName="192.168.0.6">
-    ///             <Output TaskParameter="Info" ItemName="Info"/>
-    ///         </MSBuild.ExtensionPack.Management.Wmi>
-    ///         <Message Text="WMI Info for Win32_Processes: Name: %(Info.Name), ProcessID: %(Info.ProcessID)"/>
-    ///         <Message Text="Stopping Paint.NET" Condition="%(Info.ProcessID) != ''"/>
-    ///         <MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Process" Method="Terminate" Namespace="\root\CIMV2" Instance="Handle=%(Info.ProcessID)" MachineName="192.168.0.6" Condition="%(Info.ProcessID) != ''"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>    
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<Target Name="Default">
+    ///<ItemGroup>
+    ///<WmiProps Include="BIOSVersion"/>
+    ///<WmiProps Include="CurrentLanguage"/>
+    ///<WmiProps Include="Manufacturer"/>
+    ///<WmiProps Include="SerialNumber"/>
+    ///<Wmi2Props Include="InstanceName"/>
+    ///<!-- Note that #~# is used as a separator-->
+    ///<WmiExec Include="Description#~#ExtensionPack Description"/>
+    ///<WmiExec2 Include="Name#~#MyNewShare;Path#~#C:\demo;Type#~#0"/>
+    ///<WmiExec3 Include="CommandLine#~#calc.exe"/>
+    ///</ItemGroup>
+    ///<!-- Start the Calculator -->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Process" Method="Create" MethodParameters="@(WmiExec3)" Namespace="\root\CIMV2">
+    ///<Output TaskParameter="ReturnValue" PropertyName="Rval2"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="ReturnValue: $(Rval2)"/>
+    ///<!-- Create a share -->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Share" Method="Create" MethodParameters="@(WmiExec2)" Namespace="\root\CIMV2">
+    ///<Output TaskParameter="ReturnValue" PropertyName="Rval2"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="ReturnValue: $(Rval2)"/>
+    ///<!-- Set share details using the WmiExec ItemGroup info-->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Share" Method="SetShareInfo" Instance="Name='ashare'" MethodParameters="@(WmiExec)" Namespace="\root\CIMV2">
+    ///<Output TaskParameter="ReturnValue" PropertyName="Rval"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="ReturnValue: $(Rval)"/>
+    ///<!-- Stop a service -->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Service" Method="StopService" Instance="Name='SQLSERVERAGENT'" Namespace="\root\CIMV2">
+    ///<Output TaskParameter="ReturnValue" PropertyName="Rval2"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="ReturnValue: $(Rval2)"/>
+    ///<!-- Query the Bios properties -->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" Class="Win32_BIOS" Properties="@(WmiProps)" Namespace="\root\cimv2">
+    ///<Output TaskParameter="Info" ItemName="Info"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="WMI Info for Win32_BIOS on %(Info.Identity): BIOSVersion=%(Info.BIOSVersion), CurrentLanguage=%(Info.CurrentLanguage), Manufacturer=%(Info.Manufacturer), SerialNumber=%(Info.SerialNumber)"/>
+    ///<!-- Query the server settings properties -->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" Class="ServerSettings" Properties="@(Wmi2Props)" Namespace="\root\Microsoft\SqlServer\ComputerManagement">
+    ///<Output TaskParameter="Info" ItemName="Info2"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="WMI Info for ServerSettings on %(Info2.Identity): InstanceName=%(Info2.InstanceName)"/>
+    ///<!-- Query a remote server -->
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" MachineName="AREMOTESERVER" UserName="ADOMAIN\AUSERNAME" UserPassword="APASSWORD" Class="Win32_BIOS" Properties="@(WmiProps)" Namespace="\root\cimv2">
+    ///<Output TaskParameter="Info" ItemName="Info2"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="WMI Info for %(Info2.Identity): BIOSVersion=%(Info2.BIOSVersion), CurrentLanguage=%(Info2.CurrentLanguage), Manufacturer=%(Info2.Manufacturer), SerialNumber=%(Info2.SerialNumber)"/>
+    ///<!-- Let's stop Paint.net -->
+    ///<ItemGroup>
+    ///<WmiProps2 Include="Name"/>
+    ///<WmiProps2 Include="ProcessID"/>
+    ///</ItemGroup>
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Query" Class="Win32_Process WHERE Name='paintdotnet.exe'" Namespace="\root\CIMV2" Properties="@(WmiProps2)" MachineName="192.168.0.6">
+    ///<Output TaskParameter="Info" ItemName="Info"/>
+    ///</MSBuild.ExtensionPack.Management.Wmi>
+    ///<Message Text="WMI Info for Win32_Processes: Name: %(Info.Name), ProcessID: %(Info.ProcessID)"/>
+    ///<Message Text="Stopping Paint.NET" Condition="%(Info.ProcessID) != ''"/>
+    ///<MSBuild.ExtensionPack.Management.Wmi TaskAction="Execute" Class="Win32_Process" Method="Terminate" Namespace="\root\CIMV2" Instance="Handle=%(Info.ProcessID)" MachineName="192.168.0.6" Condition="%(Info.ProcessID) != ''"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class Wmi : BaseTask
     {
+        #region Private Fields
+
         private List<ITaskItem> info;
         private List<ITaskItem> properties;
 
-        /// <summary>
-        /// Sets the namespace.
-        /// </summary>
-        [Required]
-        public string Namespace { get; set; }
+        #endregion Private Fields
 
-        /// <summary>
-        /// Gets the WMI info.
-        /// </summary>
-        [Output]
-        public ITaskItem[] Info
-        {
-            get => this.info.ToArray();
-            set => this.info = new List<ITaskItem>(value);
-        }
-
-        /// <summary>
-        /// Sets the WMI class.
-        /// </summary>
-        [Required]
-        public string Class { get; set; }
-
-        /// <summary>
-        /// Gets the ReturnValue for Execute
-        /// </summary>
-        [Output]
-        public string ReturnValue { get; set; }
-
-        /// <summary>
-        /// Sets the Method used in Execute
-        /// </summary>
-        public string Method { get; set; }
-
-        /// <summary>
-        /// Sets the MethodParameters. Use #~# separate name and value.
-        /// </summary>
-        public ITaskItem[] MethodParameters { get; set; }
-
-        /// <summary>
-        /// Sets the Wmi Instance used in Execute
-        /// </summary>
-        public string Instance { get; set; }
-
-        /// <summary>
-        /// An Item Collection of Properties to get
-        /// </summary>
-        public ITaskItem[] Properties
-        {
-            get => this.properties.ToArray();
-            set => this.properties = new List<ITaskItem>(value);
-        }
-
-        /// <summary>
-        /// Performs the action of this task.
-        /// </summary>
-        protected override void InternalExecute()
-        {
-            switch (this.TaskAction)
-            {
-                case "Execute":
-                    this.ExecuteWmi();
-                    break;
-                case "Query":
-                    this.Query();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
+        #region Private Methods
 
         private void ExecuteWmi()
         {
@@ -177,7 +132,7 @@ namespace MSBuild.ExtensionPack.Management
                     ManagementBaseObject inParams = classInstance.GetMethodParameters(this.Method);
                     this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Method: {0}", this.Method));
 
-                    if (this.MethodParameters != null)
+                    if (this.MethodParameters is not null)
                     {
                         // Add the input parameters.
                         foreach (string[] data in this.MethodParameters.Select(param => param.ItemSpec.Split(new[] { "#~#" }, StringSplitOptions.RemoveEmptyEntries)))
@@ -189,7 +144,7 @@ namespace MSBuild.ExtensionPack.Management
 
                     // Execute the method and obtain the return values.
                     ManagementBaseObject outParams = classInstance.InvokeMethod(this.Method, inParams, null);
-                    if (outParams != null)
+                    if (outParams is not null)
                     {
                         this.ReturnValue = outParams["ReturnValue"].ToString();
                     }
@@ -203,7 +158,7 @@ namespace MSBuild.ExtensionPack.Management
                     ManagementBaseObject inParams = mgmtClass.GetMethodParameters(this.Method);
                     this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Method: {0}", this.Method));
 
-                    if (this.MethodParameters != null)
+                    if (this.MethodParameters is not null)
                     {
                         // Add the input parameters.
                         foreach (string[] data in this.MethodParameters.Select(param => param.ItemSpec.Split(new[] { "#~#" }, StringSplitOptions.RemoveEmptyEntries)))
@@ -215,7 +170,7 @@ namespace MSBuild.ExtensionPack.Management
 
                     // Execute the method and obtain the return values.
                     ManagementBaseObject outParams = mgmtClass.InvokeMethod(this.Method, inParams, null);
-                    if (outParams != null)
+                    if (outParams is not null)
                     {
                         this.ReturnValue = outParams["ReturnValue"].ToString();
                     }
@@ -269,5 +224,88 @@ namespace MSBuild.ExtensionPack.Management
                 }
             }
         }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        /// Performs the action of this task.
+        /// </summary>
+        protected override void InternalExecute()
+        {
+            switch (this.TaskAction)
+            {
+                case "Execute":
+                    this.ExecuteWmi();
+                    break;
+
+                case "Query":
+                    this.Query();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// Sets the WMI class.
+        /// </summary>
+        [Required]
+        public string Class { get; set; }
+
+        /// <summary>
+        /// Gets the WMI info.
+        /// </summary>
+        [Output]
+        public ITaskItem[] Info
+        {
+            get => this.info.ToArray();
+            set => this.info = new List<ITaskItem>(value);
+        }
+
+        /// <summary>
+        /// Sets the Wmi Instance used in Execute
+        /// </summary>
+        public string Instance { get; set; }
+
+        /// <summary>
+        /// Sets the Method used in Execute
+        /// </summary>
+        public string Method { get; set; }
+
+        /// <summary>
+        /// Sets the MethodParameters. Use #~# separate name and value.
+        /// </summary>
+        public ITaskItem[] MethodParameters { get; set; }
+
+        /// <summary>
+        /// Sets the namespace.
+        /// </summary>
+        [Required]
+        public string Namespace { get; set; }
+
+        /// <summary>
+        /// An Item Collection of Properties to get
+        /// </summary>
+        public ITaskItem[] Properties
+        {
+            get => this.properties.ToArray();
+            set => this.properties = new List<ITaskItem>(value);
+        }
+
+        /// <summary>
+        /// Gets the ReturnValue for Execute
+        /// </summary>
+        [Output]
+        public string ReturnValue { get; set; }
+
+        #endregion Public Properties
     }
 }

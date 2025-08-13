@@ -1,6 +1,21 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="FtpException.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Communication.FTP
 {
     using System;
@@ -12,41 +27,60 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     [Serializable]
     public class FtpException : Exception
     {
+        #region Private Fields
+
         private readonly int ftpError;
+
+        #endregion Private Fields
+
+        #region Protected Constructors
+
+        protected FtpException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        #endregion Protected Constructors
+
+        #region Public Constructors
 
         public FtpException()
         {
-            ftpError = 0;            
+            ftpError = 0;
         }
 
         public FtpException(string message) : this(-1, message)
         {
         }
-        
+
         public FtpException(int error, string message) : base(message)
         {
             ftpError = error;
         }
 
         public FtpException(string message, Exception innerException) : base(message, innerException)
-        {         
+        {
         }
 
-        protected FtpException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {         
-        }
+        #endregion Public Constructors
 
-        public int ErrorCode => ftpError;
+        #region Public Properties
+
+        public int ErrorCode { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
-        /// No specific impelementation is needed of the GetObjectData to serialize this object
-        /// because all attributes are redefined.
+        /// No specific impelementation is needed of the GetObjectData to serialize this object because all attributes are redefined.
         /// </summary>
-        /// <param name="info">The SerializationInfo to populate with data. </param>
-        /// <param name="context">The destination for this serialization. </param>
+        /// <param name="info">   The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
         }
+
+        #endregion Public Methods
     }
 }

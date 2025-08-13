@@ -1,4 +1,4 @@
-﻿// This file is part of CycloneDX CLI Tool
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
 //
 // Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,12 +9,14 @@
 // BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
 // governing permissions and limitations under the License.
 //
-// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
+// SPDX-License-Identifier: Apache-2.0 Copyright (c) 2025, John Merryweather Cooper. All Rights Reserved. Ignore Spelling: cyclonedx Cli
 #pragma warning disable 618
 
 namespace MSBuild.ExtensionPack.Compression
 {
     using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Utility;
 
     using System;
     using System.Collections.Generic;
@@ -103,46 +105,44 @@ namespace MSBuild.ExtensionPack.Compression
 
         private void AddFiles()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Adding files to ZipFile: {0}", this.ZipFileName));
-            if (this.CompressFiles != null)
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Adding files to ZipFile: {0}", this.ZipFileName);
+            if (this.CompressFiles is not null)
             {
-                using (ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.ItemSpec))
+                using ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.ItemSpec);
+                zip.CompressionLevel = this.compressLevel;
+                if (!string.IsNullOrEmpty(this.Password))
                 {
-                    zip.CompressionLevel = this.compressLevel;
-                    if (!string.IsNullOrEmpty(this.Password))
-                    {
-                        zip.Password = this.Password;
-                    }
-
-                    foreach (ITaskItem f in this.CompressFiles)
-                    {
-                        ZipArchiveEntry updatedEntry;
-                        if (this.RemoveRoot != null)
-                        {
-                            string location = (f.GetMetadata("RootDir") + f.GetMetadata("Directory")).Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
-                            updatedEntry = zip.CreateEntryFromFile(f.GetMetadata("FullPath"), location);
-                        }
-                        else
-                        {
-                            updatedEntry = zip.CreateEntry(f.GetMetadata("FullPath"));
-                        }
-
-                        if (!this.preserveAttributes)
-                        {
-                            updatedEntry.Attributes = FileAttributes.Normal;
-                        }
-                    }
-
-                    if (this.MaxOutputSegmentSize > 0)
-                    {
-                        zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
-                    }
-
-                    zip.UseZip64WhenSaving = this.useZip64WhenSaving;
-                    zip.Save();
+                    zip.Password = this.Password;
                 }
+
+                foreach (ITaskItem f in this.CompressFiles)
+                {
+                    ZipArchiveEntry updatedEntry;
+                    if (this.RemoveRoot is not null)
+                    {
+                        string location = (f.GetMetadata("RootDir") + f.GetMetadata("Directory")).Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
+                        updatedEntry = zip.CreateEntryFromFile(f.GetMetadata("FullPath"), location);
+                    }
+                    else
+                    {
+                        updatedEntry = zip.CreateEntry(f.GetMetadata("FullPath"));
+                    }
+
+                    if (!this.preserveAttributes)
+                    {
+                        updatedEntry.Attributes = FileAttributes.Normal;
+                    }
+                }
+
+                if (this.MaxOutputSegmentSize > 0)
+                {
+                    zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
+                }
+
+                zip.UseZip64WhenSaving = this.useZip64WhenSaving;
+                zip.Save();
             }
-            else if (this.CompressPath != null)
+            else if (this.CompressPath is not null)
             {
                 using (ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.ItemSpec))
                 {
@@ -153,7 +153,7 @@ namespace MSBuild.ExtensionPack.Compression
                     }
 
                     ZipArchiveEntry archiveEntry;
-                    if (this.RemoveRoot != null)
+                    if (this.RemoveRoot is not null)
                     {
                         DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
                         string location = d.FullName.Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
@@ -186,10 +186,10 @@ namespace MSBuild.ExtensionPack.Compression
 
         private void Create()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating ZipFile: {0}", this.ZipFileName));
-            if (this.CompressFiles != null)
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Creating ZipFile: {0}", this.ZipFileName);
+            if (this.CompressFiles is not null)
             {
-                using (ZipArchive zip = ZipFile.Open(this.ZipFileName, ZipArchiveMode.Create))
+                using (ZipArchive zip = ZipFile.Open(this.ZipFileName.ItemSpec, ZipArchiveMode.Create))
                 {
                     zip.CompressionLevel = this.compressLevel;
                     if (!string.IsNullOrEmpty(this.Password))
@@ -200,7 +200,7 @@ namespace MSBuild.ExtensionPack.Compression
                     foreach (ITaskItem f in this.CompressFiles)
                     {
                         ZipArchiveEntry addedEntry;
-                        if (this.RemoveRoot != null)
+                        if (this.RemoveRoot is not null)
                         {
                             string location = (f.GetMetadata("RootDir") + f.GetMetadata("Directory")).Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
                             addedEntry = zip.AddFile(f.GetMetadata("FullPath"), location);
@@ -225,7 +225,7 @@ namespace MSBuild.ExtensionPack.Compression
                     zip.Save(this.ZipFileName.ItemSpec);
                 }
             }
-            else if (this.CompressPath != null)
+            else if (this.CompressPath is not null)
             {
                 using (ZipArchive zip = ZipFile.Open(this.ZipFileName.ItemSpec, ZipArchiveMode.Create))
                 {
@@ -236,7 +236,7 @@ namespace MSBuild.ExtensionPack.Compression
                     }
 
                     ZipArchiveEntry addedDirectory;
-                    if (this.RemoveRoot != null)
+                    if (this.RemoveRoot is not null)
                     {
                         DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
                         string location = d.FullName.Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
@@ -282,19 +282,17 @@ namespace MSBuild.ExtensionPack.Compression
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Extracting ZipFile: {0} to: {1}", this.ZipFileName, this.ExtractPath));
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Extracting ZipFile: {0} to: {1}", this.ZipFileName, this.ExtractPath);
 
-            using (ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.GetMetadata("FullPath")))
+            using ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.GetMetadata("FullPath"));
+            if (!string.IsNullOrEmpty(this.Password))
             {
-                if (!string.IsNullOrEmpty(this.Password))
-                {
-                    zip.Password = this.Password;
-                }
+                zip.Password = this.Password;
+            }
 
-                foreach (ZipArchiveEntry e in zip.Entries)
-                {
-                    e.Extract(this.ExtractPath.GetMetadata("FullPath"), ExtractExistingFileAction.OverwriteSilently);
-                }
+            foreach (ZipArchiveEntry e in zip.Entries)
+            {
+                e.Extract(this.ExtractPath.GetMetadata("FullPath"), ExtractExistingFileAction.OverwriteSilently);
             }
         }
 

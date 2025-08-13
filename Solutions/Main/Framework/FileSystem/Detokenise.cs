@@ -1,15 +1,21 @@
-// This file is part of CycloneDX CLI Tool
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
 //
-// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
-// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
-// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.FileSystem
 {
     using Microsoft.Build.Evaluation;
@@ -114,6 +120,8 @@ namespace MSBuild.ExtensionPack.FileSystem
     /// </example>
     public class Detokenise : BaseTask
     {
+        #region Private Fields
+
         private const string AnalyseTaskAction = "Analyse";
         private const string DetokeniseTaskAction = "Detokenise";
         private const string ReportTaskAction = "Report";
@@ -136,6 +144,10 @@ namespace MSBuild.ExtensionPack.FileSystem
         private bool tokenMatched;
 
         private SortedDictionary<string, string> unusedTokens;
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         private static Encoding GetTextEncoding(string enc)
         {
@@ -239,7 +251,7 @@ namespace MSBuild.ExtensionPack.FileSystem
 
                 // if the ReplacementValues collection and the CommandLineValues are null, then we need to load the project file
                 // that called this task to get it's properties.
-                if (this.ReplacementValues == null && string.IsNullOrEmpty(this.CommandLineValues))
+                if (this.ReplacementValues is null && string.IsNullOrEmpty(this.CommandLineValues))
                 {
                     this.collectionMode = false;
                 }
@@ -254,13 +266,13 @@ namespace MSBuild.ExtensionPack.FileSystem
                     }
                 }
 
-                if (this.project == null && (!this.collectionMode || this.SearchAllStores))
+                if (this.project is null && (!this.collectionMode || this.SearchAllStores))
                 {
                     // Read the project file to get the tokens
-                    string projectFile = this.ProjectFile == null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
+                    string projectFile = this.ProjectFile is null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
                     this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Loading Project: {0}", projectFile));
                     this.project = ProjectCollection.GlobalProjectCollection.GetLoadedProjects(projectFile).FirstOrDefault();
-                    if (this.project == null)
+                    if (this.project is null)
                     {
                         ProjectCollection.GlobalProjectCollection.LoadProject(projectFile);
                         this.project = ProjectCollection.GlobalProjectCollection.GetLoadedProjects(projectFile).FirstOrDefault();
@@ -312,7 +324,7 @@ namespace MSBuild.ExtensionPack.FileSystem
             // Find the replacement property
             if (this.collectionMode)
             {
-                if (this.ReplacementValues != null)
+                if (this.ReplacementValues is not null)
                 {
                     // we need to look in the ReplacementValues for a match
                     foreach (ITaskItem token in this.ReplacementValues)
@@ -338,7 +350,7 @@ namespace MSBuild.ExtensionPack.FileSystem
                 }
 
                 // we need to look in the CommandLineValues
-                if (this.commandLineDictionary != null)
+                if (this.commandLineDictionary is not null)
                 {
                     try
                     {
@@ -365,7 +377,7 @@ namespace MSBuild.ExtensionPack.FileSystem
             }
 
             // we need to look in the calling project's properties collection
-            if (this.project?.GetProperty(extractedProperty) == null)
+            if (this.project?.GetProperty(extractedProperty) is null)
             {
                 if (!this.report && !this.IgnoreUnknownTokens)
                 {
@@ -391,7 +403,7 @@ namespace MSBuild.ExtensionPack.FileSystem
 
         private void ProcessCollection()
         {
-            if (this.TargetFiles == null)
+            if (this.TargetFiles is null)
             {
                 this.Log.LogError("The collection passed to TargetFiles is empty");
                 throw new ArgumentException("Review error log");
@@ -412,7 +424,7 @@ namespace MSBuild.ExtensionPack.FileSystem
             {
                 // Check to see if this is a DirectoryInfo object.
                 var info = i as DirectoryInfo;
-                if (info != null)
+                if (info is not null)
                 {
                     // Cast the object to a DirectoryInfo object.
                     DirectoryInfo dirInfo = info;
@@ -483,6 +495,10 @@ namespace MSBuild.ExtensionPack.FileSystem
             this.tokenDictionary.Add(extractedProperty, this.activeFile + ";");
         }
 
+        #endregion Private Methods
+
+        #region Protected Methods
+
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -534,7 +550,7 @@ namespace MSBuild.ExtensionPack.FileSystem
                     // Find unused tokens.
                     if (this.collectionMode)
                     {
-                        if (this.ReplacementValues != null)
+                        if (this.ReplacementValues is not null)
                         {
                             // we need to look in the ReplacementValues for a match
                             foreach (ITaskItem token in this.ReplacementValues)
@@ -546,7 +562,7 @@ namespace MSBuild.ExtensionPack.FileSystem
                             }
                         }
 
-                        if (this.commandLineDictionary != null)
+                        if (this.commandLineDictionary is not null)
                         {
                             foreach (string s in this.commandLineDictionary.Keys)
                             {
@@ -579,6 +595,10 @@ namespace MSBuild.ExtensionPack.FileSystem
                 }
             }
         }
+
+        #endregion Protected Methods
+
+        #region Public Properties
 
         /// <summary>
         /// Sets the replacement values provided via the command line. The format is token1=value1#~#token2=value2 etc.
@@ -678,5 +698,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// </summary>
         [Output]
         public IEnumerable<ITaskItem> UnusedTokens { get; set; }
+
+        #endregion Public Properties
     }
 }

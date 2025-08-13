@@ -1,57 +1,70 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="GetPasswordForm.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Computer.Extended
 {
     using System;
     using System.DirectoryServices.AccountManagement;
-    using System.Windows.Forms;
 
     /// <summary>
     /// Gets a user's AD validated password
     /// </summary>
     public partial class GetPasswordForm : Form
     {
-        private readonly string user;
-        private readonly string domain;
+        #region Private Fields
+
         private readonly ContextOptions contextOptions;
         private readonly ContextType contextType;
-        private string password;
-        private Exception exception;
+        private readonly string domain;
+        private readonly string user;
 
-        public GetPasswordForm(string user, string domain, ContextType type, ContextOptions options)
+        #endregion Private Fields
+
+        #region Private Methods
+
+        private void ButtonCancel_Click(object sender, System.EventArgs e)
         {
-            this.InitializeComponent();
-
-            if (!string.IsNullOrEmpty(domain))
-            {
-                this.Text += domain + @"\";
-            }
-            
-            this.Text += user;
-            this.user = user;
-            this.domain = domain;
-            this.contextType = type;
-            this.contextOptions = options;
-        }
-
-        public bool UserCanceled { get; set; }
-
-        public string Password
-        {
-            get { return this.password; }
-            set { this.password = value; }
-        }
-
-        public Exception Exception
-        {
-            get { return this.exception; }
-            set { this.exception = value; }
+            this.ProcessCancel();
         }
 
         private void ButtonOk_Click(object sender, System.EventArgs e)
         {
             this.ProcessOk();
+        }
+
+        private void CheckBoxMask_CheckedChanged(object sender, System.EventArgs e)
+        {
+            this.textBoxPassword.UseSystemPasswordChar = this.checkBoxMask.Checked;
+        }
+
+        private void GetPasswordForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                this.UserCanceled = true;
+            }
+        }
+
+        private void ProcessCancel()
+        {
+            this.UserCanceled = true;
+            this.Password = string.Empty;
+            this.Close();
         }
 
         private void ProcessOk()
@@ -70,7 +83,7 @@ namespace MSBuild.ExtensionPack.Computer.Extended
                     }
                     else
                     {
-                        this.password = this.textBoxPassword.Text;
+                        this.Password = this.textBoxPassword.Text;
                         this.labelPassword.ForeColor = System.Drawing.Color.DarkGreen;
                         this.textBoxPassword.BackColor = System.Drawing.Color.WhiteSmoke;
                         this.pictureBoxLock.Visible = false;
@@ -83,26 +96,9 @@ namespace MSBuild.ExtensionPack.Computer.Extended
             }
             catch (Exception ex)
             {
-                this.exception = ex;
+                this.Exception = ex;
                 this.Close();
             }
-        }
-
-        private void ButtonCancel_Click(object sender, System.EventArgs e)
-        {
-            this.ProcessCancel();
-        }
-
-        private void ProcessCancel()
-        {
-            this.UserCanceled = true;
-            this.password = string.Empty;
-            this.Close();
-        }
-
-        private void CheckBoxMask_CheckedChanged(object sender, System.EventArgs e)
-        {
-            this.textBoxPassword.UseSystemPasswordChar = this.checkBoxMask.Checked;
         }
 
         private void TextBoxPassword_KeyUp(object sender, KeyEventArgs e)
@@ -112,18 +108,43 @@ namespace MSBuild.ExtensionPack.Computer.Extended
                 case Keys.Enter:
                     this.ProcessOk();
                     break;
+
                 case Keys.Escape:
                     this.ProcessCancel();
                     break;
             }
         }
 
-        private void GetPasswordForm_FormClosing(object sender, FormClosingEventArgs e)
+        #endregion Private Methods
+
+        #region Public Constructors
+
+        public GetPasswordForm(string user, string domain, ContextType type, ContextOptions options)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            this.InitializeComponent();
+
+            if (!string.IsNullOrEmpty(domain))
             {
-                this.UserCanceled = true;
+                this.Text += domain + @"\";
             }
+
+            this.Text += user;
+            this.user = user;
+            this.domain = domain;
+            this.contextType = type;
+            this.contextOptions = options;
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public Exception Exception { get; set; }
+
+        public string Password { get; set; }
+
+        public bool UserCanceled { get; set; }
+
+        #endregion Public Properties
     }
 }

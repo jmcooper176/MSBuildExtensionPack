@@ -1,6 +1,21 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="IHostsFile.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
 {
     using System;
@@ -9,18 +24,12 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
     using System.IO;
     using System.Text.RegularExpressions;
 
-    public interface IHostsFile
-    {
-        void SetHostEntry(string hostName, string ipAddress);
-
-        void SetHostEntry(string hostName, string ipAddress, string comment);
-
-        void Save(TextWriter sw);
-    }
-
     internal sealed class HostsFileEntries : IHostsFile
     {
+        #region Private Fields
+
         private const string Separator = "   ";
+
         private static readonly string[] Pads = new[]
                                                     {
                                                         string.Empty,
@@ -41,9 +50,52 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
                                                         "               "
                                                     };
 
-        private readonly Regex hostsEntryRegex = new Regex(@"^((\d{1,3}\.){3}\d{1,3})\s+(?<HostName>[^\s#]+)(?<Tail>.*)$");
         private readonly Dictionary<string, HostsEntry> hosts;
+        private readonly Regex hostsEntryRegex = new Regex(@"^((\d{1,3}\.){3}\d{1,3})\s+(?<HostName>[^\s#]+)(?<Tail>.*)$");
         private readonly List<string> hostsFileLines;
+
+        #endregion Private Fields
+
+        #region Private Methods
+
+        private static string PadIPAddress(string ipAddress)
+        {
+            int ipLength = ipAddress?.Length ?? 0;
+            int numSpaces = 15 - ipLength;
+            return ipAddress + Pads[numSpaces];
+        }
+
+        #endregion Private Methods
+
+        #region Private Classes
+
+        private sealed class HostsEntry
+        {
+            #region Public Constructors
+
+            public HostsEntry(int lineNumber, string hostName, string tail)
+            {
+                LineNumber = lineNumber;
+                HostName = hostName;
+                Tail = tail;
+            }
+
+            #endregion Public Constructors
+
+            #region Public Properties
+
+            public string HostName { get; }
+
+            public int LineNumber { get; }
+
+            public string Tail { get; }
+
+            #endregion Public Properties
+        }
+
+        #endregion Private Classes
+
+        #region Internal Constructors
 
         internal HostsFileEntries(string[] hostEntries) : this(hostEntries, false)
         {
@@ -51,7 +103,7 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
 
         internal HostsFileEntries(string[] hostEntries, bool truncate)
         {
-            if (hostEntries == null)
+            if (hostEntries is null)
             {
                 hostEntries = new string[0];
             }
@@ -97,6 +149,21 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
             }
         }
 
+        #endregion Internal Constructors
+
+        #region Public Methods
+
+        public void Save(TextWriter sw)
+        {
+            if (sw is not null)
+            {
+                foreach (string s in hostsFileLines)
+                {
+                    sw.WriteLine(s);
+                }
+            }
+        }
+
         public void SetHostEntry(string hostName, string ipAddress)
         {
             SetHostEntry(hostName, ipAddress, string.Empty);
@@ -119,38 +186,19 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile.HostsFile
             }
         }
 
-        public void Save(TextWriter sw)
-        {
-            if (sw != null)
-            {
-                foreach (string s in hostsFileLines)
-                {
-                    sw.WriteLine(s);
-                }
-            }
-        }
-        
-        private static string PadIPAddress(string ipAddress)
-        {
-            int ipLength = ipAddress?.Length ?? 0;
-            int numSpaces = 15 - ipLength;
-            return ipAddress + Pads[numSpaces];
-        }
+        #endregion Public Methods
+    }
 
-        private sealed class HostsEntry
-        {
-            public HostsEntry(int lineNumber, string hostName, string tail)
-            {
-                LineNumber = lineNumber;
-                HostName = hostName;
-                Tail = tail;
-            }
+    public interface IHostsFile
+    {
+        #region Public Methods
 
-            public string HostName { get; }
+        void Save(TextWriter sw);
 
-            public int LineNumber { get; }
+        void SetHostEntry(string hostName, string ipAddress);
 
-            public string Tail { get; }
-        }
+        void SetHostEntry(string hostName, string ipAddress, string comment);
+
+        #endregion Public Methods
     }
 }

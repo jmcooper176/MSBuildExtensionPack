@@ -1,232 +1,213 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="NUnit.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.CodeQuality
 {
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
     using System;
     using System.Globalization;
     using System.IO;
+    using System.Security;
     using System.Xml;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// Executes Test Cases using NUnit (Tested using v2.6.2)
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///   <PropertyGroup>
-    ///     <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///     <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///   </PropertyGroup>
-    ///   <Import Project="$(TPath)"/>
-    ///   <PropertyGroup>
-    ///     <ToolPath>D:\Program Files (x86)\NUnit 2.5.7\bin\net-2.0</ToolPath>
-    ///   </PropertyGroup>
-    ///   <Target Name="Default">
-    ///     <ItemGroup>
-    ///       <Assemblies Include="d:\a\*.dll"/>
-    ///     </ItemGroup>
-    ///     <!-- Run an NUnit Project -->
-    ///     <MSBuild.ExtensionPack.CodeQuality.NUnit Assemblies="d:\a\Project1.nunit" ToolPath="$(ToolPath)">
-    ///       <Output TaskParameter="Total" PropertyName="ResultTotal"/>
-    ///       <Output TaskParameter="NotRun" PropertyName="ResultNotRun"/>
-    ///       <Output TaskParameter="Failures" PropertyName="ResultFailures"/>
-    ///       <Output TaskParameter="Errors" PropertyName="ResultErrors"/>
-    ///       <Output TaskParameter="Inconclusive" PropertyName="ResultInconclusive"/>
-    ///       <Output TaskParameter="Ignored" PropertyName="ResultIgnored"/>
-    ///       <Output TaskParameter="Skipped" PropertyName="ResultSkipped"/>
-    ///       <Output TaskParameter="Invalid" PropertyName="ResultInvalid"/>
-    ///     </MSBuild.ExtensionPack.CodeQuality.NUnit>
-    ///     <Message Text="ResultTotal: $(ResultTotal)"/>
-    ///     <Message Text="ResultNotRun: $(ResultNotRun)"/>
-    ///     <Message Text="ResultFailures: $(ResultFailures)"/>
-    ///     <Message Text="ResultErrors: $(ResultErrors)"/>
-    ///     <Message Text="ResultInconclusive: $(ResultInconclusive)"/>
-    ///     <Message Text="ResultIgnored: $(ResultIgnored)"/>
-    ///     <Message Text="ResultSkipped: $(ResultSkipped)"/>
-    ///     <Message Text="ResultInvalid: $(ResultInvalid)"/>
-    ///     <!--- Run NUnit over a collection of assemblies -->
-    ///     <MSBuild.ExtensionPack.CodeQuality.NUnit Assemblies="@(Assemblies)" ToolPath="$(ToolPath)" OutputXmlFile="D:\a\NunitResults2.xml">
-    ///       <Output TaskParameter="Total" PropertyName="ResultTotal"/>
-    ///       <Output TaskParameter="NotRun" PropertyName="ResultNotRun"/>
-    ///       <Output TaskParameter="Failures" PropertyName="ResultFailures"/>
-    ///       <Output TaskParameter="Errors" PropertyName="ResultErrors"/>
-    ///       <Output TaskParameter="Inconclusive" PropertyName="ResultInconclusive"/>
-    ///       <Output TaskParameter="Ignored" PropertyName="ResultIgnored"/>
-    ///       <Output TaskParameter="Skipped" PropertyName="ResultSkipped"/>
-    ///       <Output TaskParameter="Invalid" PropertyName="ResultInvalid"/>
-    ///     </MSBuild.ExtensionPack.CodeQuality.NUnit>
-    ///     <Message Text="ResultTotal: $(ResultTotal)"/>
-    ///     <Message Text="ResultNotRun: $(ResultNotRun)"/>
-    ///     <Message Text="ResultFailures: $(ResultFailures)"/>
-    ///     <Message Text="ResultErrors: $(ResultErrors)"/>
-    ///     <Message Text="ResultInconclusive: $(ResultInconclusive)"/>
-    ///     <Message Text="ResultIgnored: $(ResultIgnored)"/>
-    ///     <Message Text="ResultSkipped: $(ResultSkipped)"/>
-    ///     <Message Text="ResultInvalid: $(ResultInvalid)"/>
-    ///   </Target>
-    /// </Project>
-    /// ]]></code>
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<PropertyGroup>
+    ///<ToolPath>D:\Program Files (x86)\NUnit 2.5.7\bin\net-2.0</ToolPath>
+    ///</PropertyGroup>
+    ///<Target Name="Default">
+    ///<ItemGroup>
+    ///<Assemblies Include="d:\a\*.dll"/>
+    ///</ItemGroup>
+    ///<!-- Run an NUnit Project -->
+    ///<MSBuild.ExtensionPack.CodeQuality.NUnit Assemblies="d:\a\Project1.nunit" ToolPath="$(ToolPath)">
+    ///<Output TaskParameter="Total" PropertyName="ResultTotal"/>
+    ///<Output TaskParameter="NotRun" PropertyName="ResultNotRun"/>
+    ///<Output TaskParameter="Failures" PropertyName="ResultFailures"/>
+    ///<Output TaskParameter="Errors" PropertyName="ResultErrors"/>
+    ///<Output TaskParameter="Inconclusive" PropertyName="ResultInconclusive"/>
+    ///<Output TaskParameter="Ignored" PropertyName="ResultIgnored"/>
+    ///<Output TaskParameter="Skipped" PropertyName="ResultSkipped"/>
+    ///<Output TaskParameter="Invalid" PropertyName="ResultInvalid"/>
+    ///</MSBuild.ExtensionPack.CodeQuality.NUnit>
+    ///<Message Text="ResultTotal: $(ResultTotal)"/>
+    ///<Message Text="ResultNotRun: $(ResultNotRun)"/>
+    ///<Message Text="ResultFailures: $(ResultFailures)"/>
+    ///<Message Text="ResultErrors: $(ResultErrors)"/>
+    ///<Message Text="ResultInconclusive: $(ResultInconclusive)"/>
+    ///<Message Text="ResultIgnored: $(ResultIgnored)"/>
+    ///<Message Text="ResultSkipped: $(ResultSkipped)"/>
+    ///<Message Text="ResultInvalid: $(ResultInvalid)"/>
+    ///<!--- Run NUnit over a collection of assemblies -->
+    ///<MSBuild.ExtensionPack.CodeQuality.NUnit Assemblies="@(Assemblies)" ToolPath="$(ToolPath)" OutputXmlFile="D:\a\NunitResults2.xml">
+    ///<Output TaskParameter="Total" PropertyName="ResultTotal"/>
+    ///<Output TaskParameter="NotRun" PropertyName="ResultNotRun"/>
+    ///<Output TaskParameter="Failures" PropertyName="ResultFailures"/>
+    ///<Output TaskParameter="Errors" PropertyName="ResultErrors"/>
+    ///<Output TaskParameter="Inconclusive" PropertyName="ResultInconclusive"/>
+    ///<Output TaskParameter="Ignored" PropertyName="ResultIgnored"/>
+    ///<Output TaskParameter="Skipped" PropertyName="ResultSkipped"/>
+    ///<Output TaskParameter="Invalid" PropertyName="ResultInvalid"/>
+    ///</MSBuild.ExtensionPack.CodeQuality.NUnit>
+    ///<Message Text="ResultTotal: $(ResultTotal)"/>
+    ///<Message Text="ResultNotRun: $(ResultNotRun)"/>
+    ///<Message Text="ResultFailures: $(ResultFailures)"/>
+    ///<Message Text="ResultErrors: $(ResultErrors)"/>
+    ///<Message Text="ResultInconclusive: $(ResultInconclusive)"/>
+    ///<Message Text="ResultIgnored: $(ResultIgnored)"/>
+    ///<Message Text="ResultSkipped: $(ResultSkipped)"/>
+    ///<Message Text="ResultInvalid: $(ResultInvalid)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class NUnit : ToolTask
     {
-        /// <summary>
-        /// The version of NUnit to run. Default is 2.6.2
-        /// </summary>
-        public string Version { get; set; } = "2.6.2";
+        #region Private Methods
+
+        private static int GetAttributeInt32Value(string name, XmlNode node)
+        {
+            if (node.Attributes?[name] is not null)
+            {
+                return Convert.ToInt32(node.Attributes[name].Value, CultureInfo.InvariantCulture);
+            }
+
+            return 0;
+        }
 
         /// <summary>
-        /// Gets or sets the assemblies.
+        /// Processes the nunit results
         /// </summary>
-        /// <value>The assemblies.</value>
-        [Required]
-        public ITaskItem[] Assemblies { get; set; }
+        private void ProcessXmlResultsFile()
+        {
+            string filename = "TestResult.xml";
 
-        /// <summary>
-        /// Set to true to run nunit-console-x86.exe
-        /// </summary>
-        public bool Use32Bit { get; set; }
+            if (this.OutputXmlFile is not null && File.Exists(this.OutputXmlFile.ItemSpec))
+            {
+                filename = this.OutputXmlFile.ItemSpec;
+            }
 
-        /// <summary>
-        /// Set to true to fail the task if this.Failures > 0. Helps for batching purposes. Default is false.
-        /// </summary>
-        public bool FailOnFailures { get; set; }
+            if (File.Exists(filename))
+            {
+                XmlDocument doc = new();
 
-        /// <summary>
-        /// Comma separated list of categories to include.
-        /// </summary>
-        public string IncludeCategory { get; set; }
+                try
+                {
+                    doc.Load(filename);
+                }
+                catch (XmlException xex)
+                {
+                    this.Log.LogError(xex.Message);
+                    return;
+                }
+                catch (PathTooLongException ptlex)
+                {
+                    this.Log.LogError(ptlex.Message);
+                    return;
+                }
+                catch (DirectoryNotFoundException dnfex)
+                {
+                    this.Log.LogError(dnfex.Message);
+                    return;
+                }
+                catch (UnauthorizedAccessException uaex)
+                {
+                    this.Log.LogError(uaex.Message);
+                    return;
+                }
+                catch (FileNotFoundException fnfex)
+                {
+                    this.Log.LogError(fnfex.Message);
+                    return;
+                }
+                catch (IOException ioex)
+                {
+                    this.Log.LogError(ioex.Message);
+                    return;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    this.Log.LogError(nsex.Message);
+                    return;
+                }
+                catch (SecurityException sex)
+                {
+                    this.Log.LogError(sex.Message);
+                    return;
+                }
 
-        /// <summary>
-        /// Comma separated list of categories to exclude.
-        /// </summary>
-        public string ExcludeCategory { get; set; }
+                XmlNode? root = doc.DocumentElement;
 
-        /// <summary>
-        /// Sets the OutputXmlFile name
-        /// </summary>
-        public ITaskItem OutputXmlFile { get; set; }
+                if (root is null)
+                {
+                    this.Log.LogError("Failed to load the OutputXmlFile");
+                    return;
+                }
 
-        /// <summary>
-        /// Sets the File to receive test error output
-        /// </summary>
-        public ITaskItem ErrorOutputFile { get; set; }
+                this.Failures = GetAttributeInt32Value("failures", root);
+                this.Total = GetAttributeInt32Value("total", root);
+                this.NotRun = GetAttributeInt32Value("not-run", root);
+                this.Errors = GetAttributeInt32Value("errors", root);
+                this.Inconclusive = GetAttributeInt32Value("inconclusive", root);
+                this.Ignored = GetAttributeInt32Value("ignored", root);
+                this.Skipped = GetAttributeInt32Value("skipped", root);
+                this.Invalid = GetAttributeInt32Value("invalid", root);
+            }
+        }
 
-        /// <summary>
-        /// File to receive test output
-        /// </summary>
-        public ITaskItem OutputFile { get; set; }
+        #endregion Private Methods
 
-        /// <summary>
-        /// Disable use of a separate thread for tests. Default is false.
-        /// </summary>
-        public bool NoThread { get; set; }
-
-        /// <summary>
-        /// Gets the Failures count
-        /// </summary>
-        [Output]
-        public int Failures { get; set; }
-
-        /// <summary>
-        /// Gets the NotRun count
-        /// </summary>
-        [Output]
-        public int NotRun { get; set; }
-
-        /// <summary>
-        /// Gets the Total count
-        /// </summary>
-        [Output]
-        public int Total { get; set; }
-
-        /// <summary>
-        /// Gets the Errors count
-        /// </summary>
-        [Output]
-        public int Errors { get; set; }
-
-        /// <summary>
-        /// Gets the Inconclusive count
-        /// </summary>
-        [Output]
-        public int Inconclusive { get; set; }
-
-        /// <summary>
-        /// Gets the Ignored count
-        /// </summary>
-        [Output]
-        public int Ignored { get; set; }
-
-        /// <summary>
-        /// Gets the Skipped count
-        /// </summary>
-        [Output]
-        public int Skipped { get; set; }
-
-        /// <summary>
-        /// Gets the Invalid count
-        /// </summary>
-        [Output]
-        public int Invalid { get; set; }
-
-        /// <summary>
-        /// Disable shadow copy when running in separate domain. Default is false.
-        /// </summary>
-        public bool NoShadow { get; set; }
-
-        /// <summary>
-        /// Sets the Project configuration (e.g.: Debug) to load
-        /// </summary>
-        public string Configuration { get; set; }
-
-        /// <summary>
-        /// Process model for tests. Supports Single, Separate, Multiple. Single is the Default
-        /// </summary>
-        public string Process { get; set; }
-
-        /// <summary>
-        /// AppDomain Usage for tests. Supports None, Single, Multiple. The default is to use multiple domains if multiple assemblies are listed on the command line. Otherwise a single domain is used.
-        /// </summary>
-        public string Domain { get; set; }
-
-        /// <summary>
-        /// Framework version to be used for tests
-        /// </summary>
-        public string Framework { get; set; }
-
-        /// <summary>
-        /// Set timeout for each test case in milliseconds
-        /// </summary>
-        public int TestTimeout { get; set; }
-
-        /// <summary>
-        /// Label each test in stdOut. Default is false.
-        /// </summary>
-        public bool Labels { get; set; }
-
-        /// <summary>
-        /// Name of the test case(s), fixture(s) or namespace(s) to run
-        /// </summary>
-        public string Run { get; set; }
+        #region Protected Properties
 
         protected override string ToolName => this.Use32Bit ? "nunit-console-x86.exe" : "nunit-console.exe";
 
-        protected override string GenerateFullPathToTool()
+        #endregion Protected Properties
+
+        #region Protected Methods
+
+        protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
         {
-            if (string.IsNullOrEmpty(this.ToolPath))
+            base.ExecuteTool(pathToTool, responseFileCommands, commandLineCommands);
+            this.ProcessXmlResultsFile();
+            if (this.FailOnFailures && this.Failures > 0)
             {
-                this.ToolPath = string.Format(CultureInfo.InvariantCulture, System.Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Nunit {0}\bin"), this.Version);
+                return 1;
             }
 
-            return string.IsNullOrEmpty(this.ToolPath) ? this.ToolName : Path.Combine(this.ToolPath, this.ToolName);
+            return 0;
         }
 
         protected override string GenerateCommandLineCommands()
         {
-            CommandLineBuilder builder = new CommandLineBuilder();
+            CommandLineBuilder builder = new();
             builder.AppendSwitch("/nologo");
             if (this.NoShadow)
             {
@@ -262,73 +243,166 @@ namespace MSBuild.ExtensionPack.CodeQuality
             return builder.ToString();
         }
 
-        protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
+        protected override string GenerateFullPathToTool()
         {
-            base.ExecuteTool(pathToTool, responseFileCommands, commandLineCommands);
-            this.ProcessXmlResultsFile();
-            if (this.FailOnFailures && this.Failures > 0)
+            if (string.IsNullOrEmpty(this.ToolPath))
             {
-                return 1;
+                this.ToolPath = string.Format(CultureInfo.InvariantCulture, System.Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Nunit {0}\bin"), this.Version);
             }
 
-            return 0;
+            return string.IsNullOrEmpty(this.ToolPath) ? this.ToolName : Path.Combine(this.ToolPath, this.ToolName);
         }
-        
+
         protected override void LogEventsFromTextOutput(string singleLine, MessageImportance messageImportance)
         {
             this.Log.LogMessage(MessageImportance.Normal, singleLine);
         }
 
-        private static int GetAttributeInt32Value(string name, XmlNode node)
-        {
-            if (node.Attributes?[name] != null)
-            {
-                return Convert.ToInt32(node.Attributes[name].Value, CultureInfo.InvariantCulture);
-            }
+        #endregion Protected Methods
 
-            return 0;
-        }
+        #region Public Properties
 
         /// <summary>
-        /// Processes the nunit results
+        /// Gets or sets the assemblies.
         /// </summary>
-        private void ProcessXmlResultsFile()
-        {
-            string filename = "TestResult.xml";
-            if (this.OutputXmlFile != null && File.Exists(this.OutputXmlFile.ItemSpec))
-            {
-                filename = this.OutputXmlFile.ItemSpec;
-            }
+        /// <value>The assemblies.</value>
+        [Required]
+        public ITaskItem[] Assemblies { get; set; }
 
-            if (File.Exists(filename))
-            {
-                XmlDocument doc = new XmlDocument();
-                try
-                {
-                    doc.Load(filename);
-                }
-                catch (Exception ex)
-                {
-                    this.Log.LogError(ex.Message);
-                    return;
-                }
+        /// <summary>
+        /// Sets the Project configuration (e.g.: Debug) to load
+        /// </summary>
+        public string Configuration { get; set; }
 
-                XmlNode root = doc.DocumentElement;
-                if (root == null)
-                {
-                    this.Log.LogError("Failed to load the OutputXmlFile");
-                    return;
-                }
-                
-                this.Failures = GetAttributeInt32Value("failures", root);
-                this.Total = GetAttributeInt32Value("total", root);
-                this.NotRun = GetAttributeInt32Value("not-run", root);
-                this.Errors = GetAttributeInt32Value("errors", root);
-                this.Inconclusive = GetAttributeInt32Value("inconclusive", root);
-                this.Ignored = GetAttributeInt32Value("ignored", root);
-                this.Skipped = GetAttributeInt32Value("skipped", root);
-                this.Invalid = GetAttributeInt32Value("invalid", root);
-            }
-        }
+        /// <summary>
+        /// AppDomain Usage for tests. Supports None, Single, Multiple. The default is to use multiple domains if multiple
+        /// assemblies are listed on the command line. Otherwise a single domain is used.
+        /// </summary>
+        public string Domain { get; set; }
+
+        /// <summary>
+        /// Sets the File to receive test error output
+        /// </summary>
+        public ITaskItem ErrorOutputFile { get; set; }
+
+        /// <summary>
+        /// Gets the Errors count
+        /// </summary>
+        [Output]
+        public int Errors { get; set; }
+
+        /// <summary>
+        /// Comma separated list of categories to exclude.
+        /// </summary>
+        public string ExcludeCategory { get; set; }
+
+        /// <summary>
+        /// Set to true to fail the task if this.Failures &gt; 0. Helps for batching purposes. Default is false.
+        /// </summary>
+        public bool FailOnFailures { get; set; }
+
+        /// <summary>
+        /// Gets the Failures count
+        /// </summary>
+        [Output]
+        public int Failures { get; set; }
+
+        /// <summary>
+        /// Framework version to be used for tests
+        /// </summary>
+        public string Framework { get; set; }
+
+        /// <summary>
+        /// Gets the Ignored count
+        /// </summary>
+        [Output]
+        public int Ignored { get; set; }
+
+        /// <summary>
+        /// Comma separated list of categories to include.
+        /// </summary>
+        public string IncludeCategory { get; set; }
+
+        /// <summary>
+        /// Gets the Inconclusive count
+        /// </summary>
+        [Output]
+        public int Inconclusive { get; set; }
+
+        /// <summary>
+        /// Gets the Invalid count
+        /// </summary>
+        [Output]
+        public int Invalid { get; set; }
+
+        /// <summary>
+        /// Label each test in stdOut. Default is false.
+        /// </summary>
+        public bool Labels { get; set; }
+
+        /// <summary>
+        /// Disable shadow copy when running in separate domain. Default is false.
+        /// </summary>
+        public bool NoShadow { get; set; }
+
+        /// <summary>
+        /// Disable use of a separate thread for tests. Default is false.
+        /// </summary>
+        public bool NoThread { get; set; }
+
+        /// <summary>
+        /// Gets the NotRun count
+        /// </summary>
+        [Output]
+        public int NotRun { get; set; }
+
+        /// <summary>
+        /// File to receive test output
+        /// </summary>
+        public ITaskItem OutputFile { get; set; }
+
+        /// <summary>
+        /// Sets the OutputXmlFile name
+        /// </summary>
+        public ITaskItem OutputXmlFile { get; set; }
+
+        /// <summary>
+        /// Process model for tests. Supports Single, Separate, Multiple. Single is the Default
+        /// </summary>
+        public string Process { get; set; }
+
+        /// <summary>
+        /// Name of the test case(s), fixture(s) or namespace(s) to run
+        /// </summary>
+        public string Run { get; set; }
+
+        /// <summary>
+        /// Gets the Skipped count
+        /// </summary>
+        [Output]
+        public int Skipped { get; set; }
+
+        /// <summary>
+        /// Set timeout for each test case in milliseconds
+        /// </summary>
+        public int TestTimeout { get; set; }
+
+        /// <summary>
+        /// Gets the Total count
+        /// </summary>
+        [Output]
+        public int Total { get; set; }
+
+        /// <summary>
+        /// Set to true to run nunit-console-x86.exe
+        /// </summary>
+        public bool Use32Bit { get; set; }
+
+        /// <summary>
+        /// The version of NUnit to run. Default is 2.6.2
+        /// </summary>
+        public string Version { get; set; } = "2.6.2";
+
+        #endregion Public Properties
     }
 }

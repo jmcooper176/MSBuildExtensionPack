@@ -1,19 +1,27 @@
-// This file is part of CycloneDX CLI Tool
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
 //
-// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
-// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
-// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack
 {
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Utility;
 
     using System;
     using System.Globalization;
@@ -24,12 +32,18 @@ namespace MSBuild.ExtensionPack
     /// </summary>
     public abstract class BaseTask : Task
     {
+        #region Private Fields
+
         private AuthenticationLevel authenticationLevel = System.Management.AuthenticationLevel.Default;
-        private string machineName;
+        private string? machineName;
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         private void DetermineLogging()
         {
-            string s = Environment.GetEnvironmentVariable("SuppressTaskMessages", EnvironmentVariableTarget.Machine);
+            string? s = Environment.GetEnvironmentVariable("SuppressTaskMessages", EnvironmentVariableTarget.Machine);
 
             if (!string.IsNullOrEmpty(s))
             {
@@ -39,7 +53,7 @@ namespace MSBuild.ExtensionPack
 
         private void GetExceptionLevel()
         {
-            string s = Environment.GetEnvironmentVariable("LogExceptionStack", EnvironmentVariableTarget.Machine);
+            string? s = Environment.GetEnvironmentVariable("LogExceptionStack", EnvironmentVariableTarget.Machine);
 
             if (!string.IsNullOrEmpty(s))
             {
@@ -47,18 +61,30 @@ namespace MSBuild.ExtensionPack
             }
         }
 
+        #endregion Private Methods
+
+        #region Protected Methods
+
         /// <summary>
         /// This is the main InternalExecute method that all tasks should implement
         /// </summary>
         /// <remarks>LogError should be thrown in the event of errors</remarks>
         protected abstract void InternalExecute();
 
-        internal ManagementScope Scope { get; set; }
+        #endregion Protected Methods
+
+        #region Internal Properties
+
+        internal ManagementScope? Scope { get; set; }
+
+        #endregion Internal Properties
+
+        #region Internal Methods
 
         internal void GetManagementScope(string wmiNamespace)
         {
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
-            if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) == 0)
+            this.Log.LogTaskMessage(() => true, MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
+            if (string.Equals(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase))
             {
                 this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace);
             }
@@ -77,43 +103,8 @@ namespace MSBuild.ExtensionPack
 
         internal void GetManagementScope(string wmiNamespace, ConnectionOptions options)
         {
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
+            this.Log.LogTaskMessage(() => true, MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "ManagementScope Set: {0}", "\\\\" + this.MachineName + wmiNamespace));
             this.Scope = new ManagementScope("\\\\" + this.MachineName + wmiNamespace, options);
-        }
-
-        internal void LogTaskMessage(MessageImportance messageImportance, string message)
-        {
-            this.LogTaskMessage(messageImportance, message, null);
-        }
-
-        internal void LogTaskMessage(string message, object[] arguments)
-        {
-            this.LogTaskMessage(MessageImportance.Normal, message, arguments);
-        }
-
-        internal void LogTaskMessage(string message)
-        {
-            this.LogTaskMessage(MessageImportance.Normal, message, null);
-        }
-
-        internal void LogTaskMessage(MessageImportance messageImportance, string message, object[] arguments)
-        {
-            if (!this.SuppressTaskMessages)
-            {
-                if (arguments == null)
-                {
-                    this.Log.LogMessage(messageImportance, message);
-                }
-                else
-                {
-                    this.Log.LogMessage(messageImportance, message, arguments);
-                }
-            }
-        }
-
-        internal void LogTaskWarning(string message)
-        {
-            this.Log.LogWarning(message);
         }
 
         /// <summary>
@@ -132,7 +123,7 @@ namespace MSBuild.ExtensionPack
         /// <returns>bool</returns>
         internal bool TargetingLocalMachine(bool canExecuteRemotely)
         {
-            if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) != 0)
+            if (!string.Equals(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase))
             {
                 if (!canExecuteRemotely)
                 {
@@ -145,6 +136,10 @@ namespace MSBuild.ExtensionPack
             return true;
         }
 
+        #endregion Internal Methods
+
+        #region Public Properties
+
         /// <summary>
         /// Sets the authentication level to be used to connect to WMI. Default is Default. Also supports: Call, Connect, None,
         /// Packet, PacketIntegrity, PacketPrivacy, Unchanged
@@ -152,13 +147,13 @@ namespace MSBuild.ExtensionPack
         public string AuthenticationLevel
         {
             get { return this.authenticationLevel.ToString(); }
-            set { this.authenticationLevel = (AuthenticationLevel)Enum.Parse(typeof(AuthenticationLevel), value); }
+            set { this.authenticationLevel = (AuthenticationLevel)Enum.Parse<AuthenticationLevel>(value); }
         }
 
         /// <summary>
         /// Sets the authority to be used to authenticate the specified user.
         /// </summary>
-        public string Authority { get; set; }
+        public string? Authority { get; set; }
 
         /// <summary>
         /// Set to true to error if the task has been deprecated
@@ -187,17 +182,21 @@ namespace MSBuild.ExtensionPack
         /// <summary>
         /// Sets the TaskAction.
         /// </summary>
-        public virtual string TaskAction { get; set; }
+        public virtual string? TaskAction { get; set; }
 
         /// <summary>
         /// Sets the UserName
         /// </summary>
-        public virtual string UserName { get; set; }
+        public virtual string? UserName { get; set; }
 
         /// <summary>
         /// Sets the UserPassword.
         /// </summary>
-        public virtual string UserPassword { get; set; }
+        public virtual string? UserPassword { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Executes this instance.
@@ -218,5 +217,7 @@ namespace MSBuild.ExtensionPack
                 return !this.Log.HasLoggedErrors;
             }
         }
+
+        #endregion Public Methods
     }
 }

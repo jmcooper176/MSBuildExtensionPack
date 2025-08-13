@@ -1,7 +1,21 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfoWrapper.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-// This task is based on the AssemblyInfo task written by Neil Enns (http://code.msdn.microsoft.com/AssemblyInfoTaskvers). It is used here with permission.
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
 {
     using System;
@@ -12,6 +26,8 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
 
     internal class AssemblyInfoWrapper
     {
+        #region Private Fields
+
         private readonly Regex attributeBooleanValuePattern = new Regex(@"\((?<attributeValue>([tT]rue|[fF]alse))\)", RegexOptions.Compiled);
         private readonly Dictionary<string, int> attributeIndex = new Dictionary<string, int>();
         private readonly Regex attributeNamePattern = new Regex(@"[aA]ssembly?\s*:?\s*(?<attributeName>\w+)\s*\(", RegexOptions.Compiled);
@@ -22,8 +38,12 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
         private readonly Regex singleLineCSharpCommentPattern = new Regex(@"(?m:^(\s*//.*)$)", RegexOptions.Compiled);
         private readonly Regex singleLineVbCommentPattern = new Regex(@"^(\s*'|')", RegexOptions.Compiled);
 
-        //// The ^\* is so the regex works with J# files that use /** to indicate the actual attribute lines.
-        //// This does mean that lines like /** in C# will get treated as valid lines, but that's a real borderline case.
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// The ^\* is so the regex works with J# files that use /** to indicate the actual attribute lines. This does mean that
+        /// lines like /** in C# will get treated as valid lines, but that's a real borderline case.
         public AssemblyInfoWrapper(string fileName)
         {
             using (StreamReader reader = File.OpenText(fileName))
@@ -32,7 +52,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
                 string input;
                 bool skipLine = false;
 
-                while ((input = reader.ReadLine()) != null)
+                while ((input = reader.ReadLine()) is not null)
                 {
                     rawFileLines.Add(input);
 
@@ -66,9 +86,8 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
                         continue;
                     }
 
-                    // Check to see if the current line is an attribute on the assembly info.
-                    // If so we need to keep the line number in our dictionary so we can go
-                    // back later and get it when this class is accessed through its indexer.
+                    // Check to see if the current line is an attribute on the assembly info. If so we need to keep the line number
+                    // in our dictionary so we can go back later and get it when this class is accessed through its indexer.
                     var matches = attributeNamePattern.Matches(input);
                     if (matches.Count > 0)
                     {
@@ -82,6 +101,10 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
                 }
             }
         }
+
+        #endregion Public Constructors
+
+        #region Public Indexers
 
         public string this[string attribute]
         {
@@ -111,8 +134,8 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
 
             set
             {
-                // The set case requires fancy footwork. In this case we actually replace the attribute
-                // value in the string using a regex to the value that was passed in.
+                // The set case requires fancy footwork. In this case we actually replace the attribute value in the string using a
+                // regex to the value that was passed in.
                 if (!attributeIndex.ContainsKey(attribute))
                 {
                     throw new ArgumentOutOfRangeException(nameof(attribute), string.Format(CultureInfo.CurrentCulture, "{0} is not an attribute in the specified AssemblyInfo.cs file", attribute));
@@ -135,6 +158,10 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
             }
         }
 
+        #endregion Public Indexers
+
+        #region Public Methods
+
         public void Write(TextWriter streamWriter)
         {
             foreach (string line in rawFileLines)
@@ -142,5 +169,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
                 streamWriter.WriteLine(line);
             }
         }
+
+        #endregion Public Methods
     }
 }

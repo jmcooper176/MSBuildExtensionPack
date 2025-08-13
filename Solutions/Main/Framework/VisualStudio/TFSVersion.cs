@@ -1,210 +1,98 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="TfsVersion.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.VisualStudio
 {
+    using Microsoft.Build.Framework;
+
     using System;
     using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>GetVersion</i> (<b>Required: </b> TfsBuildNumber, VersionFormat <b>Optional:</b>Major, Minor, BuildNumberRegex, PaddingCount, PaddingDigit, StartDate, DateFormat, BuildName, Delimiter, Build, Revision, VersionTemplateFormat, CombineBuildAndRevision, UseUtcDate<b>Output: </b>Version, Major, Minor, Build, Revision)</para>
+    /// <para>
+    /// <i>GetVersion</i> ( <b>Required:</b> TfsBuildNumber, VersionFormat <b>Optional:</b> Major, Minor, BuildNumberRegex,
+    /// PaddingCount, PaddingDigit, StartDate, DateFormat, BuildName, Delimiter, Build, Revision, VersionTemplateFormat,
+    /// CombineBuildAndRevision, UseUtcDate <b>Output:</b> Version, Major, Minor, Build, Revision)
+    /// </para>
     /// <para><b>Please Note:</b> The output of GetVersion should not be used to change the $(BuildNumber). For guidance, see: http://freetodev.spaces.live.com/blog/cns!EC3C8F2028D842D5!404.entry</para>
-    /// <para><i>SetVersion</i> (<b>Required: </b> Version, Files <b>Optional:</b> TextEncoding, SetAssemblyVersion, AssemblyVersion, SetAssemblyFileVersion, ForceSetVersion</para>
+    /// <para>
+    /// <i>SetVersion</i> ( <b>Required:</b> Version, Files <b>Optional:</b> TextEncoding, SetAssemblyVersion, AssemblyVersion,
+    /// SetAssemblyFileVersion, ForceSetVersion
+    /// </para>
     /// <para><b>Remote Execution Support:</b> NA</para>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <ItemGroup>
-    ///         <FilesToVersion Include="C:\Demo\CommonAssemblyInfo.cs"/>
-    ///     </ItemGroup>
-    ///     <Target Name="Default">
-    ///         <!-- Get a version number based on the elapsed days since a given date -->
-    ///         <MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="GetVersion" BuildName="YOURBUILD" TfsBuildNumber="YOURBUILD_20080703.1" VersionFormat="Elapsed" StartDate="17 Nov 1976" PaddingCount="4" PaddingDigit="1" Major="3" Minor="5">
-    ///             <Output TaskParameter="Version" PropertyName="NewVersion" />
-    ///         </MSBuild.ExtensionPack.VisualStudio.TfsVersion>
-    ///         <Message Text="Elapsed Version is $(NewVersion)"/>
-    ///         <!-- Get a version number based on the format of a given datetime -->
-    ///         <MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="GetVersion" BuildName="YOURBUILD" TfsBuildNumber="YOURBUILD_20080703.1" VersionFormat="DateTime" DateFormat="MMdd" PaddingCount="5" PaddingDigit="1" Major="3" Minor="5">
-    ///             <Output TaskParameter="Version" PropertyName="NewVersion" />
-    ///         </MSBuild.ExtensionPack.VisualStudio.TfsVersion>
-    ///         <Message Text="Date Version is $(NewVersion)"/>
-    ///         <!-- Set the version in a collection of files -->
-    ///         <MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="SetVersion" Files="%(FilesToVersion.Identity)" Version="$(NewVersion)"/>
-    ///         <!-- Set the version in a collection of files, forcing AssemblyFileVersion to be inserted even if it was not present in the affected file -->
-    ///         <MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="SetVersion" Files="%(FilesToVersion.Identity)" Version="$(NewVersion)" ForceSetVersion="true"/>
-    ///         <!-- Get a version number based on the elapsed days since a given date and use a comma as the delimiter -->
-    ///         <MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="GetVersion" Delimiter="," BuildName="YOURBUILD" TfsBuildNumber="YOURBUILD_20080703.1" VersionFormat="Elapsed" StartDate="17 Nov 1976" PaddingCount="4" PaddingDigit="1" Major="3" Minor="5">
-    ///             <Output TaskParameter="Version" PropertyName="NewcppVersion" />
-    ///         </MSBuild.ExtensionPack.VisualStudio.TfsVersion>
-    ///         <Message Text="C++ Version: $(NewcppVersion)"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>    
-    /// </example> 
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<ItemGroup>
+    ///<FilesToVersion Include="C:\Demo\CommonAssemblyInfo.cs"/>
+    ///</ItemGroup>
+    ///<Target Name="Default">
+    ///<!-- Get a version number based on the elapsed days since a given date -->
+    ///<MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="GetVersion" BuildName="YOURBUILD" TfsBuildNumber="YOURBUILD_20080703.1" VersionFormat="Elapsed" StartDate="17 Nov 1976" PaddingCount="4" PaddingDigit="1" Major="3" Minor="5">
+    ///<Output TaskParameter="Version" PropertyName="NewVersion" />
+    ///</MSBuild.ExtensionPack.VisualStudio.TfsVersion>
+    ///<Message Text="Elapsed Version is $(NewVersion)"/>
+    ///<!-- Get a version number based on the format of a given datetime -->
+    ///<MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="GetVersion" BuildName="YOURBUILD" TfsBuildNumber="YOURBUILD_20080703.1" VersionFormat="DateTime" DateFormat="MMdd" PaddingCount="5" PaddingDigit="1" Major="3" Minor="5">
+    ///<Output TaskParameter="Version" PropertyName="NewVersion" />
+    ///</MSBuild.ExtensionPack.VisualStudio.TfsVersion>
+    ///<Message Text="Date Version is $(NewVersion)"/>
+    ///<!-- Set the version in a collection of files -->
+    ///<MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="SetVersion" Files="%(FilesToVersion.Identity)" Version="$(NewVersion)"/>
+    ///<!-- Set the version in a collection of files, forcing AssemblyFileVersion to be inserted even if it was not present in the affected file -->
+    ///<MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="SetVersion" Files="%(FilesToVersion.Identity)" Version="$(NewVersion)" ForceSetVersion="true"/>
+    ///<!-- Get a version number based on the elapsed days since a given date and use a comma as the delimiter -->
+    ///<MSBuild.ExtensionPack.VisualStudio.TfsVersion TaskAction="GetVersion" Delimiter="," BuildName="YOURBUILD" TfsBuildNumber="YOURBUILD_20080703.1" VersionFormat="Elapsed" StartDate="17 Nov 1976" PaddingCount="4" PaddingDigit="1" Major="3" Minor="5">
+    ///<Output TaskParameter="Version" PropertyName="NewcppVersion" />
+    ///</MSBuild.ExtensionPack.VisualStudio.TfsVersion>
+    ///<Message Text="C++ Version: $(NewcppVersion)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
+    /// </example>
     public class TfsVersion : BaseTask
     {
-        private const string AppendAssemblyVersionFormat = "\n[assembly: System.Reflection.AssemblyVersion(\"{0}\")]";
-        private const string VBAppendAssemblyVersionFormat = "\n<assembly: System.Reflection.AssemblyVersion(\"{0}\")>";
+        #region Private Fields
+
         private const string AppendAssemblyFileVersionFormat = "\n[assembly: System.Reflection.AssemblyFileVersion(\"{0}\")]";
+        private const string AppendAssemblyVersionFormat = "\n[assembly: System.Reflection.AssemblyVersion(\"{0}\")]";
         private const string VBAppendAssemblyFileVersionFormat = "\n<assembly: System.Reflection.AssemblyFileVersion(\"{0}\")>";
-
-        private Regex regexExpression;
-        private Regex regexAssemblyVersion;
+        private const string VBAppendAssemblyVersionFormat = "\n<assembly: System.Reflection.AssemblyVersion(\"{0}\")>";
         private Encoding fileEncoding = Encoding.UTF8;
+        private Regex regexAssemblyVersion;
+        private Regex regexExpression;
 
-        /// <summary>
-        /// Sets the BuildNumberRegex to determine the verison number from the BuildNumber when using in Synced mode. Default is \d+\.\d+\.\d+\.\d+
-        /// </summary>
-        public string BuildNumberRegex { get; set; } = @"\d+\.\d+\.\d+\.\d+";
+        #endregion Private Fields
 
-        /// <summary>
-        /// Set to True to set the AssemblyVersion when calling SetVersion. Default is false.
-        /// </summary>
-        public bool SetAssemblyVersion { get; set; }
-
-        /// <summary>
-        /// Set to True to get the elapsed calculation using UTC Date Time. Default is false
-        /// </summary>
-        public bool UseUtcDate { get; set; }
-        
-        /// <summary>
-        /// Set to True to set the AssemblyFileVersion when calling SetVersion. Default is true.
-        /// </summary>
-        public bool SetAssemblyFileVersion { get; set; } = true;
-
-        /// <summary>
-        /// Set to true to force SetVersion action to update files that do not have AssemblyVersion | AssemblyFileVersion
-        /// present.  Default is false.  ForceSetVersion does not affect AssemblyVersion when SetAssemblyVersion is false.
-        /// </summary>
-        public bool ForceSetVersion { get; set; }
-
-        /// <summary>
-        /// Sets the file encoding. Default is UTF8
-        /// </summary>
-        public string TextEncoding { get; set; }
-
-        /// <summary>
-        /// Sets the files to version
-        /// </summary>
-        public ITaskItem[] Files { get; set; }
-
-        /// <summary>
-        /// Sets the Tfs Build Number. Use $(BuildNumber) for Tfs 2005 and 2008.
-        /// </summary>
-        public string TfsBuildNumber { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the Version
-        /// </summary>
-        [Output]
-        public string Version { get; set; }
-
-        /// <summary>
-        /// Sets the AssemblyVersion. Defaults to Version if not set.
-        /// </summary>
-        public string AssemblyVersion { get; set; }
-
-        /// <summary>
-        /// Sets the number of padding digits to use, e.g. 4
-        /// </summary>
-        public int PaddingCount { get; set; }
-
-        /// <summary>
-        /// Sets the padding digit to use, e.g. 0
-        /// </summary>
-        public char PaddingDigit { get; set; }
-
-        /// <summary>
-        /// Sets the start date to use when using VersionFormat="Elapsed"
-        /// </summary>
-        public DateTime StartDate { get; set; }
-
-        /// <summary>
-        /// Sets the date format to use when using VersionFormat="DateTime". e.g. MMdd
-        /// </summary>
-        public string DateFormat { get; set; }
-
-        /// <summary>
-        /// Sets the name of the build. For Tfs 2005 use $(BuildType), for Tfs 2008 use $(BuildDefinition)
-        /// </summary>
-        public string BuildName { get; set; }
-
-        /// <summary>
-        /// Sets the Version Format. Valid VersionFormats are Elapsed, DateTime, Synced
-        /// </summary>
-        public string VersionFormat { get; set; }
-
-        /// <summary>
-        /// Sets the minor version
-        /// </summary>
-        [Output]
-        public string Minor { get; set; }
-
-        /// <summary>
-        /// Sets the major version
-        /// </summary>
-        [Output]
-        public string Major { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the Build version
-        /// </summary>
-        [Output]
-        public string Build { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the Revision version
-        /// </summary>
-        [Output]
-        public string Revision { get; set; }
-
-        /// <summary>
-        /// Sets whether to make the revision a combination of the Build and Revision.
-        /// </summary>
-        public bool CombineBuildAndRevision { get; set; }
-
-        /// <summary>
-        /// Sets the Delimiter to use in the version number. Default is .
-        /// </summary>
-        public string Delimiter { get; set; } = ".";
-
-        /// <summary>
-        /// Specify the format of the build number. A format for each part must be specified or left blank, e.g. "00.000.00.000", "..0000.0"
-        /// </summary>
-        public string VersionTemplateFormat { get; set; }
-
-        protected override void InternalExecute()
-        {
-            if (!this.TargetingLocalMachine())
-            {
-                return;
-            }
-
-            switch (this.TaskAction)
-            {
-                case "GetVersion":
-                    this.GetVersion();
-                    break;
-                case "SetVersion":
-                    this.SetVersion();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
+        #region Private Methods
 
         private void GetVersion()
         {
@@ -255,6 +143,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
                                 TimeSpan elapsed = baseTimeToUse - Convert.ToDateTime(this.StartDate);
                                 this.Revision = elapsed.Days.ToString(CultureInfo.CurrentCulture).PadLeft(this.PaddingCount, this.PaddingDigit) + buildParts[1];
                                 break;
+
                             case "DATETIME":
                                 this.Revision = t.ToString(this.DateFormat, CultureInfo.CurrentCulture).PadLeft(this.PaddingCount, this.PaddingDigit) + buildParts[1];
                                 break;
@@ -277,6 +166,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
 
                         this.Version = string.Format(CultureInfo.CurrentCulture, "{0}{4}{1}{4}{2}{4}{3}", this.Major, this.Minor, this.Build, this.Revision, this.Delimiter);
                         break;
+
                     case "DATETIME":
                         if (string.IsNullOrEmpty(this.Build))
                         {
@@ -285,6 +175,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
 
                         this.Version = string.Format(CultureInfo.CurrentCulture, "{0}{4}{1}{4}{2}{4}{3}", this.Major, this.Minor, this.Build, this.Revision, this.Delimiter);
                         break;
+
                     default:
                         this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid VersionFormat provided: {0}. Valid Formats are Elapsed, DateTime", this.VersionFormat));
                         return;
@@ -317,6 +208,46 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
+        /// <summary>
+        /// Sets the file encoding.
+        /// </summary>
+        /// <returns>bool</returns>
+        private bool SetFileEncoding()
+        {
+            switch (this.TextEncoding)
+            {
+                case "ASCII":
+                    this.fileEncoding = System.Text.Encoding.ASCII;
+                    break;
+
+                case "Unicode":
+                    this.fileEncoding = System.Text.Encoding.Unicode;
+                    break;
+
+                case "UTF7":
+                    this.fileEncoding = System.Text.Encoding.UTF7;
+                    break;
+
+                case "UTF8":
+                    this.fileEncoding = System.Text.Encoding.UTF8;
+                    break;
+
+                case "BigEndianUnicode":
+                    this.fileEncoding = System.Text.Encoding.BigEndianUnicode;
+                    break;
+
+                case "UTF32":
+                    this.fileEncoding = System.Text.Encoding.UTF32;
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Encoding not supported: {0}", this.TextEncoding));
+                    return false;
+            }
+
+            return true;
+        }
+
         private void SetVersion()
         {
             // Set the file encoding if necessary
@@ -331,7 +262,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
                 return;
             }
 
-            if (this.Files == null)
+            if (this.Files is null)
             {
                 this.Log.LogError("No Files specified. Pass an Item Collection of files to the Files property.");
                 return;
@@ -384,6 +315,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
                             case ".cs":
                                 newFile = newFile.AppendFormat(AppendAssemblyFileVersionFormat, this.Version);
                                 break;
+
                             case ".vb":
                                 newFile = newFile.AppendFormat(VBAppendAssemblyFileVersionFormat, this.Version);
                                 break;
@@ -402,6 +334,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
                             case ".cs":
                                 newFile = newFile.AppendFormat(AppendAssemblyVersionFormat, this.AssemblyVersion);
                                 break;
+
                             case ".vb":
                                 newFile = newFile.AppendFormat(VBAppendAssemblyVersionFormat, this.AssemblyVersion);
                                 break;
@@ -423,38 +356,158 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
-        /// <summary>
-        /// Sets the file encoding.
-        /// </summary>
-        /// <returns>bool</returns>
-        private bool SetFileEncoding()
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        protected override void InternalExecute()
         {
-            switch (this.TextEncoding)
+            if (!this.TargetingLocalMachine())
             {
-                case "ASCII":
-                    this.fileEncoding = System.Text.Encoding.ASCII;
-                    break;
-                case "Unicode":
-                    this.fileEncoding = System.Text.Encoding.Unicode;
-                    break;
-                case "UTF7":
-                    this.fileEncoding = System.Text.Encoding.UTF7;
-                    break;
-                case "UTF8":
-                    this.fileEncoding = System.Text.Encoding.UTF8;
-                    break;
-                case "BigEndianUnicode":
-                    this.fileEncoding = System.Text.Encoding.BigEndianUnicode;
-                    break;
-                case "UTF32":
-                    this.fileEncoding = System.Text.Encoding.UTF32;
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Encoding not supported: {0}", this.TextEncoding));
-                    return false;
+                return;
             }
 
-            return true;
+            switch (this.TaskAction)
+            {
+                case "GetVersion":
+                    this.GetVersion();
+                    break;
+
+                case "SetVersion":
+                    this.SetVersion();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
         }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// Sets the AssemblyVersion. Defaults to Version if not set.
+        /// </summary>
+        public string AssemblyVersion { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the Build version
+        /// </summary>
+        [Output]
+        public string Build { get; set; }
+
+        /// <summary>
+        /// Sets the name of the build. For Tfs 2005 use $(BuildType), for Tfs 2008 use $(BuildDefinition)
+        /// </summary>
+        public string BuildName { get; set; }
+
+        /// <summary>
+        /// Sets the BuildNumberRegex to determine the verison number from the BuildNumber when using in Synced mode. Default is \d+\.\d+\.\d+\.\d+
+        /// </summary>
+        public string BuildNumberRegex { get; set; } = @"\d+\.\d+\.\d+\.\d+";
+
+        /// <summary>
+        /// Sets whether to make the revision a combination of the Build and Revision.
+        /// </summary>
+        public bool CombineBuildAndRevision { get; set; }
+
+        /// <summary>
+        /// Sets the date format to use when using VersionFormat="DateTime". e.g. MMdd
+        /// </summary>
+        public string DateFormat { get; set; }
+
+        /// <summary>
+        /// Sets the Delimiter to use in the version number. Default is .
+        /// </summary>
+        public string Delimiter { get; set; } = ".";
+
+        /// <summary>
+        /// Sets the files to version
+        /// </summary>
+        public ITaskItem[] Files { get; set; }
+
+        /// <summary>
+        /// Set to true to force SetVersion action to update files that do not have AssemblyVersion | AssemblyFileVersion present.
+        /// Default is false. ForceSetVersion does not affect AssemblyVersion when SetAssemblyVersion is false.
+        /// </summary>
+        public bool ForceSetVersion { get; set; }
+
+        /// <summary>
+        /// Sets the major version
+        /// </summary>
+        [Output]
+        public string Major { get; set; }
+
+        /// <summary>
+        /// Sets the minor version
+        /// </summary>
+        [Output]
+        public string Minor { get; set; }
+
+        /// <summary>
+        /// Sets the number of padding digits to use, e.g. 4
+        /// </summary>
+        public int PaddingCount { get; set; }
+
+        /// <summary>
+        /// Sets the padding digit to use, e.g. 0
+        /// </summary>
+        public char PaddingDigit { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the Revision version
+        /// </summary>
+        [Output]
+        public string Revision { get; set; }
+
+        /// <summary>
+        /// Set to True to set the AssemblyFileVersion when calling SetVersion. Default is true.
+        /// </summary>
+        public bool SetAssemblyFileVersion { get; set; } = true;
+
+        /// <summary>
+        /// Set to True to set the AssemblyVersion when calling SetVersion. Default is false.
+        /// </summary>
+        public bool SetAssemblyVersion { get; set; }
+
+        /// <summary>
+        /// Sets the start date to use when using VersionFormat="Elapsed"
+        /// </summary>
+        public DateTime StartDate { get; set; }
+
+        /// <summary>
+        /// Sets the file encoding. Default is UTF8
+        /// </summary>
+        public string TextEncoding { get; set; }
+
+        /// <summary>
+        /// Sets the Tfs Build Number. Use $(BuildNumber) for Tfs 2005 and 2008.
+        /// </summary>
+        public string TfsBuildNumber { get; set; }
+
+        /// <summary>
+        /// Set to True to get the elapsed calculation using UTC Date Time. Default is false
+        /// </summary>
+        public bool UseUtcDate { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the Version
+        /// </summary>
+        [Output]
+        public string Version { get; set; }
+
+        /// <summary>
+        /// Sets the Version Format. Valid VersionFormats are Elapsed, DateTime, Synced
+        /// </summary>
+        public string VersionFormat { get; set; }
+
+        /// <summary>
+        /// Specify the format of the build number. A format for each part must be specified or left blank, e.g. "00.000.00.000", "..0000.0"
+        /// </summary>
+        public string VersionTemplateFormat { get; set; }
+
+        #endregion Public Properties
     }
 }

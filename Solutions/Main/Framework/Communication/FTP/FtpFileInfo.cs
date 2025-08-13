@@ -1,6 +1,21 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="FtpFileInfo.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Communication.FTP
 {
     using System;
@@ -13,19 +28,30 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     [Serializable]
     public sealed class FtpFileInfo : FileSystemInfo
     {
-        private readonly string fileName; 
+        #region Private Fields
+
+        private readonly string fileName;
         private readonly FtpConnection ftpConnection;
 
+        private DateTime? creationTime;
         private DateTime? lastAccessTime;
         private DateTime? lastWriteTime;
-        private DateTime? creationTime;
+
+        #endregion Private Fields
+
+        #region Private Constructors
+
+        private FtpFileInfo(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        #endregion Private Constructors
+
+        #region Public Constructors
 
         public FtpFileInfo(FtpConnection ftp, string filePath)
         {
-            if (filePath == null)
-            {
-                throw new ArgumentNullException("filePath");
-            }
+            ArgumentNullException.ThrowIfNull(filePath);
 
             OriginalPath = filePath;
             FullPath = filePath;
@@ -33,41 +59,42 @@ namespace MSBuild.ExtensionPack.Communication.FTP
             fileName = Path.GetFileName(filePath);
         }
 
-        private FtpFileInfo(SerializationInfo info, StreamingContext context) : base(info, context)
-        {         
-        }
+        #endregion Public Constructors
 
-        public FtpConnection FtpConnection => ftpConnection;
+        #region Public Properties
 
-        public new DateTime? LastAccessTime
-        {
-            get { return lastAccessTime.HasValue ? lastAccessTime.Value : null; }
-            internal set => lastAccessTime = value;
-        }
+        public new FileAttributes Attributes { get; internal set; }
 
         public new DateTime? CreationTime
         {
-            get => creationTime.HasValue ? creationTime.Value : null;
+            get => creationTime ?? null;
             internal set => creationTime = value;
         }
 
-        public new DateTime? LastWriteTime
+        public new DateTime? CreationTimeUtc => creationTime?.ToUniversalTime();
+        public override bool Exists => FtpConnection.FileExists(FullName);
+        public FtpConnection FtpConnection { get; }
+
+        public new DateTime? LastAccessTime
         {
-            get => lastWriteTime.HasValue ? lastWriteTime.Value : null;
-            internal set => lastWriteTime = value;
+            get { return lastAccessTime ?? null; }
+            internal set => lastAccessTime = value;
         }
 
         public new DateTime? LastAccessTimeUtc => lastAccessTime?.ToUniversalTime();
 
-        public new DateTime? CreationTimeUtc => creationTime?.ToUniversalTime();
+        public new DateTime? LastWriteTime
+        {
+            get => lastWriteTime ?? null;
+            internal set => lastWriteTime = value;
+        }
 
         public new DateTime? LastWriteTimeUtc => lastWriteTime?.ToUniversalTime();
+        public override string Name { get; }
 
-        public new FileAttributes Attributes { get; internal set; }
+        #endregion Public Properties
 
-        public override string Name => fileName;
-
-        public override bool Exists => FtpConnection.FileExists(FullName);
+        #region Public Methods
 
         public override void Delete()
         {
@@ -75,14 +102,15 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         }
 
         /// <summary>
-        /// No specific impelementation is needed of the GetObjectData to serialize this object
-        /// because all attributes are redefined.
+        /// No specific impelementation is needed of the GetObjectData to serialize this object because all attributes are redefined.
         /// </summary>
-        /// <param name="info">The SerializationInfo to populate with data. </param>
-        /// <param name="context">The destination for this serialization. </param>
+        /// <param name="info">   The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
         }
+
+        #endregion Public Methods
     }
 }

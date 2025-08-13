@@ -1,15 +1,21 @@
-﻿// This file is part of CycloneDX CLI Tool
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
 //
-// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
-// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
-// SPDX-License-Identifier: Apache-2.0 Copyright (c) OWASP Foundation. All Rights Reserved. Ignore Spelling: cyclonedx Cli
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.Loggers
 {
     using Microsoft.Build.Framework;
@@ -48,6 +54,8 @@ namespace MSBuild.ExtensionPack.Loggers
     /// </summary>
     public class SecureFileLogger : Logger
     {
+        #region Private Fields
+
         private const char SecureChar = '#';
         private static readonly char[] FileLoggerParameterDelimiters = [';'];
         private static readonly char[] FileLoggerParameterValueSplitCharacter = ['='];
@@ -61,6 +69,10 @@ namespace MSBuild.ExtensionPack.Loggers
         private string ruleFileName;
         private DateTime startTime;
         private int warnings;
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         private static bool NotExpectedException(Exception e)
         {
@@ -153,7 +165,7 @@ namespace MSBuild.ExtensionPack.Loggers
 
                     using StreamReader r = new(ruleFile.FullName);
                     string line;
-                    while ((line = r.ReadLine()) != null)
+                    while ((line = r.ReadLine()) is not null)
                     {
                         this.regExRules.Add(line);
                     }
@@ -180,7 +192,7 @@ namespace MSBuild.ExtensionPack.Loggers
 
         private void ParseFileLoggerParameters()
         {
-            if (this.Parameters != null)
+            if (this.Parameters is not null)
             {
                 string[] strArray = this.Parameters.Split(FileLoggerParameterDelimiters);
                 foreach (string[] strArray2 in from t in strArray where t.Length > 0 select t.Split(FileLoggerParameterValueSplitCharacter))
@@ -282,6 +294,10 @@ namespace MSBuild.ExtensionPack.Loggers
             this.fileWriter.WriteLine(line);
         }
 
+        #endregion Private Methods
+
+        #region Public Methods
+
         /// <summary>
         /// Initialize Override
         /// </summary>
@@ -325,5 +341,7 @@ namespace MSBuild.ExtensionPack.Loggers
         {
             this.fileWriter?.Close();
         }
+
+        #endregion Public Methods
     }
 }

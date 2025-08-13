@@ -1,8 +1,25 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="VC6.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 namespace MSBuild.ExtensionPack.VisualStudio
 {
+    using Microsoft.Build.Framework;
+
     using System;
     using System.Diagnostics;
     using System.Globalization;
@@ -10,117 +27,62 @@ namespace MSBuild.ExtensionPack.VisualStudio
     using System.Linq;
     using System.Text;
 
-    using Microsoft.Build.Framework;
-
     /// <summary>
     /// <b>Valid TaskActions are:</b>
-    /// <para><i>Build</i> (<b>Required: </b> Projects <b>Optional: </b>MSDEVPath, StopOnError)</para>
+    /// <para><i>Build</i> ( <b>Required:</b> Projects <b>Optional:</b> MSDEVPath, StopOnError)</para>
     /// <para><b>Remote Execution Support:</b> NA</para>
     /// <para/>
     /// </summary>
     /// <example>
-    /// <code lang="xml"><![CDATA[
-    /// <Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    ///     <PropertyGroup>
-    ///         <TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
-    ///         <TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
-    ///     </PropertyGroup>
-    ///     <Import Project="$(TPath)"/>
-    ///     <ItemGroup>
-    ///         <!-- This uses $(Platform) and $(Configuration) for all projects in the .dsp file -->
-    ///         <ProjectsToBuild Include="C:\MyVC6Project.dsp"/>
-    ///         <!-- Uses supplied platform and configuration for all projects in the .dsp file -->
-    ///         <ProjectsToBuild Include="C:\MyVC6Project2.dsp">
-    ///             <Platform>Win32</Platform>
-    ///             <Configuration>Debug</Configuration>
-    ///         </ProjectsToBuild>
-    ///         <!-- Uses $(Platform) and $(Configuration) for just the specified projects in the .dsw file -->
-    ///         <ProjectsToBuild Include="C:\MyVC6Project3.dsw">
-    ///             <Projects>Project1;Project2</Projects>
-    ///         </ProjectsToBuild>
-    ///     </ItemGroup>
-    ///     <Target Name="Default">
-    ///         <!-- Build a collection of VC6 projects -->
-    ///         <MSBuild.ExtensionPack.VisualStudio.VC6 TaskAction="Build" Projects="@(ProjectsToBuild)"/>
-    ///     </Target>
-    /// </Project>
-    /// ]]></code>
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<ItemGroup>
+    ///<!-- This uses $(Platform) and $(Configuration) for all projects in the .dsp file -->
+    ///<ProjectsToBuild Include="C:\MyVC6Project.dsp"/>
+    ///<!-- Uses supplied platform and configuration for all projects in the .dsp file -->
+    ///<ProjectsToBuild Include="C:\MyVC6Project2.dsp">
+    ///<Platform>Win32</Platform>
+    ///<Configuration>Debug</Configuration>
+    ///</ProjectsToBuild>
+    ///<!-- Uses $(Platform) and $(Configuration) for just the specified projects in the .dsw file -->
+    ///<ProjectsToBuild Include="C:\MyVC6Project3.dsw">
+    ///<Projects>Project1;Project2</Projects>
+    ///</ProjectsToBuild>
+    ///</ItemGroup>
+    ///<Target Name="Default">
+    ///<!-- Build a collection of VC6 projects -->
+    ///<MSBuild.ExtensionPack.VisualStudio.VC6 TaskAction="Build" Projects="@(ProjectsToBuild)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
     /// </example>
     public class VC6 : BaseTask
     {
-        private const string DefaultMSDEVPath = @"\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE";
+        #region Private Fields
+
         private const string BuildTaskAction = "Build";
         private const string CleanTaskAction = "Clean";
-        private const string RebuildTaskAction = "Rebuild";
-        private const string ProjectsMetadataName = "Projects";
-        private const string PlatformMetadataName = "Platform";
         private const string ConfigurationMetadataName = "Configuration";
+        private const string DefaultMSDEVPath = @"\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE";
+        private const string PlatformMetadataName = "Platform";
+        private const string ProjectsMetadataName = "Projects";
+        private const string RebuildTaskAction = "Rebuild";
         private const char Separator = ';';
 
-        /// <summary>
-        /// Sets the MSDEV path. Default is [Program Files]\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE
-        /// </summary>
-        public string MSDEVPath { get; set; }
+        #endregion Private Fields
 
-        /// <summary>
-        /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.
-        /// </summary>
-        public bool StopOnError { get; set; }
-
-        /// <summary>
-        /// Sets the .dsp/.dsw projects to build.
-        /// </summary>
-        /// <remarks>
-        /// An additional Projects metadata item may be specified for each project to indicate which workspace project(s)
-        /// to build. If none is supplied, the special-case 'ALL' project name is used to inform MSDEV to build all 
-        /// projects contained within the workspace/project.
-        /// </remarks>
-        [Required]
-        public ITaskItem[] Projects { get; set; }
-
-        protected override void InternalExecute()
-        {
-            if (!this.TargetingLocalMachine())
-            {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(this.MSDEVPath))
-            {
-                string programFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                if (string.IsNullOrEmpty(programFilePath))
-                {
-                    this.Log.LogError("Failed to find the special folder 'ProgramFiles'");
-                    return;
-                }
-
-                if (File.Exists(programFilePath + DefaultMSDEVPath))
-                {
-                    this.MSDEVPath = programFilePath + DefaultMSDEVPath;
-                }
-                else
-                {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "MSDEV.exe was not found in the default location. Use MSDEVPath to specify it. Searched at: {0}", programFilePath + DefaultMSDEVPath));
-                    return;
-                }
-            }
-
-            switch (this.TaskAction)
-            {
-                case BuildTaskAction:
-                case CleanTaskAction:
-                case RebuildTaskAction:
-                    this.Build();
-                    break;
-                default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
-                    return;
-            }
-        }
+        #region Private Methods
 
         private void Build()
         {
-            if (this.Projects == null)
+            if (this.Projects is null)
             {
                 this.Log.LogError("The collection passed to Projects is empty");
                 return;
@@ -241,5 +203,77 @@ namespace MSBuild.ExtensionPack.VisualStudio
 
             return allBuildsSucceeded;
         }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        protected override void InternalExecute()
+        {
+            if (!this.TargetingLocalMachine())
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(this.MSDEVPath))
+            {
+                string programFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                if (string.IsNullOrEmpty(programFilePath))
+                {
+                    this.Log.LogError("Failed to find the special folder 'ProgramFiles'");
+                    return;
+                }
+
+                if (File.Exists(programFilePath + DefaultMSDEVPath))
+                {
+                    this.MSDEVPath = programFilePath + DefaultMSDEVPath;
+                }
+                else
+                {
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "MSDEV.exe was not found in the default location. Use MSDEVPath to specify it. Searched at: {0}", programFilePath + DefaultMSDEVPath));
+                    return;
+                }
+            }
+
+            switch (this.TaskAction)
+            {
+                case BuildTaskAction:
+                case CleanTaskAction:
+                case RebuildTaskAction:
+                    this.Build();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// Sets the MSDEV path. Default is [Program Files]\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE
+        /// </summary>
+        public string MSDEVPath { get; set; }
+
+        /// <summary>
+        /// Sets the .dsp/.dsw projects to build.
+        /// </summary>
+        /// <remarks>
+        /// An additional Projects metadata item may be specified for each project to indicate which workspace project(s) to build.
+        /// If none is supplied, the special-case 'ALL' project name is used to inform MSDEV to build all projects contained within
+        /// the workspace/project.
+        /// </remarks>
+        [Required]
+        public ITaskItem[] Projects { get; set; }
+
+        /// <summary>
+        /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.
+        /// </summary>
+        public bool StopOnError { get; set; }
+
+        #endregion Public Properties
     }
 }

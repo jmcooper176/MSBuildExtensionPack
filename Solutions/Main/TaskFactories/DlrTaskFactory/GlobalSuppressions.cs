@@ -1,18 +1,12 @@
-﻿//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// <copyright file="GlobalSuppressions.cs">(c) 2017 Mike Fourie and Contributors (https://github.com/mikefourie/MSBuildExtensionPack) under MIT License. See https://opensource.org/licenses/MIT </copyright>
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTask.#Execute()")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTask.#SetPropertyValue(Microsoft.Build.Framework.TaskPropertyInfo,System.Object)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTask.#GetPropertyValue(Microsoft.Build.Framework.TaskPropertyInfo)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTaskFactory.#CreateTask(Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "taskFactoryLoggingHost", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTask.#.ctor(MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTaskFactory,System.Xml.Linq.XElement,Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "factory", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTask.#.ctor(MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTaskFactory,System.Xml.Linq.XElement,Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "parameterGroup", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.Dlr.DlrTaskFactory.#Initialize(System.String,System.Collections.Generic.IDictionary`2<System.String,Microsoft.Build.Framework.TaskPropertyInfo>,System.String,Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTask.#Execute()")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTask.#GetPropertyValue(Microsoft.Build.Framework.TaskPropertyInfo)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTask.#SetPropertyValue(Microsoft.Build.Framework.TaskPropertyInfo,System.Object)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "parameterGroup", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTaskFactory.#Initialize(System.String,System.Collections.Generic.IDictionary`2<System.String,Microsoft.Build.Framework.TaskPropertyInfo>,System.String,Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "taskFactoryLoggingHost", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTask.#.ctor(MSBuild.ExtensionPack.TaskFactory.DlrTaskFactory,System.Xml.Linq.XElement,Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTaskFactory.#CreateTask(Microsoft.Build.Framework.IBuildEngine)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "factory", Scope = "member", Target = "MSBuild.ExtensionPack.TaskFactory.DlrTask.#.ctor(MSBuild.ExtensionPack.TaskFactory.DlrTaskFactory,System.Xml.Linq.XElement,Microsoft.Build.Framework.IBuildEngine)")]
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
+// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0 Copyright (c) 2025, John Merryweather Cooper. All Rights Reserved. Ignore Spelling: cyclonedx Cli
