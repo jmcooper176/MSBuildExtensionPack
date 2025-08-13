@@ -19,19 +19,26 @@
 using Microsoft.Build.Framework;
 
 using System.CommandLine.Parsing;
+using System.Runtime.Versioning;
 using System.Security;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MSBuild.ExtensionPack.Base.Extension
 {
-    public class CommandLineListBuilder
+    /// <summary>
+    /// </summary>
+    /// <param name="quoteHyphensOnCommandLine"></param>
+    /// <param name="useNewLineSeparator">      </param>
+    public class CommandLineListBuilder(bool quoteHyphensOnCommandLine, bool useNewLineSeparator)
     {
         #region Private Fields
 
         /// <summary>
-        /// Constant <see cref="Regex"/> to use for detecting strings containing characters that do not require quoting when
-        /// escaping of hyphens is supposed to take place.
+        /// Constant used to build a <see cref="Regex"/> for detecting strings containing characters that do not require quoting
+        /// when escaping of hyphens is supposed to take place.
         /// </summary>
         private const string ALLOWED_UNQUOTED_NO_QUOTE_HYPHEN_REGEX =
                         "^"                             // Beginning of line
@@ -39,20 +46,25 @@ namespace MSBuild.ExtensionPack.Base.Extension
                        + "$";
 
         /// <summary>
-        /// Constant <see cref="Regex"/> to use for detecting strings containing characters that do not require quoting when
-        /// escaping of hyphens is supposed to take place.
+        /// Constant used to build a <see cref="Regex"/> for detecting strings containing characters that do not require quoting
+        /// when quoting of hyphens is supposed to take place.
         /// </summary>
         private const string ALLOWED_UNQUOTED_QUOTE_HYPHEN_REGEX =
                          "^"                             // Beginning of line
                        + @"[a-z\\/:0-9\._+=]*"           // Quote hyphen
                        + "$";
 
-        private const string DEFINITELY_NEED_QUOTES_NO_QUOTE_HYPHEN_REGEX = @"[|><\s,;\-""]+";
+        /// <summary>
+        /// Constant used to build a <see cref="Regex"/> for detecting strings containing one or more characters that require
+        /// quoting when quoting of hyphens is not required.
+        /// </summary>
+        private const string DEFINITELY_NEED_QUOTES_NO_QUOTE_HYPHEN_REGEX = @"[|><\s,;""]+";
 
         /// <summary>
-        /// Constant <see cref="Regex"/> to use for detecting strings containing one or more characters that require quoting when
+        /// Constant used to build a <see cref="Regex"/> for detecting strings containing one or more characters that require
+        /// quoting when quoting of hyphens is required.
         /// </summary>
-        private const string DEFINITELY_NEED_QUOTES_QUOTE_HYPHEN_REGEX = @"[|><\s,;""]+";
+        private const string DEFINITELY_NEED_QUOTES_QUOTE_HYPHEN_REGEX = @"[|><\s,;\-""]+";
 
         #endregion Private Fields
 
@@ -61,12 +73,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Gets a <see cref="Regex"/> value indicating a parameter or file name that can safely be unquoted.
         /// </summary>
-        private Regex AllowedUnquoted => new(this.QuoteHyphens ? ALLOWED_UNQUOTED_QUOTE_HYPHEN_REGEX : ALLOWED_UNQUOTED_NO_QUOTE_HYPHEN_REGEX, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        private Regex AllowedUnquoted => new(this.QuoteHyphens ? ALLOWED_UNQUOTED_QUOTE_HYPHEN_REGEX : ALLOWED_UNQUOTED_NO_QUOTE_HYPHEN_REGEX, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Gets a <see cref="Regex"/> value indicating a parameter or file name that must be quoted.
         /// </summary>
-        private Regex DefinitelyNeedQuotes => new(this.QuoteHyphens ? DEFINITELY_NEED_QUOTES_NO_QUOTE_HYPHEN_REGEX : DEFINITELY_NEED_QUOTES_QUOTE_HYPHEN_REGEX, RegexOptions.CultureInvariant);
+        private Regex DefinitelyNeedQuotes => new(this.QuoteHyphens ? DEFINITELY_NEED_QUOTES_NO_QUOTE_HYPHEN_REGEX : DEFINITELY_NEED_QUOTES_QUOTE_HYPHEN_REGEX, RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         #endregion Private Properties
 
@@ -75,19 +87,20 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Gets a value indicating the command line <see cref="IList{T}"/>.
         /// </summary>
-        protected IList<string> CommandList { get; }
+        protected IList<string> CommandList { get; } = [];
 
         #endregion Protected Properties
 
         #region Protected Methods
 
         /// <summary>
-        /// Append <paramref name="textToAppend"/> to <paramref name="buffer"/> unquoted if <paramref name="textToAppend"/> is not
-        /// <see langref="null"/> or empty.
+        /// Appends <paramref name="textToAppend"/> to <paramref name="buffer"/> if <paramref name="textToAppend"/> is not <see
+        /// langref="null"/> or empty. No quotes are added.
         /// </summary>
         /// <param name="buffer">      Specifies the accumulator for <paramref name="textToAppend"/>.</param>
         /// <param name="textToAppend">Specifies the text to append.</param>
         /// <exception cref="ArgumentNullException">Throws if <paramref name="buffer"/> is <see langref="null"/>.</exception>
+        /// <remarks>This method does not append a <see cref="SPACE"/> to the command line before executing.</remarks>
         protected static void AppendTextUnquoted(StringBuilder? buffer, string? textToAppend)
         {
             ArgumentNullException.ThrowIfNull(buffer, nameof(buffer));
@@ -99,10 +112,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Append <paramref name="fileName"/> with quoting, if necessary, to <see cref="CommandList"/> if <paramref
-        /// name="fileName"/> is not <see langref="null"/> or empty.
+        /// Appends a <paramref name="fileName"/> to <see cref="CommandList"/> if <paramref name="fileName"/> is not <see
+        /// langref="null"/> or empty. If the first character of the file name is a dash, a "." and a directory separator are
+        /// prepended to avoid confusing the file name with a switch.
         /// </summary>
         /// <param name="fileName">Specifies the file name to be append.</param>
+        /// <remarks>This method does not append a space to the command line before executing.</remarks>
         protected void AppendFileNameWithQuoting(string? fileName)
         {
             if (!string.IsNullOrEmpty(fileName))
@@ -114,12 +129,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Append <paramref name="fileName"/> with quoting, if necessary, to <see cref="CommandList"/> if <paramref
-        /// name="fileName"/> is not <see langref="null"/> or empty.
+        /// Appends a <paramref name="fileName"/> to <paramref name="buffer"/> if <paramref name="fileName"/> is not <see
+        /// langref="null"/> or empty. If the first character of the file name is a dash, a "." and a directory separator are
+        /// prepended to avoid confusing the file name with a switch.
         /// </summary>
         /// <param name="buffer">  Specifies the accumulator for <paramref name="fileName"/>.</param>
         /// <param name="fileName">Specifies the file name to be append.</param>
         /// <exception cref="ArgumentNullException">Throws if <paramref name="buffer"/> is <see langref="null"/>.</exception>
+        /// <remarks>This method does not append a space to the command line before executing.</remarks>
         protected void AppendFileNameWithQuoting(StringBuilder? buffer, string? fileName)
         {
             ArgumentNullException.ThrowIfNull(buffer, nameof(buffer));
@@ -133,8 +150,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Append quoted text <paramref name="unquotedTextToAppend"/> to <paramref name="buffer"/> if <paramref
-        /// name="unquotedTextToAppend"/> is not <see langref="null"/> or empty.
+        /// Appends the given text <paramref name="unquotedTextToAppend"/> to the buffer <paramref name="buffer"/>, after first
+        /// quoting the text if necessary, if <paramref name="unquotedTextToAppend"/> is not <see langref="null"/> or empty.
         /// </summary>
         /// <param name="buffer">              Specifies the accumulator for <paramref name="unquotedTextToAppend"/>.</param>
         /// <param name="unquotedTextToAppend">Specifies the unquoted text to be appended after quoting.</param>
@@ -169,8 +186,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Append quoted text <paramref name="unquotedTextToAppend"/> to <paramref name="list"/> if <paramref
-        /// name="unquotedTextToAppend"/> is not <see langref="null"/> or empty.
+        /// Appends the given text <paramref name="unquotedTextToAppend"/> to the list <paramref name="list"/>, after first quoting
+        /// the text if necessary, if <paramref name="unquotedTextToAppend"/> is not <see langref="null"/> or empty.
         /// </summary>
         /// <param name="list">                Specifies the <see cref="IList{T}"/> accumulator for <paramref name="unquotedTextToAppend"/>.</param>
         /// <param name="unquotedTextToAppend">Specifies the unquoted text to be appended after quoting.</param>
@@ -183,13 +200,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             {
                 ItemBuffer.Clear();
                 AppendQuotedTextToBuffer(ItemBuffer, unquotedTextToAppend);
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
         /// <summary>
-        /// Appends a space if the last element of <see cref="CommandList"/> does not end in space, or <see
-        /// cref="Environment.NewLine"/> to <paramref name="buffer"/> which usually points to the <see cref="ItemBuffer"/>.
+        /// Appends a space or <see cref="Environment.NewLine"/> to the specified string if and only if the last element of <see
+        /// cref="CommandList"/> does not end in space, to <paramref name="buffer"/> which usually points to the <see cref="ItemBuffer"/>.
         /// </summary>
         /// <param name="buffer">Specifies the item buffer accumulator.</param>
         /// <exception cref="ArgumentNullException">
@@ -199,8 +216,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(buffer, nameof(buffer));
             ArgumentNullException.ThrowIfNull(CommandList);
-
-            const char SPACE = ' ';
 
             if (Length > 0)
             {
@@ -218,14 +233,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Append <paramref name="switchName"/> to <paramref name="buffer"/>.
+        /// Appends a command-line switch <paramref name="switchName"/> that has no separator value, without quoting, to <paramref name="buffer"/>.
         /// </summary>
         /// <param name="buffer">    Specifies the accumulator for <paramref name="switchName"/>.</param>
-        /// <param name="switchName">Specifies the command line switch to append to <paramref name="buffer"/>.</param>
+        /// <param name="switchName">Specifies the command-line switch to append to <paramref name="buffer"/>.</param>
         /// <exception cref="ArgumentNullException">
         /// Throws if either <paramref name="buffer"/> is <see langref="null"/> or <paramref name="switchName"/> is <see
         /// langref="null"/>, empty, or all whitespace.
         /// </exception>
+        /// <remarks>This method appends a space to the command-line (if it is not currently empty) before <paramref name="switchName"/>.</remarks>
         protected void AppendSwitch(StringBuilder? buffer, string? switchName)
         {
             ArgumentNullException.ThrowIfNull(buffer, nameof(buffer));
@@ -236,16 +252,17 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Append text <paramref name="textToAppend"/> to <see cref="CommandList"/> if <paramref name="textToAppend"/> is not <see
-        /// langref="null"/> or empty.
+        /// Appends a string <paramref name="textToAppend"/> to <see cref="CommandList"/> if <paramref name="textToAppend"/> is not
+        /// <see langref="null"/> or empty. Quotes are added if they are needed.
         /// </summary>
         /// <param name="textToAppend">Specifies the text to append as an item to <see cref="CommandList"/>.</param>
         /// <exception cref="ArgumentNullException">Throws if <see cref="CommandList"/> is <see langref="null"/>.</exception>
+        /// <remarks>This method does not append a space to the command-line before executing.</remarks>
         protected void AppendTextWithQuoting(string? textToAppend) => AppendQuotedTextToList(CommandList, textToAppend);
 
         /// <summary>
-        /// Append text <paramref name="textToAppend"/> to <paramref name="buffer"/> if <paramref name="textToAppend"/> is not <see
-        /// langref="null"/> or empty.
+        /// Appends a string <paramref name="textToAppend"/> to <paramref name="buffer"/> if <paramref name="textToAppend"/> is not
+        /// <see langref="null"/> or empty. Quotes are added if they are needed.
         /// </summary>
         /// <param name="buffer">      Specifies the accumulator for <paramref name="textToAppend"/>.</param>
         /// <param name="textToAppend">Specifies the text to append as an item to <see cref="CommandList"/>.</param>
@@ -253,7 +270,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         protected void AppendTextWithQuoting(StringBuilder buffer, string? textToAppend) => AppendQuotedTextToBuffer(buffer, textToAppend);
 
         /// <summary>
-        /// Tests <paramref name="parameter"/> for whether quoting is required on the command line.
+        /// Checks the give switch parameter <paramref name="parameter"/> for whether quoting is required or optional on the command line.
         /// </summary>
         /// <param name="parameter">Specifies the parameter string to scan.</param>
         /// <returns><see langref="true"/> if <paramref name="parameter"/> requires quoting; otherwise, <see langref="false"/>.</returns>
@@ -295,11 +312,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Tests <paramref name="parameter"/> of <paramref name="switchName"/> for embedded double quotes.
+        /// Throws a <see cref="SecurityException"/> if the parameter <paramref name="parameter"/> of <paramref name="switchName"/>
+        /// has a double-quote in it. This is used to prevent parameter/code injection.
         /// </summary>
         /// <param name="switchName">Specifies the command line switch under test.</param>
         /// <param name="parameter"> Specifies the command line switch parameter to scan.</param>
         /// <exception cref="SecurityException">Throws if <paramref name="parameter"/> contains a double quote.</exception>
+        /// <remarks>This method is virtual so that tools can override it if they want to have quotes escaped in file names.</remarks>
         protected virtual void ThrowOnEmbeddedDoubleQuote(string? switchName, string? parameter)
         {
             if (!string.IsNullOrEmpty(parameter))
@@ -328,22 +347,73 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Gets a value indicating the line buffer to use for assembling individual <see cref="CommandList"/> string elements.
         /// </summary>
-        internal StringBuilder ItemBuffer { get; }
+        internal StringBuilder ItemBuffer { get; } = new(16);
 
         /// <summary>
         /// Gets a value indicating whether to quote hyphens on the elements of <see cref="CommandList"/>.
         /// </summary>
-        internal bool QuoteHyphens { get; }
+        internal bool QuoteHyphens { get; } = quoteHyphensOnCommandLine;
 
         /// <summary>
         /// Gets a value indicating whether to use <see cref="Environment.NewLine"/> instead of the space character as whitespace in
         /// <see cref="CommandList"/> elements.
         /// </summary>
-        internal bool UseNewLine { get; }
+        internal bool UseNewLine { get; } = useNewLineSeparator;
 
         #endregion Internal Properties
 
         #region Internal Methods
+
+        /// <summary>
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <param name="paths">     </param>
+        /// <returns></returns>
+        internal static FileSystemInfo Combine(FileAttributes attributes, params string[] paths)
+        {
+            List<string> filtered = [];
+
+            foreach (string path in paths)
+            {
+                var stripped = path.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                if (!string.IsNullOrWhiteSpace(stripped))
+                {
+                    filtered.Add(stripped);
+                }
+            }
+
+            FileSystemInfo fileSystemInfo = attributes.HasFlag(FileAttributes.Directory) ? new DirectoryInfo(Path.Combine([.. filtered])) : new FileInfo(Path.Combine([.. filtered]));
+            fileSystemInfo.Attributes = attributes;
+            return fileSystemInfo;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <param name="firstPath"> </param>
+        /// <param name="secondPath"></param>
+        /// <returns></returns>
+        internal static FileSystemInfo Combine(FileAttributes attributes, string firstPath, string secondPath) => CommandLineListBuilder.Combine(attributes, [firstPath, secondPath]);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <param name="firstPath"> </param>
+        /// <param name="secondPath"></param>
+        /// <param name="thirdPath"> </param>
+        /// <returns></returns>
+        internal static FileSystemInfo Combine(FileAttributes attributes, string firstPath, string secondPath, string thirdPath) => CommandLineListBuilder.Combine(attributes, [firstPath, secondPath, thirdPath]);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <param name="firstPath"> </param>
+        /// <param name="secondPath"></param>
+        /// <param name="thirdPath"> </param>
+        /// <param name="fourthPath"></param>
+        /// <returns></returns>
+        internal static FileSystemInfo Combine(FileAttributes attributes, string firstPath, string secondPath, string thirdPath, string fourthPath) => CommandLineListBuilder.Combine(attributes, [firstPath, secondPath, thirdPath, fourthPath]);
 
         /// <summary>
         /// Tests whether <paramref name="buffer"/> is <see langref="null"/> or empty.
@@ -352,10 +422,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>
         /// <see langref="true"/> if <paramref name="buffer"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
         /// </returns>
-        internal static bool IsNullOrEmpty(StringBuilder? buffer)
-        {
-            return buffer is null || buffer.Length < 1;
-        }
+        internal static bool IsNullOrEmpty(StringBuilder? buffer) => buffer is null || buffer.Length < 1;
 
         /// <summary>
         /// Tests whether <paramref name="item"/> is <see langref="null"/> or empty.
@@ -364,10 +431,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>
         /// <see langref="true"/> if <paramref name="item"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
         /// </returns>
-        internal static bool IsNullOrEmpty(ITaskItem? item)
-        {
-            return item is null || string.IsNullOrEmpty(item?.ItemSpec);
-        }
+        internal static bool IsNullOrEmpty(ITaskItem? item) => item is null || string.IsNullOrEmpty(item?.ItemSpec);
 
         /// <summary>
         /// Tests whether <paramref name="items"/> is <see langref="null"/> or empty.
@@ -377,10 +441,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>
         /// <see langref="true"/> if <paramref name="items"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
         /// </returns>
-        internal static bool IsNullOrEmpty<T>(IEnumerable<T> items)
-        {
-            return items is null || !items.Any();
-        }
+        internal static bool IsNullOrEmpty<T>(IEnumerable<T> items) => items?.Any() != true;
 
         /// <summary>
         /// Tests whether <paramref name="items"/> is <see langref="null"/> or empty.
@@ -389,10 +450,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>
         /// <see langref="true"/> if <paramref name="items"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
         /// </returns>
-        internal static bool IsNullOrEmpty(IEnumerable<string> items)
-        {
-            return IsNullOrEmpty<string>(items);
-        }
+        internal static bool IsNullOrEmpty(IEnumerable<string> items) => CommandLineListBuilder.IsNullOrEmpty<string>(items);
 
         /// <summary>
         /// Tests whether <paramref name="items"/> is <see langref="null"/> or empty.
@@ -404,6 +462,103 @@ namespace MSBuild.ExtensionPack.Base.Extension
         internal static bool IsNullOrEmpty(IEnumerable<ITaskItem> items)
         {
             return IsNullOrEmpty<ITaskItem>(items);
+        }
+
+        internal static FileSystemInfo Join(FileAttributes attributes, params string?[] paths)
+        {
+            List<string> filtered = [];
+
+            foreach (string path in paths)
+            {
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    filtered.Add(path);
+                }
+            }
+
+            FileSystemInfo fileSystemInfo = attributes.HasFlag(FileAttributes.Directory) ? new DirectoryInfo(Path.Join([.. filtered])) : new FileInfo(Path.Join([.. filtered]));
+            fileSystemInfo.Attributes = attributes;
+            return fileSystemInfo;
+        }
+
+        internal static FileSystemInfo Join(FileAttributes attributes, string? firstPath, string? secondPath)
+        {
+            return CommandLineListBuilder.Join(attributes, [firstPath, secondPath]);
+        }
+
+        internal static FileSystemInfo Join(FileAttributes attributes, string? firstPath, string? secondPath, string? thirdPath)
+        {
+            return CommandLineListBuilder.Join(attributes, [firstPath, secondPath, thirdPath]);
+        }
+
+        internal static FileSystemInfo Join(FileAttributes attributes, string? firstPath, string? secondPath, string? thirdPath, string? fourthPath)
+        {
+            return CommandLineListBuilder.Join(attributes, [firstPath, secondPath, thirdPath, fourthPath]);
+        }
+
+        internal static DirectoryInfo? MakeSecureTempDirectory(string leaf = ".tmp")
+        {
+            const FileAttributes attributes = FileAttributes.Directory | FileAttributes.Temporary | FileAttributes.NotContentIndexed;
+            return CommandLineListBuilder.Join(attributes, Path.GetTempPath(), Guid.NewGuid().ToString(), leaf) as DirectoryInfo;
+        }
+
+        internal static string MakeSecureTempFileName(string baseName, string? extension)
+        {
+            DateTime utc = DateTime.UtcNow;
+            Span<char> destination = new("XXXXXXXX".ToCharArray());
+
+            if (Convert.TryToHexString(BitConverter.GetBytes(utc.Ticks), destination, out int charsWritten) && charsWritten >= 6)
+            {
+                return string.IsNullOrEmpty(extension) ? string.Concat(baseName, destination) : string.Concat(baseName, destination, extension);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Could not parse UTC ticks to a Span with at least six characters.");
+            }
+        }
+
+        internal static FileInfo? MakeSecureTempPath(string baseName, string leaf = ".tmp", string? extension = ".tmp", int maxRetry = 1000)
+        {
+            const FileAttributes attributes = FileAttributes.Normal | FileAttributes.Temporary | FileAttributes.NotContentIndexed;
+
+            var directory = MakeSecureTempDirectory(leaf);
+            FileInfo? tempInfo = null;
+            int count = maxRetry;
+
+            do
+            {
+                tempInfo = CommandLineListBuilder.Join(attributes, directory?.FullName, MakeSecureTempFileName(baseName, extension)) as FileInfo;
+            }
+            while (tempInfo?.Exists != false && count-- >= 1);
+
+            if (tempInfo is null)
+            {
+                throw new InvalidOperationException("Error Joining parameters to form FileInfo.");
+            }
+
+            if (count < 1)
+            {
+                throw new InvalidOperationException($"Cannot generate a unique file name in {maxRetry} attempts.");
+            }
+
+            if (OperatingSystem.IsWindows())
+            {
+                CommandLineListBuilder.SetDefaultAccessControl(
+                    tempInfo,
+                    owner: FileSystemRights.FullControl,
+                    group: FileSystemRights.Read,
+                    world: FileSystemRights.Read);
+            }
+            else
+            {
+                CommandLineListBuilder.SetDefaultFileMode(
+                    tempInfo,
+                    UnixFileMode.UserExecute | UnixFileMode.UserWrite | UnixFileMode.UserRead
+                    | UnixFileMode.GroupRead
+                    | UnixFileMode.OtherRead);
+            }
+
+            return tempInfo;
         }
 
         /// <summary>
@@ -449,6 +604,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="SecurityException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
         internal static string NormalizeFileName(string? fileName)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
@@ -483,62 +645,147 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         internal static string NormalizeFilePath(string? path)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(path, nameof(path));
 
-            FileInfo normal = new(path);
-            return normal.FullName;
+            try
+            {
+                FileInfo normal = new(path);
+                return Path.Combine(normal.DirectoryName ?? ".", CommandLineListBuilder.NormalizeFileName(normal.Name));
+            }
+            catch (SecurityException sex)
+            {
+                Console.Error.WriteLine(sex.ToString());
+                throw;
+            }
+            catch (ArgumentException aex)
+            {
+                Console.Error.WriteLine(aex.ToString());
+                return string.Empty;
+            }
+            catch (UnauthorizedAccessException uaex)
+            {
+                Console.Error.WriteLine(uaex.ToString());
+                throw;
+            }
+            catch (PathTooLongException ptlex)
+            {
+                Console.Error.WriteLine(ptlex.ToString());
+                return string.Empty;
+            }
+            catch (NotSupportedException nsex)
+            {
+                Console.Error.WriteLine(nsex.ToString());
+                throw;
+            }
+        }
+
+        [SupportedOSPlatform("Windows")]
+        internal static void SetDefaultAccessControl(FileInfo path, FileSystemRights owner, FileSystemRights group, FileSystemRights world)
+        {
+            var ownerSecurityIdentifier = new SecurityIdentifier(WellKnownSidType.CreatorOwnerSid, null);
+            var groupSecurityIdentifier = new SecurityIdentifier(WellKnownSidType.CreatorGroupSid, null);
+            var worldSecurityIdentifier = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+
+            FileSecurity security = path.GetAccessControl();
+            security.AddAccessRule(new FileSystemAccessRule(ownerSecurityIdentifier, owner, AccessControlType.Allow));
+            security.PurgeAccessRules(groupSecurityIdentifier);
+            security.AddAccessRule(new FileSystemAccessRule(groupSecurityIdentifier, group, AccessControlType.Allow));
+            security.PurgeAccessRules(worldSecurityIdentifier);
+            security.AddAccessRule(new FileSystemAccessRule(worldSecurityIdentifier, world, AccessControlType.Allow));
+            path.SetAccessControl(security);
+        }
+
+        [UnsupportedOSPlatform("Windows")]
+        internal static void SetDefaultFileMode(FileInfo path, UnixFileMode fileMode)
+        {
+            path.UnixFileMode = fileMode;
         }
 
         #endregion Internal Methods
 
+        #region Public Fields
+
+        /// <summary>
+        /// Constant field representing the space character.
+        /// </summary>
+        public const char SPACE = ' ';
+
+        #endregion Public Fields
+
         #region Public Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineListBuilder"/> class.
+        /// </summary>
         public CommandLineListBuilder()
             : this(quoteHyphensOnCommandLine: false, useNewLineSeparator: false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineListBuilder"/> class.
+        /// </summary>
+        /// <param name="quoteHyphensOnCommandLine"></param>
         public CommandLineListBuilder(bool quoteHyphensOnCommandLine)
             : this(quoteHyphensOnCommandLine, useNewLineSeparator: false)
         {
         }
 
-        public CommandLineListBuilder(bool quoteHyphensOnCommandLine, bool useNewLineSeparator)
-        {
-            this.QuoteHyphens = quoteHyphensOnCommandLine;
-            this.UseNewLine = useNewLineSeparator;
-            CommandList = [];
-            ItemBuffer = new(16);
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineListBuilder"/> class.
+        /// </summary>
+        /// <param name="commandLine"></param>
         public CommandLineListBuilder(string commandLine)
             : this(commandLine, quoteHyphensOnCommandLine: false, useNewLineSeparator: false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineListBuilder"/> class.
+        /// </summary>
+        /// <param name="commandLine">              </param>
+        /// <param name="quoteHyphensOnCommandLine"></param>
         public CommandLineListBuilder(string commandLine, bool quoteHyphensOnCommandLine)
            : this(commandLine, quoteHyphensOnCommandLine, useNewLineSeparator: false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineListBuilder"/> class.
+        /// </summary>
+        /// <param name="commandLine">              </param>
+        /// <param name="quoteHyphensOnCommandLine"></param>
+        /// <param name="useNewLineSeparator">      </param>
         public CommandLineListBuilder(string commandLine, bool quoteHyphensOnCommandLine, bool useNewLineSeparator)
             : this(quoteHyphensOnCommandLine, useNewLineSeparator)
         {
-            CommandList = CommandLineParser.SplitCommandLine(commandLine).ToList();
+            CommandList = [.. CommandLineParser.SplitCommandLine(commandLine)];
         }
 
         #endregion Public Constructors
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets a value indicating the length of <see cref="CommandList"/> in elements.
+        /// </summary>
         public int Length => CommandList.Count;
 
         #endregion Public Properties
 
         #region Public Methods
 
+        /// <summary>
+        /// </summary>
+        /// <param name="commandLine"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static IEnumerable<string> ToList(string commandLine)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(commandLine);
@@ -546,11 +793,18 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return CommandLineParser.SplitCommandLine(commandLine);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="fileItem"></param>
         public void AppendFileNameIfNotNull(ITaskItem fileItem)
         {
             AppendFileNameIfNotNull(fileItem.ItemSpec);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <exception cref="SecurityException"></exception>
         public void AppendFileNameIfNotNull(string? fileName)
         {
             if (!string.IsNullOrEmpty(fileName))
@@ -561,10 +815,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 AppendSpaceIfNotEmpty(ItemBuffer);
                 AppendFileNameWithQuoting(ItemBuffer, fileName);
                 AppendTextUnquoted(ItemBuffer.ToString());
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="fileItems"></param>
+        /// <param name="delimiter"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="SecurityException"></exception>
         public void AppendFileNamesIfNotNull(IEnumerable<ITaskItem> fileItems, string? delimiter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(delimiter, nameof(delimiter));
@@ -588,10 +848,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     AppendFileNameWithQuoting(ItemBuffer, item.ItemSpec);
                 }
 
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="fileNames"></param>
+        /// <param name="delimiter"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="SecurityException"></exception>
         public void AppendFileNamesIfNotNull(IEnumerable<string> fileNames, string? delimiter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(delimiter, nameof(delimiter));
@@ -615,15 +881,24 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     AppendFileNameWithQuoting(ItemBuffer, item);
                 }
 
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
         public void AppendSwitch(string? switchName)
         {
             AppendSwitch(ItemBuffer, switchName);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameters"></param>
+        /// <param name="delimiter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchIfNotNull(string? switchName, IEnumerable<string> parameters, string? delimiter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -645,10 +920,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     AppendTextWithQuoting(ItemBuffer, parameter);
                 }
 
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameters"></param>
+        /// <param name="delimiter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchIfNotNull(string? switchName, IEnumerable<ITaskItem> parameters, string delimiter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -670,10 +951,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     AppendTextWithQuoting(ItemBuffer, parameter.ItemSpec);
                 }
 
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchIfNotNull(string? switchName, string parameter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -682,10 +968,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             {
                 AppendSwitch(ItemBuffer, switchName);
                 AppendTextWithQuoting(ItemBuffer, parameter);
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchIfNotNull(string? switchName, ITaskItem parameter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -696,6 +987,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameters"></param>
+        /// <param name="delimiter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchUnquotedIfNotNull(string? switchName, IEnumerable<string> parameters, string delimiter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -717,10 +1014,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     AppendTextUnquoted(ItemBuffer, parameter);
                 }
 
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameters"></param>
+        /// <param name="delimiter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchUnquotedIfNotNull(string? switchName, IEnumerable<ITaskItem> parameters, string delimiter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -742,10 +1045,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     AppendTextUnquoted(ItemBuffer, parameter.ItemSpec);
                 }
 
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameter"> </param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AppendSwitchUnquotedIfNotNull(string? switchName, string? parameter)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(switchName);
@@ -754,15 +1062,22 @@ namespace MSBuild.ExtensionPack.Base.Extension
             {
                 AppendSwitch(ItemBuffer, switchName);
                 AppendTextUnquoted(ItemBuffer, parameter);
-                CommandList.Add(ItemBuffer.ToString());
+                AppendTextUnquoted(ItemBuffer.ToString());
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="switchName"></param>
+        /// <param name="parameter"> </param>
         public void AppendSwitchUnquotedIfNotNull(string? switchName, ITaskItem parameter)
         {
             AppendSwitchUnquotedIfNotNull(switchName, parameter.ItemSpec);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="textToAppend"></param>
         public void AppendTextUnquoted(string? textToAppend)
         {
             if (!string.IsNullOrEmpty(textToAppend))
@@ -771,21 +1086,41 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Convert <see cref="CommandList"/> to an array of strings.
+        /// </summary>
+        /// <returns>Returns the command list as an array of strings.</returns>
         public string[] ToArray()
         {
-            return CommandList.ToArray();
+            return [.. CommandList];
         }
 
+        /// <summary>
+        /// Convert <see cref="CommandList"/> to a <see cref="List{T}"/> of type string.
+        /// </summary>
+        /// <returns>Returns the command list as a <see cref="List{T}"/>.</returns>
         public List<string> ToList()
         {
-            return CommandList.ToList();
+            return [.. CommandList];
         }
 
+        /// <summary>
+        /// Convert <see cref="CommandList"/> to a string.
+        /// </summary>
+        /// <returns>Returns the command line as a string.</returns>
         public override string ToString()
         {
             StringBuilder buffer = new(16);
-            ToList().ForEach(i => buffer.Append(i));
-            return buffer.ToString();
+
+            try
+            {
+                ToList().ForEach(i => buffer.Append(i.Trim()).Append(UseNewLine ? Environment.NewLine : SPACE));
+                return buffer.ToString();
+            }
+            finally
+            {
+                buffer.Clear();
+            }
         }
 
         #endregion Public Methods
