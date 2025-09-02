@@ -17,20 +17,196 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace MSBuild.ExtensionPack.Base.SystemAttribute
 {
-    public class CustomAttribute<TAttr> : IEqualityComparer<TAttr> where TAttr : Attribute
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
+    public class CustomAttribute : Attribute
     {
+        #region Private Fields
+
+        private const int BASE_NUMBER = 1;
+        private const string PREFIX = "CSTATTR";
+        private static int counter = BASE_NUMBER;
+        private bool isDefault;
+
+        #endregion Private Fields
+
+        #region Protected Constructors
+
+        protected CustomAttribute(string? message, int number)
+            : base()
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(number, nameof(number));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(number, 0xFFFFFFF, nameof(number));
+
+            counter = number;
+            isDefault = string.IsNullOrEmpty(message) && number == BASE_NUMBER;
+            DiagnosticId = $"{PREFIX}{number:D7}";
+            Message = message ?? "Default Attribute Constructor";
+        }
+
+        #endregion Protected Constructors
+
+        #region Public Constructors
+
+        public CustomAttribute()
+                    : this(null, BASE_NUMBER)
+        {
+        }
+
+        public CustomAttribute(string? message)
+            : this(message, "https://github.com/jmcooper176")
+        {
+        }
+
+        public CustomAttribute(string? message, string? urlFormat)
+            : this(message, counter++)
+        {
+            UrlFormat = urlFormat;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public virtual string? DiagnosticId { get; set; }
+
+        public virtual string? Message { get; }
+
+        public override object TypeId => Guid.NewGuid();
+
+        public virtual string? UrlFormat { get; set; }
+
+        #endregion Public Properties
+
         #region Public Methods
 
-        public virtual bool Equals(TAttr? x, TAttr? y)
+        public static Attribute? GetCustomAttribute([AllowNull] ParameterInfo element, [AllowNull] Type attributeType, bool inherit)
         {
-            if (x?.Match(y) != true)
+            ArgumentNullException.ThrowIfNull(element);
+            ArgumentNullException.ThrowIfNull(attributeType);
+
+            if (!attributeType.IsAssignableTo(typeof(Attribute)))
+            {
+                throw new ArgumentException($"Parameter '{nameof(attributeType)}' is not derived from 'Attribute'", nameof(attributeType));
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static Attribute? GetCustomAttribute([AllowNull] MemberInfo element, [AllowNull] Type attributeType, bool inherit)
+        {
+            ArgumentNullException.ThrowIfNull(element);
+            ArgumentNullException.ThrowIfNull(attributeType);
+
+            if (!attributeType.IsAssignableTo(typeof(Attribute)))
+            {
+                throw new ArgumentException($"Parameter '{nameof(attributeType)}' is not derived from 'Attribute'", nameof(attributeType));
+            }
+
+            if (element.MemberType == MemberTypes.Constructor)
+            {
+                // continue
+            }
+            else if (element.MemberType == MemberTypes.Method)
+            {
+                // continue
+            }
+            else if (element.MemberType == MemberTypes.Property)
+            {
+                // continue
+            }
+            else if (element.MemberType == MemberTypes.Event)
+            {
+                // continue
+            }
+            else if (element.MemberType == MemberTypes.TypeInfo)
+            {
+                // continue
+            }
+            else if (element.MemberType == MemberTypes.Field)
+            {
+                // continue
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static Attribute? GetCustomAttribute([AllowNull] Assembly element, [AllowNull] Type attributeType, bool inherit)
+        {
+            ArgumentNullException.ThrowIfNull(element);
+            ArgumentNullException.ThrowIfNull(attributeType);
+
+            if (!attributeType.IsAssignableTo(typeof(Attribute)))
+            {
+                throw new ArgumentException($"Parameter '{nameof(attributeType)}' is not derived from 'Attribute'", nameof(attributeType));
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static Attribute? GetCustomAttribute(Module? element, Type? attributeType, bool inherit)
+        {
+            ArgumentNullException.ThrowIfNull(element);
+            ArgumentNullException.ThrowIfNull(attributeType);
+
+            if (!attributeType.IsAssignableTo(typeof(Attribute)))
+            {
+                throw new ArgumentException($"Parameter '{nameof(attributeType)}' is not derived from 'Attribute'", nameof(attributeType));
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static Attribute? GetCustomAttribute(Module? element, Type? attributeType)
+        {
+            return GetCustomAttribute(element, attributeType, inherit: false);
+        }
+
+        public static Attribute? GetCustomAttribute(MemberInfo? element, Type? attributeType)
+        {
+            return GetCustomAttribute(element, attributeType, inherit: false);
+        }
+
+        public static Attribute? GetCustomAttribute(Assembly? element, Type? attributeType)
+        {
+            return GetCustomAttribute(element, attributeType, inherit: false);
+        }
+
+        public static Attribute? GetCustomAttribute(ParameterInfo? element, Type? attributeType)
+        {
+            return GetCustomAttribute(element, attributeType, inherit: false);
+        }
+
+        public virtual bool Equals(CustomAttribute? x, CustomAttribute? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            else if (x is null ^ y is null)
             {
                 return false;
             }
-            else if (x?.TypeId != y?.TypeId)
+            else if (!string.Equals(x?.DiagnosticId, y?.DiagnosticId, StringComparison.Ordinal))
+            {
+                return false;
+            }
+            else if (!string.Equals(x?.Message, y?.Message, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            else if (!string.Equals(x?.UrlFormat, y?.UrlFormat, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            else if ((x?.IsDefaultAttribute() == true) ^ (y?.IsDefaultAttribute() == true))
             {
                 return false;
             }
@@ -40,39 +216,29 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             }
         }
 
-        public virtual Attribute? GetCustomAttributeForType<T>() where T : class
+        public override bool Equals([NotNullWhen(true)] object? obj)
         {
-            return Attribute.GetCustomAttribute(typeof(T).Assembly, typeof(TAttr));
+            return base.Equals(obj);
         }
 
-        public IEnumerable<TAttr> GetCustomAttributesForType<T>(bool inherit = false) where T : class
+        public override int GetHashCode()
         {
-            return Attribute.GetCustomAttributes(typeof(T).Assembly, typeof(TAttr), inherit).Cast<TAttr>();
+            return HashCode.Combine(base.GetHashCode(), this.DiagnosticId, this.TypeId);
         }
 
-        public object? GetCustomAttributeTypeId<T>(TAttr? instance) where T : class
+        public override bool IsDefaultAttribute()
         {
-            return IsCustomAttributePresent<T>(instance) ? instance?.TypeId : null;
+            return isDefault;
         }
 
-        public int GetHashCode([DisallowNull] TAttr obj)
+        public override bool Match(object? obj)
         {
-            return obj.GetHashCode();
+            return base.Match(obj);
         }
 
-        public bool IsCustomAttributeDefault(TAttr? instance)
+        public override string ToString()
         {
-            return instance?.IsDefaultAttribute() == true;
-        }
-
-        public bool IsCustomAttributeDefined<T>(bool inherit = false) where T : class
-        {
-            return Attribute.IsDefined(typeof(T), typeof(TAttr), inherit);
-        }
-
-        public virtual bool IsCustomAttributePresent<T>(TAttr? target, bool inherit = false) where T : class
-        {
-            return GetCustomAttributesForType<T>(inherit).Any(a => Equals(a, target));
+            return base.ToString();
         }
 
         #endregion Public Methods

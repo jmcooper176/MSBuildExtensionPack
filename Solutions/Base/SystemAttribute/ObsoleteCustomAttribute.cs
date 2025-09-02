@@ -16,31 +16,29 @@
 //
 // SPDX-License-Identifier: MIT
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace MSBuild.ExtensionPack.Base.SystemAttribute
 {
-    public class ObsoleteCustomAttribute : CustomAttribute<ObsoleteAttribute>
+    public class ObsoleteCustomAttribute : CustomAttribute
     {
+        #region Public Properties
+
+        public bool IsError { get; set; }
+
+        public override object TypeId => this.GetType().GUID;
+
+        #endregion Public Properties
+
         #region Public Methods
 
-        public override bool Equals(ObsoleteAttribute? x, ObsoleteAttribute? y)
+        public override bool Equals(ObsoleteCustomAttribute? x, ObsoleteCustomAttribute? y)
         {
             if (!base.Equals(x, y))
             {
                 return false;
             }
-            else if (string.Equals(x?.DiagnosticId, y?.DiagnosticId, StringComparison.Ordinal))
-            {
-                return false;
-            }
-            else if (x?.IsError != y?.IsError)
-            {
-                return false;
-            }
-            else if (!string.Equals(x?.Message, y?.Message, StringComparison.Ordinal))
-            {
-                return false;
-            }
-            else if (!string.Equals(x?.UrlFormat, y?.UrlFormat, StringComparison.Ordinal))
+            else if ((x?.IsError == true) ^ (y?.IsError == true))
             {
                 return false;
             }
@@ -53,6 +51,16 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public override ObsoleteAttribute? GetCustomAttributeForType<T>() where T : class
         {
             return base.GetCustomAttributeForType<T>() as ObsoleteAttribute;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), TypeId);
+        }
+
+        public int GetHashCode([DisallowNull] ObsoleteAttribute obj)
+        {
+            return HashCode.Combine(obj.GetHashCode(), this.GetHashCode());
         }
 
         public string? GetObsoleteAttributeDiagnosticId<T>(ObsoleteAttribute? instance, bool inherit = false) where T : class

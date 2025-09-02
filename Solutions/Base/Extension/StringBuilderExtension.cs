@@ -32,18 +32,68 @@ namespace MSBuild.ExtensionPack.Base.Extension
     {
         #region Internal Methods
 
-        internal static StringBuilder? SortFunctional(this StringBuilder? builder, int startIndex, int count, IComparer<char>? comparer)
+        internal static bool IsInRange(int index, int inclusiveStart, int exclusiveEnd)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                return builder;
-            }
-            else
-            {
-                List<char>? list = builder!.ToCharArray()?.ToList();
-                list!.Sort(startIndex, count, comparer);
-                return StringBuilderExtension.Create(list);
-            }
+            return index >= inclusiveStart && index < exclusiveEnd;
+        }
+
+        internal static bool IsInRange(int index, Range range)
+        {
+            return IsInRange(index, range.Start.Value, range.End.Value);
+        }
+
+        internal static bool IsInRange(Index index, int inclusiveStart, int exclusiveEnd)
+        {
+            return IsInRange(index.Value, inclusiveStart..^exclusiveEnd);
+        }
+
+        internal static bool IsInRange(Index index, Range range)
+        {
+            return IsInRange(index.Value, range);
+        }
+
+        internal static bool IsInRange<TIndex>(TIndex index, Range range) where TIndex : IConvertible, IComparable<TIndex>
+        {
+            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.Start.Value) >= 0)
+                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.End.Value) < 0);
+        }
+
+        internal static bool IsInRange<TIndex>(TIndex index, int inclusiveStart, int exclusiveEnd) where TIndex : IConvertible, IComparable<TIndex>
+        {
+            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(inclusiveStart) >= 0)
+                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(exclusiveEnd) < 0);
+        }
+
+        internal static bool IsOutOfRange(int index, int inclusiveStart, int exclusiveEnd)
+        {
+            return index < inclusiveStart || index >= exclusiveEnd;
+        }
+
+        internal static bool IsOutOfRange(int index, Range range)
+        {
+            return IsOutOfRange(index, range.Start.Value, range.End.Value);
+        }
+
+        internal static bool IsOutOfRange(Index index, int inclusiveStart, int exclusiveEnd)
+        {
+            return IsOutOfRange(index.Value, inclusiveStart..^exclusiveEnd);
+        }
+
+        internal static bool IsOutOfRange(Index index, Range range)
+        {
+            return IsOutOfRange(index.Value, range);
+        }
+
+        internal static bool IsOutOfRange<TIndex>(TIndex index, Range range) where TIndex : IConvertible, IComparable<TIndex>
+        {
+            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.Start.Value) < 0)
+                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.End.Value) >= 0);
+        }
+
+        internal static bool IsOutOfRange<TIndex>(TIndex index, int inclusiveStart, int exclusiveEnd) where TIndex : IConvertible, IComparable<TIndex>
+        {
+            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(inclusiveStart) < 0)
+                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(exclusiveEnd) >= 0);
         }
 
         #endregion Internal Methods
@@ -56,108 +106,125 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         #region Public Methods
 
-        public static bool All(this StringBuilder? builder, Func<char, bool> predicate)
+        /// <summary>
+        /// Alls the specified predicate.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder or predicate</exception>
+        public static bool All([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            foreach (var item in builder.GetEnumerator())
             {
-                return false;
-            }
-            else
-            {
-                for (var i = 0; i < builder?.Count(); i++)
+                if (!predicate.Invoke(item))
                 {
-                    if (!predicate.Invoke(builder[i]))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-
-                return true;
             }
+
+            return true;
         }
 
-        public static bool Any(this StringBuilder? builder)
+        /// <summary>
+        /// Anies the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        public static bool Any([AllowNull] this StringBuilder builder)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder);
+            ArgumentNullException.ThrowIfNull(builder);
+
+            return builder.Count() < 1;
         }
 
-        public static bool Any(this StringBuilder? builder, Func<char, bool> predicate)
+        /// <summary>
+        /// Anies the specified predicate.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder or predicate</exception>
+        public static bool Any([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            foreach (var item in builder.GetEnumerator())
             {
-                return false;
-            }
-            else
-            {
-                for (var i = 0; i < builder?.Count(); i++)
+                if (predicate.Invoke(item))
                 {
-                    if (predicate.Invoke(builder[i]))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-
-                return false;
             }
+
+            return false;
         }
 
-        public static StringBuilder Append([DisallowNull] this StringBuilder builder, ITaskItem value)
+        /// <summary>
+        /// Appends the specified value.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
+        /// <exception cref="ArgumentOutOfRangeException">capacity</exception>
+        public static StringBuilder Append(this StringBuilder builder, ITaskItem value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(builder.Capacity + value.ItemSpec.Length, builder.MaxCapacity, nameof(builder.Capacity));
+
             return builder.Append(value.ItemSpec);
         }
 
-        public static StringBuilder Append([DisallowNull] this StringBuilder builder, IEnumerable<ITaskItem> list, string separator)
+        /// <summary>
+        /// Appends the specified value.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
+        /// <exception cref="ArgumentOutOfRangeException">capacity</exception>
+        public static StringBuilder Append(this StringBuilder builder, DirectoryInfo value)
         {
-            bool first = true;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(builder.Capacity + value.FullName.Length, builder.MaxCapacity, nameof(builder.Capacity));
 
-            foreach (var item in list)
-            {
-                if (first)
-                {
-                    builder.Append(item);
-                    first = false;
-                }
-                else
-                {
-                    builder.Append(separator).Append(item);
-                }
-            }
-
-            return builder;
-        }
-
-        public static StringBuilder Append([DisallowNull] this StringBuilder builder, IEnumerable<string?> list, string separator)
-        {
-            bool first = true;
-
-            foreach (var item in list)
-            {
-                if (first)
-                {
-                    builder.Append(item);
-                    first = false;
-                }
-                else
-                {
-                    builder.Append(separator).Append(item);
-                }
-            }
-
-            return builder;
-        }
-
-        public static StringBuilder Append([DisallowNull] this StringBuilder builder, DirectoryInfo value)
-        {
             return builder.Append(value.FullName);
         }
 
-        public static StringBuilder Append([DisallowNull] this StringBuilder builder, FileInfo value)
+        /// <summary>
+        /// Appends the specified value.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
+        /// <exception cref="ArgumentOutOfRangeException">capacity</exception>
+        public static StringBuilder Append(this StringBuilder builder, FileInfo value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(builder.Capacity + value.FullName.Length, builder.MaxCapacity, nameof(builder));
             return builder.Append(value.FullName);
         }
 
-        public static StringBuilder Append([DisallowNull] this StringBuilder builder, FileSystemInfo value)
+        /// <summary>
+        /// Appends the specified value.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
+        /// <exception cref="ArgumentOutOfRangeException">capacity</exception>
+        public static StringBuilder Append(this StringBuilder builder, FileSystemInfo value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(builder.Capacity + value.FullName.Length, builder.MaxCapacity, nameof(builder.Capacity));
+
             if (value is FileInfo file)
             {
                 return builder.Append(file.FullName);
@@ -172,42 +239,74 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        public static IEnumerable<char>? AsEnumerable(this StringBuilder? builder)
+        public static StringBuilder Append<TElement>([AllowNull] this StringBuilder source, TElement element) where TElement : IFormattable
         {
-            return builder.ToList();
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            return source.Append(element.ToString());
         }
 
-        public static IEnumerable<TResult> Cast<TResult>([DisallowNull] this StringBuilder builder) where TResult : IConvertible
+        public static StringBuilder AppendJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<ITaskItem> list)
         {
-            return builder.AsEnumerable()?.Cast<TResult>() ?? Enumerable.Empty<TResult>();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            List<string?> convertedList = [];
+            list.ToList().ForEach(i => convertedList.Add(i.ItemSpec));
+            return builder.AppendJoin(separator, convertedList);
         }
 
-        public static StringBuilder Concat([DisallowNull] this StringBuilder first, StringBuilder? second)
+        public static StringBuilder AppendJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<string?> list)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(builder.Capacity + string.Join(separator, list).Length, builder.MaxCapacity, nameof(builder));
+
+            return builder.AppendJoin(separator, list);
+        }
+
+        public static IEnumerable<char> AsEnumerable([AllowNull] this StringBuilder builder)
+        {
+            return builder.GetEnumerator();
+        }
+
+        public static IEnumerable<TResult> Cast<TResult>([AllowNull] this StringBuilder builder) where TResult : IConvertible
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+
+            return builder.AsEnumerable().Cast<TResult>() ?? Enumerable.Empty<TResult>();
+        }
+
+        public static StringBuilder Concat([AllowNull] this StringBuilder first, StringBuilder? second)
+        {
+            ArgumentNullException.ThrowIfNull(first, nameof(first));
+            ArgumentNullException.ThrowIfNull(second, nameof(second));
+
             return first.Append(second);
         }
 
-        public static bool Contains(this StringBuilder? builder, char character)
+        public static bool Contains([AllowNull] this StringBuilder builder, char character)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
         }
 
-        public static bool Contains(this StringBuilder? builder, char character, StringComparison comparison)
+        public static bool Contains([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && builder!.Contains(character: new ReadOnlySpan<char>(in character), comparison);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(character: new ReadOnlySpan<char>(in character), comparison);
         }
 
-        public static bool Contains(this StringBuilder? builder, ReadOnlySpan<char> character)
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
         }
 
-        public static bool Contains(this StringBuilder? builder, ReadOnlySpan<char> character, StringComparison comparison)
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character, StringComparison comparison)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                return false;
-            }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
             foreach (var chunk in builder!.GetChunks())
             {
@@ -220,27 +319,37 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return false;
         }
 
-        public static bool Contains(this StringBuilder? builder, string value)
+        public static bool Contains([AllowNull] this StringBuilder builder, string value)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
         }
 
-        public static bool Contains(this StringBuilder? builder, string value, StringComparison comparison)
+        public static bool Contains([AllowNull] this StringBuilder builder, string value, StringComparison comparison)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparison);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparison);
         }
 
-        public static bool Contains(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex)
+        public static bool Contains([AllowNull] this StringBuilder builder, string value, IEqualityComparer<char>? comparer)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && builder!.Contains(value, startIndex, StringComparison.Ordinal);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparer ?? EqualityComparer<char>.Default);
         }
 
-        public static bool Contains(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex, StringComparison comparison)
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                return false;
-            }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) && builder!.Contains(value, startIndex, StringComparison.Ordinal);
+        }
+
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, StringComparison comparison)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
             foreach (var item in value[startIndex..])
             {
@@ -253,12 +362,24 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
-        public static bool Contains(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex, int length)
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, IEqualityComparer<char>? comparer)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            foreach (var item in value[startIndex..])
             {
-                return false;
+                if (!builder.ToString().Contains(item, comparer ?? EqualityComparer<char>.Default))
+                {
+                    return false;
+                }
             }
+
+            return true;
+        }
+
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
             foreach (var item in value.Slice(startIndex, length))
             {
@@ -271,12 +392,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
-        public static bool Contains(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex, int length, StringComparison comparison)
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length, StringComparison comparison)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                return false;
-            }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
             foreach (var item in value.Slice(startIndex, length))
             {
@@ -289,38 +407,75 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
-        public static void CopyTo([DisallowNull] this StringBuilder builder, int startIndex, [DisallowNull] StringBuilder destination, int destinationIndex, int count)
+        public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length, IEqualityComparer<char>? comparer)
         {
-            destination.Clear();
-            destination.Capacity = count;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (startIndex + length > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
+            }
+
+            foreach (var item in value.Slice(startIndex, length))
+            {
+                if (!builder.ToString().Contains(item, comparer))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static void CopyTo([AllowNull] this StringBuilder builder, int startIndex, StringBuilder? destination, int destinationIndex, int count)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(destination, nameof(destination));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            ArgumentOutOfRangeException.ThrowIfNegative(destinationIndex, nameof(destinationIndex));
+
+            if (destinationIndex + count > destination.Count())
+            {
+                throw new ArgumentException($"Destination Index '{destinationIndex}' plus Count '{count}' is greater than Length '{destination.Count()}'.");
+            }
+
+            destination.Capacity = destinationIndex + count;
             destination.Insert(destinationIndex, builder.ToCharArray(startIndex, count));
         }
 
-        public static int Count(this StringBuilder? builder)
+        public static int Count([AllowNull] this StringBuilder builder)
         {
-            return builder?.Length ?? 0;
+            return builder is not null ? builder!.Length : 0;
         }
 
-        public static int Count(this StringBuilder? builder, Func<char, bool> countable)
+        public static int Count([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
             int counter = 0;
 
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            foreach (var item in builder.GetEnumerator())
             {
-                return counter;
-            }
-            else
-            {
-                for (int i = 0; i < builder?.Count(); i++)
+                if (predicate.Invoke(item))
                 {
-                    if (countable.Invoke(builder[i]))
-                    {
-                        counter++;
-                    }
+                    counter++;
                 }
-
-                return counter;
             }
+
+            return counter;
         }
 
         public static StringBuilder Create(int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
@@ -330,35 +485,35 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create(IFormatProvider? provider, string format, object? first)
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first));
         }
 
         public static StringBuilder Create(IFormatProvider? provider, string format, object? first, object? second)
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first, second));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first, second));
         }
 
         public static StringBuilder Create(IFormatProvider? provider, string format, params object?[] arguments)
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments));
         }
 
         public static StringBuilder Create(IFormatProvider? provider, string format, object? first, object? second, object? third)
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first, second, third));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first, second, third));
         }
 
         public static StringBuilder Create<T>(IFormatProvider? provider, string format, Tuple<T> arguments)
             where T : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1));
         }
 
         public static StringBuilder Create<T1, T2>(IFormatProvider? provider, string format, Tuple<T1, T2> arguments)
             where T1 : IFormattable
             where T2 : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2));
         }
 
         public static StringBuilder Create<T1, T2, T3>(IFormatProvider? provider, string format, Tuple<T1, T2, T3> arguments)
@@ -366,7 +521,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             where T2 : IFormattable
             where T3 : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3));
         }
 
         public static StringBuilder Create<T1, T2, T3, T4>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4> arguments)
@@ -375,7 +530,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             where T3 : IFormattable
             where T4 : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4));
         }
 
         public static StringBuilder Create<T1, T2, T3, T4, T5>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4, T5> arguments)
@@ -385,7 +540,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             where T4 : IFormattable
             where T5 : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5));
         }
 
         public static StringBuilder Create<T1, T2, T3, T4, T5, T6>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4, T5, T6> arguments)
@@ -396,7 +551,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             where T5 : IFormattable
             where T6 : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5, arguments.Item6));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5, arguments.Item6));
         }
 
         public static StringBuilder Create<T1, T2, T3, T4, T5, T6, T7>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4, T5, T6, T7> arguments)
@@ -408,117 +563,113 @@ namespace MSBuild.ExtensionPack.Base.Extension
             where T6 : IFormattable
             where T7 : IFormattable
         {
-            return StringBuilderExtension.Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5, arguments.Item6, arguments.Item7));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5, arguments.Item6, arguments.Item7));
         }
 
-        public static StringBuilder Create(bool value, IFormatProvider? provider)
+        public static StringBuilder Create(bool value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(byte value, IFormatProvider? provider)
+        public static StringBuilder Create(byte value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
-        }
-
-        public static StringBuilder Create(char value, IFormatProvider? provider)
-        {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
         public static StringBuilder Create(DateTime value, IFormatProvider? provider)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
         }
 
-        public static StringBuilder Create(decimal value, IFormatProvider? provider)
+        public static StringBuilder Create(decimal value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(double value, IFormatProvider? provider)
+        public static StringBuilder Create(double value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(float value, IFormatProvider? provider)
+        public static StringBuilder Create(float value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(int value, IFormatProvider? provider)
+        public static StringBuilder Create(int value, int capacity, int maximumCapacity = int.MaxValue)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity, maximumCapacity).Append(value);
         }
 
-        public static StringBuilder Create(long value, IFormatProvider? provider)
+        public static StringBuilder Create(long value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(object? value, IFormatProvider? provider)
+        public static StringBuilder Create(object? value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(sbyte value, IFormatProvider? provider)
+        public static StringBuilder Create(sbyte value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(short value, IFormatProvider? provider)
+        public static StringBuilder Create(short value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(uint value, IFormatProvider? provider)
+        public static StringBuilder Create(uint value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(ulong value, IFormatProvider? provider)
+        public static StringBuilder Create(ulong value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(ushort value, IFormatProvider? provider)
+        public static StringBuilder Create(ushort value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create<TValue>(TValue value, IFormatProvider? provider) where TValue : IConvertible
+        public static StringBuilder Create<TValue>(TValue value, IFormatProvider? provider) where TValue : IFormattable
         {
-            return StringBuilderExtension.Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
+            return Create(string.Format(provider ?? CultureInfo.InvariantCulture, "{0}", value));
         }
 
         public static StringBuilder Create(FileInfo source)
         {
-            return StringBuilderExtension.Create(source.OpenText());
+            return Create(source.OpenText());
         }
 
         public static StringBuilder Create(StreamReader reader)
         {
-            return StringBuilderExtension.Create(reader.ReadToEnd());
+            return Create(reader.ReadToEnd());
         }
 
         public static StringBuilder Create(XmlDocument xml)
         {
-            return StringBuilderExtension.Create(xml.InnerXml);
+            return Create(xml.InnerXml);
         }
 
         public static StringBuilder Create(JsonDocument json)
         {
-            return StringBuilderExtension.Create(json.ToString());
+            return Create(json.ToString());
         }
 
         public static StringBuilder Create(XDocument xml)
         {
-            return StringBuilderExtension.Create(xml.Root?.ToString() ?? string.Empty);
+            return Create(xml.Root?.ToString() ?? string.Empty);
         }
 
         public static StringBuilder Create(ICollection<char> collection, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            StringBuilder accumulator = new(capacity);
+            ArgumentOutOfRangeException.ThrowIfNegative(capacity, nameof(capacity));
+            StringBuilder accumulator = Create(capacity);
 
             foreach (var item in collection)
             {
@@ -530,7 +681,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create(IOrderedEnumerable<char> orderedList, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            StringBuilder accumulator = new(capacity);
+            StringBuilder accumulator = Create(capacity);
 
             foreach (var item in orderedList)
             {
@@ -542,7 +693,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create(IOrderedEnumerable<string?> orderedList, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            StringBuilder accumulator = new(capacity);
+            StringBuilder accumulator = Create(capacity);
 
             foreach (var item in orderedList)
             {
@@ -554,7 +705,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create(ICollection<string?> collection, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            StringBuilder accumulator = new(capacity);
+            StringBuilder accumulator = Create(capacity);
 
             foreach (var item in collection)
             {
@@ -566,7 +717,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create<TElement>(ICollection<TElement> collection, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY) where TElement : IFormattable
         {
-            StringBuilder accumulator = new(capacity);
+            StringBuilder accumulator = Create(capacity);
 
             foreach (var item in collection)
             {
@@ -578,11 +729,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create(char value, int count)
         {
-            return StringBuilderExtension.Create(new string(value, count));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            return Create(new string(value, count));
         }
 
         public static StringBuilder Create(int capacity, int maximumCapacity)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(capacity, nameof(capacity));
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maximumCapacity, capacity, nameof(maximumCapacity));
+
             return new StringBuilder(capacity, maximumCapacity);
         }
 
@@ -593,44 +749,133 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder Create(char[]? array, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(new string(array), capacity);
+            return Create(new string(array), capacity);
         }
 
-        public static StringBuilder Create(string? value, int startIndex, int count, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
+        public static StringBuilder Create([AllowNull] string value, int startIndex, int count, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
+            ArgumentNullException.ThrowIfNullOrEmpty(value);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, value.Length, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > value.Length)
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{value.Length}'.");
+            }
+
             return new StringBuilder(value, startIndex, count, capacity);
         }
 
         public static StringBuilder Create(char[] array, int startIndex, int count, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
-            return StringBuilderExtension.Create(new string(array, startIndex, count), capacity);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > array.Length)
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{array.Length}'.");
+            }
+
+            return Create(new string(array, startIndex, count), capacity);
         }
 
-        public static StringBuilder CreateWithBase64CharArray(byte[] array, Base64FormattingOptions options = Base64FormattingOptions.None)
+        public static StringBuilder Create([AllowNull] StringBuilder builder)
         {
-            return StringBuilderExtension.CreateWithBase64CharArray(array, 0, array.Length, 0, options);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+
+            foreach (var item in builder.GetEnumerator())
+            {
+                accumulator.Append(item);
+            }
+
+            return accumulator;
         }
 
-        public static StringBuilder CreateWithBase64CharArray(byte[] array, int offsetIn, int length, int offsetOut, Base64FormattingOptions options = Base64FormattingOptions.None)
+        public static StringBuilder Create([AllowNull] StringBuilder builder, int startIndex)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+
+            foreach (var item in builder.Slice(startIndex).GetEnumerator())
+            {
+                accumulator.Append(item);
+            }
+
+            return accumulator;
+        }
+
+        public static StringBuilder Create([AllowNull] StringBuilder builder, int startIndex, int count)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+
+            foreach (var item in builder.Slice(startIndex, count).GetEnumerator())
+            {
+                accumulator.Append(item);
+            }
+
+            return accumulator;
+        }
+
+        public static StringBuilder CreateWithBase64CharArray([AllowNull] byte[] array, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+
+            return CreateWithBase64CharArray(array, 0, array.Length, 0, options);
+        }
+
+        public static StringBuilder CreateWithBase64CharArray([AllowNull] byte[] array, int offsetIn, int length, int offsetOut, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+            ArgumentOutOfRangeException.ThrowIfNegative(offsetIn, nameof(offsetIn));
+            ArgumentOutOfRangeException.ThrowIfNegative(offsetOut, nameof(offsetOut));
+
             char[] destination = new char[array.Length];
             Convert.ToBase64CharArray(array, offsetIn, length, destination, offsetOut, options);
-            return StringBuilderExtension.Create(destination);
+            return Create(destination);
         }
 
-        public static StringBuilder CreateWithBase64String(byte[] array, Base64FormattingOptions options = Base64FormattingOptions.None)
+        public static StringBuilder CreateWithBase64String([AllowNull] byte[] array, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-            return StringBuilderExtension.CreateWithBase64String(array, 0, array.Length, options);
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+
+            return CreateWithBase64String(array, 0, array.Length, options);
         }
 
-        public static StringBuilder CreateWithBase64String(byte[] array, int offset, int length, Base64FormattingOptions options = Base64FormattingOptions.None)
+        public static StringBuilder CreateWithBase64String([AllowNull] byte[] array, int offset, int length, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-            return StringBuilderExtension.Create(Convert.ToBase64String(array, offset, length, options));
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+            ArgumentOutOfRangeException.ThrowIfNegative(offset, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (offset + length > array.Length)
+            {
+                throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.");
+            }
+
+            return Create(Convert.ToBase64String(array, offset, length, options));
         }
 
         public static StringBuilder CreateWithDirectories(DirectoryInfo source, string searchPattern, EnumerationOptions options)
         {
-            StringBuilder builder = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            StringBuilder builder = Create();
 
             foreach (var item in source.EnumerateDirectories(searchPattern, options))
             {
@@ -642,7 +887,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder CreateWithDirectories(DirectoryInfo source, string searchPattern, SearchOption option = SearchOption.TopDirectoryOnly)
         {
-            StringBuilder builder = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            StringBuilder builder = Create();
 
             foreach (var item in source.EnumerateDirectories(searchPattern, option))
             {
@@ -654,7 +899,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder CreateWithDirectories(DirectoryInfo source)
         {
-            StringBuilder builder = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            StringBuilder builder = Create();
 
             foreach (var item in source.EnumerateDirectories())
             {
@@ -666,7 +911,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder CreateWithFiles(DirectoryInfo source, string searchPattern, EnumerationOptions options)
         {
-            StringBuilder builder = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            StringBuilder builder = Create();
 
             foreach (var item in source.EnumerateFiles(searchPattern, options))
             {
@@ -678,7 +923,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder CreateWithFiles(DirectoryInfo source)
         {
-            StringBuilder builder = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            StringBuilder builder = Create();
 
             foreach (var item in source.EnumerateFiles())
             {
@@ -690,7 +935,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static StringBuilder CreateWithFiles(DirectoryInfo source, string searchPattern, SearchOption option = SearchOption.TopDirectoryOnly)
         {
-            StringBuilder builder = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            StringBuilder builder = Create();
 
             foreach (var item in source.EnumerateFiles(searchPattern, option))
             {
@@ -700,190 +945,495 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
-        public static StringBuilder CreateWithHexLowerString(byte[] array)
+        public static StringBuilder CreateWithHexLowerString([AllowNull] byte[] array)
         {
-            return StringBuilderExtension.CreateWithHexLowerString(array, 0, array.Length);
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+
+            return CreateWithHexLowerString(array, 0, array.Length);
         }
 
-        public static StringBuilder CreateWithHexLowerString(byte[] array, int offset, int length)
+        public static StringBuilder CreateWithHexLowerString([AllowNull] byte[] array, int offset, int length)
         {
-            return StringBuilderExtension.Create(Convert.ToHexString(array, offset, length));
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+            ArgumentOutOfRangeException.ThrowIfNegative(offset, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (offset + length > array.Length)
+            {
+                throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.");
+            }
+
+            return Create(Convert.ToHexString(array, offset, length));
         }
 
         public static StringBuilder CreateWithHexLowerString(int value)
         {
-            return StringBuilderExtension.Create(null, "0x{0:x8}", value);
+            return Create(null, "0x{0:x8}", value);
         }
 
         public static StringBuilder CreateWithHexString(int value)
         {
-            return StringBuilderExtension.Create(null, "0x{0:X8}", value);
+            return Create(null, "0x{0:X8}", value);
         }
 
         public static StringBuilder CreateWithHexString(byte[] array)
         {
-            return StringBuilderExtension.CreateWithHexString(array, 0, array.Length);
+            return CreateWithHexString(array, 0, array.Length);
         }
 
-        public static StringBuilder CreateWithHexString(byte[] array, int offset, int length)
+        public static StringBuilder CreateWithHexString([AllowNull] byte[] array, int offset, int length)
         {
-            return StringBuilderExtension.Create(Convert.ToHexString(array, offset, length));
-        }
+            ArgumentNullException.ThrowIfNull(array, nameof(array));
+            ArgumentOutOfRangeException.ThrowIfNegative(offset, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
 
-        public static StringBuilder DefaultIfEmpty(this StringBuilder? builder)
-        {
-            return StringBuilderExtension.IsNullOrEmpty(builder) ? StringBuilderExtension.Create() : builder!;
-        }
-
-        public static char ElementAt(this StringBuilder? builder, int index)
-        {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            if (offset + length > array.Length)
             {
-                throw new ArgumentNullException(nameof(builder));
+                throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.");
             }
 
-            if (index < 0 || index >= builder.Count())
+            return Create(Convert.ToHexString(array, offset, length));
+        }
+
+        public static StringBuilder DefaultIfEmpty([AllowNull] this StringBuilder builder)
+        {
+            return builder.DefaultIfEmpty(char.MinValue);
+        }
+
+        public static StringBuilder DefaultIfEmpty([AllowNull] this StringBuilder builder, char defaultValue)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return IsEmpty(builder) ? Create(defaultValue, 1) : builder;
+        }
+
+        public static char ElementAt([AllowNull] this StringBuilder builder, int index)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(index, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+
+            return builder[index];
+        }
+
+        public static char ElementAt([AllowNull] this StringBuilder builder, Index index)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(index.Value, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index.Value, builder.Count(), nameof(index));
+
+            if (IsOutOfRange(index, 0..^builder.Count()))
             {
                 throw new ArgumentOutOfRangeException(nameof(index), index, $"Parameter {nameof(index)} {index} is out of range.");
             }
 
-            try
-            {
-                return builder[index];
-            }
+            return builder[index];
         }
 
-        public static char ElementAtOrDefault(this StringBuilder? builder, int index)
+        public static char ElementAtOrDefault([AllowNull] this StringBuilder builder, int index)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(index, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+
+            if (IsOutOfRange(index, 0..^builder.Count()))
             {
                 return char.MinValue;
             }
 
-            if (index < 0 || index >= builder.Count())
+            return builder![index];
+        }
+
+        public static char ElementAtOrDefault([AllowNull] this StringBuilder builder, Index index)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(index.Value, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index.Value, builder.Count(), nameof(index));
+
+            if (!IsInRange(index, 0..^builder.Count()))
             {
                 return char.MinValue;
             }
 
-            try
-            {
-                return builder![index];
-            }
+            return builder![index];
         }
 
         public static StringBuilder Empty()
         {
-            return StringBuilderExtension.Create();
+            return Create(0, 1);
         }
 
-        public static char First(this StringBuilder? builder)
+        public static bool Equals(StringBuilder? left, StringBuilder? right)
         {
-            StringBuilderExtension.ThrowIfNullOrEmpty(builder);
-
-            return builder![0];
-        }
-
-        public static char First(this StringBuilder? builder, Func<char, bool> predicate)
-        {
-            StringBuilderExtension.ThrowIfNullOrEmpty(builder);
-
-            for (int i = 0; i < builder.Count(); i++)
+            if (ReferenceEquals(left, right))
             {
-                if (predicate.Invoke(builder![i]))
+                return true;
+            }
+            else if (left is null ^ right is null)
+            {
+                return false;
+            }
+            else if (left.Count() != right.Count())
+            {
+                return false;
+            }
+            else
+            {
+                return left!.Equals(right);
+            }
+        }
+
+        public static char First([AllowNull] this StringBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (builder.Count() < 1)
+            {
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
+            }
+
+            return builder.ElementAt(0);
+        }
+
+        public static char First([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            if (builder.Count() < 1)
+            {
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
+            }
+
+            foreach (var item in builder.GetEnumerator())
+            {
+                if (predicate.Invoke(item))
                 {
-                    return builder[i];
+                    return item;
                 }
             }
 
             throw new InvalidOperationException($"No value satisfying {nameof(predicate)} was found.");
         }
 
-        public static char First(this StringBuilder? builder, Func<char, int, bool> predicate)
+        public static char FirstOrDefault([AllowNull] this StringBuilder builder)
         {
-            StringBuilderExtension.ThrowIfNullOrEmpty(builder);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            for (int i = 0; i < builder.Count(); i++)
+            return builder.Count() > 0 ? builder.ElementAtOrDefault(0) : char.MinValue;
+        }
+
+        public static char FirstOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
+        {
+            return builder.FirstOrDefault(predicate, char.MinValue);
+        }
+
+        public static char FirstOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate, char defaultValue)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            foreach (var item in builder.GetEnumerator())
             {
-                if (predicate.Invoke(builder![i], i))
+                if (predicate.Invoke(item))
                 {
-                    return builder[i];
+                    return item;
                 }
             }
 
-            throw new InvalidOperationException($"No value satisfying {nameof(predicate)} was found.");
+            return defaultValue;
         }
 
-        public static char FirstOrDefault(this StringBuilder? builder)
+        public static IEnumerable<char> GetEnumerator([AllowNull] this StringBuilder builder)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? builder![0] : char.MinValue;
-        }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        public static char FirstOrDefault(this StringBuilder? builder, Func<char, bool> predicate)
-        {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                return char.MinValue;
-            }
+            int index;
+            char current;
+            List<char> enumerator = new(builder.Count());
+            bool enumeratorDisposed = false;
 
-            for (int i = 0; i < builder.Count(); i++)
+            bool MoveNext()
             {
-                if (predicate.Invoke(builder![i]))
+                lock (builder)
                 {
-                    return builder[i];
+                    bool result = ++index < builder.Count();
+                    current = result ? builder[index] : char.MinValue;
+                    return result;
                 }
             }
 
-            return char.MinValue;
-        }
-
-        public static char FirstOrDefault(this StringBuilder? builder, Func<char, int, bool> predicate)
-        {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            void Reset()
             {
-                return char.MinValue;
+                Dispose(disposing: false);
             }
 
-            for (int i = 0; i < builder.Count(); i++)
+            void Dispose(bool disposing)
             {
-                if (predicate.Invoke(builder![i], i))
+                if (disposing)
                 {
-                    return builder[i];
+                    if (!enumeratorDisposed)
+                    {
+                        enumerator.Clear();
+                        enumeratorDisposed = true;
+                    }
                 }
+
+                index = -1;
+                current = char.MinValue;
             }
 
-            return char.MinValue;
+            try
+            {
+                Reset();
+
+                while (MoveNext())
+                {
+                    enumerator.Add(current);
+                }
+
+                return enumerator;
+            }
+            finally
+            {
+                Dispose(disposing: true);
+            }
         }
 
-        public static IEnumerable<Tuple<int, char>> Index(this StringBuilder builder)
+        public static int GetLowerBound(this StringBuilder builder)
         {
-            List<Tuple<int, char>> accumulator = new();
+            ArgumentNullException.ThrowIfNull(builder);
 
-            for (int i = 0; i < builder.Count(); i++)
+            return 0;
+        }
+
+        public static int GetUpperBound([AllowNull] this StringBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+
+            return IsEmpty(builder) ? 0 : builder.Count() - 1;
+        }
+
+        public static IEnumerable<Tuple<int, char>> Index([AllowNull] this StringBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            int index = 0;
+            List<Tuple<int, char>> accumulator = new(builder.Count());
+
+            while (IsInRange(index, 0..^builder.Count()))
             {
-                accumulator.Add(Tuple.Create(i, builder[i]));
+                accumulator.Add(Tuple.Create<int, char>(index, builder.ElementAtOrDefault(index)));
+
+                index++;
             }
 
             return accumulator;
         }
 
-        public static int IndexOf(this StringBuilder? builder, char character)
+        public static IEnumerable<Tuple<TEnum, char>> Index<TEnum>([AllowNull] this StringBuilder builder) where TEnum : struct, System.Enum
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? builder!.IndexOf(character, StringComparison.Ordinal) : -1;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            var index = Enum.GetValuesAsUnderlyingType<TEnum>().Cast<int>().FirstOrDefault();
+            List<Tuple<TEnum, char>> accumulator = new(builder.Count());
+
+            while (IsInRange(index, 0..^builder.Count()))
+            {
+                accumulator.Add(Tuple.Create<TEnum, char>((TEnum)Enum.ToObject(typeof(TEnum), index), builder.ElementAtOrDefault(index)));
+
+                index++;
+            }
+
+            return accumulator;
         }
 
-        public static int IndexOf(this StringBuilder? builder, char character, StringComparison comparison)
+        public static IEnumerable<Tuple<System.Index, char>> IndexByIndex([AllowNull] this StringBuilder builder)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? builder.IndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            System.Index index = 0;
+            List<Tuple<Index, char>> accumulator = new(builder.Count());
+
+            while (IsInRange(index, 0..^builder.Count()))
+            {
+                accumulator.Add(Tuple.Create<Index, char>(index, builder.ElementAtOrDefault(index)));
+
+                index = index.Value + 1;
+            }
+
+            return accumulator;
         }
 
-        public static int IndexOf(this StringBuilder? builder, ReadOnlySpan<char> character)
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, char character)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? builder.IndexOf(character, StringComparison.Ordinal) : -1;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) ? builder!.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
         }
 
-        public static int IndexOf(this StringBuilder? builder, ReadOnlySpan<char> character, StringComparison comparison)
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
+        }
+
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
+        }
+
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character, StringComparison comparison)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (IsNullOrEmpty(builder))
+            {
+                return -1;
+            }
+
+            Index index = -1;
+
+            foreach (var chunk in builder.GetChunks())
+            {
+                index = chunk.Span.IndexOf(character, comparison);
+
+                if (index.Value > -1)
+                {
+                    return index;
+                }
+            }
+
+            return index;
+        }
+
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, string value)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (IsNullOrEmpty(builder))
+            {
+                return -1;
+            }
+
+            return builder.IndexByIndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), startIndex: 0);
+        }
+
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, Index startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex.Value, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex.Value, builder.Count(), nameof(startIndex));
+
+            if (IsNullOrEmpty(builder))
+            {
+                return -1;
+            }
+
+            Index first = -1;
+
+            foreach (var item in value[startIndex..])
+            {
+                Index index = builder.IndexByIndexOf(item);
+
+                if (index.Value == -1)
+                {
+                    return index;
+                }
+                else if (first.Value == -1)
+                {
+                    first = index.Value + startIndex.Value;
+                }
+            }
+
+            return first;
+        }
+
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, Index startIndex, int length)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex.Value, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex.Value, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (startIndex.Value + length > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
+            }
+
+            if (IsNullOrEmpty(builder))
+            {
+                return -1;
+            }
+
+            return builder.IndexByIndexOf(value, startIndex, length, StringComparison.Ordinal);
+        }
+
+        public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, Index startIndex, int length, StringComparison comparison)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex.Value, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex.Value, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (startIndex.Value + length > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
+            }
+
+            if (IsNullOrEmpty(builder))
+            {
+                return -1;
+            }
+
+            Index first = -1;
+
+            foreach (var item in value.Slice(startIndex.Value, length))
+            {
+                Index index = builder.IndexByIndexOf(item, comparison);
+
+                if (index.Value == -1)
+                {
+                    return index;
+                }
+                else if (first.Value == -1)
+                {
+                    first = index.Value + startIndex.Value;
+                }
+            }
+
+            return first;
+        }
+
+        public static int IndexOf([AllowNull] this StringBuilder builder, char character)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) ? builder!.IndexOf(character, StringComparison.Ordinal) : -1;
+        }
+
+        public static int IndexOf([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
+        {
+            return !IsNullOrEmpty(builder) ? builder.IndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
+        }
+
+        public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return !IsNullOrEmpty(builder) ? builder.IndexOf(character, StringComparison.Ordinal) : -1;
+        }
+
+        public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character, StringComparison comparison)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -903,9 +1453,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return index;
         }
 
-        public static int IndexOf(this StringBuilder? builder, string value)
+        public static int IndexOf([AllowNull] this StringBuilder builder, string value)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -913,9 +1465,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.IndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
         }
 
-        public static int IndexOf(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex)
+        public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            if (IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -939,9 +1495,19 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first;
         }
 
-        public static int IndexOf(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex, int length)
+        public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (startIndex + length > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
+            }
+
+            if (IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -949,9 +1515,19 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.IndexOf(value, startIndex, length, StringComparison.Ordinal);
         }
 
-        public static int IndexOf(this StringBuilder? builder, ReadOnlySpan<char> value, int startIndex, int length, StringComparison comparison)
+        public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length, StringComparison comparison)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (startIndex + length > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
+            }
+
+            if (IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -975,34 +1551,99 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first;
         }
 
-        public static StringBuilder Insert([DisallowNull] this StringBuilder builder, int index, [DisallowNull] StringBuilder value)
+        public static StringBuilder Insert(this StringBuilder builder, int index, StringBuilder? value)
         {
-            return builder.Insert(index, value.ToString());
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfLessThan(index, 0, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+
+            if (builder.Count() + value.Count() > builder.MaxCapacity)
+            {
+                throw new ArgumentException($"Enlarging Source {nameof(builder)} by Value {nameof(value)} would exceed MaxCapacity '{builder.MaxCapacity}'.");
+            }
+
+            foreach (var item in value.Reverse().GetEnumerator())
+            {
+                builder.Insert(index, item);
+            }
+
+            return builder;
         }
 
-        public static bool IsMatch(this StringBuilder? builder, Regex pattern)
+        public static StringBuilder Insert(this StringBuilder builder, int index, StringBuilder? value, int startIndex)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && pattern.IsMatch(builder!.ToString());
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfLessThan(index, 0, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+            ArgumentOutOfRangeException.ThrowIfLessThan(startIndex, 0, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, value.Count(), nameof(startIndex));
+
+            return builder.Insert(index, value.Slice(startIndex));
         }
 
-        public static bool IsMatch(this StringBuilder? builder, Regex pattern, int startIndex)
+        public static StringBuilder Insert(this StringBuilder builder, int index, StringBuilder? value, int startIndex, int count)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && pattern.IsMatch(builder!.ToString(startIndex) ?? string.Empty);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfLessThan(index, 0, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+            ArgumentOutOfRangeException.ThrowIfLessThan(startIndex, 0, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, value.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            return builder.Insert(index, value.Slice(startIndex, count));
         }
 
-        public static bool IsMatch(this StringBuilder? builder, Regex pattern, int startIndex, int count)
-        {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) && pattern.IsMatch(builder!.ToString(startIndex, count) ?? string.Empty);
-        }
-
-        public static bool IsNullOrEmpty(StringBuilder? builder)
+        public static bool IsEmpty(StringBuilder builder)
         {
             return builder.Count() < 1;
         }
 
+        public static bool IsMatch([AllowNull] this StringBuilder builder, Regex pattern)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.Count() > 0 && pattern.IsMatch(builder.ToString());
+        }
+
+        public static bool IsMatch([AllowNull] this StringBuilder builder, Regex pattern, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return builder.Count() > 0 && builder.Slice(startIndex).IsMatch(pattern);
+        }
+
+        public static bool IsMatch([AllowNull] this StringBuilder builder, Regex pattern, int startIndex, int count)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            return builder.Count() > 0 && builder.Slice(startIndex, count).IsMatch(pattern);
+        }
+
+        public static bool IsNullOrEmpty(StringBuilder? builder)
+        {
+            return builder?.Count() < 1;
+        }
+
         public static bool IsNullOrEmpty<TElement>(TElement[]? array)
         {
-            return StringBuilderExtension.IsNullOrEmpty(collection: array);
+            return IsNullOrEmpty(collection: array);
         }
 
         public static bool IsNullOrEmpty<TValue>(ICollection<TValue>? collection)
@@ -1012,127 +1653,156 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static bool IsNullOrEmpty<TKey, TValue>(IDictionary<TKey, TValue?>? dictionary)
         {
-            return StringBuilderExtension.IsNullOrEmpty(collection: dictionary);
+            return IsNullOrEmpty(collection: dictionary);
         }
 
         public static bool IsNullOrEmpty<TElement>(ISet<TElement> theSet)
         {
-            return StringBuilderExtension.IsNullOrEmpty(collection: theSet);
+            return IsNullOrEmpty(collection: theSet);
         }
 
         public static bool IsNullOrWhiteSpace(StringBuilder? builder)
         {
-            return StringBuilderExtension.IsNullOrEmpty(builder) || (builder.All(c => char.IsWhiteSpace(c)));
+            return IsNullOrEmpty(builder) || (builder.All(c => char.IsWhiteSpace(c)));
         }
 
-        public static char Last(this StringBuilder? builder)
+        public static char Last([AllowNull] this StringBuilder builder)
         {
-            StringBuilderExtension.ThrowIfNullOrEmpty(builder);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return builder![^1];
-        }
-
-        public static char Last(this StringBuilder? builder, Func<char, bool> predicate)
-        {
-            StringBuilderExtension.ThrowIfNullOrEmpty(builder);
-
-            for (int i = builder.Count() - 1; i >= 0; i--)
+            if (builder.Count() <= 0)
             {
-                if (predicate.Invoke(builder![i]))
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
+            }
+
+            return builder.ElementAt(^0);
+        }
+
+        public static char Last([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            if (builder.Count() <= 0)
+            {
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
+            }
+
+            foreach (var item in builder.Reverse().GetEnumerator())
+            {
+                if (predicate.Invoke(item))
                 {
-                    return builder[i];
+                    return item;
                 }
             }
 
             throw new InvalidOperationException($"No value satisfying {nameof(predicate)} was found.");
         }
 
-        public static char Last(this StringBuilder? builder, Func<char, int, bool> predicate)
+        public static char LastOrDefault([AllowNull] this StringBuilder builder)
         {
-            StringBuilderExtension.ThrowIfNullOrEmpty(builder);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            for (int i = builder.Count() - 1; i >= 0; i--)
+            return builder.Count() > 0 ? builder![^1] : char.MinValue;
+        }
+
+        public static char LastOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            return builder.LastOrDefault(predicate, char.MinValue);
+        }
+
+        public static char LastOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate, char defaultValue)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            if (builder.Count() <= 0)
             {
-                if (predicate.Invoke(builder![i], i))
+                return defaultValue;
+            }
+
+            foreach (var item in builder.Reverse().GetEnumerator())
+            {
+                if (predicate.Invoke(item))
                 {
-                    return builder[i];
+                    return item;
                 }
             }
 
-            throw new InvalidOperationException($"No value satisfying {nameof(predicate)} was found.");
+            return defaultValue;
         }
 
-        public static char LastOrDefault(this StringBuilder? builder)
+        public static MatchCollection Matches([AllowNull] this StringBuilder builder, Regex pattern)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? builder![^1] : char.MinValue;
-        }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        public static char LastOrDefault(this StringBuilder? builder, Func<char, bool> predicate)
-        {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            if (builder.Count() <= 0)
             {
-                return char.MinValue;
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
             }
 
-            for (int i = builder.Count() - 1; i >= 0; i--)
+            return pattern.Matches(builder!.ToString());
+        }
+
+        public static MatchCollection Matches([AllowNull] this StringBuilder builder, Regex pattern, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            if (builder.Count() <= 0)
             {
-                if (predicate.Invoke(builder![i]))
-                {
-                    return builder[i];
-                }
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
             }
 
-            return char.MinValue;
+            return builder.Slice(startIndex).Matches(pattern);
         }
 
-        public static char LastOrDefault(this StringBuilder? builder, Func<char, int, bool> predicate)
+        public static MatchCollection Matches([AllowNull] this StringBuilder builder, Regex pattern, int startIndex, int count)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
             {
-                return char.MinValue;
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
             }
 
-            for (int i = builder.Count() - 1; i >= 0; i--)
+            if (builder.Count() <= 0)
             {
-                if (predicate.Invoke(builder![i], i))
-                {
-                    return builder[i];
-                }
+                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
             }
 
-            return char.MinValue;
+            return builder.Slice(startIndex, count).Matches(pattern);
         }
 
-        public static MatchCollection? Matches(this StringBuilder? builder, Regex pattern)
+        public static StringBuilder Order([AllowNull] this StringBuilder builder)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? pattern.Matches(builder!.ToString()) : default;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.Order(comparer: Comparer<char>.Default);
         }
 
-        public static MatchCollection? Matches(this StringBuilder? builder, Regex pattern, int startIndex)
+        public static StringBuilder Order([AllowNull] this StringBuilder builder, bool caseInsensitive)
         {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? pattern.Matches(builder!.ToString(startIndex) ?? string.Empty) : default;
-        }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        public static MatchCollection Matches(this StringBuilder? builder, Regex pattern, int startIndex, int count)
-        {
-            return !StringBuilderExtension.IsNullOrEmpty(builder) ? pattern.Matches(builder!.ToString(startIndex, count) ?? string.Empty) : default;
-        }
-
-        public static StringBuilder Order([DisallowNull] this StringBuilder builder)
-        {
-            return builder.Order(comparer: null);
-        }
-
-        public static StringBuilder Order([DisallowNull] this StringBuilder builder, bool caseInsensitive)
-        {
             return builder.Order(null, caseInsensitive);
         }
 
-        public static StringBuilder Order([DisallowNull] this StringBuilder builder, CultureInfo? culture, bool caseInsensitive)
+        public static StringBuilder Order([AllowNull] this StringBuilder builder, CultureInfo? culture, bool caseInsensitive)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             if (!caseInsensitive)
             {
-                return builder.Order(comparer: null);
+                return builder.Order(comparer: Comparer<char>.Default);
             }
             else
             {
@@ -1148,67 +1818,98 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        public static StringBuilder Order([DisallowNull] this StringBuilder builder, Comparison<char> comparison)
+        public static StringBuilder Order([AllowNull] this StringBuilder builder, Comparison<char> comparison)
         {
-            return builder.Order((x, y) => comparison.Invoke(x, y));
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.Count() > 0 ? builder.Order((x, y) => comparison.Invoke(x, y)) : Empty();
         }
 
-        public static StringBuilder Order([DisallowNull] this StringBuilder builder, IComparer<char>? comparer)
+        public static StringBuilder Order([AllowNull] this StringBuilder builder, IComparer<char>? comparer)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (builder.Count() <= 0)
             {
-                return builder;
+                return Empty();
             }
-            else
-            {
-                List<char> list = [.. builder!.ToCharArray() ?? [char.MinValue]];
-                list.Sort(comparer);
-                return StringBuilderExtension.Create(list);
-            }
+
+            List<char> list = [.. builder.ToCharArray()];
+            list.Sort(comparer);
+            return Create(list);
         }
 
-        public static StringBuilder Order([DisallowNull] this StringBuilder builder, int startIndex, int count, IComparer<char>? comparer)
+        public static StringBuilder Order([AllowNull] this StringBuilder builder, int startIndex, int count, IComparer<char>? comparer)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
             {
-                return builder;
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
             }
-            else
+
+            if (builder.Count() <= 0)
             {
-                List<char>? list = builder!.ToCharArray()?.ToList();
-                list!.Sort(startIndex, count, comparer);
-                return StringBuilderExtension.Create(list);
+                return Empty();
             }
+
+            List<char> list = builder.ToCharArray().ToList();
+            list.Sort(startIndex, count, comparer);
+            return Create(list);
         }
 
-        public static StringBuilder OrderDescending([DisallowNull] this StringBuilder builder, int startIndex, int count, IComparer<char>? comparer)
+        public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, int startIndex, int count, IComparer<char>? comparer)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
             {
-                return builder;
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
             }
-            else
+
+            if (builder.Count() <= 0)
             {
-                List<char>? list = builder.ToCharArray(startIndex, count)?.ToList();
-                return !StringBuilderExtension.IsNullOrEmpty(list) ? StringBuilderExtension.Create(list!.OrderDescending(comparer)) : builder;
+                return Empty();
             }
+
+            List<char> list = builder.ToCharArray(startIndex, count).ToList();
+            return Create(list.OrderDescending(comparer));
         }
 
-        public static StringBuilder OrderDescending([DisallowNull] this StringBuilder builder)
+        public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.OrderDescending(comparer: null);
         }
 
-        public static StringBuilder OrderDescending([DisallowNull] this StringBuilder builder, bool caseInsensitive)
+        public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, bool caseInsensitive)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (builder.Count() <= 0)
+            {
+                return Empty();
+            }
+
             return builder.OrderDescending(null, caseInsensitive);
         }
 
-        public static StringBuilder OrderDescending([DisallowNull] this StringBuilder builder, CultureInfo? culture, bool caseInsensitive)
+        public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, CultureInfo? culture, bool caseInsensitive)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             if (!caseInsensitive)
             {
-                return builder.OrderDescending(comparer: null);
+                return builder.OrderDescending(comparer: Comparer<char>.Default);
             }
             else
             {
@@ -1224,66 +1925,35 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        public static StringBuilder OrderDescending([DisallowNull] this StringBuilder builder, Comparison<char> comparison)
+        public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, Comparison<char> comparison)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (builder.Count() <= 0)
+            {
+                return Empty();
+            }
+
             return builder.OrderDescending((x, y) => comparison.Invoke(x, y));
         }
 
-        public static StringBuilder OrderDescending([DisallowNull] this StringBuilder builder, IComparer<char>? comparer)
+        public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, IComparer<char>? comparer)
         {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            if (builder.Count() <= 0)
             {
-                return builder;
+                return Empty();
             }
-            else
-            {
-                List<char> list = [.. builder!.ToCharArray() ?? [char.MinValue]];
-                return StringBuilderExtension.Create(list.OrderDescending(comparer));
-            }
+
+            List<char> list = [.. builder!.ToCharArray() ?? [char.MinValue]];
+            return Create(list.OrderDescending(comparer));
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, IEnumerable<ITaskItem> list, string separator)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, FileSystemInfo value)
         {
-            bool first = true;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            foreach (var item in list)
-            {
-                if (first)
-                {
-                    builder.Prepend(item);
-                    first = false;
-                }
-                else
-                {
-                    builder.Prepend(item).Prepend(separator);
-                }
-            }
-
-            return builder;
-        }
-
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, IEnumerable<string?> list, string separator)
-        {
-            bool first = true;
-
-            foreach (var item in list)
-            {
-                if (first)
-                {
-                    builder.Prepend(item);
-                    first = false;
-                }
-                else
-                {
-                    builder.Prepend(item).Prepend(separator);
-                }
-            }
-
-            return builder;
-        }
-
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, FileSystemInfo value)
-        {
             if (value is FileInfo file)
             {
                 return builder.Insert(0, file.FullName);
@@ -1298,208 +1968,351 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, DirectoryInfo value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, DirectoryInfo value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value.FullName);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, FileInfo value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, FileInfo value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value.FullName);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, char value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, ITaskItem value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, ITaskItem value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             return builder.Insert(0, value.ItemSpec);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, char value, int count)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char value, int count)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
             return builder.Prepend(new string(value, count));
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, char[]? value, int startIndex, int count)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char[]? value, int startIndex, int count)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
             return builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToArray());
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, string? value, int startIndex, int count)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, string? value, int startIndex, int count)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
             return builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToString());
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, bool value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, bool value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, byte value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, byte value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, char[]? value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char[]? value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, decimal value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, decimal value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, double value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, double value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, float value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, float value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, int value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, int value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, long value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, long value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, object? value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, object? value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, sbyte value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, sbyte value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, short value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, short value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, string? value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, string? value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, StringBuilder? value)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, StringBuilder? value)
         {
-            return builder.Prepend(value?.ToString());
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return value is not null ? value.Append(builder) : builder;
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, StringBuilder? value, int startIndex)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, StringBuilder? value, int startIndex)
         {
-            return builder.Prepend(value?.ToString(startIndex));
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return value.Slice(startIndex).Append(builder);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, StringBuilder? value, int startIndex, int count)
+        public static StringBuilder Prepend([AllowNull] this StringBuilder builder, StringBuilder? value, int startIndex, int count)
         {
-            return builder.Prepend(value?.ToString(startIndex, count));
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            return value.Slice(startIndex, count).Append(builder);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, uint value)
+        public static StringBuilder Prepend(this StringBuilder builder, uint value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, ulong value)
+        public static StringBuilder Prepend(this StringBuilder builder, ulong value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, ushort value)
+        public static StringBuilder Prepend(this StringBuilder builder, ushort value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, ReadOnlySpan<char> value)
+        public static StringBuilder Prepend(this StringBuilder builder, ReadOnlySpan<char> value)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
-        public static StringBuilder Prepend([DisallowNull] this StringBuilder builder, string? value, int count)
+        public static StringBuilder Prepend(this StringBuilder builder, string? value, int count)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
             return builder.Insert(0, value, count);
         }
 
-        public static StringBuilder PrependFormat([DisallowNull] this StringBuilder builder, IFormatProvider? provider, string format, params object?[] arguments)
+        public static StringBuilder PrependFormat(this StringBuilder builder, IFormatProvider? provider, string format, params object?[] arguments)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Prepend(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments));
         }
 
-        public static StringBuilder PrependFormat([DisallowNull] this StringBuilder builder, string format, params object?[] arguments)
+        public static StringBuilder PrependFormat(this StringBuilder builder, string format, params object?[] arguments)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.PrependFormat(null, format, arguments);
         }
 
-        public static StringBuilder PrependLine([DisallowNull] this StringBuilder builder)
+        public static StringBuilder PrependJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<ITaskItem> list)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            StringBuilder value = Create();
+            List<string?> convertedList = [];
+
+            list.ToList().ForEach(i => convertedList.Add(i.ItemSpec));
+            return value.PrependJoin(separator, convertedList);
+        }
+
+        public static StringBuilder PrependJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<string?> list)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            StringBuilder value = Create();
+
+            value.AppendJoin(separator, list);
+
+            return value.Append(builder);
+        }
+
+        public static StringBuilder PrependLine([AllowNull] this StringBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Prepend(Environment.NewLine);
         }
 
-        public static StringBuilder PrependLine([DisallowNull] this StringBuilder builder, IFormatProvider? provider, string format, params object?[] arguments)
+        public static StringBuilder PrependLine([AllowNull] this StringBuilder builder, IFormatProvider? provider, string format, params object?[] arguments)
         {
             return builder.PrependLine().PrependFormat(provider, format, arguments);
         }
 
-        public static StringBuilder PrependLine([DisallowNull] this StringBuilder builder, string format, params object?[] arguments)
+        public static StringBuilder PrependLine([AllowNull] this StringBuilder builder, string format, params object?[] arguments)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.PrependLine(null, format, arguments);
         }
 
-        public static StringBuilder Repeat([DisallowNull] this StringBuilder builder, char element, int count)
+        public static StringBuilder Repeat([AllowNull] this StringBuilder builder, char element, int count)
         {
-            builder.Clear();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
             return builder.Append(element, count);
         }
 
-        public static void Reverse([DisallowNull] StringBuilder builder)
+        public static StringBuilder Resize([AllowNull] this StringBuilder builder, int capacity, int maximumCapacity)
         {
-            StringBuilder accumulator = StringBuilderExtension.Create(capacity: builder.Count());
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            for (int i = builder.Count() - 1; i >= 0; i--)
-            {
-                accumulator.Append(builder![i]);
-            }
-
-            builder = accumulator;
+            return Create(Math.Max(builder.Count(), capacity), Math.Max(builder.Count(), maximumCapacity)).Append(builder);
         }
 
-        public static IEnumerable<TResult> Select<TResult>(this StringBuilder? builder, Func<char, TResult> selector)
+        public static StringBuilder Reverse([AllowNull] this StringBuilder builder)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            char[] temp = builder.ToCharArray();
+            Array.Reverse(temp);
+            return Create(temp);
+        }
+
+        public static StringBuilder Reverse([AllowNull] this StringBuilder builder, int index, int length)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(index, nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
+            ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+
+            if (index + length > builder.Count())
+            {
+                throw new ArgumentException($"Index '{index}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
+            }
+
+            char[] temp = builder.ToCharArray();
+            Array.Reverse(temp, index, length);
+            return Create(temp);
+        }
+
+        public static IEnumerable<TResult> Select<TResult>([AllowNull] this StringBuilder builder, [AllowNull] Func<char, TResult> selector)
+            where TResult : IConvertible
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(selector, nameof(selector));
+
             List<TResult> accumulator = [];
 
-            if (!StringBuilderExtension.IsNullOrEmpty(builder))
+            if (!IsNullOrEmpty(builder))
             {
-                for (int i = 0; i < builder.Count(); i++)
+                foreach (var item in builder.GetEnumerator())
                 {
-                    accumulator.Add(selector.Invoke(builder![i]));
+                    accumulator.Add(selector.Invoke(item));
                 }
             }
 
-            return accumulator;
+            return accumulator.Cast<TResult>();
         }
 
-        public static IEnumerable<TResult> Select<TResult>(this StringBuilder? builder, Func<char, int, TResult> selector)
+        public static IEnumerable<TResult> Select<TResult>([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, TResult> selector)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(selector, nameof(selector));
+
             List<TResult> accumulator = [];
 
-            if (!StringBuilderExtension.IsNullOrEmpty(builder))
+            if (!IsNullOrEmpty(builder))
             {
-                for (int i = 0; i < builder.Count(); i++)
+                int index = 0;
+
+                foreach (var item in builder.GetEnumerator())
                 {
-                    accumulator.Add(selector.Invoke(builder![i], i));
+                    accumulator.Add(selector.Invoke(item, index++));
                 }
             }
 
@@ -1508,67 +2321,25 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right)
         {
-            return left.SequenceEqual(right, EqualityComparer<char>.Default);
+            return left.SequenceEqual(right, comparer: null);
         }
 
         public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right, Func<char, char, bool> equals)
         {
-            if (left is null && right is null)
-            {
-                return true;
-            }
-            else if (left is null ^ right is null)
-            {
-                return false;
-            }
-            else if (!left.Count().Equals(right.Count()))
-            {
-                return false;
-            }
-            else
-            {
-                for (var i = 0; i < left.Count(); i++)
-                {
-                    if (!equals.Invoke(left![i], right![i]))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
+            return Equals(left, right) || Enumerable.Range(0, left.GetUpperBound()).All(i => equals.Invoke(left![i], right![i]));
         }
 
-        public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right, IEqualityComparer<char> comparer)
+        public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right, IEqualityComparer<char>? comparer)
         {
-            if (left is null && right is null)
-            {
-                return true;
-            }
-            else if (left is null ^ right is null)
-            {
-                return false;
-            }
-            else if (!left.Count().Equals(right.Count()))
-            {
-                return false;
-            }
-            else
-            {
-                for (var i = 0; i < left.Count(); i++)
-                {
-                    if (!comparer.Equals(left![i], right![i]))
-                    {
-                        return false;
-                    }
-                }
+            comparer ??= EqualityComparer<char>.Default;
 
-                return true;
-            }
+            return Equals(left, right) || Enumerable.Range(0, left.GetUpperBound()).All(i => comparer.Equals(left![i], right![i]));
         }
 
-        public static char Single(this StringBuilder? builder)
+        public static char Single([AllowNull] this StringBuilder builder)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             if (builder.Count() != 1)
             {
                 throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
@@ -1579,8 +2350,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        public static char Single(this StringBuilder? builder, Func<char, bool> predicate)
+        public static char Single([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
             if (builder.Count() != 1)
             {
                 throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
@@ -1591,202 +2365,246 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        public static char SingleOrDefault(this StringBuilder? builder)
+        public static char SingleOrDefault([AllowNull] this StringBuilder builder)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             if (builder.Count() != 1)
             {
                 throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
             }
             else
             {
-                return builder.FirstOrDefault();
+                return builder.ElementAtOrDefault(0);
             }
         }
 
-        public static char SingleOrDefault(this StringBuilder? builder, Func<char, bool> predicate)
+        public static char SingleOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
             if (builder.Count() != 1)
             {
                 throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
             }
             else
             {
-                return builder.FirstOrDefault(predicate);
+                var item = builder.ElementAtOrDefault(0);
+                return predicate.Invoke(item) ? item : char.MinValue;
             }
         }
 
-        public static StringBuilder? Skip(this StringBuilder? builder, int count)
+        public static StringBuilder? Skip([AllowNull] this StringBuilder builder, int count)
         {
-            return new StringBuilder(builder?.ToString(count - 1) ?? string.Empty);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
+
+            return Create(builder, count - 1);
         }
 
-        public static StringBuilder? SkipLast(this StringBuilder? builder, int count)
+        public static StringBuilder? SkipLast([AllowNull] this StringBuilder builder, int count)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
+
             return builder.Take(builder.Count() - count);
         }
 
-        public static StringBuilder? SkipWhile(this StringBuilder? builder, Func<char, bool> predicate)
+        public static StringBuilder? SkipWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
-            int count = 0;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            for (int i = 0; i < builder?.Count(); i++)
+            int index = 0;
+
+            while (predicate.Invoke(builder.ElementAtOrDefault(index++)))
             {
-                if (predicate.Invoke(builder[i]))
-                {
-                    count++;
-                }
             }
 
-            return builder?.Skip(count);
+            return builder?.Skip(index);
         }
 
-        public static StringBuilder? SkipWhile(this StringBuilder? builder, Func<char, int, bool> predicate)
+        public static StringBuilder? SkipWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, bool> predicate)
         {
-            int count = 0;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            for (int i = 0; i < builder?.Count(); i++)
+            int index = 0;
+
+            while (predicate.Invoke(builder.ElementAtOrDefault(index), index++))
             {
-                if (predicate.Invoke(builder[i], i))
-                {
-                    count++;
-                }
             }
 
-            return builder?.Skip(count);
+            return builder?.Skip(index);
         }
 
-        public static StringBuilder? Slice(this StringBuilder? builder, int startIndex)
+        public static StringBuilder Slice([AllowNull] this StringBuilder builder, int startIndex)
         {
-            return new StringBuilder(builder?.ToString(startIndex));
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return Create(builder.ToString(startIndex));
         }
 
-        public static StringBuilder? Slice(this StringBuilder? builder, int startIndex, int count)
+        public static StringBuilder Slice([AllowNull] this StringBuilder builder, int startIndex, int count)
         {
-            return new StringBuilder(builder?.ToString(startIndex, count));
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            return Create(builder?.ToString(startIndex, count));
         }
 
-        public static StringBuilder? Take(this StringBuilder? builder, int count)
+        public static StringBuilder? Take([AllowNull] this StringBuilder builder, int count)
         {
-            return new StringBuilder(builder?.ToString(0, count) ?? string.Empty);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
+
+            return Create(builder.ToString(0, count));
         }
 
-        public static StringBuilder? TakeLast(this StringBuilder? builder, int count)
+        public static StringBuilder? TakeLast([AllowNull] this StringBuilder builder, int count)
         {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
+
             return builder.Skip(builder.Count() - count);
         }
 
-        public static StringBuilder? TakeWhile(this StringBuilder? builder, Func<char, bool> predicate)
+        public static StringBuilder TakeWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
-            int count = 0;
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            for (int i = 0; i < builder?.Count(); i++)
+            StringBuilder accumulator = Create();
+            int index = 0;
+            char element = builder.ElementAtOrDefault(index);
+
+            while (predicate.Invoke(element))
             {
-                if (predicate.Invoke(builder[i]))
-                {
-                    count++;
-                }
-            }
-
-            return builder?.Take(count);
-        }
-
-        public static StringBuilder? TakeWhile(this StringBuilder? builder, Func<char, int, bool> predicate)
-        {
-            int count = 0;
-
-            for (int i = 0; i < builder?.Count(); i++)
-            {
-                if (predicate.Invoke(builder[i], i))
-                {
-                    count++;
-                }
-            }
-
-            return builder?.Take(count);
-        }
-
-        public static void ThrowIfNullOrEmpty(this StringBuilder? builder)
-        {
-            builder.ThrowIfNullOrEmpty(null, null);
-        }
-
-        public static void ThrowIfNullOrEmpty(this StringBuilder? builder, string? paramName)
-        {
-            builder.ThrowIfNullOrEmpty(paramName, null);
-        }
-
-        public static void ThrowIfNullOrEmpty(this StringBuilder? builder, string? paramName, string? message)
-        {
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                throw new ArgumentNullException(paramName ?? nameof(builder), message);
-            }
-        }
-
-        public static void ThrowIfNullOrWhiteSpace(this StringBuilder? builder)
-        {
-            builder.ThrowIfNullOrWhiteSpace(null, null);
-        }
-
-        public static void ThrowIfNullOrWhiteSpace(this StringBuilder? builder, string? paramName)
-        {
-            builder.ThrowIfNullOrWhiteSpace(paramName, null);
-        }
-
-        public static void ThrowIfNullOrWhiteSpace(this StringBuilder? builder, string? paramName, string? message)
-        {
-            if (StringBuilderExtension.IsNullOrWhiteSpace(builder))
-            {
-                throw new ArgumentNullException(paramName ?? nameof(builder), message);
-            }
-        }
-
-        public static char[]? ToCharArray(this StringBuilder? builder)
-        {
-            return builder?.ToCharArray(0, builder.Count());
-        }
-
-        public static char[]? ToCharArray(this StringBuilder? builder, int startIndex)
-        {
-            return builder?.ToCharArray()?.Skip(startIndex + 1).ToArray();
-        }
-
-        public static char[] ToCharArray(this StringBuilder? builder, int startIndex, int count)
-        {
-            char[] accumulator = new char[count];
-
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
-            {
-                return [];
-            }
-
-            builder!.CopyTo(startIndex, accumulator, 0, count);
-            return accumulator;
-        }
-
-        public static IDictionary<int, char> ToDictionary(this StringBuilder builder)
-        {
-            return builder.Index().ToDictionary();
-        }
-
-        public static IDictionary<int, char> ToDictionary(this StringBuilder builder, IEqualityComparer<int>? comparer)
-        {
-            Dictionary<int, char> accumulator = new(comparer);
-
-            foreach (var item in builder.Index())
-            {
-                if (item is not null)
-                {
-                    accumulator.Add(item.Item1, item.Item2);
-                }
+                accumulator.Append(element);
+                element = builder.ElementAtOrDefault(++index);
             }
 
             return accumulator;
         }
 
-        public static IDictionary<int, char> ToDictionary(this IEnumerable<Tuple<int, char>> tuples)
+        public static StringBuilder? TakeWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, bool> predicate)
         {
-            Dictionary<int, char> accumulator = new();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            StringBuilder accumulator = Create();
+            int index = 0;
+            char element = builder.ElementAtOrDefault(index);
+
+            while (predicate.Invoke(element, index))
+            {
+                accumulator.Append(element);
+                element = builder.ElementAtOrDefault(++index);
+            }
+
+            return accumulator;
+        }
+
+        public static TElement[] ToArray<TElement>([AllowNull] this StringBuilder builder) where TElement : IConvertible
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return [.. builder.ToList().Cast<TElement>()];
+        }
+
+        public static TElement[] ToArray<TElement>([AllowNull] this StringBuilder builder, int startIndex) where TElement : IConvertible
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return [.. builder.ToList(startIndex).Cast<TElement>()];
+        }
+
+        public static TElement[] ToArray<TElement>([AllowNull] this StringBuilder builder, int startIndex, int count) where TElement : IConvertible
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            return [.. builder.ToList(startIndex, count).Cast<TElement>()];
+        }
+
+        public static char[] ToCharArray([AllowNull] this StringBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.ToArray<char>();
+        }
+
+        public static char[] ToCharArray(this StringBuilder builder, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return builder.ToArray<char>(startIndex);
+        }
+
+        public static char[] ToCharArray(this StringBuilder builder, int startIndex, int count)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+            if (startIndex + count > builder.Count())
+            {
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
+            }
+
+            return builder.ToArray<char>(startIndex, count);
+        }
+
+        public static Dictionary<int, char> ToDictionary([AllowNull] this StringBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.Index().ToDictionary(null);
+        }
+
+        public static Dictionary<int, char> ToDictionary([AllowNull] this StringBuilder builder, IEqualityComparer<int>? comparer)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.Index().ToDictionary(comparer ?? EqualityComparer<int>.Default);
+        }
+
+        public static Dictionary<int, char> ToDictionary([AllowNull] this IEnumerable<Tuple<int, char>> tuples)
+        {
+            ArgumentNullException.ThrowIfNull(tuples, nameof(tuples));
+
+            return tuples.ToDictionary(null);
+        }
+
+        public static Dictionary<int, char> ToDictionary([AllowNull] this IEnumerable<Tuple<int, char>> tuples, IEqualityComparer<int>? comparer)
+        {
+            ArgumentNullException.ThrowIfNull(tuples, nameof(tuples));
+
+            Dictionary<int, char> accumulator = new(comparer ?? EqualityComparer<int>.Default);
 
             foreach (var item in tuples)
             {
@@ -1799,62 +2617,125 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
-        public static IList<char>? ToList(this StringBuilder? builder)
+        public static HashSet<char> ToHashSet([AllowNull] this StringBuilder builder)
         {
-            return builder?.ToCharArray()?.ToList();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return builder.ToHashSet(null);
         }
 
-        public static IList<char>? ToList(this StringBuilder? builder, int startIndex)
+        public static HashSet<char> ToHashSet([AllowNull] this StringBuilder builder, IEqualityComparer<char>? comparer)
         {
-            return builder?.ToCharArray(startIndex)?.ToList();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return new(builder.ToCharArray(), comparer ?? EqualityComparer<char>.Default);
         }
 
-        public static IList<char>? ToList(this StringBuilder? builder, int startIndex, int count)
+        public static List<char> ToList([AllowNull] this StringBuilder builder)
         {
-            return builder?.ToCharArray(startIndex, count)?.ToList();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            return [.. builder.ToCharArray()];
         }
 
-        public static string? ToString(this StringBuilder? builder, int startIndex)
+        public static List<char> ToList([AllowNull] this StringBuilder builder, int startIndex)
         {
-            return builder?.ToCharArray(startIndex)?.ToString();
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return [.. builder.ToCharArray(startIndex)];
         }
 
-        public static StringBuilder Where(this StringBuilder? builder, Func<char, bool> filter)
+        public static List<char> ToList([AllowNull] this StringBuilder builder, int startIndex, int count)
         {
-            StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            if (startIndex + count > builder.Count())
             {
-                accumulator.Capacity = 0;
-                return accumulator;
+                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
             }
 
-            for (var i = 0; i < builder.Count(); i++)
+            return [.. builder.ToCharArray(startIndex, count)];
+        }
+
+        public static ILookup<int, char> ToLookup(
+            [AllowNull] this StringBuilder source,
+            Func<StringBuilder, int>? keySelector,
+            Func<StringBuilder, char>? elementSelector)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            return source.ToLookup(keySelector, elementSelector, null);
+        }
+
+        public static ILookup<int, char> ToLookup(
+            [AllowNull] this StringBuilder source,
+            [AllowNull] Func<StringBuilder, int> keySelector,
+            [AllowNull] Func<StringBuilder, char> elementSelector,
+            IEqualityComparer<int>? comparer)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(keySelector, nameof(keySelector));
+            ArgumentNullException.ThrowIfNull(elementSelector, nameof(elementSelector));
+
+            return source.ToLookup(keySelector, elementSelector, comparer ?? EqualityComparer<int>.Default);
+        }
+
+        public static string ToString([AllowNull] this StringBuilder builder, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
+
+            return new string(builder.ToCharArray(startIndex));
+        }
+
+        public static StringBuilder Where([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+
+            StringBuilder accumulator = Create();
+
+            if (builder.Count() < 1)
             {
-                if (filter.Invoke(builder![i]))
+                return Empty();
+            }
+
+            foreach (var item in builder.GetEnumerator())
+            {
+                if (predicate.Invoke(item))
                 {
-                    accumulator.Append(builder[i]);
+                    accumulator.Append(item);
                 }
             }
 
             return accumulator;
         }
 
-        public static StringBuilder Where(this StringBuilder? builder, Func<char, int, bool> filter)
+        public static StringBuilder Where([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, bool> predicate)
         {
-            StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            if (StringBuilderExtension.IsNullOrEmpty(builder))
+            StringBuilder accumulator = Create();
+
+            if (builder.Count() < 1)
             {
-                accumulator.Capacity = 0;
-                return accumulator;
+                return Empty();
             }
 
-            for (var i = 0; i < builder.Count(); i++)
+            int index = 0;
+
+            foreach (var item in builder.GetEnumerator())
             {
-                if (filter.Invoke(builder![i], i))
+                if (predicate.Invoke(item, index++))
                 {
-                    accumulator.Append(builder[i]);
+                    accumulator.Append(item);
                 }
             }
 
