@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MSBuild.ExtensionPack.TaskFactory.PowerShell</RootNamespace>
+    <AssemblyName>MSBuild.ExtensionPack.TaskFactory.PowerShell</AssemblyName>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <AssemblyOriginatorKeyFile>D:\GitHub\MSBuildExtensionPack\Common\RamTunedMegaCode.public.snk</AssemblyOriginatorKeyFile>
+    <Authors>John Merryweather Cooper, Mike Fourie</Authors>
+    <Company>Ram Tuned Mega Code</Company>
+    <Copyright>Copyright (c) 2008-2025, John Merryweather Cooper.  All Rights Reserved.</Copyright>
+    <DelaySign>True</DelaySign>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IncludeSymbols>True</IncludeSymbols>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <Nullable>enable</Nullable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/jmcooper176/MSBuildExtensionPack</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Product>MSBuild Extension Pack 6.0</Product>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/jmcooper176/MSBuildExtensionPack.git</RepositoryUrl>
+    <SignAssembly>True</SignAssembly>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Title>MSBuild Extension Pack Task Factory PowerShell</Title>
+    <Version>6.0.0</Version>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WarningLevel>9999</WarningLevel>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <WarningLevel>9999</WarningLevel>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="XmlSamples\PowerShellTaskFactory.proj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.14.8" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.5.2" />
+    <PackageReference Include="System.Management" Version="9.0.7" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
+    <PackageReference Include="System.Reflection.DispatchProxy" Version="4.8.2" />
+  </ItemGroup>
+</Project>

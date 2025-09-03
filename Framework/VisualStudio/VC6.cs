@@ -1,0 +1,281 @@
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
+namespace MSBuild.ExtensionPack.VisualStudio
+{
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+
+    using System;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+
+    /// <summary>
+    /// <b>Valid TaskActions are:</b>
+    /// <para><i>Build</i> ( <b>Required:</b> Projects <b>Optional:</b> MSDEVPath, StopOnError)</para>
+    /// <para><b>Remote Execution Support:</b> NA</para>
+    /// <para/>
+    /// </summary>
+    /// <example>
+    /// <code lang="xml">
+    ///<![CDATA[
+    ///<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ///<PropertyGroup>
+    ///<TPath>$(MSBuildProjectDirectory)\..\MSBuild.ExtensionPack.tasks</TPath>
+    ///<TPath Condition="Exists('$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks')">$(MSBuildProjectDirectory)\..\..\Common\MSBuild.ExtensionPack.tasks</TPath>
+    ///</PropertyGroup>
+    ///<Import Project="$(TPath)"/>
+    ///<ItemGroup>
+    ///<!-- This uses $(Platform) and $(Configuration) for all projects in the .dsp file -->
+    ///<ProjectsToBuild Include="C:\MyVC6Project.dsp"/>
+    ///<!-- Uses supplied platform and configuration for all projects in the .dsp file -->
+    ///<ProjectsToBuild Include="C:\MyVC6Project2.dsp">
+    ///<Platform>Win32</Platform>
+    ///<Configuration>Debug</Configuration>
+    ///</ProjectsToBuild>
+    ///<!-- Uses $(Platform) and $(Configuration) for just the specified projects in the .dsw file -->
+    ///<ProjectsToBuild Include="C:\MyVC6Project3.dsw">
+    ///<Projects>Project1;Project2</Projects>
+    ///</ProjectsToBuild>
+    ///</ItemGroup>
+    ///<Target Name="Default">
+    ///<!-- Build a collection of VC6 projects -->
+    ///<MSBuild.ExtensionPack.VisualStudio.VC6 TaskAction="Build" Projects="@(ProjectsToBuild)"/>
+    ///</Target>
+    ///</Project>
+    ///]]>
+    /// </code>
+    /// </example>
+    public class VC6 : BaseTask
+    {
+        #region Private Fields
+
+        private const string BuildTaskAction = "Build";
+        private const string CleanTaskAction = "Clean";
+        private const string ConfigurationMetadataName = "Configuration";
+        private const string DefaultMSDEVPath = @"\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE";
+        private const string PlatformMetadataName = "Platform";
+        private const string ProjectsMetadataName = "Projects";
+        private const string RebuildTaskAction = "Rebuild";
+        private const char Separator = ';';
+
+        #endregion Private Fields
+
+        #region Private Methods
+
+        private void Build()
+        {
+            if (this.Projects is null)
+            {
+                this.Log.LogError("The collection passed to Projects is empty");
+                return;
+            }
+
+            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Building Projects Collection: {0} projects", this.Projects.Length));
+            if (this.Projects.Any(project => !this.BuildProject(project) && this.StopOnError))
+            {
+                this.LogTaskMessage("VC6 Task Execution Failed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]. Stopped by StopOnError set on true");
+                return;
+            }
+
+            this.LogTaskMessage("VC6 Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
+        }
+
+        private bool BuildProject(ITaskItem project)
+        {
+            string projectNames = project.GetMetadata(ProjectsMetadataName);
+            if (string.IsNullOrEmpty(projectNames))
+            {
+                this.Log.LogMessage(MessageImportance.Low, "No project names specified. Using 'ALL'.");
+                projectNames = "ALL";
+            }
+            else
+            {
+                this.Log.LogMessage(MessageImportance.Low, "Project names '{0}'", projectNames);
+            }
+
+            string platformName = project.GetMetadata(PlatformMetadataName);
+            if (string.IsNullOrEmpty(platformName))
+            {
+                this.Log.LogMessage(MessageImportance.Low, "No platform name specified. Using 'Win32'.");
+                platformName = "Win32";
+            }
+            else
+            {
+                this.Log.LogMessage(MessageImportance.Low, "Platform name '{0}'", platformName);
+            }
+
+            string configurationName = project.GetMetadata(ConfigurationMetadataName);
+            if (string.IsNullOrEmpty(configurationName))
+            {
+                this.Log.LogMessage(MessageImportance.Low, "No configuration name specified. Using 'Debug'.");
+                configurationName = "Debug";
+            }
+            else
+            {
+                this.Log.LogMessage(MessageImportance.Low, "Configuration names '{0}'", configurationName);
+            }
+
+            bool allBuildsSucceeded = true;
+            foreach (string projectName in projectNames.Split(Separator))
+            {
+                using (Process proc = new Process())
+                {
+                    proc.StartInfo.FileName = this.MSDEVPath;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.RedirectStandardError = true;
+
+                    StringBuilder argumentsBuilder = new System.Text.StringBuilder();
+                    argumentsBuilder.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" /OUT \"{0}.log\" /MAKE ", project.ItemSpec);
+                    argumentsBuilder.AppendFormat(CultureInfo.CurrentCulture, "\"{0} - {1} {2}\"", projectName, platformName, configurationName);
+
+                    if (this.TaskAction == CleanTaskAction)
+                    {
+                        argumentsBuilder.Append(" /CLEAN");
+                    }
+                    else if (this.TaskAction == RebuildTaskAction)
+                    {
+                        argumentsBuilder.Append(" /REBUILD");
+                    }
+
+                    proc.StartInfo.Arguments = argumentsBuilder.ToString();
+
+                    // start the process
+                    this.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+
+                    proc.Start();
+                    proc.WaitForExit();
+
+                    string outputStream = proc.StandardOutput.ReadToEnd();
+                    if (outputStream.Length > 0)
+                    {
+                        this.LogTaskMessage(outputStream);
+                    }
+
+                    string errorStream = proc.StandardError.ReadToEnd();
+                    if (errorStream.Length > 0)
+                    {
+                        this.Log.LogError(errorStream);
+                    }
+
+                    proc.WaitForExit();
+                    if (proc.ExitCode == 0)
+                    {
+                        continue;
+                    }
+
+                    this.Log.LogError("Non-zero exit code from MSDEV.exe: " + proc.ExitCode);
+                    try
+                    {
+                        using (FileStream myStreamFile = new FileStream(project.ItemSpec + ".log", FileMode.Open))
+                        {
+                            StreamReader myStream = new System.IO.StreamReader(myStreamFile);
+                            string myBuffer = myStream.ReadToEnd();
+                            this.Log.LogError(myBuffer);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
+                    }
+
+                    allBuildsSucceeded = false;
+                }
+            }
+
+            return allBuildsSucceeded;
+        }
+
+        #endregion Private Methods
+
+        #region Protected Methods
+
+        protected override void InternalExecute()
+        {
+            if (!this.TargetingLocalMachine())
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(this.MSDEVPath))
+            {
+                string programFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                if (string.IsNullOrEmpty(programFilePath))
+                {
+                    this.Log.LogError("Failed to find the special folder 'ProgramFiles'");
+                    return;
+                }
+
+                if (File.Exists(programFilePath + DefaultMSDEVPath))
+                {
+                    this.MSDEVPath = programFilePath + DefaultMSDEVPath;
+                }
+                else
+                {
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "MSDEV.exe was not found in the default location. Use MSDEVPath to specify it. Searched at: {0}", programFilePath + DefaultMSDEVPath));
+                    return;
+                }
+            }
+
+            switch (this.TaskAction)
+            {
+                case BuildTaskAction:
+                case CleanTaskAction:
+                case RebuildTaskAction:
+                    this.Build();
+                    break;
+
+                default:
+                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    return;
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Public Properties
+
+        /// <summary>
+        /// Sets the MSDEV path. Default is [Program Files]\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE
+        /// </summary>
+        public string MSDEVPath { get; set; }
+
+        /// <summary>
+        /// Sets the .dsp/.dsw projects to build.
+        /// </summary>
+        /// <remarks>
+        /// An additional Projects metadata item may be specified for each project to indicate which workspace project(s) to build.
+        /// If none is supplied, the special-case 'ALL' project name is used to inform MSDEV to build all projects contained within
+        /// the workspace/project.
+        /// </remarks>
+        [Required]
+        public ITaskItem[] Projects { get; set; }
+
+        /// <summary>
+        /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.
+        /// </summary>
+        public bool StopOnError { get; set; }
+
+        #endregion Public Properties
+    }
+}
