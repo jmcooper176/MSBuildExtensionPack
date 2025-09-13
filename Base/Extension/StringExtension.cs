@@ -28,29 +28,24 @@ namespace MSBuild.ExtensionPack
 
         public static string Append(this string? originalValue, string? appendValue)
         {
-            StringBuilder builder = new(originalValue);
-            builder.Append(appendValue);
-            return builder.ToString();
+            return string.Concat(originalValue, appendValue);
         }
 
         public static string Append(this string? originalValue, object? appendValue)
         {
-            StringBuilder builder = new(originalValue);
-            builder.Append(appendValue);
-            return builder.ToString();
+            return string.Concat(originalValue, appendValue);
         }
 
         public static string Append(this string? originalValue, char appendValue)
         {
-            return Append(originalValue, appendValue, 1);
+            return originalValue.Append(appendValue, 1);
         }
 
         public static string Append(this string? originalValue, char appendValue, int repeatCount)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(repeatCount, nameof(repeatCount));
-            StringBuilder builder = new(originalValue);
-            builder.Append(appendValue, repeatCount);
-            return builder.ToString();
+
+            return string.Concat(originalValue, new string(appendValue, repeatCount));
         }
 
         public static string AppendFormat(
@@ -64,9 +59,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments));
         }
 
         public static string AppendFormat(
@@ -80,9 +73,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider ?? CultureInfo.CurrentCulture, format, argument);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, argument));
         }
 
         public static string AppendFormat(
@@ -97,9 +88,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider, format, first, second);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second));
         }
 
         public static string AppendFormat(
@@ -115,9 +104,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider, format, first, second, third);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second, third));
         }
 
         public static string AppendFormat(
@@ -126,14 +113,12 @@ namespace MSBuild.ExtensionPack
             CompositeFormat format,
             params object?[] arguments)
         {
-            if (arguments is null)
+            if (arguments is null || arguments.Length < 1)
             {
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments));
         }
 
         public static string AppendFormat<TArg>(
@@ -147,9 +132,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider ?? CultureInfo.CurrentCulture, format, argument);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, argument));
         }
 
         public static string AppendFormat<TFirst, TSecond>(
@@ -164,9 +147,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider ?? CultureInfo.CurrentCulture, format, first, second);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second));
         }
 
         public static string AppendFormat<TFirst, TSecond, TThird>(
@@ -182,9 +163,7 @@ namespace MSBuild.ExtensionPack
                 return originalValue ?? string.Empty;
             }
 
-            StringBuilder builder = new(originalValue);
-            builder.AppendFormat(provider ?? CultureInfo.CurrentCulture, format, first, second, third);
-            return builder.ToString();
+            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second, third));
         }
 
         public static string AppendFormat(this string originalValue, string format, object? argument)
@@ -286,45 +265,32 @@ namespace MSBuild.ExtensionPack
 
         public static string Prepend(this string? originalValue, string? prependValue)
         {
-            StringBuilder builder = new(originalValue);
-            builder.Insert(0, prependValue);
-            return builder.ToString();
+            return string.Concat(prependValue, originalValue);
         }
 
         public static string Prepend(this string? originalValue, object? prependValue)
         {
-            StringBuilder builder = new(originalValue);
-            builder.Insert(0, prependValue);
-            return builder.ToString();
+            return string.Concat(prependValue, originalValue);
         }
 
         public static string Prepend(this string? originalValue, char prependValue, int repeatCount)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(repeatCount, nameof(repeatCount));
-            StringBuilder builder = new(originalValue);
-            builder.Insert(0, new string(prependValue, repeatCount).ToCharArray());
-            return builder.ToString();
+            return string.Concat(new string(prependValue, repeatCount), originalValue);
         }
 
         public static string Prepend(this string? originalValue, char prependValue)
         {
-            StringBuilder builder = new(originalValue);
-            builder.Insert(0, prependValue);
-            return builder.ToString();
+            return originalValue.Prepend(prependValue, 1);
         }
 
-        public static string Replace(this string? originalValue, string oldValue, string? newValue)
+        public static string? Replace(this string? originalValue, string oldValue, string? newValue)
         {
-            StringBuilder? builder = new(originalValue);
-            builder.Replace(oldValue, newValue);
-            return builder.ToString();
+            return originalValue?.Replace(oldValue, newValue);
         }
 
-        public static string Replace(this string? originalValue, char oldValue, char newValue)
+        public static string? Replace(this string? originalValue, char oldValue, char newValue)
         {
-            StringBuilder? builder = new(originalValue);
-            builder.Replace(oldValue, newValue);
-            return builder.ToString();
+            return originalValue?.Replace(oldValue, newValue);
         }
 
         public static string Replace(this string? originalValue, char oldValue, char newValue, int startIndex, int count)
@@ -332,9 +298,7 @@ namespace MSBuild.ExtensionPack
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startIndex, originalValue?.Length ?? 0, nameof(startIndex));
 
-            StringBuilder? builder = new(originalValue);
-            builder.Replace(oldValue, newValue, startIndex, count);
-            return builder.ToString();
+            return originalValue.Replace(oldValue, newValue, startIndex, count);
         }
 
         public static string Replace(this string? originalValue, string oldValue, string? newValue, int startIndex, int count)
@@ -342,9 +306,7 @@ namespace MSBuild.ExtensionPack
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startIndex, originalValue?.Length ?? 0, nameof(startIndex));
 
-            StringBuilder? builder = new(originalValue);
-            builder.Replace(oldValue, newValue, startIndex, count);
-            return builder.ToString();
+            return originalValue.Replace(oldValue, newValue, startIndex, count);
         }
 
         #endregion Public Methods

@@ -30,74 +30,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
 {
     public static class StringBuilderExtension
     {
-        #region Internal Methods
-
-        internal static bool IsInRange(int index, int inclusiveStart, int exclusiveEnd)
-        {
-            return index >= inclusiveStart && index < exclusiveEnd;
-        }
-
-        internal static bool IsInRange(int index, Range range)
-        {
-            return IsInRange(index, range.Start.Value, range.End.Value);
-        }
-
-        internal static bool IsInRange(Index index, int inclusiveStart, int exclusiveEnd)
-        {
-            return IsInRange(index.Value, inclusiveStart..^exclusiveEnd);
-        }
-
-        internal static bool IsInRange(Index index, Range range)
-        {
-            return IsInRange(index.Value, range);
-        }
-
-        internal static bool IsInRange<TIndex>(TIndex index, Range range) where TIndex : IConvertible, IComparable<TIndex>
-        {
-            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.Start.Value) >= 0)
-                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.End.Value) < 0);
-        }
-
-        internal static bool IsInRange<TIndex>(TIndex index, int inclusiveStart, int exclusiveEnd) where TIndex : IConvertible, IComparable<TIndex>
-        {
-            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(inclusiveStart) >= 0)
-                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(exclusiveEnd) < 0);
-        }
-
-        internal static bool IsOutOfRange(int index, int inclusiveStart, int exclusiveEnd)
-        {
-            return index < inclusiveStart || index >= exclusiveEnd;
-        }
-
-        internal static bool IsOutOfRange(int index, Range range)
-        {
-            return IsOutOfRange(index, range.Start.Value, range.End.Value);
-        }
-
-        internal static bool IsOutOfRange(Index index, int inclusiveStart, int exclusiveEnd)
-        {
-            return IsOutOfRange(index.Value, inclusiveStart..^exclusiveEnd);
-        }
-
-        internal static bool IsOutOfRange(Index index, Range range)
-        {
-            return IsOutOfRange(index.Value, range);
-        }
-
-        internal static bool IsOutOfRange<TIndex>(TIndex index, Range range) where TIndex : IConvertible, IComparable<TIndex>
-        {
-            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.Start.Value) < 0)
-                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(range.End.Value) >= 0);
-        }
-
-        internal static bool IsOutOfRange<TIndex>(TIndex index, int inclusiveStart, int exclusiveEnd) where TIndex : IConvertible, IComparable<TIndex>
-        {
-            return (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(inclusiveStart) < 0)
-                && (Convert.ToInt32(index, CultureInfo.InvariantCulture).CompareTo(exclusiveEnd) >= 0);
-        }
-
-        #endregion Internal Methods
-
         #region Public Fields
 
         public const int OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY = 16;
@@ -118,7 +50,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (char item in builder)
             {
                 if (!predicate.Invoke(item))
                 {
@@ -154,7 +86,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 if (predicate.Invoke(item))
                 {
@@ -265,7 +197,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static IEnumerable<char> AsEnumerable([AllowNull] this StringBuilder builder)
         {
-            return builder.GetEnumerator();
+            return builder.ToCharArray();
         }
 
         public static IEnumerable<TResult> Cast<TResult>([AllowNull] this StringBuilder builder) where TResult : IConvertible
@@ -467,7 +399,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             int counter = 0;
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 if (predicate.Invoke(item))
                 {
@@ -787,7 +719,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 accumulator.Append(item);
             }
@@ -803,7 +735,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
 
-            foreach (var item in builder.Slice(startIndex).GetEnumerator())
+            foreach (var item in builder.Slice(startIndex))
             {
                 accumulator.Append(item);
             }
@@ -825,7 +757,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             StringBuilder accumulator = new(OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY);
 
-            foreach (var item in builder.Slice(startIndex, count).GetEnumerator())
+            foreach (var item in builder.Slice(startIndex, count))
             {
                 accumulator.Append(item);
             }
@@ -1024,7 +956,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentOutOfRangeException.ThrowIfNegative(index.Value, nameof(index));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(index.Value, builder.Count(), nameof(index));
 
-            if (IsOutOfRange(index, 0..^builder.Count()))
+            if (ExceptionExtension.IsOutOfRange(index, 0..^builder.Count()))
             {
                 throw new ArgumentOutOfRangeException(nameof(index), index, $"Parameter {nameof(index)} {index} is out of range.");
             }
@@ -1038,7 +970,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentOutOfRangeException.ThrowIfNegative(index, nameof(index));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
 
-            if (IsOutOfRange(index, 0..^builder.Count()))
+            if (ExceptionExtension.IsOutOfRange(index, 0..^builder.Count()))
             {
                 return char.MinValue;
             }
@@ -1052,7 +984,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentOutOfRangeException.ThrowIfNegative(index.Value, nameof(index));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(index.Value, builder.Count(), nameof(index));
 
-            if (!IsInRange(index, 0..^builder.Count()))
+            if (!ExceptionExtension.IsInRange(index, 0..^builder.Count()))
             {
                 return char.MinValue;
             }
@@ -1107,7 +1039,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
             }
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 if (predicate.Invoke(item))
                 {
@@ -1135,7 +1067,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 if (predicate.Invoke(item))
                 {
@@ -1146,60 +1078,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return defaultValue;
         }
 
-        public static IEnumerable<char> GetEnumerator([AllowNull] this StringBuilder builder)
+        public static IEnumerator<char> GetEnumerator(this StringBuilder builder)
         {
-            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            StringBuilderInfo info = new(builder);
 
-            int index;
-            char current;
-            List<char> enumerator = new(builder.Count());
-            bool enumeratorDisposed = false;
-
-            bool MoveNext()
-            {
-                lock (builder)
-                {
-                    bool result = ++index < builder.Count();
-                    current = result ? builder[index] : char.MinValue;
-                    return result;
-                }
-            }
-
-            void Reset()
-            {
-                Dispose(disposing: false);
-            }
-
-            void Dispose(bool disposing)
-            {
-                if (disposing)
-                {
-                    if (!enumeratorDisposed)
-                    {
-                        enumerator.Clear();
-                        enumeratorDisposed = true;
-                    }
-                }
-
-                index = -1;
-                current = char.MinValue;
-            }
-
-            try
-            {
-                Reset();
-
-                while (MoveNext())
-                {
-                    enumerator.Add(current);
-                }
-
-                return enumerator;
-            }
-            finally
-            {
-                Dispose(disposing: true);
-            }
+            return info.GetEnumerator();
         }
 
         public static int GetLowerBound(this StringBuilder builder)
@@ -1223,7 +1106,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             int index = 0;
             List<Tuple<int, char>> accumulator = new(builder.Count());
 
-            while (IsInRange(index, 0..^builder.Count()))
+            while (ExceptionExtension.IsInRange(index, 0..^builder.Count()))
             {
                 accumulator.Add(Tuple.Create<int, char>(index, builder.ElementAtOrDefault(index)));
 
@@ -1240,7 +1123,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             var index = Enum.GetValuesAsUnderlyingType<TEnum>().Cast<int>().FirstOrDefault();
             List<Tuple<TEnum, char>> accumulator = new(builder.Count());
 
-            while (IsInRange(index, 0..^builder.Count()))
+            while (ExceptionExtension.IsInRange(index, 0..^builder.Count()))
             {
                 accumulator.Add(Tuple.Create<TEnum, char>((TEnum)Enum.ToObject(typeof(TEnum), index), builder.ElementAtOrDefault(index)));
 
@@ -1257,7 +1140,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             System.Index index = 0;
             List<Tuple<Index, char>> accumulator = new(builder.Count());
 
-            while (IsInRange(index, 0..^builder.Count()))
+            while (ExceptionExtension.IsInRange(index, 0..^builder.Count()))
             {
                 accumulator.Add(Tuple.Create<Index, char>(index, builder.ElementAtOrDefault(index)));
 
@@ -1562,7 +1445,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new ArgumentException($"Enlarging Source {nameof(builder)} by Value {nameof(value)} would exceed MaxCapacity '{builder.MaxCapacity}'.");
             }
 
-            foreach (var item in value.Reverse().GetEnumerator())
+            foreach (var item in value.Reverse())
             {
                 builder.Insert(index, item);
             }
@@ -1688,7 +1571,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
             }
 
-            foreach (var item in builder.Reverse().GetEnumerator())
+            foreach (var item in builder.Reverse())
             {
                 if (predicate.Invoke(item))
                 {
@@ -1724,7 +1607,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 return defaultValue;
             }
 
-            foreach (var item in builder.Reverse().GetEnumerator())
+            foreach (var item in builder.Reverse())
             {
                 if (predicate.Invoke(item))
                 {
@@ -2290,7 +2173,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             if (!IsNullOrEmpty(builder))
             {
-                foreach (var item in builder.GetEnumerator())
+                foreach (var item in builder)
                 {
                     accumulator.Add(selector.Invoke(item));
                 }
@@ -2310,7 +2193,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             {
                 int index = 0;
 
-                foreach (var item in builder.GetEnumerator())
+                foreach (var item in builder)
                 {
                     accumulator.Add(selector.Invoke(item, index++));
                 }
@@ -2706,7 +2589,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 return Empty();
             }
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 if (predicate.Invoke(item))
                 {
@@ -2731,7 +2614,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             int index = 0;
 
-            foreach (var item in builder.GetEnumerator())
+            foreach (var item in builder)
             {
                 if (predicate.Invoke(item, index++))
                 {

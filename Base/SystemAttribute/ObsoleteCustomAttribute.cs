@@ -21,19 +21,40 @@ using System.Reflection;
 
 namespace MSBuild.ExtensionPack.Base.SystemAttribute
 {
+    /// <summary>
+    /// Implements an enhanced <see cref="ObsoleteAttribute"/> attribute.
+    /// </summary>
+    /// <seealso cref="MSBuild.ExtensionPack.Base.SystemAttribute.CustomAttribute"/>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
     public class ObsoleteCustomAttribute : CustomAttribute
     {
         #region Private Fields
 
+        /// <summary>
+        /// The base number
+        /// </summary>
         private const int BASE_NUMBER = 1;
+
+        /// <summary>
+        /// The prefix
+        /// </summary>
         private const string PREFIX = "OBSATTR";
+
+        /// <summary>
+        /// The counter
+        /// </summary>
         private static int counter = BASE_NUMBER;
 
         #endregion Private Fields
 
         #region Protected Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="number"> The number.</param>
+        /// <param name="isError">if set to <c>true</c> [is error].</param>
         protected ObsoleteCustomAttribute(string? message, int number, bool isError)
             : base(message, number)
         {
@@ -54,38 +75,69 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
 
         #region Protected Properties
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is default.
+        /// </summary>
+        /// <value><c>true</c> if this instance is default; otherwise, <c>false</c>.</value>
         protected override bool IsDefault { get; }
 
         #endregion Protected Properties
 
         #region Public Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
         public ObsoleteCustomAttribute()
                     : this(null, BASE_NUMBER, false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
+        /// <param name="isError">if set to <c>true</c> [is error].</param>
         public ObsoleteCustomAttribute(bool isError)
                     : this(null, BASE_NUMBER, isError)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public ObsoleteCustomAttribute(string? message)
             : this(message, counter++, false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="isError">if set to <c>true</c> [is error].</param>
         public ObsoleteCustomAttribute(string? message, bool isError)
             : this(message, counter++, isError)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
+        /// <param name="message">  The message.</param>
+        /// <param name="urlFormat">The URL format.</param>
         public ObsoleteCustomAttribute(string? message, string? urlFormat)
             : this(message, counter++, false)
         {
             UrlFormat = urlFormat;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
+        /// </summary>
+        /// <param name="message">  The message.</param>
+        /// <param name="urlFormat">The URL format.</param>
+        /// <param name="isError">  if set to <c>true</c> [is error].</param>
         public ObsoleteCustomAttribute(string? message, string? urlFormat, bool isError)
             : this(message, counter++, isError)
         {
@@ -96,40 +148,66 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is error.
+        /// </summary>
+        /// <value><c>true</c> if this instance is error; otherwise, <c>false</c>.</value>
         public bool IsError { get; private set; }
 
+        /// <summary>
+        /// Gets the message.
+        /// </summary>
+        /// <value>The message.</value>
         public override string? Message { get; }
+
+        /// <summary>
+        /// When implemented in a derived class, gets a unique identifier for this <see cref="Attribute"/>.
+        /// </summary>
         public override object TypeId { get; }
 
         #endregion Public Properties
 
         #region Public Methods
 
-        public new static IEnumerable<Attribute> GetCustomAttributes([AllowNull] Module element)
+        /// <summary>
+        /// Tries the get custom attribute.
+        /// </summary>
+        /// <param name="type">   The type.</param>
+        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
+        public static bool TryGetCustomAttribute(Type type, bool inherit, out ObsoleteCustomAttribute? value)
         {
-            return GetCustomAttributes<ObsoleteCustomAttribute>(element, false);
+            value = null;
+            var result = CustomAttribute.IsDefinedOnType<ObsoleteCustomAttribute>(type, inherit);
+
+            if (result)
+            {
+                value = CustomAttribute.GetTypeInfo(type).GetCustomAttribute<ObsoleteCustomAttribute>(inherit);
+            }
+
+            return result;
         }
 
-        public new static IEnumerable<Attribute> GetCustomAttributes([AllowNull] MemberInfo element)
-        {
-            return GetCustomAttributes<ObsoleteCustomAttribute>(element, false);
-        }
-
-        public new static IEnumerable<Attribute> GetCustomAttributes([AllowNull] Assembly element)
-        {
-            return GetCustomAttributes<ObsoleteCustomAttribute>(element, false);
-        }
-
-        public new static IEnumerable<Attribute> GetCustomAttributes([AllowNull] Module element, bool inherit)
-        {
-            return GetCustomAttributes<ObsoleteCustomAttribute>(element, inherit);
-        }
-
+        /// <summary>
+        /// Returns a value that indicates whether this instance is equal to a specified object.
+        /// </summary>
+        /// <param name="obj">An <see cref="Object"/> to compare with this instance or <see langword="null"/>.</param>
+        /// <returns>
+        /// <see langword="true"/> if <paramref name="obj"/> and this instance are of the same type and have identical field values;
+        /// otherwise, <see langword="false"/>.
+        /// </returns>
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
             return base.Equals(obj) && Equals(this, obj);
         }
 
+        /// <summary>
+        /// Equals the specified x.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <returns></returns>
         public override bool Equals(Attribute? x, Attribute? y)
         {
             ObsoleteCustomAttribute? xPrime = x as ObsoleteCustomAttribute;
@@ -149,31 +227,56 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             }
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), IsError);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public int GetHashCode([DisallowNull] ObsoleteCustomAttribute obj)
         {
             return HashCode.Combine(GetHashCode(obj as CustomAttribute), this.GetHashCode());
         }
 
+        /// <summary>
+        /// When overridden in a derived class, indicates whether the value of this instance is the default value for the derived class.
+        /// </summary>
+        /// <returns><see langword="true"/> if this instance is the default attribute for the class; otherwise, <see langword="false"/>.</returns>
         public override bool IsDefaultAttribute()
         {
-            return base.IsDefaultAttribute() || isDefault;
+            return base.IsDefaultAttribute() || IsDefault;
         }
 
+        /// <summary>
+        /// Determines whether [is error attribute].
+        /// </summary>
+        /// <returns><c>true</c> if [is error attribute]; otherwise, <c>false</c>.</returns>
         public virtual bool IsErrorAttribute()
         {
             return IsError;
         }
 
+        /// <summary>
+        /// Sets the is error attribute.
+        /// </summary>
+        /// <param name="value">if set to <c>true</c> [value].</param>
         public virtual void SetIsErrorAttribute(bool value)
         {
             IsError = value;
         }
 
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string? ToString()
         {
             if (this.IsDefaultAttribute())
@@ -184,19 +287,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             {
                 return $"{this.GetType().Name} : In Error => {IsError} {DiagnosticId} {UrlFormat} : {Message}";
             }
-        }
-
-        public bool TryGetCustomAttribute(Type type, bool inherit, out ObsoleteCustomAttribute? value)
-        {
-            value = null;
-            var result = IsDefinedOnType<ObsoleteCustomAttribute>(type, inherit);
-
-            if (result)
-            {
-                value = type.GetTypeInfo().GetCustomAttribute<ObsoleteCustomAttribute>(inherit);
-            }
-
-            return result;
         }
 
         #endregion Public Methods
