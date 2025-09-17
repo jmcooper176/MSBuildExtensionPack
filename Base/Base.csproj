@@ -29,6 +29,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

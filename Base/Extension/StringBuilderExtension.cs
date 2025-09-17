@@ -32,6 +32,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
     {
         #region Public Fields
 
+        /// <summary>
+        /// The optimal initial stringbuilder capacity.
+        /// </summary>
         public const int OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY = 16;
 
         #endregion Public Fields
@@ -171,6 +174,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Appends the specified element.
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="source"> The source.</param>
+        /// <param name="element">The element.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">source</exception>
         public static StringBuilder Append<TElement>([AllowNull] this StringBuilder source, TElement element) where TElement : IFormattable
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -178,6 +189,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return source.Append(element.ToString());
         }
 
+        /// <summary>
+        /// Appends the join.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="list">     The list.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static StringBuilder AppendJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<ITaskItem> list)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -187,6 +206,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.AppendJoin(separator, convertedList);
         }
 
+        /// <summary>
+        /// Appends the join.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="list">     The list.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static StringBuilder AppendJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<string?> list)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -195,11 +222,23 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.AppendJoin(separator, list);
         }
 
+        /// <summary>
+        /// Ases the enumerable.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IEnumerable<char> AsEnumerable([AllowNull] this StringBuilder builder)
         {
             return builder.ToCharArray();
         }
 
+        /// <summary>
+        /// Casts the specified builder.
+        /// </summary>
+        /// <typeparam name="TResult">The <see cref="Type"/> of the result.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public static IEnumerable<TResult> Cast<TResult>([AllowNull] this StringBuilder builder) where TResult : IConvertible
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -207,6 +246,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.AsEnumerable().Cast<TResult>() ?? Enumerable.Empty<TResult>();
         }
 
+        /// <summary>
+        /// Concats the specified second.
+        /// </summary>
+        /// <param name="first"> The first.</param>
+        /// <param name="second">The second.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">first or second</exception>
         public static StringBuilder Concat([AllowNull] this StringBuilder first, StringBuilder? second)
         {
             ArgumentNullException.ThrowIfNull(first, nameof(first));
@@ -215,6 +261,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first.Append(second);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="character">The character.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified character]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, char character)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -222,6 +275,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="character"> The character.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified character]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -229,6 +290,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(character: new ReadOnlySpan<char>(in character), comparison);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="character">The character.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified character]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -236,6 +304,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="character"> The character.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified character]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -251,6 +327,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return false;
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, string value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -258,6 +341,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, string value, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -265,6 +356,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparison);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="value">   The value.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, string value, IEqualityComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -272,6 +371,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparer ?? EqualityComparer<char>.Default);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -279,6 +386,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) && builder!.Contains(value, startIndex, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -294,6 +410,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="comparer">  The comparer.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, IEqualityComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -309,6 +434,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -324,6 +458,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -339,6 +483,19 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
+        /// <summary>
+        /// Determines whether this instance contains the object.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <param name="comparer">  The comparer.</param>
+        /// <returns><see langref="true"/> if [contains] [the specified value]; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">builder</exception>
+        /// <exception cref="System.ArgumentException">
+        /// Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.
+        /// </exception>
         public static bool Contains([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length, IEqualityComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -363,6 +520,19 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return true;
         }
 
+        /// <summary>
+        /// Copies to.
+        /// </summary>
+        /// <param name="builder">         The builder.</param>
+        /// <param name="startIndex">      The start index.</param>
+        /// <param name="destination">     The destination.</param>
+        /// <param name="destinationIndex">Index of the destination.</param>
+        /// <param name="count">           The count.</param>
+        /// <exception cref="System.ArgumentNullException">builder or destination</exception>
+        /// <exception cref="System.ArgumentException">
+        /// Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'. or Destination Index
+        /// '{destinationIndex}' plus Count '{count}' is greater than Length '{destination.Count()}'.
+        /// </exception>
         public static void CopyTo([AllowNull] this StringBuilder builder, int startIndex, StringBuilder? destination, int destinationIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -387,11 +557,23 @@ namespace MSBuild.ExtensionPack.Base.Extension
             destination.Insert(destinationIndex, builder.ToCharArray(startIndex, count));
         }
 
+        /// <summary>
+        /// Counts the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static int Count([AllowNull] this StringBuilder builder)
         {
             return builder is not null ? builder!.Length : 0;
         }
 
+        /// <summary>
+        /// Counts the specified predicate.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">builder or predicate</exception>
         public static int Count([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -410,11 +592,23 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return counter;
         }
 
+        /// <summary>
+        /// Creates the specified capacity.
+        /// </summary>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return new StringBuilder(capacity);
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="format">  The format.</param>
+        /// <param name="first">   The first.</param>
+        /// <returns></returns>
         public static StringBuilder Create(IFormatProvider? provider, string format, object? first)
         {
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first));
@@ -425,22 +619,55 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first, second));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create(IFormatProvider? provider, string format, params object?[] arguments)
         {
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="format">  The format.</param>
+        /// <param name="first">   The first.</param>
+        /// <param name="second">  The second.</param>
+        /// <param name="third">   The third.</param>
+        /// <returns></returns>
         public static StringBuilder Create(IFormatProvider? provider, string format, object? first, object? second, object? third)
         {
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, first, second, third));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create<T>(IFormatProvider? provider, string format, Tuple<T> arguments)
             where T : IFormattable
         {
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <typeparam name="T1">The <see cref="Type"/> of the 1.</typeparam>
+        /// <typeparam name="T2">The <see cref="Type"/> of the 2.</typeparam>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create<T1, T2>(IFormatProvider? provider, string format, Tuple<T1, T2> arguments)
             where T1 : IFormattable
             where T2 : IFormattable
@@ -448,6 +675,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <typeparam name="T1">The <see cref="Type"/> of the 1.</typeparam>
+        /// <typeparam name="T2">The <see cref="Type"/> of the 2.</typeparam>
+        /// <typeparam name="T3">The <see cref="Type"/> of the 3.</typeparam>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create<T1, T2, T3>(IFormatProvider? provider, string format, Tuple<T1, T2, T3> arguments)
             where T1 : IFormattable
             where T2 : IFormattable
@@ -465,6 +702,18 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <typeparam name="T1">The <see cref="Type"/> of the 1.</typeparam>
+        /// <typeparam name="T2">The <see cref="Type"/> of the 2.</typeparam>
+        /// <typeparam name="T3">The <see cref="Type"/> of the 3.</typeparam>
+        /// <typeparam name="T4">The <see cref="Type"/> of the 4.</typeparam>
+        /// <typeparam name="T5">The <see cref="Type"/> of the 5.</typeparam>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create<T1, T2, T3, T4, T5>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4, T5> arguments)
             where T1 : IFormattable
             where T2 : IFormattable
@@ -475,6 +724,19 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <typeparam name="T1">The <see cref="Type"/> of the 1.</typeparam>
+        /// <typeparam name="T2">The <see cref="Type"/> of the 2.</typeparam>
+        /// <typeparam name="T3">The <see cref="Type"/> of the 3.</typeparam>
+        /// <typeparam name="T4">The <see cref="Type"/> of the 4.</typeparam>
+        /// <typeparam name="T5">The <see cref="Type"/> of the 5.</typeparam>
+        /// <typeparam name="T6">The <see cref="Type"/> of the 6.</typeparam>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create<T1, T2, T3, T4, T5, T6>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4, T5, T6> arguments)
             where T1 : IFormattable
             where T2 : IFormattable
@@ -486,6 +748,20 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5, arguments.Item6));
         }
 
+        /// <summary>
+        /// Creates the specified provider.
+        /// </summary>
+        /// <typeparam name="T1">The <see cref="Type"/> of the 1.</typeparam>
+        /// <typeparam name="T2">The <see cref="Type"/> of the 2.</typeparam>
+        /// <typeparam name="T3">The <see cref="Type"/> of the 3.</typeparam>
+        /// <typeparam name="T4">The <see cref="Type"/> of the 4.</typeparam>
+        /// <typeparam name="T5">The <see cref="Type"/> of the 5.</typeparam>
+        /// <typeparam name="T6">The <see cref="Type"/> of the 6.</typeparam>
+        /// <typeparam name="T7">The <see cref="Type"/> of the 7.</typeparam>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder Create<T1, T2, T3, T4, T5, T6, T7>(IFormatProvider? provider, string format, Tuple<T1, T2, T3, T4, T5, T6, T7> arguments)
             where T1 : IFormattable
             where T2 : IFormattable
@@ -498,106 +774,229 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments.Item1, arguments.Item2, arguments.Item3, arguments.Item4, arguments.Item5, arguments.Item6, arguments.Item7));
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   if set to <see langref="true"/> [value].</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(bool value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(byte value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="provider">The provider.</param>
+        /// <returns></returns>
         public static StringBuilder Create(DateTime value, IFormatProvider? provider)
         {
             return Create(Convert.ToString(value, provider ?? CultureInfo.InvariantCulture));
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(decimal value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(double value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(float value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">          The value.</param>
+        /// <param name="capacity">       The capacity.</param>
+        /// <param name="maximumCapacity">The maximum capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(int value, int capacity, int maximumCapacity = int.MaxValue)
         {
             return Create(capacity, maximumCapacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(long value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
-        public static StringBuilder Create(object? value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
+/        public static StringBuilder Create(object? value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(sbyte value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(short value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(uint value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(ulong value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(ushort value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
+        /// <param name="value">   The value.</param>
+        /// <param name="provider">The provider.</param>
+        /// <returns></returns>
         public static StringBuilder Create<TValue>(TValue value, IFormatProvider? provider) where TValue : IFormattable
         {
             return Create(string.Format(provider ?? CultureInfo.InvariantCulture, "{0}", value));
         }
 
+        /// <summary>
+        /// Creates the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
         public static StringBuilder Create(FileInfo source)
         {
             return Create(source.OpenText());
         }
 
-        public static StringBuilder Create(StreamReader reader)
+        /// <summary>
+        /// Creates the specified reader.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <returns></returns>
+/        public static StringBuilder Create(StreamReader reader)
         {
             return Create(reader.ReadToEnd());
         }
 
+        /// <summary>
+        /// Creates the specified XML.
+        /// </summary>
+        /// <param name="xml">The XML.</param>
+        /// <returns></returns>
         public static StringBuilder Create(XmlDocument xml)
         {
             return Create(xml.InnerXml);
         }
 
+        /// <summary>
+        /// Creates the specified json.
+        /// </summary>
+        /// <param name="json">The json.</param>
+        /// <returns></returns>
         public static StringBuilder Create(JsonDocument json)
         {
             return Create(json.ToString());
         }
 
+        /// <summary>
+        /// Creates the specified XML.
+        /// </summary>
+        /// <param name="xml">The XML.</param>
+        /// <returns></returns>
         public static StringBuilder Create(XDocument xml)
         {
             return Create(xml.Root?.ToString() ?? string.Empty);
         }
 
+        /// <summary>
+        /// Creates the specified <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <param name="collection">The <see cref="ICollection{T}"/>.</param>
+        /// <param name="capacity">  The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(ICollection<char> collection, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(capacity, nameof(capacity));
@@ -611,6 +1010,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified ordered list.
+        /// </summary>
+        /// <param name="orderedList">The ordered list.</param>
+        /// <param name="capacity">   The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(IOrderedEnumerable<char> orderedList, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             StringBuilder accumulator = Create(capacity);
@@ -623,6 +1028,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified ordered list.
+        /// </summary>
+        /// <param name="orderedList">The ordered list.</param>
+        /// <param name="capacity">   The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(IOrderedEnumerable<string?> orderedList, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             StringBuilder accumulator = Create(capacity);
@@ -635,6 +1046,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <param name="collection">The <see cref="ICollection{T}"/>.</param>
+        /// <param name="capacity">  The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(ICollection<string?> collection, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             StringBuilder accumulator = Create(capacity);
@@ -647,6 +1064,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="collection">The <see cref="ICollection{T}"/>.</param>
+        /// <param name="capacity">  The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create<TElement>(ICollection<TElement> collection, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY) where TElement : IFormattable
         {
             StringBuilder accumulator = Create(capacity);
@@ -659,6 +1083,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
         public static StringBuilder Create(char value, int count)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
@@ -666,6 +1096,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(new string(value, count));
         }
 
+        /// <summary>
+        /// Creates the specified capacity.
+        /// </summary>
+        /// <param name="capacity">       The capacity.</param>
+        /// <param name="maximumCapacity">The maximum capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(int capacity, int maximumCapacity)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(capacity, nameof(capacity));
@@ -674,16 +1110,37 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return new StringBuilder(capacity, maximumCapacity);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">   The value.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(string? value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return new StringBuilder(value, capacity);
         }
 
+        /// <summary>
+        /// Creates the specified array.
+        /// </summary>
+        /// <param name="array">   The array.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Create(char[]? array, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(new string(array), capacity);
         }
 
+        /// <summary>
+        /// Creates the specified value.
+        /// </summary>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <param name="capacity">  The capacity.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{value.Length}'.</exception>
         public static StringBuilder Create([AllowNull] string value, int startIndex, int count, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             ArgumentNullException.ThrowIfNullOrEmpty(value);
@@ -699,6 +1156,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return new StringBuilder(value, startIndex, count, capacity);
         }
 
+        /// <summary>
+        /// Creates the specified array.
+        /// </summary>
+        /// <param name="array">     The array.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <param name="capacity">  The capacity.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{array.Length}'.</exception>
         public static StringBuilder Create(char[] array, int startIndex, int count, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
@@ -713,6 +1179,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(new string(array, startIndex, count), capacity);
         }
 
+        /// <summary>
+        /// Creates the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static StringBuilder Create([AllowNull] StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -727,6 +1198,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static StringBuilder Create([AllowNull] StringBuilder builder, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -743,6 +1220,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Create([AllowNull] StringBuilder builder, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -765,6 +1250,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Creates the with base64 character array.
+        /// </summary>
+        /// <param name="array">  The array.</param>
+        /// <param name="options">The options.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithBase64CharArray([AllowNull] byte[] array, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -772,6 +1263,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return CreateWithBase64CharArray(array, 0, array.Length, 0, options);
         }
 
+        /// <summary>
+        /// Creates the with base64 character array.
+        /// </summary>
+        /// <param name="array">    The array.</param>
+        /// <param name="offsetIn"> The offset in.</param>
+        /// <param name="length">   The length.</param>
+        /// <param name="offsetOut">The offset out.</param>
+        /// <param name="options">  The options.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithBase64CharArray([AllowNull] byte[] array, int offsetIn, int length, int offsetOut, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -783,6 +1283,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(destination);
         }
 
+        /// <summary>
+        /// Creates the with base64 string.
+        /// </summary>
+        /// <param name="array">  The array.</param>
+        /// <param name="options">The options.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithBase64String([AllowNull] byte[] array, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -790,6 +1296,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return CreateWithBase64String(array, 0, array.Length, options);
         }
 
+        /// <summary>
+        /// Creates the with base64 string.
+        /// </summary>
+        /// <param name="array">  The array.</param>
+        /// <param name="offset"> The offset.</param>
+        /// <param name="length"> The length.</param>
+        /// <param name="options">The options.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.</exception>
         public static StringBuilder CreateWithBase64String([AllowNull] byte[] array, int offset, int length, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -805,6 +1320,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(Convert.ToBase64String(array, offset, length, options));
         }
 
+        /// <summary>
+        /// Creates the with directories.
+        /// </summary>
+        /// <param name="source">       The source.</param>
+        /// <param name="searchPattern">The search pattern.</param>
+        /// <param name="options">      The options.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithDirectories(DirectoryInfo source, string searchPattern, EnumerationOptions options)
         {
             StringBuilder builder = Create();
@@ -817,6 +1339,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Creates the with directories.
+        /// </summary>
+        /// <param name="source">       The source.</param>
+        /// <param name="searchPattern">The search pattern.</param>
+        /// <param name="option">       The option.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithDirectories(DirectoryInfo source, string searchPattern, SearchOption option = SearchOption.TopDirectoryOnly)
         {
             StringBuilder builder = Create();
@@ -829,6 +1358,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Creates the with directories.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithDirectories(DirectoryInfo source)
         {
             StringBuilder builder = Create();
@@ -841,6 +1375,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Creates the with files.
+        /// </summary>
+        /// <param name="source">       The source.</param>
+        /// <param name="searchPattern">The search pattern.</param>
+        /// <param name="options">      The options.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithFiles(DirectoryInfo source, string searchPattern, EnumerationOptions options)
         {
             StringBuilder builder = Create();
@@ -853,6 +1394,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Creates the with files.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithFiles(DirectoryInfo source)
         {
             StringBuilder builder = Create();
@@ -865,6 +1411,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Creates the with files.
+        /// </summary>
+        /// <param name="source">       The source.</param>
+        /// <param name="searchPattern">The search pattern.</param>
+        /// <param name="option">       The option.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithFiles(DirectoryInfo source, string searchPattern, SearchOption option = SearchOption.TopDirectoryOnly)
         {
             StringBuilder builder = Create();
@@ -877,6 +1430,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Creates the with hexadecimal lower string.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithHexLowerString([AllowNull] byte[] array)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -884,6 +1442,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return CreateWithHexLowerString(array, 0, array.Length);
         }
 
+        /// <summary>
+        /// Creates the with hexadecimal lower string.
+        /// </summary>
+        /// <param name="array"> The array.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.</exception>
         public static StringBuilder CreateWithHexLowerString([AllowNull] byte[] array, int offset, int length)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -899,21 +1465,44 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(Convert.ToHexString(array, offset, length));
         }
 
+        /// <summary>
+        /// Creates the with hexadecimal lower string.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithHexLowerString(int value)
         {
             return Create(null, "0x{0:x8}", value);
         }
 
+        /// <summary>
+        /// Creates the with hexadecimal string.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithHexString(int value)
         {
             return Create(null, "0x{0:X8}", value);
         }
 
+        /// <summary>
+        /// Creates the with hexadecimal string.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns></returns>
         public static StringBuilder CreateWithHexString(byte[] array)
         {
             return CreateWithHexString(array, 0, array.Length);
         }
 
+        /// <summary>
+        /// Creates the with hexadecimal string.
+        /// </summary>
+        /// <param name="array"> The array.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.</exception>
         public static StringBuilder CreateWithHexString([AllowNull] byte[] array, int offset, int length)
         {
             ArgumentNullException.ThrowIfNull(array, nameof(array));
@@ -929,11 +1518,22 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(Convert.ToHexString(array, offset, length));
         }
 
+        /// <summary>
+        /// Defaults if empty.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static StringBuilder DefaultIfEmpty([AllowNull] this StringBuilder builder)
         {
             return builder.DefaultIfEmpty(char.MinValue);
         }
 
+        /// <summary>
+        /// Defaults if empty.
+        /// </summary>
+        /// <param name="builder">     The builder.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
         public static StringBuilder DefaultIfEmpty([AllowNull] this StringBuilder builder, char defaultValue)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -941,6 +1541,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return IsEmpty(builder) ? Create(defaultValue, 1) : builder;
         }
 
+        /// <summary>
+        /// Elements at.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="index">  The index.</param>
+        /// <returns></returns>
         public static char ElementAt([AllowNull] this StringBuilder builder, int index)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -950,6 +1556,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder[index];
         }
 
+        /// <summary>
+        /// Elements at.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="index">  The index.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// nameof(index), index, $"Parameter {nameof(index)} {index} is out of range.
+        /// </exception>
         public static char ElementAt([AllowNull] this StringBuilder builder, Index index)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -964,6 +1579,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder[index];
         }
 
+        /// <summary>
+        /// Elements at or default.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="index">  The index.</param>
+        /// <returns></returns>
         public static char ElementAtOrDefault([AllowNull] this StringBuilder builder, int index)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -978,6 +1599,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder![index];
         }
 
+        /// <summary>
+        /// Elements at or default.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="index">  The index.</param>
+        /// <returns></returns>
         public static char ElementAtOrDefault([AllowNull] this StringBuilder builder, Index index)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -992,11 +1619,21 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder![index];
         }
 
+        /// <summary>
+        /// Empties this instance.
+        /// </summary>
+        /// <returns></returns>
         public static StringBuilder Empty()
         {
-            return Create(0, 1);
+            return new(capacity: 0, maxCapacity: 1);
         }
 
+        /// <summary>
+        /// Equals the specified left.
+        /// </summary>
+        /// <param name="left"> The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns></returns>
         public static bool Equals(StringBuilder? left, StringBuilder? right)
         {
             if (ReferenceEquals(left, right))
@@ -1017,6 +1654,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Firsts the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"Parameter {nameof(builder)} is empty.</exception>
         public static char First([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1029,6 +1672,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.ElementAt(0);
         }
 
+        /// <summary>
+        /// Firsts the specified builder.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">
+        /// $"Parameter {nameof(builder)} is empty. or $"No value satisfying {nameof(predicate)} was found.
+        /// </exception>
         public static char First([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1050,6 +1702,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             throw new InvalidOperationException($"No value satisfying {nameof(predicate)} was found.");
         }
 
+        /// <summary>
+        /// Firsts the or default.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static char FirstOrDefault([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1057,11 +1714,24 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Count() > 0 ? builder.ElementAtOrDefault(0) : char.MinValue;
         }
 
+        /// <summary>
+        /// Firsts the or default.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static char FirstOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             return builder.FirstOrDefault(predicate, char.MinValue);
         }
 
+        /// <summary>
+        /// Firsts the or default.
+        /// </summary>
+        /// <param name="builder">     The builder.</param>
+        /// <param name="predicate">   The predicate.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
         public static char FirstOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate, char defaultValue)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1078,6 +1748,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return defaultValue;
         }
 
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IEnumerator<char> GetEnumerator(this StringBuilder builder)
         {
             StringBuilderInfo info = new(builder);
@@ -1085,6 +1760,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return info.GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets the lower bound.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static int GetLowerBound(this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -1092,6 +1772,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return 0;
         }
 
+        /// <summary>
+        /// Gets the upper bound.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static int GetUpperBound([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -1099,6 +1784,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return IsEmpty(builder) ? 0 : builder.Count() - 1;
         }
 
+        /// <summary>
+        /// Indexes the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IEnumerable<Tuple<int, char>> Index([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1116,23 +1806,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
-        public static IEnumerable<Tuple<TEnum, char>> Index<TEnum>([AllowNull] this StringBuilder builder) where TEnum : struct, System.Enum
-        {
-            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
-
-            var index = Enum.GetValuesAsUnderlyingType<TEnum>().Cast<int>().FirstOrDefault();
-            List<Tuple<TEnum, char>> accumulator = new(builder.Count());
-
-            while (ExceptionExtension.IsInRange(index, 0..^builder.Count()))
-            {
-                accumulator.Add(Tuple.Create<TEnum, char>((TEnum)Enum.ToObject(typeof(TEnum), index), builder.ElementAtOrDefault(index)));
-
-                index++;
-            }
-
-            return accumulator;
-        }
-
+        /// <summary>
+        /// Indexes the index of the by.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IEnumerable<Tuple<System.Index, char>> IndexByIndex([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1150,6 +1828,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="character">The character.</param>
+        /// <returns></returns>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, char character)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1157,6 +1841,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) ? builder!.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="character"> The character.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1164,6 +1855,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="character">The character.</param>
+        /// <returns></returns>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1171,6 +1868,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="character"> The character.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1195,6 +1899,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return index;
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, string value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1207,6 +1917,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.IndexByIndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), startIndex: 0);
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, Index startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1237,6 +1954,17 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first;
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// $"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.
+        /// </exception>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, Index startIndex, int length)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1257,6 +1985,18 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.IndexByIndexOf(value, startIndex, length, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Indexes the by index of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// $"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.
+        /// </exception>
         public static Index IndexByIndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, Index startIndex, int length, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1293,6 +2033,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first;
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="character">The character.</param>
+        /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, char character)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1300,11 +2046,24 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) ? builder!.IndexOf(character, StringComparison.Ordinal) : -1;
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="character"> The character.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
         {
             return !IsNullOrEmpty(builder) ? builder.IndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="character">The character.</param>
+        /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1312,6 +2071,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return !IsNullOrEmpty(builder) ? builder.IndexOf(character, StringComparison.Ordinal) : -1;
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="character"> The character.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> character, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1336,6 +2102,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return index;
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, string value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1348,6 +2120,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.IndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1378,6 +2157,17 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first;
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// $"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.
+        /// </exception>
         public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1398,6 +2188,18 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.IndexOf(value, startIndex, length, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Indexes the of.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="length">    The length.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// $"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.
+        /// </exception>
         public static int IndexOf([AllowNull] this StringBuilder builder, ReadOnlySpan<char> value, int startIndex, int length, StringComparison comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1434,6 +2236,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return first;
         }
 
+        /// <summary>
+        /// Inserts the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="index">  The index.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">
+        /// $"Enlarging Source {nameof(builder)} by Value {nameof(value)} would exceed MaxCapacity '{builder.MaxCapacity}'.
+        /// </exception>
         public static StringBuilder Insert(this StringBuilder builder, int index, StringBuilder? value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1453,6 +2265,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder;
         }
 
+        /// <summary>
+        /// Inserts the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="index">     The index.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static StringBuilder Insert(this StringBuilder builder, int index, StringBuilder? value, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1464,6 +2284,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(index, value.Slice(startIndex));
         }
 
+        /// <summary>
+        /// Inserts the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="index">     The index.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Insert(this StringBuilder builder, int index, StringBuilder? value, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1482,11 +2312,22 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(index, value.Slice(startIndex, count));
         }
 
+        /// <summary>
+        /// Determines whether the specified builder is empty.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns><see langref="true"/> if the specified builder is empty; otherwise, <see langref="false"/>.</returns>
         public static bool IsEmpty(StringBuilder builder)
         {
             return builder.Count() < 1;
         }
 
+        /// <summary>
+        /// Determines whether the specified builder is match.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="pattern">The pattern.</param>
+        /// <returns><see langref="true"/> if the specified builder is match; otherwise, <see langref="false"/>.</returns>
         public static bool IsMatch([AllowNull] this StringBuilder builder, Regex pattern)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1494,6 +2335,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Count() > 0 && pattern.IsMatch(builder.ToString());
         }
 
+        /// <summary>
+        /// Determines whether the specified builder is match.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="pattern">   The pattern.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns><see langref="true"/> if the specified builder is match; otherwise, <see langref="false"/>.</returns>
         public static bool IsMatch([AllowNull] this StringBuilder builder, Regex pattern, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1503,6 +2351,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Count() > 0 && builder.Slice(startIndex).IsMatch(pattern);
         }
 
+        /// <summary>
+        /// Determines whether the specified builder is match.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="pattern">   The pattern.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns><see langref="true"/> if the specified builder is match; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static bool IsMatch([AllowNull] this StringBuilder builder, Regex pattern, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1519,36 +2376,84 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Count() > 0 && builder.Slice(startIndex, count).IsMatch(pattern);
         }
 
+        /// <summary>
+        /// Determines whether [is <see langref="null"/> or empty] [the specified builder].
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns><see langref="true"/> if [is <see langref="null"/> or empty] [the specified builder]; otherwise, <see langref="false"/>.</returns>
         public static bool IsNullOrEmpty(StringBuilder? builder)
         {
             return builder?.Count() < 1;
         }
 
+        /// <summary>
+        /// Determines whether [is <see langref="null"/> or empty] [the specified array].
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="array">The array.</param>
+        /// <returns><see langref="true"/> if [is <see langref="null"/> or empty] [the specified array]; otherwise, <see langref="false"/>.</returns>
         public static bool IsNullOrEmpty<TElement>(TElement[]? array)
         {
             return IsNullOrEmpty(collection: array);
         }
 
+        /// <summary>
+        /// Determines whether /[is <see langref="null"/> or empty] [the specified <see cref="ICollection{T}"/>].
+        /// </summary>
+        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
+        /// <param name="collection">The <see cref="ICollection{T}"/>.</param>
+        /// <returns>
+        /// <see langref="true"/> if [is <see langref="null"/> or empty] [the specified <see cref="ICollection{T}"/>]; otherwise,
+        /// <see langref="false"/>.
+        /// </returns>
         public static bool IsNullOrEmpty<TValue>(ICollection<TValue>? collection)
         {
             return collection?.Count < 1;
         }
 
+        /// <summary>
+        /// Determines whether [is <see langref="null"/> or empty] [the specified dictionary].
+        /// </summary>
+        /// <typeparam name="TKey">The <see cref="Type"/> of the key.</typeparam>
+        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <returns>
+        /// <see langref="true"/> if [is <see langref="null"/> or empty] [the specified dictionary]; otherwise, <see langref="false"/>.
+        /// </returns>
         public static bool IsNullOrEmpty<TKey, TValue>(IDictionary<TKey, TValue?>? dictionary)
         {
             return IsNullOrEmpty(collection: dictionary);
         }
 
+        /// <summary>
+        /// Determines whether [is <see langref="null"/> or empty] [the specified the set].
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="theSet">The set.</param>
+        /// <returns><see langref="true"/> if [is <see langref="null"/> or empty] [the specified the set]; otherwise, <see langref="false"/>.</returns>
         public static bool IsNullOrEmpty<TElement>(ISet<TElement> theSet)
         {
             return IsNullOrEmpty(collection: theSet);
         }
 
+        /// <summary>
+        /// Determines whether [is <see langref="null"/> or white space] [the specified builder].
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>
+        /// <see langref="true"/> if [is <see langref="null"/> or white space] [the specified builder]; otherwise, <see langref="false"/>.
+        /// </returns>
         public static bool IsNullOrWhiteSpace(StringBuilder? builder)
         {
             return IsNullOrEmpty(builder) || (builder.All(c => char.IsWhiteSpace(c)));
         }
 
+        /// <summary>
+        /// Lasts the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"Parameter {nameof(builder)} is empty.</exception>
         public static char Last([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1561,6 +2466,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.ElementAt(^0);
         }
 
+        /// <summary>
+        /// Lasts the specified builder.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">
+        /// $"Parameter {nameof(builder)} is empty. or $"No value satisfying {nameof(predicate)} was found.
+        /// </exception>
         public static char Last([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1582,6 +2496,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             throw new InvalidOperationException($"No value satisfying {nameof(predicate)} was found.");
         }
 
+        /// <summary>
+        /// Lasts the or default.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static char LastOrDefault([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1589,6 +2508,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Count() > 0 ? builder![^1] : char.MinValue;
         }
 
+        /// <summary>
+        /// Lasts the or default.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static char LastOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1597,6 +2522,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.LastOrDefault(predicate, char.MinValue);
         }
 
+        /// <summary>
+        /// Lasts the or default.
+        /// </summary>
+        /// <param name="builder">     The builder.</param>
+        /// <param name="predicate">   The predicate.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
         public static char LastOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate, char defaultValue)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1618,6 +2550,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return defaultValue;
         }
 
+        /// <summary>
+        /// Matcheses the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="pattern">The pattern.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"Parameter {nameof(builder)} is empty.</exception>
         public static MatchCollection Matches([AllowNull] this StringBuilder builder, Regex pattern)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1630,6 +2569,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return pattern.Matches(builder!.ToString());
         }
 
+        /// <summary>
+        /// Matcheses the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="pattern">   The pattern.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"Parameter {nameof(builder)} is empty.</exception>
         public static MatchCollection Matches([AllowNull] this StringBuilder builder, Regex pattern, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1644,6 +2591,16 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Slice(startIndex).Matches(pattern);
         }
 
+        /// <summary>
+        /// Matcheses the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="pattern">   The pattern.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
+        /// <exception cref="InvalidOperationException">$"Parameter {nameof(builder)} is empty.</exception>
         public static MatchCollection Matches([AllowNull] this StringBuilder builder, Regex pattern, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1665,6 +2622,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Slice(startIndex, count).Matches(pattern);
         }
 
+        /// <summary>
+        /// Orders the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static StringBuilder Order([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1672,6 +2634,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Order(comparer: Comparer<char>.Default);
         }
 
+        /// <summary>
+        /// Orders the specified builder.
+        /// </summary>
+        /// <param name="builder">        The builder.</param>
+        /// <param name="caseInsensitive">if set to <see langref="true"/> [case insensitive].</param>
+        /// <returns></returns>
         public static StringBuilder Order([AllowNull] this StringBuilder builder, bool caseInsensitive)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1679,6 +2647,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Order(null, caseInsensitive);
         }
 
+        /// <summary>
+        /// Orders the specified builder.
+        /// </summary>
+        /// <param name="builder">        The builder.</param>
+        /// <param name="culture">        The culture.</param>
+        /// <param name="caseInsensitive">if set to <see langref="true"/> [case insensitive].</param>
+        /// <returns></returns>
         public static StringBuilder Order([AllowNull] this StringBuilder builder, CultureInfo? culture, bool caseInsensitive)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1701,6 +2676,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Orders the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static StringBuilder Order([AllowNull] this StringBuilder builder, Comparison<char> comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1708,6 +2689,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Count() > 0 ? builder.Order((x, y) => comparison.Invoke(x, y)) : Empty();
         }
 
+        /// <summary>
+        /// Orders the specified builder.
+        /// </summary>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static StringBuilder Order([AllowNull] this StringBuilder builder, IComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1722,6 +2709,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(list);
         }
 
+        /// <summary>
+        /// Orders the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <param name="comparer">  The comparer.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Order([AllowNull] this StringBuilder builder, int startIndex, int count, IComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1745,6 +2741,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(list);
         }
 
+        /// <summary>
+        /// Orders the descending.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <param name="comparer">  The comparer.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, int startIndex, int count, IComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1767,6 +2772,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(list.OrderDescending(comparer));
         }
 
+        /// <summary>
+        /// Orders the descending.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1774,6 +2784,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.OrderDescending(comparer: null);
         }
 
+        /// <summary>
+        /// Orders the descending.
+        /// </summary>
+        /// <param name="builder">        The builder.</param>
+        /// <param name="caseInsensitive">if set to <see langref="true"/> [case insensitive].</param>
+        /// <returns></returns>
         public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, bool caseInsensitive)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1786,6 +2802,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.OrderDescending(null, caseInsensitive);
         }
 
+        /// <summary>
+        /// Orders the descending.
+        /// </summary>
+        /// <param name="builder">        The builder.</param>
+        /// <param name="culture">        The culture.</param>
+        /// <param name="caseInsensitive">if set to <see langref="true"/> [case insensitive].</param>
+        /// <returns></returns>
         public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, CultureInfo? culture, bool caseInsensitive)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1808,6 +2831,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Orders the descending.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, Comparison<char> comparison)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1820,6 +2849,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.OrderDescending((x, y) => comparison.Invoke(x, y));
         }
 
+        /// <summary>
+        /// Orders the descending.
+        /// </summary>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static StringBuilder OrderDescending([AllowNull] this StringBuilder builder, IComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1833,6 +2868,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(list.OrderDescending(comparer));
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, FileSystemInfo value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1851,6 +2892,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, DirectoryInfo value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1858,6 +2905,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value.FullName);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, FileInfo value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1865,6 +2918,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value.FullName);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1872,12 +2931,25 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, ITaskItem value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             return builder.Insert(0, value.ItemSpec);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char value, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1886,6 +2958,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Prepend(new string(value, count));
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char[]? value, int startIndex, int count)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
@@ -1901,6 +2982,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToArray());
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, string? value, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1917,6 +3007,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToString());
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  if set to <see langref="true"/> [value].</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, bool value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1924,6 +3020,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, byte value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1931,6 +3033,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, char[]? value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1938,6 +3046,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, decimal value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1945,6 +3059,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, double value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1952,6 +3072,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, float value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1959,12 +3085,24 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, int value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, long value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1972,6 +3110,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, object? value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1979,12 +3123,25 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, sbyte value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, short value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1992,6 +3149,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, string? value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -1999,6 +3162,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, StringBuilder? value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2006,6 +3175,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return value is not null ? value.Append(builder) : builder;
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, StringBuilder? value, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2015,6 +3191,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return value.Slice(startIndex).Append(builder);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="value">     The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Prepend([AllowNull] this StringBuilder builder, StringBuilder? value, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2031,6 +3216,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return value.Slice(startIndex, count).Append(builder);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend(this StringBuilder builder, uint value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2038,6 +3229,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend(this StringBuilder builder, ulong value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2045,6 +3242,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend(this StringBuilder builder, ushort value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2052,6 +3255,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend(this StringBuilder builder, ReadOnlySpan<char> value)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2059,6 +3268,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value);
         }
 
+        /// <summary>
+        /// Prepends the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="value">  The value.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder Prepend(this StringBuilder builder, string? value, int count)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
@@ -2066,6 +3282,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Insert(0, value, count);
         }
 
+        /// <summary>
+        /// Prepends the format.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder PrependFormat(this StringBuilder builder, IFormatProvider? provider, string format, params object?[] arguments)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2073,6 +3297,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Prepend(string.Format(provider ?? CultureInfo.InvariantCulture, format, arguments));
         }
 
+        /// <summary>
+        /// Prepends the format.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder PrependFormat(this StringBuilder builder, string format, params object?[] arguments)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2080,6 +3311,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.PrependFormat(null, format, arguments);
         }
 
+        /// <summary>
+        /// Prepends the join.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="list">     The list.</param>
+        /// <returns></returns>
         public static StringBuilder PrependJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<ITaskItem> list)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2091,6 +3329,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return value.PrependJoin(separator, convertedList);
         }
 
+        /// <summary>
+        /// Prepends the join.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="list">     The list.</param>
+        /// <returns></returns>
         public static StringBuilder PrependJoin([AllowNull] this StringBuilder builder, string? separator, IEnumerable<string?> list)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2102,6 +3347,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return value.Append(builder);
         }
 
+        /// <summary>
+        /// Prepends the line.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static StringBuilder PrependLine([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2109,11 +3359,26 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Prepend(Environment.NewLine);
         }
 
+        /// <summary>
+        /// Prepends the line.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="provider"> The provider.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder PrependLine([AllowNull] this StringBuilder builder, IFormatProvider? provider, string format, params object?[] arguments)
         {
             return builder.PrependLine().PrependFormat(provider, format, arguments);
         }
 
+        /// <summary>
+        /// Prepends the line.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="format">   The format.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         public static StringBuilder PrependLine([AllowNull] this StringBuilder builder, string format, params object?[] arguments)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2121,6 +3386,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.PrependLine(null, format, arguments);
         }
 
+        /// <summary>
+        /// Repeats the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="element">The element.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder Repeat([AllowNull] this StringBuilder builder, char element, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2129,6 +3401,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Append(element, count);
         }
 
+        /// <summary>
+        /// Resizes the specified builder.
+        /// </summary>
+        /// <param name="builder">        The builder.</param>
+        /// <param name="capacity">       The capacity.</param>
+        /// <param name="maximumCapacity">The maximum capacity.</param>
+        /// <returns></returns>
         public static StringBuilder Resize([AllowNull] this StringBuilder builder, int capacity, int maximumCapacity)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2136,6 +3415,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(Math.Max(builder.Count(), capacity), Math.Max(builder.Count(), maximumCapacity)).Append(builder);
         }
 
+        /// <summary>
+        /// Reverses the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static StringBuilder Reverse([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2145,6 +3429,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(temp);
         }
 
+        /// <summary>
+        /// Reverses the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="index">  The index.</param>
+        /// <param name="length"> The length.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Index '{index}' plus Length '{length}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Reverse([AllowNull] this StringBuilder builder, int index, int length)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2163,6 +3455,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(temp);
         }
 
+        /// <summary>
+        /// Selects the specified builder.
+        /// </summary>
+        /// <typeparam name="TResult">The <see cref="Type"/> of the result.</typeparam>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IEnumerable<TResult> Select<TResult>([AllowNull] this StringBuilder builder, [AllowNull] Func<char, TResult> selector)
             where TResult : IConvertible
         {
@@ -2182,6 +3481,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator.Cast<TResult>();
         }
 
+        /// <summary>
+        /// Selects the specified builder.
+        /// </summary>
+        /// <typeparam name="TResult">The <see cref="Type"/> of the result.</typeparam>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IEnumerable<TResult> Select<TResult>([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, TResult> selector)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2202,16 +3508,36 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Sequences the equal.
+        /// </summary>
+        /// <param name="left"> The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns></returns>
         public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right)
         {
             return left.SequenceEqual(right, comparer: null);
         }
 
+        /// <summary>
+        /// Sequences the equal.
+        /// </summary>
+        /// <param name="left">  The left.</param>
+        /// <param name="right"> The right.</param>
+        /// <param name="equals">The equals.</param>
+        /// <returns></returns>
         public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right, Func<char, char, bool> equals)
         {
             return Equals(left, right) || Enumerable.Range(0, left.GetUpperBound()).All(i => equals.Invoke(left![i], right![i]));
         }
 
+        /// <summary>
+        /// Sequences the equal.
+        /// </summary>
+        /// <param name="left">    The left.</param>
+        /// <param name="right">   The right.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static bool SequenceEqual(this StringBuilder? left, StringBuilder? right, IEqualityComparer<char>? comparer)
         {
             comparer ??= EqualityComparer<char>.Default;
@@ -2219,6 +3545,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Equals(left, right) || Enumerable.Range(0, left.GetUpperBound()).All(i => comparer.Equals(left![i], right![i]));
         }
 
+        /// <summary>
+        /// Singles the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"StringBuilder {nameof(builder)} is not a singleton.</exception>
         public static char Single([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2233,6 +3565,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Singles the specified builder.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"StringBuilder {nameof(builder)} is not a singleton.</exception>
         public static char Single([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2248,6 +3587,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Singles the or default.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"StringBuilder {nameof(builder)} is not a singleton.</exception>
         public static char SingleOrDefault([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2262,6 +3607,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Singles the or default.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">$"StringBuilder {nameof(builder)} is not a singleton.</exception>
         public static char SingleOrDefault([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2278,6 +3630,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
+        /// <summary>
+        /// Skips the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder? Skip([AllowNull] this StringBuilder builder, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2286,6 +3644,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(builder, count - 1);
         }
 
+        /// <summary>
+        /// Skips the last.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder? SkipLast([AllowNull] this StringBuilder builder, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2294,6 +3658,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Take(builder.Count() - count);
         }
 
+        /// <summary>
+        /// Skips the while.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static StringBuilder? SkipWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2308,6 +3678,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder?.Skip(index);
         }
 
+        /// <summary>
+        /// Skips the while.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static StringBuilder? SkipWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2322,6 +3698,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder?.Skip(index);
         }
 
+        /// <summary>
+        /// Slices the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static StringBuilder Slice([AllowNull] this StringBuilder builder, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2331,6 +3713,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(builder.ToString(startIndex));
         }
 
+        /// <summary>
+        /// Slices the specified builder.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static StringBuilder Slice([AllowNull] this StringBuilder builder, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2347,6 +3737,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(builder?.ToString(startIndex, count));
         }
 
+        /// <summary>
+        /// Takes the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder? Take([AllowNull] this StringBuilder builder, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2355,6 +3751,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return Create(builder.ToString(0, count));
         }
 
+        /// <summary>
+        /// Takes the last.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="count">  The count.</param>
+        /// <returns></returns>
         public static StringBuilder? TakeLast([AllowNull] this StringBuilder builder, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2363,6 +3765,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Skip(builder.Count() - count);
         }
 
+        /// <summary>
+        /// Takes the while.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static StringBuilder TakeWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2381,6 +3789,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Takes the while.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static StringBuilder? TakeWhile([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2399,6 +3813,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Converts to array.
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static TElement[] ToArray<TElement>([AllowNull] this StringBuilder builder) where TElement : IConvertible
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2406,6 +3826,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return [.. builder.ToList().Cast<TElement>()];
         }
 
+        /// <summary>
+        /// Converts to array.
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static TElement[] ToArray<TElement>([AllowNull] this StringBuilder builder, int startIndex) where TElement : IConvertible
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2415,6 +3842,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return [.. builder.ToList(startIndex).Cast<TElement>()];
         }
 
+        /// <summary>
+        /// Converts to array.
+        /// </summary>
+        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static TElement[] ToArray<TElement>([AllowNull] this StringBuilder builder, int startIndex, int count) where TElement : IConvertible
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2431,6 +3867,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return [.. builder.ToList(startIndex, count).Cast<TElement>()];
         }
 
+        /// <summary>
+        /// Converts to chararray.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static char[] ToCharArray([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2438,6 +3879,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.ToArray<char>();
         }
 
+        /// <summary>
+        /// Converts to chararray.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static char[] ToCharArray(this StringBuilder builder, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2447,6 +3894,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.ToArray<char>(startIndex);
         }
 
+        /// <summary>
+        /// Converts to chararray.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static char[] ToCharArray(this StringBuilder builder, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2462,6 +3917,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.ToArray<char>(startIndex, count);
         }
 
+        /// <summary>
+        /// Converts to dictionary.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static Dictionary<int, char> ToDictionary([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2469,6 +3929,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Index().ToDictionary(null);
         }
 
+        /// <summary>
+        /// Converts to dictionary.
+        /// </summary>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static Dictionary<int, char> ToDictionary([AllowNull] this StringBuilder builder, IEqualityComparer<int>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2476,6 +3942,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.Index().ToDictionary(comparer ?? EqualityComparer<int>.Default);
         }
 
+        /// <summary>
+        /// Converts to dictionary.
+        /// </summary>
+        /// <param name="tuples">The tuples.</param>
+        /// <returns></returns>
         public static Dictionary<int, char> ToDictionary([AllowNull] this IEnumerable<Tuple<int, char>> tuples)
         {
             ArgumentNullException.ThrowIfNull(tuples, nameof(tuples));
@@ -2483,6 +3954,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return tuples.ToDictionary(null);
         }
 
+        /// <summary>
+        /// Converts to dictionary.
+        /// </summary>
+        /// <param name="tuples">  The tuples.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static Dictionary<int, char> ToDictionary([AllowNull] this IEnumerable<Tuple<int, char>> tuples, IEqualityComparer<int>? comparer)
         {
             ArgumentNullException.ThrowIfNull(tuples, nameof(tuples));
@@ -2500,6 +3977,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Converts to hashset.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static HashSet<char> ToHashSet([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2507,6 +3989,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return builder.ToHashSet(null);
         }
 
+        /// <summary>
+        /// Converts to hashset.
+        /// </summary>
+        /// <param name="builder"> The builder.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public static HashSet<char> ToHashSet([AllowNull] this StringBuilder builder, IEqualityComparer<char>? comparer)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2514,6 +4002,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return new(builder.ToCharArray(), comparer ?? EqualityComparer<char>.Default);
         }
 
+        /// <summary>
+        /// Converts to list.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static List<char> ToList([AllowNull] this StringBuilder builder)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2521,6 +4014,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return [.. builder.ToCharArray()];
         }
 
+        /// <summary>
+        /// Converts to list.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static List<char> ToList([AllowNull] this StringBuilder builder, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2530,6 +4029,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return [.. builder.ToCharArray(startIndex)];
         }
 
+        /// <summary>
+        /// Converts to list.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">     The count.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">$"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.</exception>
         public static List<char> ToList([AllowNull] this StringBuilder builder, int startIndex, int count)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2545,6 +4052,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return [.. builder.ToCharArray(startIndex, count)];
         }
 
+        /// <summary>
+        /// Converts to lookup.
+        /// </summary>
+        /// <param name="source">         The source.</param>
+        /// <param name="keySelector">    The key selector.</param>
+        /// <param name="elementSelector">The element selector.</param>
+        /// <returns></returns>
         public static ILookup<int, char> ToLookup(
             [AllowNull] this StringBuilder source,
             Func<StringBuilder, int>? keySelector,
@@ -2555,6 +4069,14 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return source.ToLookup(keySelector, elementSelector, null);
         }
 
+        /// <summary>
+        /// Converts to lookup.
+        /// </summary>
+        /// <param name="source">         The source.</param>
+        /// <param name="keySelector">    The key selector.</param>
+        /// <param name="elementSelector">The element selector.</param>
+        /// <param name="comparer">       The comparer.</param>
+        /// <returns></returns>
         public static ILookup<int, char> ToLookup(
             [AllowNull] this StringBuilder source,
             [AllowNull] Func<StringBuilder, int> keySelector,
@@ -2568,6 +4090,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return source.ToLookup(keySelector, elementSelector, comparer ?? EqualityComparer<int>.Default);
         }
 
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <param name="builder">   The builder.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <returns></returns>
         public static string ToString([AllowNull] this StringBuilder builder, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2577,6 +4105,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return new string(builder.ToCharArray(startIndex));
         }
 
+        /// <summary>
+        /// Wheres the specified builder.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static StringBuilder Where([AllowNull] this StringBuilder builder, [AllowNull] Func<char, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
@@ -2600,6 +4134,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return accumulator;
         }
 
+        /// <summary>
+        /// Wheres the specified builder.
+        /// </summary>
+        /// <param name="builder">  The builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
         public static StringBuilder Where([AllowNull] this StringBuilder builder, [AllowNull] Func<char, int, bool> predicate)
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));

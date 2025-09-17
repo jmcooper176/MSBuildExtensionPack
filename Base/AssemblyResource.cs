@@ -84,7 +84,7 @@ namespace MSBuild.ExtensionPack.Base
         /// </summary>
         /// <remarks>This method is thread-safe.</remarks>
         /// <param name="name"></param>
-        /// <returns>The resource string, or null if not found.</returns>
+        /// <returns>The resource string, or <see langref="null"/> if not found.</returns>
         internal static string GetString(string name)
         {
             string? resource = PrimaryResources.GetString(name, CultureInfo.CurrentUICulture)

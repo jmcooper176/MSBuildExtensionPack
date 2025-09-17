@@ -45,8 +45,11 @@ namespace MSBuild.ExtensionPack.Base.Shared
             [Conditional("DEBUG")]
             private static void ValidateArgsIfDebug(object?[]? args)
             {
-                // If you accidentally pass some random type in that can't be converted to a string, FormatResourceString calls
-                // ToString() which returns the full name of the type!
+                // If you accidentally pass some random
+                // <see cref="Type"/>
+                // in that can't be converted to a string, FormatResourceString calls ToString() which returns the full name of the
+                // <see cref="Type"/>
+                // !
                 if (args is null || args.Length < 1)
                 {
                     throw new ArgumentNullException(nameof(args));
@@ -54,7 +57,9 @@ namespace MSBuild.ExtensionPack.Base.Shared
 
                 foreach (object? param in args)
                 {
-                    // Check it has a real implementation of ToString() and the type is not actually System.String
+                    // Check it has a real implementation of ToString() and the
+                    // <see cref="Type"/>
+                    // is not actually System.String
                     if (param is not null)
                     {
                         if (string.Equals(param.GetType().ToString(), param.ToString(), StringComparison.Ordinal) && param.GetType() != typeof(string))
@@ -76,7 +81,7 @@ namespace MSBuild.ExtensionPack.Base.Shared
             /// </summary>
             /// <param name="msbuildCodeOnly">Whether to match only MSBuild error codes, or any error code.</param>
             /// <param name="message">        The string to parse.</param>
-            /// <param name="code">           [out] The message code, or null if there was no code.</param>
+            /// <param name="code">           [out] The message code, or <see langref="null"/> if there was no code.</param>
             /// <returns>The string without its message code prefix, if any.</returns>
             [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Scope = "member", Target = "Microsoft.Build.Shared.ResourceUtilities.#ExtractMessageCode(System.Boolean,System.String,System.String&)", Justification = "Unavoidable complexity")]
             internal static string ExtractMessageCode(bool msbuildCodeOnly, string message, out string? code)
@@ -170,8 +175,8 @@ namespace MSBuild.ExtensionPack.Base.Shared
             /// for the array of arguments -- do not call this method repeatedly in performance-critical scenarios.
             /// </summary>
             /// <remarks>This method is thread-safe.</remarks>
-            /// <param name="code">        [out] The MSBuild message code, or null.</param>
-            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or null.</param>
+            /// <param name="code">        [out] The MSBuild message code, or <see langref="null"/>.</param>
+            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or <see langref="null"/>.</param>
             /// <param name="resourceName">Resource string to load.</param>
             /// <param name="args">        Optional arguments for formatting the resource string.</param>
             /// <returns>The formatted resource string.</returns>
@@ -188,8 +193,8 @@ namespace MSBuild.ExtensionPack.Base.Shared
             /// MSBuild message code and help keyword associated with it, they too are returned.
             /// </summary>
             /// <remarks>This method is thread-safe.</remarks>
-            /// <param name="code">        [out] The MSBuild message code, or null.</param>
-            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or null.</param>
+            /// <param name="code">        [out] The MSBuild message code, or <see langref="null"/>.</param>
+            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or <see langref="null"/>.</param>
             /// <param name="resourceName">Resource string to load.</param>
             /// <returns>The formatted resource string.</returns>
             internal static string FormatResourceStringStripCodeAndKeyword(out string? code, out string? helpKeyword, string resourceName)
@@ -203,8 +208,8 @@ namespace MSBuild.ExtensionPack.Base.Shared
             /// Loads the specified string resource and formats it with the arguments passed in. If the string resource has an
             /// MSBuild message code and help keyword associated with it, they too are returned.
             /// </summary>
-            /// <param name="code">        [out] The MSBuild message code, or null.</param>
-            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or null.</param>
+            /// <param name="code">        [out] The MSBuild message code, or <see langref="null"/>.</param>
+            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or <see langref="null"/>.</param>
             /// <param name="resourceName">Resource string to load.</param>
             /// <param name="arg1">        Argument for formatting the resource string.</param>
             internal static string FormatResourceStringStripCodeAndKeyword(out string? code, out string? helpKeyword, string resourceName, object? arg1)
@@ -217,8 +222,8 @@ namespace MSBuild.ExtensionPack.Base.Shared
             /// Loads the specified string resource and formats it with the arguments passed in. If the string resource has an
             /// MSBuild message code and help keyword associated with it, they too are returned.
             /// </summary>
-            /// <param name="code">        [out] The MSBuild message code, or null.</param>
-            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or null.</param>
+            /// <param name="code">        [out] The MSBuild message code, or <see langref="null"/>.</param>
+            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or <see langref="null"/>.</param>
             /// <param name="resourceName">Resource string to load.</param>
             /// <param name="arg1">        First argument for formatting the resource string.</param>
             /// <param name="arg2">        Second argument for formatting the resource string.</param>
@@ -232,8 +237,8 @@ namespace MSBuild.ExtensionPack.Base.Shared
             /// Loads the specified string resource and formats it with the arguments passed in. If the string resource has an
             /// MSBuild message code and help keyword associated with it, they too are returned.
             /// </summary>
-            /// <param name="code">        [out] The MSBuild message code, or null.</param>
-            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or null.</param>
+            /// <param name="code">        [out] The MSBuild message code, or <see langref="null"/>.</param>
+            /// <param name="helpKeyword"> [out] The MSBuild F1-help keyword for the host IDE, or <see langref="null"/>.</param>
             /// <param name="resourceName">Resource string to load.</param>
             /// <param name="arg1">        First argument for formatting the resource string.</param>
             /// <param name="arg2">        Second argument for formatting the resource string.</param>

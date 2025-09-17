@@ -22,7 +22,7 @@ using System.Reflection;
 namespace MSBuild.ExtensionPack.Base.SystemAttribute
 {
     /// <summary>
-    /// Implements an enhanced <see cref="ObsoleteAttribute"/> attribute.
+    /// Implements an enhanced <see cref="ObsoleteAttribute"/><see cref="Attribute"/>.
     /// </summary>
     /// <seealso cref="MSBuild.ExtensionPack.Base.SystemAttribute.CustomAttribute"/>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
@@ -54,7 +54,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="number"> The number.</param>
-        /// <param name="isError">if set to <c>true</c> [is error].</param>
+        /// <param name="isError">if set to <see langref="true"/> [is error].</param>
         protected ObsoleteCustomAttribute(string? message, int number, bool isError)
             : base(message, number)
         {
@@ -78,7 +78,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets a value indicating whether this instance is default.
         /// </summary>
-        /// <value><c>true</c> if this instance is default; otherwise, <c>false</c>.</value>
+        /// <value><see langref="true"/> if this instance is default; otherwise, <see langref="false"/>.</value>
         protected override bool IsDefault { get; }
 
         #endregion Protected Properties
@@ -96,7 +96,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
         /// </summary>
-        /// <param name="isError">if set to <c>true</c> [is error].</param>
+        /// <param name="isError">if set to <see langref="true"/> [is error].</param>
         public ObsoleteCustomAttribute(bool isError)
                     : this(null, BASE_NUMBER, isError)
         {
@@ -115,7 +115,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <param name="isError">if set to <c>true</c> [is error].</param>
+        /// <param name="isError">if set to <see langref="true"/> [is error].</param>
         public ObsoleteCustomAttribute(string? message, bool isError)
             : this(message, counter++, isError)
         {
@@ -137,7 +137,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// </summary>
         /// <param name="message">  The message.</param>
         /// <param name="urlFormat">The URL format.</param>
-        /// <param name="isError">  if set to <c>true</c> [is error].</param>
+        /// <param name="isError">  if set to <see langref="true"/> [is error].</param>
         public ObsoleteCustomAttribute(string? message, string? urlFormat, bool isError)
             : this(message, counter++, isError)
         {
@@ -151,7 +151,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets a value indicating whether this instance is error.
         /// </summary>
-        /// <value><c>true</c> if this instance is error; otherwise, <c>false</c>.</value>
+        /// <value><see langref="true"/> if this instance is error; otherwise, <see langref="false"/>.</value>
         public bool IsError { get; private set; }
 
         /// <summary>
@@ -170,10 +170,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         #region Public Methods
 
         /// <summary>
-        /// Tries the get custom attribute.
+        /// Tries the get custom <see cref="Attribute"/>.
         /// </summary>
-        /// <param name="type">   The type.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="type">   The <see cref="Type"/>.</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <param name="value">  The value.</param>
         /// <returns></returns>
         public static bool TryGetCustomAttribute(Type type, bool inherit, out ObsoleteCustomAttribute? value)
@@ -194,8 +194,8 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// </summary>
         /// <param name="obj">An <see cref="Object"/> to compare with this instance or <see langword="null"/>.</param>
         /// <returns>
-        /// <see langword="true"/> if <paramref name="obj"/> and this instance are of the same type and have identical field values;
-        /// otherwise, <see langword="false"/>.
+        /// <see langword="true"/> if <paramref name="obj"/> and this instance are of the same <see cref="Type"/> and have identical
+        /// field values; otherwise, <see langword="false"/>.
         /// </returns>
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
@@ -249,25 +249,27 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// When overridden in a derived class, indicates whether the value of this instance is the default value for the derived class.
         /// </summary>
-        /// <returns><see langword="true"/> if this instance is the default attribute for the class; otherwise, <see langword="false"/>.</returns>
+        /// <returns>
+        /// <see langword="true"/> if this instance is the default <see cref="Attribute"/> for the class; otherwise, <see langword="false"/>.
+        /// </returns>
         public override bool IsDefaultAttribute()
         {
             return base.IsDefaultAttribute() || IsDefault;
         }
 
         /// <summary>
-        /// Determines whether [is error attribute].
+        /// Determines whether [is error <see cref="Attribute"/>].
         /// </summary>
-        /// <returns><c>true</c> if [is error attribute]; otherwise, <c>false</c>.</returns>
+        /// <returns><see langref="true"/> if [is error <see cref="Attribute"/>]; otherwise, <see langref="false"/>.</returns>
         public virtual bool IsErrorAttribute()
         {
             return IsError;
         }
 
         /// <summary>
-        /// Sets the is error attribute.
+        /// Sets the is error <see cref="Attribute"/>.
         /// </summary>
-        /// <param name="value">if set to <c>true</c> [value].</param>
+        /// <param name="value">if set to <see langref="true"/> [value].</param>
         public virtual void SetIsErrorAttribute(bool value)
         {
             IsError = value;

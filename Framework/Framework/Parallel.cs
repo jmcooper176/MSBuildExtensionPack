@@ -502,7 +502,7 @@ namespace MSBuild.ExtensionPack.Framework
         public bool WaitAll { get; set; } = true;
 
         /// <summary>
-        /// Specifies the working directory. Default is null and MSBuild is resolved to the Path environment variable.
+        /// Specifies the working directory. Default is <see langref="null"/> and MSBuild is resolved to the Path environment variable.
         /// </summary>
         public string WorkingDirectory { get; set; }
 

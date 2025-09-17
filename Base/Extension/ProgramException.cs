@@ -190,7 +190,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Calls the with timeout asynchronous.
         /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <typeparam name="TResult">The <see cref="Type"/> of the result.</typeparam>
         /// <param name="processAsync">The process asynchronous.</param>
         /// <returns></returns>
         public virtual async Task<TResult?> CallWithTimeoutAsync<TResult>(Func<CancellationToken, Task>? processAsync)

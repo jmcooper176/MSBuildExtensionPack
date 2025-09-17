@@ -1153,7 +1153,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// Item collection of files Excluded from the count.
         /// </summary>
         [Output]
-        public ITaskItem[] ExcludedFiles
+        public IEnumerable<ITaskItem> ExcludedFiles
         {
             get => this.excludedFiles?.ToArray();
             set => this.excludedFiles = new List<ITaskItem>(value);
@@ -1175,7 +1175,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// Item collection of files included after filtering operations
         /// </summary>
         [Output]
-        public ITaskItem[] IncludedFiles
+        public IEnumerable<ITaskItem> IncludedFiles
         {
             get => this.includedFiles?.ToArray();
             set => this.includedFiles = new List<ITaskItem>(value);
@@ -1326,7 +1326,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         public int TotalLinecount { get; set; }
 
         /// <summary>
-        /// Sets the users collection. Use the Permission metadata tag to specify permissions. Separate pemissions with a comma.
+        /// Sets the users collection. Use the Permission metadata tag to specify permissions. Separate permissions with a comma.
         /// <remarks> The Permission metadata is only used if the Permission property is not set.
         /// <code lang="xml">
         ///<![CDATA[
@@ -1337,7 +1337,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// </code>
         /// </remarks>
         /// </summary>
-        public ITaskItem[] Users { get; set; }
+        public IEnumerable<ITaskItem> Users { get; set; }
 
         #endregion Public Properties
     }

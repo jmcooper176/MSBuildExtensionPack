@@ -1243,7 +1243,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// <summary>
         /// Sets the collection of Services to target in parallel. See TaskAction parameters for which TaskActions support this.
         /// </summary>
-        public ITaskItem[] Services { get; set; }
+        public IEnumerable<ITaskItem> Services { get; set; }
 
         /// <summary>
         /// Sets the Startup Type of the service.

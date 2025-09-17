@@ -669,14 +669,14 @@ namespace MSBuild.ExtensionPack.FileSystem
         public ITaskItem TargetPath { get; set; }
 
         /// <summary>
-        /// Sets the users collection. Use the Permission metadata tag to specify permissions. Separate pemissions with a comma.
+        /// Sets the users collection. Use the Permission metadata tag to specify permissions. Separate permissions with a comma.
         /// <para/>
         /// <UsersCol Include="AUser">
         /// <para/>
         /// <Permission>Read,etc</Permission>
         /// <para/></UsersCol>
         /// </summary>
-        public ITaskItem[] Users { get; set; }
+        public IEnumerable<ITaskItem> Users { get; set; }
 
         #endregion Public Properties
     }

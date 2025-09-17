@@ -24,7 +24,7 @@ namespace MSBuild.ExtensionPack.Base
     /// <summary>
     /// Interface for implementing validators for <see cref="BaseToolTask.ValidateParameters"/>.
     /// </summary>
-    /// <typeparam name="TValue">Specifies the value type for validation.</typeparam>
+    /// <typeparam name="TValue">Specifies the value <see cref="Type"/> for validation.</typeparam>
     public interface IPropertyValidator<TValue>
     {
         #region Public Properties
@@ -53,7 +53,7 @@ namespace MSBuild.ExtensionPack.Base
         string? ErrorMessageResourceName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating the resource type to use for error-message lookup if validation fails.
+        /// Gets or sets a value indicating the resource <see cref="Type"/> to use for error-message lookup if validation fails.
         /// </summary>
         Type? ErrorMessageResourceType { get; set; }
 
@@ -98,7 +98,7 @@ namespace MSBuild.ExtensionPack.Base
         TValue ObjectInstance { get; }
 
         /// <summary>
-        /// Gets a value indicating the type of the object to validate.
+        /// Gets a value indicating the <see cref="Type"/> of the object to validate.
         /// </summary>
         Type ObjectType { get; }
 
@@ -118,7 +118,7 @@ namespace MSBuild.ExtensionPack.Base
         string ValidatorName { get; }
 
         /// <summary>
-        /// Gets a value indicating this validator's result for <see cref="ObjectInstance"/> of type <see cref="ObjectType"/>.
+        /// Gets a value indicating this validator's result for <see cref="ObjectInstance"/> of <see cref="Type"/><see cref="ObjectType"/>.
         /// </summary>
         bool ValidatorResult { get; }
 
@@ -142,7 +142,9 @@ namespace MSBuild.ExtensionPack.Base
         /// Applies formatting to an error message, based on the source of the validation failure.
         /// </summary>
         /// <param name="name">      Specifies the name to include in the formatted message.</param>
-        /// <param name="value">     Specifies the value of type <typeparamref name="TValue"/> causing validation failure.</param>
+        /// <param name="value">     
+        /// Specifies the value of <see cref="Type"/><typeparamref name="TValue"/> causing validation failure.
+        /// </param>
         /// <param name="path">      Specifies the absolute file path to the source file containing the validation failure.</param>
         /// <param name="member">    Specifies the member in <paramref name="path"/> that is the source of the validation failure.</param>
         /// <param name="lineNumber">

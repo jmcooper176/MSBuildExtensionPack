@@ -209,7 +209,7 @@ namespace MSBuild.ExtensionPack.Framework
 
         /// <summary>
         /// Allows the user to either allow all public types to be renamed when they are duplicates, or to specify it for arbitrary
-        /// type names
+        /// <see cref="Type"/> names
         /// <para/>
         /// Command line option: [/allowDup[:typeName]]*
         /// <para/>
@@ -218,8 +218,8 @@ namespace MSBuild.ExtensionPack.Framework
         public ITaskItem[] AllowDuplicateTypes { get; set; }
 
         /// <summary>
-        /// If set, any assembly-level attributes names that have the same type are copied over into the target directory as long as
-        /// the definition of the attribute type specifies that “AllowMultiple” is true.
+        /// If set, any assembly-level attributes names that have the same <see cref="Type"/> are copied over into the target
+        /// directory as long as the definition of the attribute <see cref="Type"/> specifies that “AllowMultiple” is true.
         /// <para/>
         /// Command line option: /allowMultiple
         /// <para/>
@@ -256,7 +256,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /attr:filename
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public ITaskItem AttributeFile { get; set; }
 
@@ -281,7 +281,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// the target assembly.
         /// <para/>
         /// Any duplicate attribute overwrites a previously copied attribute. If you want to allow duplicates (for those attributes
-        /// whose type specifies “AllowMultiple” in their definition), then you can also set the AllowMultipleAssemblyLevelAttributes.
+        /// whose <see cref="Type"/> specifies “AllowMultiple” in their definition), then you can also set the AllowMultipleAssemblyLevelAttributes.
         /// <para/>
         /// The input assemblies are processed in the order they are specified. This option is mutually exclusive with specifying an
         /// attribute assembly, i.e., the property AttributeFile.
@@ -313,7 +313,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /delaysign
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public bool DelaySign { get; set; }
 
@@ -336,7 +336,8 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// The regular expressions are matched against each type's full name, e.g., "System.Collections.IList".
         /// <para/>
-        /// If the match fails, it is tried again with the assembly name (surrounded by square brackets) prepended to the type name.
+        /// If the match fails, it is tried again with the assembly name (surrounded by square brackets) prepended to the <see
+        /// cref="Type"/> name.
         /// <para/>
         /// Thus, the pattern “\[A\].*” excludes all types in assembly A from being made non-public. (The backslashes are required
         /// because the string is treated as a regular expression.)
@@ -348,7 +349,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /internalize[:excludeFile]
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public ITaskItem ExcludeFile { get; set; }
 
@@ -372,8 +373,8 @@ namespace MSBuild.ExtensionPack.Framework
         /// This controls whether types in assemblies other than the primary assembly have their visibility modified. When it is
         /// true, then all non-exempt types that are visible outside of their assembly
         /// <para/>
-        /// have their visibility modified so that they are not visible from outside of the merged assembly. A type is exempt if its
-        /// full name matches a line from the ExcludeFile (Section 2.10) using the .NET regular expression engine.
+        /// have their visibility modified so that they are not visible from outside of the merged assembly. A <see cref="Type"/> is
+        /// exempt if its full name matches a line from the ExcludeFile (Section 2.10) using the .NET regular expression engine.
         /// <para/>
         /// Command line option: /internalize[:excludeFile]
         /// <para/>
@@ -391,25 +392,25 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /keyfile:filename
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public ITaskItem KeyFile { get; set; }
 
         /// <summary>
         /// When this is set before calling Merge, it indicates the path and filename that log messages are written to. If
-        /// LogMessages is true, but LogFile is null, then log messages are written to Console.Out.
+        /// LogMessages is true, but LogFile is <see langref="null"/>, then log messages are written to Console.Out.
         /// <para/>
         /// Command line option: /log[:logfile]
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public ITaskItem LogFile { get; set; }
 
         /// <summary>
         /// When this is set before calling Merge, then log messages are written. It is used in conjunction with the LogFile property.
         /// <para/>
-        /// If Log is true, but LogFile is null, then log messages are written to Console.Out. To specify this behavior on the
-        /// command line, the option "/log" can be given without a log file.
+        /// If Log is true, but LogFile is <see langref="null"/>, then log messages are written to Console.Out. To specify this
+        /// behavior on the command line, the option "/log" can be given without a log file.
         /// <para/>
         /// Command line option: /log[:logfile]
         /// <para/>
@@ -422,7 +423,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /out:filename
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         [Required]
         public ITaskItem OutputFile { get; set; }
@@ -481,7 +482,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /targetplatform:version,platformdirectory
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public ITaskItem TargetPlatformDirectory { get; set; }
 
@@ -497,13 +498,13 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /targetplatform:version,platformdirectory
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public string TargetPlatformVersion { get; set; }
 
         /// <summary>
-        /// When this is true, then types with the same name are all merged into a single type in the target assembly. The single
-        /// type is the union of all of the individual
+        /// When this is true, then types with the same name are all merged into a single <see cref="Type"/> in the target assembly.
+        /// The single <see cref="Type"/> is the union of all of the individual
         /// <para/>
         /// types in the input assemblies: it contains all of the members from each of the corresponding types in the input
         /// assemblies. It cannot be specified at the same time as /allowDup.
@@ -515,15 +516,15 @@ namespace MSBuild.ExtensionPack.Framework
         public bool UnionMerge { get; set; }
 
         /// <summary>
-        /// When this has a non-null value, then the target assembly will be given its value as the version number of the assembly.
-        /// When specified on the command line, the
+        /// When this has a non- <see langref="null"/> value, then the target assembly will be given its value as the version number
+        /// of the assembly. When specified on the command line, the
         /// <para/>
         /// version is read in as a string and should look like "6.2.1.3" (but without the quote marks). The version must be a valid
         /// assembly version as defined by the attribute AssemblyVersion in the System.Reflection namespace.
         /// <para/>
         /// Command line option: /ver:version
         /// <para/>
-        /// Default: null
+        /// Default: <see langref="null"/>
         /// </summary>
         public string Version { get; set; }
 

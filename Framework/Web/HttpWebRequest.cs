@@ -238,8 +238,8 @@ namespace MSBuild.ExtensionPack.Web
         #region Public Properties
 
         /// <summary>
-        /// The content type of the request. By default, it is "application/x-www-form-urlencoded" (used for classic HTTP POST) for
-        /// Post and null for GetResponse.
+        /// The content <see cref="Type"/> of the request. By default, it is "application/x-www-form-urlencoded" (used for classic
+        /// HTTP POST) for Post and <see langref="null"/> for GetResponse.
         /// </summary>
         public string ContentType { get; set; }
 

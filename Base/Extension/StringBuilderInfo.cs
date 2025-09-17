@@ -38,7 +38,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         #region Private Fields
 
         /// <summary>
-        /// The disposed value
+        /// If <see langref="true"/>, this instance has been disposed; otherwise, <see langref="false"/>.
         /// </summary>
         private bool disposedValue;
 
@@ -50,7 +50,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing">
-        /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
+        /// <see langref="true"/> to release both managed and unmanaged resources; <see langref="false"/> to release only unmanaged resources.
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
@@ -170,8 +170,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
-        /// <param name="x">The first object of type <see cref="StringBuilder"/> to compare.</param>
-        /// <param name="y">The second object of type <see cref="StringBuilder"/> to compare.</param>
+        /// <param name="x">The first object of <see cref="Type"/><see cref="StringBuilder"/> to compare.</param>
+        /// <param name="y">The second object of <see cref="Type"/><see cref="StringBuilder"/> to compare.</param>
         /// <returns><see langword="true"/> if the specified objects are equal; otherwise, <see langword="false"/>.</returns>
         public bool Equals(StringBuilder? x, StringBuilder? y)
         {
@@ -202,7 +202,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
+        /// Indicates whether the current object is equal to another object of the same <see cref="Type"/>.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>

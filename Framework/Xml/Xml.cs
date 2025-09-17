@@ -347,7 +347,7 @@ namespace MSBuild.ExtensionPack.Xml
         /// <summary>
         /// Sets the Schema Files collection
         /// </summary>
-        public ITaskItem[] SchemaFiles { get; set; }
+        public IEnumerable<ITaskItem> SchemaFiles { get; set; }
 
         /// <summary>
         /// Sets the TargetNamespace for Validate. Default is ""

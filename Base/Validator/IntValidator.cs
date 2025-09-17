@@ -26,7 +26,7 @@ using System.Text;
 namespace MSBuild.ExtensionPack.Base.Validator
 {
     /// <summary>
-    /// Implements <see cref="IPropertyValidator{TValue}"/> for values of type <see cref="int"/>.
+    /// Implements <see cref="IPropertyValidator{TValue}"/> for values of <see cref="Type"/><see cref="int"/>.
     /// </summary>
     public class IntValidator : IPropertyValidator<int>
     {

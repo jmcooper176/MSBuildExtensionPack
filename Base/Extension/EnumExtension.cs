@@ -17,9 +17,13 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace MSBuild.ExtensionPack.Base.Extension
 {
+    /// <summary>
+    /// Implements extension methods for <see cref="Enum"/>.
+    /// </summary>
     public static class EnumExtension
     {
         #region Public Methods
@@ -28,14 +32,50 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// Formats <paramref name="value"/> using <paramref name="format"/> to a <see cref="string"/>.
         /// </summary>
         /// <typeparam name="TEnum">Specifies the return enumeration <see cref="Type"/>.</typeparam>
-        /// <param name="value"> Specifies the enumeration of type <typeparamref name="TEnum"/> as an <see cref="object"/> to format.</param>
+        /// <param name="value"> 
+        /// Specifies the enumeration of <see cref="Type"/><typeparamref name="TEnum"/> as an <see cref="object"/> to format.
+        /// </param>
         /// <param name="format">Specifies the <see cref="Enum"/> format string to apply.</param>
         /// <returns>A <see cref="string"/> representing <paramref name="value"/> as formatted by <paramref name="format"/>.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if <paramref name="format"/> is <see langref="null"/>, empty, or all whitespace.
+        /// </exception>
         public static string Format<TEnum>([DisallowNull] object value, [AllowNull] string format) where TEnum : struct, Enum
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(format, nameof(format));
 
             return Enum.Format(typeof(TEnum), value, format);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="string"/> name for <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">Specifies the enumeration <see cref="Type"/>.</typeparam>
+        /// <param name="value"></param>
+        /// <returns>A <see cref="string"/> representing the name of <paramref name="value"/>.</returns>
+        public static string? GetName<TEnum>(TEnum value) where TEnum : struct, Enum
+        {
+            return Enum.GetName<TEnum>(value);
+        }
+
+        /// <summary>
+        /// Gets an <see cref="IEnumerable{T}"/> of all the <see cref="string"/> names of the <typeparamref name="TEnum"/> enumeration.
+        /// </summary>
+        /// <typeparam name="TEnum">Specifies the <see cref="Type"/> of the enumeration.</typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/> of the names of the <typeparamref name="TEnum"/>.</returns>
+        public static IEnumerable<string> GetNames<TEnum>() where TEnum : struct, Enum
+        {
+            return Enum.GetNames<TEnum>();
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Array"/> of <see cref="string"/> names for <typeparamref name="TEnum"/> and converts it to an <see cref="IQueryable{T}"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">Specifies <see cref="Type"/> of the enumeration to get the <see cref="string"/> names for.</typeparam>
+        /// <returns>An <see cref="IQueryable{T}"/> representing the <see cref="string"/> names of <typeparamref name="TEnum"/>.</returns>
+        public static IQueryable<string> GetNamesAsQueryable<TEnum>() where TEnum : struct, Enum
+        {
+            return Enum.GetNames<TEnum>().AsQueryable<string>();
         }
 
         /// <summary>
@@ -50,59 +90,160 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         /// <summary>
         /// </summary>
-        /// <typeparam name="TEnum">Specifies the return enumeration <see cref="Type"/> and the value type of <paramref name="value"/>.</typeparam>
-        /// <param name="value">Specifies the enumeration of type <typeparamref name="TEnum"/> to convert to a value.</param>
-        /// <returns>A <see cref="object"/> representing the value of <paramref name="value"/>.</returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static object? GetValue<TEnum>(string? name) where TEnum : struct, Enum
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+            return IndexAsUnderlyingType<TEnum>().TryGetValue(name, out var value) ? value : default;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static object? GetValue<TEnum>(TEnum value) where TEnum : struct, Enum
         {
-            string? key = string.Empty;
-
-            if (!Enum.IsDefined(value))
-            {
-                throw new ArgumentException($"Parameter {nameof(value)} of Type {typeof(TEnum).FullName} is not defined.", nameof(value));
-            }
-            else
-            {
-                key = Enum.GetName(value);
-                ArgumentNullException.ThrowIfNullOrWhiteSpace(key);
-            }
-
-            Array values = Enum.GetValuesAsUnderlyingType<TEnum>();
-            string[] keys = Enum.GetNames<TEnum>();
-
-            if (values.Count() != keys.Length)
-            {
-                throw new InvalidOperationException($"Count 'values' [{values.Count()}] does not match Length 'keys' [{keys.Length}].");
-            }
-
-            Dictionary<string, object> keyValuePairs = keys.Zip<string, object>(values).ToDictionary(t => t.First, t => t.Second);
-
-            return keyValuePairs.TryGetValue(key, out object? result) ? result : default;
+            return GetValue<TEnum>(Enum.GetName<TEnum>(value));
         }
 
         /// <summary>
         /// </summary>
-        /// <typeparam name="TEnum">Specifies the return enumeration <see cref="Type"/>.</typeparam>
-        /// <param name="value"></param>
-        /// <returns>A <typeparamref name="TEnum"/> constructed from <paramref name="value"/>.</returns>
-        public static TEnum MakeEnum<TEnum>([DisallowNull] object value) where TEnum : struct, Enum
+        /// <typeparam name="TEnum"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<TEnum> GetValues<TEnum>() where TEnum : struct, Enum
         {
-            return ToObject<TEnum>(value);
+            return Enum.GetValues<TEnum>();
+        }
+
+        /// <summary>
+        /// Return the <see cref="Enum.GetValues{TEnum}()"/> values as an <see cref="IQueryable{T}"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">
+        /// Specifies <see cref="Type"/> of the enumeration to get <see cref="Enum.GetValues{TEnum}()"/> values for.
+        /// </typeparam>
+        /// <returns>An <see cref="IQueryable{T}"/>.</returns>
+        public static IQueryable<TEnum> GetValuesAsQueryable<TEnum>() where TEnum : struct, Enum
+        {
+            return Enum.GetValues<TEnum>().AsQueryable<TEnum>();
+        }
+
+        /// <summary>
+        /// Return the <see cref="Enum.GetValuesAsUnderlyingType{TEnum}()"/> values as an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">
+        /// Specifies <see cref="Type"/> of the enumeration to get <see cref="Enum.GetValuesAsUnderlyingType{TEnum}()"/> values for.
+        /// </typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/>.</returns>
+        public static IEnumerable<object> GetValuesAsUnderlyingTypeAsEnumerable<TEnum>() where TEnum : struct, Enum
+        {
+            return Enum.GetValuesAsUnderlyingType<TEnum>().Cast<object>();
+        }
+
+        /// <summary>
+        /// Return the <see cref="Enum.GetValuesAsUnderlyingType{TEnum}()"/> values as an <see cref="IQueryable{T}"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">
+        /// Specifies <see cref="Type"/> of the enumeration to get <see cref="Enum.GetValuesAsUnderlyingType{TEnum}()"/> values for.
+        /// </typeparam>
+        /// <returns>An <see cref="IQueryable{T}"/>.</returns>
+        public static IQueryable<object> GetValuesAsUnderlyingTypeAsQueryable<TEnum>() where TEnum : struct, Enum
+        {
+            return GetValuesAsUnderlyingTypeAsEnumerable<TEnum>().AsQueryable<object>();
         }
 
         /// <summary>
         /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static IEnumerable<Tuple<TEnum, char>> Index<TEnum>([AllowNull] this StringBuilder builder) where TEnum : struct, System.Enum
+        {
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
+            var index = Enum.GetValuesAsUnderlyingType<TEnum>().Cast<int>().FirstOrDefault();
+            List<Tuple<TEnum, char>> accumulator = new(builder.Count());
+
+            while (ExceptionExtension.IsInRange(index, 0..^builder.Count()))
+            {
+                accumulator.Add(Tuple.Create<TEnum, char>((TEnum)Enum.ToObject(typeof(TEnum), index), builder.ElementAtOrDefault(index)));
+
+                index++;
+            }
+
+            return accumulator;
+        }
+
+        /// <summary>
+        /// Gets the value of <typeparamref name="TEnum"/> for the <paramref name="value"/> and returns it as an <see cref="object"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">Specifies the return enumeration <see cref="Type"/> and the value type of <paramref name="value"/>.</typeparam>
+        /// <returns>A <see cref="object"/> representing the value of <paramref name="value"/>.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if the <typeparamref name="TEnum"/> name <see cref="string"/> for <paramref name="value"/> is <see
+        /// langref="null"/>, empty, or all whitespace.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">Throws if the number of keys does not match the number of values.</exception>
+        public static IDictionary<string, object> IndexAsUnderlyingType<TEnum>() where TEnum : struct, Enum
+        {
+            IEnumerable<object> values = GetValuesAsUnderlyingTypeAsEnumerable<TEnum>();
+            IQueryable<string> keys = GetNamesAsQueryable<TEnum>();
+
+            if (values.Count() != keys.Count())
+            {
+                throw new InvalidOperationException($"Count 'values' [{values.Count()}] does not match Length 'keys' [{keys.Count()}].");
+            }
+
+            return keys.Zip<string, object>(values).ToDictionary(t => t.First, t => t.Second);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="underlyingType"></param>
+        /// <param name="value">         </param>
+        /// <returns></returns>
+        public static bool IsAssignableTo(Type underlyingType, object value)
+        {
+            return value.GetType().IsAssignableTo(underlyingType);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsAssignableTo(object value)
+        {
+            return IsAssignableTo<int>(value);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <typeparam name="TUnderlyingType"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsAssignableTo<TUnderlyingType>(object value) where TUnderlyingType : struct, IConvertible
+        {
+            return IsAssignableTo(typeof(TUnderlyingType), value);
+        }
+
+        /// <summary>
+        /// Create a <typeparamref name="TEnum"/> instance from a <paramref name="value"/>.
+        /// </summary>
         /// <typeparam name="TEnum">Specifies the return enumeration <see cref="Type"/>.</typeparam>
         /// <param name="value"></param>
         /// <returns>A <typeparamref name="TEnum"/> constructed from <paramref name="value"/>.</returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">
+        /// Throws if the <see cref="Type"/> of <paramref name="value"/> is not assignable to the underlying value <see
+        /// cref="Type"/> of <typeparamref name="TEnum"/>.
+        /// </exception>
         public static TEnum ToObject<TEnum>([DisallowNull] object value) where TEnum : struct, Enum
         {
             Type valueType = GetUnderlyingType<TEnum>();
 
-            return value.GetType().IsAssignableTo(valueType) ? (TEnum)Enum.ToObject(typeof(TEnum), value) : throw new ArgumentException($"Parameter {nameof(value)} of Type '{value.GetType().FullName}' is not assignable to the Enum Underlying Type {valueType.FullName}.", nameof(value));
+            return IsAssignableTo(valueType, value) ? (TEnum)Enum.ToObject(typeof(TEnum), value) : throw new ArgumentException($"Parameter {nameof(value)} of Type '{value.GetType().FullName}' is not assignable to the Enum Underlying Type {valueType.FullName}.", nameof(value));
         }
 
         #endregion Public Methods

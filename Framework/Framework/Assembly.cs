@@ -261,7 +261,9 @@ namespace MSBuild.ExtensionPack.Framework
             {
                 this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", this.NetAssembly.GetMetadata("FullPath")));
 
-                // set the OutputItems so we dont get a null ref exception.
+                // set the OutputItems so we dont get a
+                // <see langref="null"/>
+                // ref exception.
                 this.OutputItems = new ITaskItem[0];
                 return;
             }
@@ -294,7 +296,7 @@ namespace MSBuild.ExtensionPack.Framework
         #region Public Properties
 
         /// <summary>
-        /// Sets the arguments to use for invoking a method. The arguments must be specified with a type, i.e. <Args Include="1"><Type>int</Type></Args>
+        /// Sets the arguments to use for invoking a method. The arguments must be specified with a <see cref="Type"/>, i.e. <Args Include="1"><Type>int</Type></Args>
         /// </summary>
         public ITaskItem[] NetArguments { get; set; }
 

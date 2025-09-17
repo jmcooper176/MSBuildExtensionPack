@@ -223,7 +223,8 @@ namespace MSBuild.ExtensionPack.Base
                 }
             }
 
-            // TODO: set large fields to null
+            // TODO: set large fields to 
+            // <see langref="null"/>
             ToolTimer = null;
             ToolTaskProcess = null;
             StandardOutputData = null;
@@ -661,7 +662,8 @@ namespace MSBuild.ExtensionPack.Base
                     }
                 }
 
-                // ensure the command line arguments string is not null
+                // ensure the command line arguments string is not
+                // <see langref="null"/>
                 if (string.IsNullOrEmpty(commandLineCommands))
                 {
                     commandLineCommands = string.Empty;
@@ -688,7 +690,7 @@ namespace MSBuild.ExtensionPack.Base
 
                 string pathToTool = ComputePathToTool();
 
-                if (pathToTool == null)
+                if (pathToTool is null)
                 {
                     // An appropriate error should have been logged already.
                     return false;
@@ -785,7 +787,7 @@ namespace MSBuild.ExtensionPack.Base
             finally
             {
                 // Clean up after ourselves.
-                if (TemporaryBatchFile != null && TemporaryBatchFile.Exists)
+                if (TemporaryBatchFile is not null && TemporaryBatchFile.Exists)
                 {
                     DeleteTempFile(TemporaryBatchFile);
                 }

@@ -337,7 +337,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// can be changed in the provided expression by using the regular expression options group syntax. For information on .NET
         /// Regular Expressions: http://msdn.microsoft.com/en-us/library/hs600312%28VS.71%29.aspx Capturing groups can be defined
         /// for the following values:
-        /// * SubCategory - A description of the error type
+        /// * SubCategory - A description of the error <see cref="Type"/>
         /// * ErrorCode - The error code
         /// * HelpKeyword - Help keyword for the error
         /// * File - Path to the file

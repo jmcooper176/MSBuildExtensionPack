@@ -88,7 +88,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets a value indicating whether this instance is default.
         /// </summary>
-        /// <value><c>true</c> if this instance is default; otherwise, <c>false</c>.</value>
+        /// <value><see langref="true"/> if this instance is default; otherwise, <see langref="false"/>.</value>
         protected virtual bool IsDefault { get; }
 
         #endregion Protected Properties
@@ -169,11 +169,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         #region Public Methods
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] ParameterInfo element, bool inherit) where TAttribute : Attribute
         {
@@ -199,11 +199,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] MemberInfo element, bool inherit) where TAttribute : Attribute
         {
@@ -239,11 +239,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] Assembly element, bool inherit) where TAttribute : Attribute
         {
@@ -269,11 +269,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] Module element, bool inherit) where TAttribute : Attribute
         {
@@ -299,9 +299,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] Module element) where TAttribute : Attribute
@@ -310,9 +310,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] MemberInfo element) where TAttribute : Attribute
@@ -321,9 +321,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] Assembly element) where TAttribute : Attribute
@@ -332,9 +332,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute>([AllowNull] ParameterInfo element) where TAttribute : Attribute
@@ -343,11 +343,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<T, TAttribute>(bool inherit) where TAttribute : Attribute
         {
@@ -355,11 +355,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="constructor">The constructor.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="TypeLoadException"></exception>
@@ -387,11 +387,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="eventInfo">The event information.</param>
-        /// <param name="inherit">  if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">  if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="TypeLoadException"></exception>
@@ -419,11 +419,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="field">  The field.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="TypeLoadException"></exception>
@@ -451,11 +451,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="property">The property.</param>
-        /// <param name="inherit"> if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit"> if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="TypeLoadException"></exception>
@@ -483,11 +483,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="type">   The type.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="type">   The <see cref="Type"/>.</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="TypeLoadException"></exception>
@@ -515,11 +515,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="method"> The method.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">method</exception>
         /// <exception cref="TypeLoadException"></exception>
@@ -547,9 +547,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="module">        The module.</param>
         /// <param name="filter">        The filter.</param>
         /// <param name="filterCriteria">The filter criteria.</param>
@@ -565,10 +565,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <typeparam name="TEnum">The <see cref="Type"/> of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute, TEnum>(TEnum value)
@@ -579,12 +579,12 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attribute.
+        /// Gets the custom <see cref="Attribute"/>.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <typeparam name="TEnum">The <see cref="Type"/> of the enum.</typeparam>
         /// <param name="value">  The value.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static TAttribute? GetCustomAttribute<TAttribute, TEnum>(TEnum value, bool inherit)
             where TAttribute : Attribute
@@ -594,12 +594,12 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the custom attributes.
+        /// Gets the custom <see cref="Attribute"/> s.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <typeparam name="TEnum">The <see cref="Type"/> of the enum.</typeparam>
         /// <param name="value">  The value.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute, TEnum>(TEnum value, bool inherit)
                     where TAttribute : Attribute
@@ -611,8 +611,8 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <typeparam name="TEnum">The <see cref="Type"/> of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute, TEnum>(TEnum value)
@@ -625,9 +625,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="TypeLoadException"></exception>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>([AllowNull] MemberInfo element, bool inherit) where TAttribute : Attribute
@@ -658,9 +658,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>([AllowNull] ParameterInfo element, bool inherit) where TAttribute : Attribute
         {
@@ -685,9 +685,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="TypeLoadException"></exception>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>([AllowNull] Module element, bool inherit) where TAttribute : Attribute
@@ -708,9 +708,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="TypeLoadException"></exception>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>([AllowNull] Assembly element, bool inherit) where TAttribute : Attribute
@@ -731,7 +731,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
         /// <returns></returns>
         /// <exception cref="TypeLoadException"></exception>
@@ -753,7 +753,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">element</exception>
@@ -775,7 +775,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the custom attributes.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="module">        The module.</param>
         /// <param name="filter">        The filter.</param>
         /// <param name="filterCriteria">The filter criteria.</param>
@@ -810,8 +810,8 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the field.
         /// </summary>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="value">The value.</param>
         /// <param name="name"> The name.</param>
         /// <returns></returns>
@@ -836,7 +836,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Gets the member.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">The name.</param>
         /// <returns></returns>
         public static MemberInfo? GetMember<T, TAttribute>(string name) where TAttribute : Attribute
@@ -848,9 +848,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Gets the member.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">       The name.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
         /// <returns></returns>
         public static MemberInfo? GetMember<T, TAttribute>(string name, BindingFlags bindingAttr) where TAttribute : Attribute
         {
@@ -860,11 +860,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the member.
         /// </summary>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="value">  The value.</param>
         /// <param name="name">   The name.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">value</exception>
         /// <exception cref="System.NotSupportedException"></exception>
@@ -891,7 +891,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Gets the members.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">The name.</param>
         /// <returns></returns>
         public static MemberInfo[] GetMembers<T, TAttribute>(string name) where TAttribute : Attribute
@@ -903,9 +903,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Gets the members.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">       The name.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
         /// <returns></returns>
         public static MemberInfo[] GetMembers<T, TAttribute>(string name, BindingFlags bindingAttr) where TAttribute : Attribute
         {
@@ -915,8 +915,8 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the members.
         /// </summary>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="value">The value.</param>
         /// <param name="name"> The name.</param>
         /// <returns></returns>
@@ -944,7 +944,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the method.
         /// </summary>
-        /// <typeparam name="TParent">The type of the parent.</typeparam>
+        /// <typeparam name="TParent">The <see cref="Type"/> of the parent.</typeparam>
         /// <param name="methodName">Name of the method.</param>
         /// <returns></returns>
         public static MethodInfo? GetMethod<TParent>(string methodName)
@@ -957,9 +957,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the method.
         /// </summary>
-        /// <typeparam name="TParent">The type of the parent.</typeparam>
+        /// <typeparam name="TParent">The <see cref="Type"/> of the parent.</typeparam>
         /// <param name="methodName"> Name of the method.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
         /// <returns></returns>
         public static MethodInfo? GetMethod<TParent>(string methodName, BindingFlags bindingAttr)
         {
@@ -971,7 +971,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the parameters.
         /// </summary>
-        /// <typeparam name="TParent">The type of the parent.</typeparam>
+        /// <typeparam name="TParent">The <see cref="Type"/> of the parent.</typeparam>
         /// <param name="methodName">Name of the method.</param>
         /// <returns></returns>
         public static ParameterInfo[] GetParameters<TParent>(string methodName)
@@ -982,9 +982,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Gets the parameters.
         /// </summary>
-        /// <typeparam name="TParent">The type of the parent.</typeparam>
+        /// <typeparam name="TParent">The <see cref="Type"/> of the parent.</typeparam>
         /// <param name="methodName"> Name of the method.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
         /// <returns></returns>
         public static ParameterInfo[] GetParameters<TParent>(string methodName, BindingFlags bindingAttr)
         {
@@ -992,7 +992,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the type information.
+        /// Gets the <see cref="TypeInfo"/> information.
         /// </summary>
         /// <param name="targetType">Type of the target.</param>
         /// <returns></returns>
@@ -1005,9 +1005,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Gets the type information.
+        /// Gets the <see cref="TypeInfo"/> information.
         /// </summary>
-        /// <typeparam name="TType">The type of the type.</typeparam>
+        /// <typeparam name="TType">The <see cref="Type"/> of the <see cref="Type"/>.</typeparam>
         /// <returns></returns>
         public static TypeInfo GetTypeInfo<TType>() where TType : Type
         {
@@ -1015,13 +1015,13 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Determines whether the specified type is defined.
+        /// Determines whether the specified <see cref="Type"/> is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="type">   The type.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified type is defined; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">type</exception>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="type">   The <see cref="Type"/>.</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified <see cref="Type"/> is defined; otherwise, <see langref="false"/>.</returns>
+        /// <exception cref="System.ArgumentNullException"><see cref="Type"/></exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] TypeInfo type, bool inherit) where TAttribute : Attribute
         {
@@ -1050,10 +1050,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified property is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="property">The property.</param>
-        /// <param name="inherit"> if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified property is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit"> if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified property is defined; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="System.ArgumentNullException">property</exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] PropertyInfo property, bool inherit) where TAttribute : Attribute
@@ -1083,10 +1083,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified method is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="method"> The method.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified method is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified method is defined; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="System.ArgumentNullException">method</exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] MethodInfo method, bool inherit) where TAttribute : Attribute
@@ -1116,10 +1116,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified field is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="field">  The field.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified field is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified field is defined; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="System.ArgumentNullException">field</exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] FieldInfo field, bool inherit) where TAttribute : Attribute
@@ -1149,10 +1149,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified event information is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="eventInfo">The event information.</param>
-        /// <param name="inherit">  if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified event information is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">  if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified event information is defined; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="System.ArgumentNullException">eventInfo</exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] EventInfo eventInfo, bool inherit) where TAttribute : Attribute
@@ -1182,10 +1182,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified constructor is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="constructor">The constructor.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified constructor is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified constructor is defined; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="System.ArgumentNullException">constructor</exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] ConstructorInfo constructor, bool inherit) where TAttribute : Attribute
@@ -1215,11 +1215,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified module is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="module">        The module.</param>
         /// <param name="filter">        The filter.</param>
         /// <param name="filterCriteria">The filter criteria.</param>
-        /// <returns><c>true</c> if the specified module is defined; otherwise, <c>false</c>.</returns>
+        /// <returns><see langref="true"/> if the specified module is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] Module module, TypeFilter? filter, object? filterCriteria) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(module, filter, filterCriteria) is not null;
@@ -1228,10 +1228,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] ParameterInfo element, bool inherit) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element, inherit) is not null;
@@ -1240,10 +1240,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] Module element, bool inherit) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element, inherit) is not null;
@@ -1252,10 +1252,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefined<TAttribute>([AllowNull] MemberInfo element, bool inherit) where TAttribute : Attribute
         {
@@ -1284,10 +1284,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] Assembly element, bool inherit) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element, inherit) is not null;
@@ -1296,9 +1296,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] MemberInfo element) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element) is not null;
@@ -1307,9 +1307,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] Module element) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element) is not null;
@@ -1318,9 +1318,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] Assembly element) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element) is not null;
@@ -1329,9 +1329,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// Determines whether the specified element is defined.
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="element">The element.</param>
-        /// <returns><c>true</c> if the specified element is defined; otherwise, <c>false</c>.</returns>
+        /// <returns><see langref="true"/> if the specified element is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<TAttribute>([AllowNull] ParameterInfo element) where TAttribute : Attribute
         {
             return GetCustomAttribute<TAttribute>(element) is not null;
@@ -1341,22 +1341,25 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether the specified inherit is defined.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if the specified inherit is defined; otherwise, <c>false</c>.</returns>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if the specified inherit is defined; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefined<T, TAttribute>(bool inherit) where TAttribute : Attribute
         {
             return IsDefinedOnType<TAttribute>(typeof(T), inherit);
         }
 
         /// <summary>
-        /// Determines whether [is defined on constructor] [the specified types].
+        /// Determines whether [is defined on constructor] [the specified <see cref="Array"/> of <see cref="Type"/>].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="types">  The types.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on constructor] [the specified types]; otherwise, <c>false</c>.</returns>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="types">  The <see cref="Array"/> of <see cref="Type"/>.</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns>
+        /// <see langref="true"/> if [is defined on constructor] [the specified <see cref="Array"/> of <see cref="Type"/>];
+        /// otherwise, <see langref="false"/>.
+        /// </returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnConstructor<T, TAttribute>(Type[] types, bool inherit) where TAttribute : Attribute
         {
@@ -1383,14 +1386,17 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Determines whether [is defined on constructor] [the specified binding attribute].
+        /// Determines whether [is defined on constructor] [the specified <see cref="BindingFlags"/> binding attributes].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="types">      The types.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on constructor] [the specified binding attribute]; otherwise, <c>false</c>.</returns>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="types">      The <see cref="Array"/> of <see cref="Type"/>.</param>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns>
+        /// <see langref="true"/> if [is defined on constructor] [the specified <see cref="BindingFlags"/> binding attributes];
+        /// otherwise, <see langref="false"/>.
+        /// </returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnConstructor<T, TAttribute>(BindingFlags bindingAttr, Type[] types, bool inherit) where T : class where TAttribute : Attribute
         {
@@ -1417,16 +1423,19 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Determines whether [is defined on constructor] [the specified binding attribute].
+        /// Determines whether [is defined on constructor] [the specified <see cref="BindingFlags"/> binding attributes].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="binder">     The binder.</param>
-        /// <param name="types">      The types.</param>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="binder">     The <see cref="Binder"/> binder.</param>
+        /// <param name="types">      The <see cref="Array"/> of <see cref="Type"/>.</param>
         /// <param name="modifiers">  The modifiers.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on constructor] [the specified binding attribute]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns>
+        /// <see langref="true"/> if [is defined on constructor] [the specified <see cref="BindingFlags"/> binding attributes];
+        /// otherwise, <see langref="false"/>.
+        /// </returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnConstructor<T, TAttribute>(BindingFlags bindingAttr, Binder? binder, Type[] types, ParameterModifier[]? modifiers, bool inherit)
             where T : class
@@ -1455,17 +1464,20 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Determines whether [is defined on constructor] [the specified binding attribute].
+        /// Determines whether [is defined on constructor] [the specified <see cref="BindingFlags"/> binding attributes].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="binder">     The binder.</param>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="binder">     The <see cref="Binder"/> binder.</param>
         /// <param name="convention"> The convention.</param>
-        /// <param name="types">      The types.</param>
+        /// <param name="types">      The <see cref="Array"/> of <see cref="Type"/>.</param>
         /// <param name="modifiers">  The modifiers.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on constructor] [the specified binding attribute]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns>
+        /// <see langref="true"/> if [is defined on constructor] [the specified <see cref="BindingFlags"/> binding attributes];
+        /// otherwise, <see langref="false"/>.
+        /// </returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnConstructor<T, TAttribute>(BindingFlags bindingAttr, Binder? binder, CallingConventions convention, Type[] types, ParameterModifier[]? modifiers, bool inherit)
             where T : class
@@ -1497,9 +1509,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on default constructor] [the specified inherit].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on default constructor] [the specified inherit]; otherwise, <c>false</c>.</returns>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on default constructor] [the specified inherit]; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefinedOnDefaultConstructor<T, TAttribute>(bool inherit) where TAttribute : Attribute
         {
             return IsDefinedOnConstructor<T, TAttribute>(Type.EmptyTypes, inherit);
@@ -1509,10 +1521,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on event] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">   The name.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on event] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on event] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnEvent<T, TAttribute>(string name, bool inherit) where TAttribute : Attribute
         {
@@ -1542,11 +1554,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on event] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">       The name.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on event] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on event] [the specified name]; otherwise, <see langref="false"/>.</returns>
         public static bool IsDefinedOnEvent<T, TAttribute>(string name, BindingFlags bindingAttr, bool inherit) where T : class where TAttribute : Attribute
         {
             EventInfo? eventInfo = typeof(T).GetEvent(name, bindingAttr);
@@ -1575,10 +1587,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on field] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">   The name.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on field] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on field] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnField<T, TAttribute>(string name, bool inherit) where T : class where TAttribute : Attribute
         {
@@ -1608,11 +1620,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on field] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">       The name.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on field] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on field] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnField<T, TAttribute>(string name, BindingFlags bindingAttr, bool inherit) where TAttribute : Attribute
         {
@@ -1642,11 +1654,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on member] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">      The name.</param>
         /// <param name="memberType">Type of the member.</param>
-        /// <param name="inherit">   if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on member] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">   if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on member] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnMember<T, TAttribute>(string name, MemberTypes memberType, bool inherit) where TAttribute : Attribute
         {
@@ -1676,12 +1688,12 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on member] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">       The name.</param>
         /// <param name="memberType"> Type of the member.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on member] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on member] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnMember<T, TAttribute>(string name, MemberTypes memberType, BindingFlags bindingAttr, bool inherit) where TAttribute : Attribute
         {
@@ -1712,10 +1724,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on method] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">   The name.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on method] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on method] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnMethod<T, TAttribute>(string name, bool inherit) where TAttribute : Attribute
         {
@@ -1746,11 +1758,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on method] [the specified name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="name">       The name.</param>
-        /// <param name="bindingAttr">The binding attribute.</param>
-        /// <param name="inherit">    if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on method] [the specified name]; otherwise, <c>false</c>.</returns>
+        /// <param name="bindingAttr">The <see cref="BindingFlags"/> binding attributes.</param>
+        /// <param name="inherit">    if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on method] [the specified name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnMethod<T, TAttribute>(string name, BindingFlags bindingAttr, bool inherit) where TAttribute : Attribute
         {
@@ -1781,11 +1793,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on parameter] [the specified method name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="methodName">   Name of the method.</param>
         /// <param name="parameterName">Name of the parameter.</param>
-        /// <param name="inherit">      if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on parameter] [the specified method name]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">      if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on parameter] [the specified method name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnParameter<T, TAttribute>(string methodName, string parameterName, bool inherit) where TAttribute : Attribute
         {
@@ -1816,12 +1828,12 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// Determines whether [is defined on parameter] [the specified method name].
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
         /// <param name="methodName">   Name of the method.</param>
-        /// <param name="bindingAttr">  The binding attribute.</param>
+        /// <param name="bindingAttr">  The <see cref="BindingFlags"/> binding attributes.</param>
         /// <param name="parameterName">Name of the parameter.</param>
-        /// <param name="inherit">      if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on parameter] [the specified method name]; otherwise, <c>false</c>.</returns>
+        /// <param name="inherit">      if set to <see langref="true"/> [inherit].</param>
+        /// <returns><see langref="true"/> if [is defined on parameter] [the specified method name]; otherwise, <see langref="false"/>.</returns>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnParameter<T, TAttribute>(string methodName, BindingFlags bindingAttr, string parameterName, bool inherit) where T : class where TAttribute : Attribute
         {
@@ -1849,13 +1861,15 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Determines whether [is defined on type] [the specified type].
+        /// Determines whether [is defined on <see cref="Type"/>] [the specified <see cref="Type"/>].
         /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
-        /// <param name="type">   The type.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
-        /// <returns><c>true</c> if [is defined on type] [the specified type]; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">type</exception>
+        /// <typeparam name="TAttribute">The <see cref="Type"/> of the <see cref="Attribute"/>.</typeparam>
+        /// <param name="type">   The <see cref="Type"/>.</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
+        /// <returns>
+        /// <see langref="true"/> if [is defined on <see cref="Type"/>] [the specified <see cref="Type"/>]; otherwise, <see langref="false"/>.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><see cref="Type"/></exception>
         /// <exception cref="TypeLoadException"></exception>
         public static bool IsDefinedOnType<TAttribute>([AllowNull] Type type, bool inherit) where TAttribute : Attribute
         {
@@ -1882,10 +1896,10 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Tries the get custom attribute.
+        /// Tries the get custom <see cref="Attribute"/>.
         /// </summary>
-        /// <param name="type">   The type.</param>
-        /// <param name="inherit">if set to <c>true</c> [inherit].</param>
+        /// <param name="type">   The <see cref="Type"/>.</param>
+        /// <param name="inherit">if set to <see langref="true"/> [inherit].</param>
         /// <param name="value">  The value.</param>
         /// <returns></returns>
         /// <exception cref="TypeLoadException"></exception>
@@ -1942,8 +1956,8 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// </summary>
         /// <param name="obj">An <see cref="Object"/> to compare with this instance or <see langword="null"/>.</param>
         /// <returns>
-        /// <see langword="true"/> if <paramref name="obj"/> and this instance are of the same type and have identical field values;
-        /// otherwise, <see langword="false"/>.
+        /// <see langword="true"/> if <paramref name="obj"/> and this instance are of the same <see cref="Type"/> and have identical
+        /// field values; otherwise, <see langword="false"/>.
         /// </returns>
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
@@ -2013,7 +2027,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// <summary>
         /// When overridden in a derived class, indicates whether the value of this instance is the default value for the derived class.
         /// </summary>
-        /// <returns><see langword="true"/> if this instance is the default attribute for the class; otherwise, <see langword="false"/>.</returns>
+        /// <returns>
+        /// <see langword="true"/> if this instance is the default <see cref="Attribute"/> for the class; otherwise, <see langword="false"/>.
+        /// </returns>
         public override bool IsDefaultAttribute()
         {
             return IsDefault;

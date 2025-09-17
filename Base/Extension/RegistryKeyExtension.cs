@@ -18,6 +18,8 @@
 
 using Microsoft.Win32;
 
+using System.Security.AccessControl;
+
 namespace MSBuild.ExtensionPack.Base.Extension
 {
     internal static class RegistryKeyExtension
@@ -25,75 +27,95 @@ namespace MSBuild.ExtensionPack.Base.Extension
         #region Public Properties
 
         /// <summary>
-        /// Returns the 32 bit HKLM\SOFTWARE registry key. May return null if it doesn't exist. Dispose of the return value.
+        /// Returns the 32 bit HKLM\SOFTWARE registry key. May return <see langref="null"/> if it doesn't exist.
         /// </summary>
-        public static RegistryKey SoftwareRegistry32Bit
+        /// <remarks>Call must dispose of the <see cref="RegistryKey"/> return value.</remarks>
+        public static RegistryKey? HklmSoftware32Bit
         {
             get
             {
-                // simple logic
-                if (Environment.Is64BitProcess)
-                {
-                    return SoftwareRegistryNonnative;
-                }
-
-                return SoftwareRegistryNative;
+                return Environment.Is64BitProcess ? HklmSoftwareNonnative : HklmSoftwareNative;
             }
         }
 
         /// <summary>
-        /// Returns the 64 bit HKLM\SOFTWARE registry key. May return null if it doesn't exist. Dispose of the return value.
+        /// Returns the 64 bit HKLM\SOFTWARE registry key. May return <see langref="null"/> if it doesn't exist.
         /// </summary>
-        public static RegistryKey SoftwareRegistry64Bit
+        /// <remarks>Call must dispose of the <see cref="RegistryKey"/> return value.</remarks>
+        public static RegistryKey? HklmSoftware64Bit
         {
             get
             {
-                // simple logic
-                if (Environment.Is64BitProcess)
-                {
-                    return SoftwareRegistryNative;
-                }
-
-                return SoftwareRegistryNonnative;
+                return Environment.Is64BitProcess ? HklmSoftwareNative : HklmSoftwareNonnative;
             }
         }
 
         /// <summary>
-        /// For a 32 bit process, it returns the 32 bit HKLM\SOFTWARE registry key, otherwise the 64 bit one. May return null if it
-        /// doesn't exist. Dispose of the return value.
+        /// For a 32 bit process, it returns the 32 bit HKLM\SOFTWARE registry key, otherwise the 64 bit one. May return <see
+        /// langref="null"/> if it doesn't exist.
         /// </summary>
-        public static RegistryKey SoftwareRegistryNative
+        /// <remarks>Call must dispose of the <see cref="RegistryKey"/> return value.</remarks>
+        public static RegistryKey? HklmSoftwareNative
         {
             get
             {
-                // no need to play with RegistryView, it is the simplest case
-                return Registry.LocalMachine.OpenSubKey("SOFTWARE");
+                return OpenSubKey(RegistryHive.LocalMachine, RegistryView.Default, "SOFTWARE");
             }
         }
 
         /// <summary>
-        /// For a 32 bit process, it returns the 64 bit HKLM\SOFTWARE registry key, otherwise the 32 bit one. May return null if it
-        /// doesn't exist. Dispose of the return value.
+        /// For a 32 bit process, it returns the 64 bit HKLM\SOFTWARE registry key, otherwise the 32 bit one. May return <see
+        /// langref="null"/> if it doesn't exist.
         /// </summary>
-        public static RegistryKey SoftwareRegistryNonnative
+        /// <remarks>Call must dispose of the <see cref="RegistryKey"/> return value.</remarks>
+        public static RegistryKey? HklmSoftwareNonnative
         {
             get
             {
-                // a non-native registry only exists on 64 bit OS'es
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    // use RegistryView to get the other one
                     var view = Environment.Is64BitProcess ? RegistryView.Registry32 : RegistryView.Registry64;
-                    using (var basekey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view))
-                    {
-                        return basekey.OpenSubKey("SOFTWARE");
-                    }
+                    return OpenSubKey(RegistryHive.LocalMachine, view, "SOFTWARE");
                 }
-
-                return null;
+                else
+                {
+                    return null;
+                }
             }
         }
 
         #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Closes the specified <see cref="RegistryKey"/> if it is not <see langref="null"/> and then set it to <see langref="null"/>.
+        /// </summary>
+        /// <param name="hKey">Specifies the <see cref="RegistryKey"/> to close.</param>
+        public static void Close(this RegistryHive? hKey)
+        {
+            if (hKey is not null)
+            {
+                hKey.Close();
+                hKey = null;
+            }
+        }
+
+        public static RegistryKey? OpenSubKey(RegistryHive hKey, RegistryView view, string name)
+        {
+            return OpenSubKey(hKey, view, name, RegistryKeyPermissionCheck.Default);
+        }
+
+        public static RegistryKey? OpenSubKey(RegistryHive hKey, RegistryView view, string name, RegistryKeyPermissionCheck permissionCheck)
+        {
+            return RegistryKey.OpenBaseKey(hKey, view).OpenSubKey(name, permissionCheck);
+        }
+
+        public static RegistryKey? OpenSubKey(RegistryHive hKey, RegistryView view, string name, RegistryKeyPermissionCheck permissionCheck, RegistryRights rights)
+        {
+            return RegistryKey.OpenBaseKey(hKey, view).OpenSubKey(name, permissionCheck, rights);
+        }
+
+        #endregion Public Methods
     }
 }

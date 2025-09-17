@@ -174,16 +174,18 @@ namespace MSBuild.ExtensionPack.FileSystem
 
         /// <summary>
         /// Gets or sets a value indicating if directories should be included in the result. <br/> The default value for this is
-        /// <c>false</c>. Both <c>FindFiles</c> and <c>FindDirectories</c> cannot be <c>false</c>, atleast one <b>must</b> be <c>true</c>.
+        /// <see langref="false"/>. Both <c>FindFiles</c> and <c>FindDirectories</c> cannot be <see langref="false"/>, atleast one
+        /// <b>must</b> be <see langref="true"/>.
         /// </summary>
-        /// <value><c>true</c> if directories should be included in the find result; otherwise, <c>false</c>.</value>
+        /// <value><see langref="true"/> if directories should be included in the find result; otherwise, <see langref="false"/>.</value>
         protected bool FindDirectories { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating if files should be included in the result. <br/> The default value for this is
-        /// <c>false</c>. <br/> Both <c>FindFiles</c> and <c>FindDirectories</c> cannot be <c>false</c>, atleast one <b>must</b> be <c>true</c>.
+        /// Gets or sets a value indicating if files should be included in the result. <br/> The default value for this is <see
+        /// langref="false"/>. <br/> Both <c>FindFiles</c> and <c>FindDirectories</c> cannot be <see langref="false"/>, atleast one
+        /// <b>must</b> be <see langref="true"/>.
         /// </summary>
-        /// <value><c>true</c> if file should be included in the find result; otherwise, <c>false</c>.</value>
+        /// <value><see langref="true"/> if file should be included in the find result; otherwise, <see langref="false"/>.</value>
         protected bool FindFiles { get; set; }
 
         #endregion Protected Properties

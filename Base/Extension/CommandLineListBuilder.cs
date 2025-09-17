@@ -436,7 +436,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Tests whether <paramref name="items"/> is <see langref="null"/> or empty.
         /// </summary>
-        /// <typeparam name="T">Specifies the element type of <paramref name="items"/>.</typeparam>
+        /// <typeparam name="T">Specifies the element <see cref="Type"/> of <paramref name="items"/>.</typeparam>
         /// <param name="items">Specifies the <see cref="IEnumerable{T}"/> under test.</param>
         /// <returns>
         /// <see langref="true"/> if <paramref name="items"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
@@ -446,7 +446,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Tests whether <paramref name="items"/> is <see langref="null"/> or empty.
         /// </summary>
-        /// <param name="items">Specifies the <see cref="IEnumerable{T}"/> of element type <see cref="string"/> under test.</param>
+        /// <param name="items">
+        /// Specifies the <see cref="IEnumerable{T}"/> of element <see cref="Type"/><see cref="string"/> under test.
+        /// </param>
         /// <returns>
         /// <see langref="true"/> if <paramref name="items"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
         /// </returns>
@@ -455,7 +457,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Tests whether <paramref name="items"/> is <see langref="null"/> or empty.
         /// </summary>
-        /// <param name="items">Specifies the <see cref="IEnumerable{T}"/> of element type <see cref="ITaskItem"/> under test.</param>
+        /// <param name="items">
+        /// Specifies the <see cref="IEnumerable{T}"/> of element <see cref="Type"/><see cref="ITaskItem"/> under test.
+        /// </param>
         /// <returns>
         /// <see langref="true"/> if <paramref name="items"/> is either <see langref="null"/> or empty; otherwise, <see langref="false"/>.
         /// </returns>
@@ -1096,7 +1100,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Convert <see cref="CommandList"/> to a <see cref="List{T}"/> of type string.
+        /// Convert <see cref="CommandList"/> to a <see cref="List{T}"/> of <see cref="Type"/> string.
         /// </summary>
         /// <returns>Returns the command list as a <see cref="List{T}"/>.</returns>
         public List<string> ToList()

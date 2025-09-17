@@ -107,7 +107,7 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
         public string FactoryName => GetType().Name;
 
         /// <summary>
-        /// The type of Task
+        /// The <see cref="Type"/> of Task
         /// </summary>
         public Type TaskType => typeof(PowerShellTask);
 

@@ -424,7 +424,7 @@ namespace MSBuild.ExtensionPack.Computer
         public string Data { get; set; }
 
         /// <summary>
-        /// Sets the type of the data. RegistryValueKind Enumeration. Support for Binary, DWord, MultiString, QWord, ExpandString
+        /// Sets the <see cref="Type"/> of the data. RegistryValueKind Enumeration. Support for Binary, DWord, MultiString, QWord, ExpandString
         /// </summary>
         public string DataType { get; set; }
 

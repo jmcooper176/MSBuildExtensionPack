@@ -251,8 +251,9 @@ namespace MSBuild.ExtensionPack.FileSystem
             {
                 this.LogTaskMessage("Detokenise Task Execution Started [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
 
-                // if the ReplacementValues collection and the CommandLineValues are null, then we need to load the project file
-                // that called this task to get it's properties.
+                // if the ReplacementValues collection and the CommandLineValues are
+                // <see langref="null"/>
+                // , then we need to load the project file that called this task to get it's properties.
                 if (this.ReplacementValues is null && string.IsNullOrEmpty(this.CommandLineValues))
                 {
                     this.collectionMode = false;

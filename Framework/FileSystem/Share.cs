@@ -639,7 +639,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         ///]]>
         /// </code>
         /// </summary>
-        public ITaskItem[] AllowUsers { get; set; }
+        public IEnumerable<ITaskItem> AllowUsers { get; set; }
 
         /// <summary>
         /// Sets whether to create the SharePath if it doesnt exist. Default is false
@@ -649,7 +649,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// <summary>
         /// Sets a collection of users not allowed to access the share
         /// </summary>
-        public ITaskItem[] DenyUsers { get; set; }
+        public IEnumerable<ITaskItem> DenyUsers { get; set; }
 
         /// <summary>
         /// Sets the desctiption for the share

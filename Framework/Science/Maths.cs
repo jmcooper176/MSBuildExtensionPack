@@ -412,7 +412,7 @@ namespace MSBuild.ExtensionPack.Science
         /// <summary>
         /// A semicolon separated collection of numbers
         /// </summary>
-        public string[] Numbers
+        public IEnumerable<string> Numbers
         {
             set => this.numbers = ToFloatArray(value);
         }

@@ -106,7 +106,7 @@ namespace MSBuild.ExtensionPack.Framework
     /// <para>The actual code is compiled into a static method of a class. Enclosing <see cref="Code"/> in curly braces is not necessary.</para>
     /// <para>There are three types of parameters passed to the method: default parameters, input parameters, and output parameters.</para>
     /// <para>
-    /// Currently, there is only one default parameter, named "@this". Its type is <b>Microsoft.Build.Utilities.Task</b>, and it may
+    /// Currently, there is only one default parameter, named "@this". Its <see cref="Type"/> is <b>Microsoft.Build.Utilities.Task</b>, and it may
     /// be used to access task-level properties such as <b>Log</b> and <b>BuildEngine2</b>. Default parameters may be disabled by
     /// specifying <see cref="NoDefaultParameters"/>.
     /// </para>
@@ -142,20 +142,20 @@ namespace MSBuild.ExtensionPack.Framework
     /// </para>
     /// <para><b>Specifying Inputs and Outputs</b></para>
     /// <para>
-    /// Each input or output has a type and a name. The name must be a legal C# parameter name, and cannot start with "_" or be
+    /// Each input or output has a <see cref="Type"/> and a name. The name must be a legal C# parameter name, and cannot start with "_" or be
     /// equal to "@this". Input and output names must be unique; an input cannot have the same name as an output.
     /// </para>
     /// <para>If <see cref="NoDefaultParameters"/> is specified, then input and output names may start with "_" or be equal to "@this".</para>
     /// <para>
     /// Type and name pairs may be specified one of three ways. The first (and most compact) way is to pass a comma-delimited string
-    /// of type and name pairs. This is the most familiar syntax to C#.
+    /// of <see cref="Type"/> and name pairs. This is the most familiar syntax to C#.
     /// </para>
     /// <para>
-    /// The second way is to pass an array of task items, with the identity of each item set to its type and name separated by at
+    /// The second way is to pass an array of task items, with the identity of each item set to its <see cref="Type"/> and name separated by at
     /// least one space.
     /// </para>
     /// <para>
-    /// The third way is to pass an array of task items, with the type looked up from the item's "Type" metadata. The name may be
+    /// The third way is to pass an array of task items, with the <see cref="Type"/> looked up from the item's "Type" metadata. The name may be
     /// specified by the item's "Name" metadata or its identity.
     /// </para>
     /// <code lang="xml">
@@ -208,17 +208,17 @@ namespace MSBuild.ExtensionPack.Framework
     /// <b>float</b>, <b>double</b>, <b>Decimal</b>, and <b>DateTime</b>.
     /// </para>
     /// <para>
-    /// <b>Group C</b> - Any nullable type whose underlying type is in Group B. This includes the types <b>char?</b>, <b>bool?</b>,
+    /// <b>Group C</b> - Any <see cref="Nullable{T}"/> <see cref="Type"/> whose underlying <see cref="Type"/> is in Group B. This includes the types <b>char?</b>, <b>bool?</b>,
     /// <b>byte?</b>, <b>sbyte?</b>, <b>short?</b>, <b>ushort?</b>, <b>int?</b>, <b>uint?</b>, <b>long?</b>, <b>ulong?</b>,
     /// <b>float?</b>, <b>double?</b>, <b>Decimal?</b>, and <b>DateTime?</b>.
     /// </para>
     /// <para>
-    /// <b>Group D</b> - An array of any type from Group B. Each element of the array must contain a value; it is not valid to pass
-    /// or return arrays if one of the elements in the array is null.
+    /// <b>Group D</b> - An array of any <see cref="Type"/> from Group B. Each element of the array must contain a value; it is not valid to pass
+    /// or return arrays if one of the elements in the array is <see langref="null"/>.
     /// </para>
     /// <para>
     /// Invalid input and output types are not detected at compile time. They are only detected if a value fails to convert to or
-    /// from the specified type.
+    /// from the specified <see cref="Type"/>.
     /// </para>
     /// <para><b>Conversion of Input Parameters</b></para>
     /// <para>
@@ -226,14 +226,14 @@ namespace MSBuild.ExtensionPack.Framework
     /// performed by the <b>SetInput</b>, <b>Call</b>, or <b>Run</b> task action.
     /// </para>
     /// <para>
-    /// The MSBuild conversion always converts to <b>ITaskItem[]</b>, because this is the type of the <see cref="InputValue"/>, <see
+    /// The MSBuild conversion always converts to <b>ITaskItem[]</b>, because this is the <see cref="Type"/> of the <see cref="InputValue"/>, <see
     /// cref="Input1"/>, <see cref="Input2"/>, and <see cref="Input3"/> properties.
     /// </para>
     /// <para>
     /// Once the input value has been converted to an array of task items, the <b>DynamicExecute</b> task action performs a second
     /// conversion. This is designed to work similarly to the MSBuild conversions and default C# conversions to prevent unexpected
-    /// behavior. The exact steps taken are dependent on the group the input type belongs to; see <i>Supported Types</i> above for
-    /// more information about the type grouping.
+    /// behavior. The exact steps taken are dependent on the group the input <see cref="Type"/> belongs to; see <i>Supported Types</i> above for
+    /// more information about the <see cref="Type"/> grouping.
     /// </para>
     /// <para>
     /// <b>Group A</b> - No actual conversion is performed. If the method expects a single <b>ITaskItem</b>, then the task action
@@ -241,15 +241,15 @@ namespace MSBuild.ExtensionPack.Framework
     /// </para>
     /// <para>
     /// <b>Groups B and C</b> - The task ensures that the input value contains only a single task item. Then, the task item's
-    /// <b>ItemSpec</b> is used as a string value, and this string is converted to the expected type.
+    /// <b>ItemSpec</b> is used as a string value, and this string is converted to the expected <see cref="Type"/>.
     /// </para>
     /// <para>
     /// <b>Group D</b> - Each task item's <b>ItemSpec</b> is used as a string value, and this string is converted to the expected
-    /// type. The result is an array with the same number of elements as the array of task items.
+    /// <see cref="Type"/>. The result is an array with the same number of elements as the array of task items.
     /// </para>
-    /// <para>If an input argument value is null, then no conversions are performed; the method is passed a null value.</para>
+    /// <para>If an input argument value is <see langref="null"/>, then no conversions are performed; the method is passed a <see langref="null"/> value.</para>
     /// <para>
-    /// Special conversions exist if the input parameter is of <b>bool</b> type. Valid values include "true", "false", "yes", "no",
+    /// Special conversions exist if the input parameter is of <b>bool</b> <see cref="Type"/>. Valid values include "true", "false", "yes", "no",
     /// "on", and "off", all case-insensitive. In addition, these values may be prefixed with the logical "not" operator ("!").
     /// These conversions are supported because they are MSBuild conventions.
     /// </para>
@@ -309,22 +309,22 @@ namespace MSBuild.ExtensionPack.Framework
     /// </para>
     /// <para>
     /// The <b>DynamicExecute</b> task action performs the first conversion. This is always a conversion to <b>ITaskItem[]</b>,
-    /// because that is the type of the <see cref="OutputValue"/>, <see cref="Output1"/>, <see cref="Output2"/>, and <see
+    /// because that is the <see cref="Type"/> of the <see cref="OutputValue"/>, <see cref="Output1"/>, <see cref="Output2"/>, and <see
     /// cref="Output3"/> properties.
     /// </para>
     /// <para>
     /// This conversion is designed to work similarly to the MSBuild conversions and default C# conversions to prevent unexpected
-    /// behavior. The exact steps taken are dependent on the group the output type belongs to; see <i>Supported Types</i> above for
-    /// more information about the type grouping.
+    /// behavior. The exact steps taken are dependent on the group the output <see cref="Type"/> belongs to; see <i>Supported Types</i> above for
+    /// more information about the <see cref="Type"/> grouping.
     /// </para>
     /// <para>
-    /// <b>Group A</b> - The actual objects returned must be of type <b>TaskItem</b> or <b>TaskItem[]</b> (returning an instance of
-    /// another type implementing <b>ITaskItem</b> is not supported). No actual conversion is performed. If the method produces a
+    /// <b>Group A</b> - The actual objects returned must be of <see cref="Type"/> <b>TaskItem</b> or <b>TaskItem[]</b> (returning an instance of
+    /// another <see cref="Type"/> implementing <b>ITaskItem</b> is not supported). No actual conversion is performed. If the method produces a
     /// single <b>TaskItem</b>, then the task action creates an array of task items containing only the single element.
     /// </para>
     /// <para>
     /// <b>Groups B and C</b> - An array of task items is returned containing a single element. The <b>ItemSpec</b> of that single
-    /// element is the output value converted to a string. Note that null values are treated specially (see below).
+    /// element is the output value converted to a string. Note that <see langref="null"/> values are treated specially (see below).
     /// </para>
     /// <para>
     /// <b>Group D</b> - An array of task items is returned, with the same number of items as the output array. For each
@@ -332,7 +332,7 @@ namespace MSBuild.ExtensionPack.Framework
     /// output array element.
     /// </para>
     /// <para>
-    /// If an output argument value is null, then no conversions are performed by the task action. MSBuild will convert a null value
+    /// If an output argument value is <see langref="null"/>, then no conversions are performed by the task action. MSBuild will convert a <see langref="null"/> value
     /// to an empty string or empty item group if necessary.
     /// </para>
     /// <para>The default MSBuild conversion will convert from <b>ITaskItem[]</b> to an item group or string as necessary.</para>
@@ -408,7 +408,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///</MSBuild.ExtensionPack.Framework.DynamicExecute>
     ///<!-- Output: Array test result: 110;210;310 -->
     ///<Message Text="Array test result: $(ArrayTestResult)"/>
-    ///<!-- Take two array arguments of non-string type and return an array -->
+    ///<!-- Take two array arguments of non-string <see cref="Type"/> and return an array -->
     ///<MSBuild.ExtensionPack.Framework.DynamicExecute TaskAction="Run"
     ///Inputs="int[] first, int[] second"
     ///Outputs="int[] result"
@@ -549,7 +549,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///</MSBuild.ExtensionPack.Framework.DynamicExecute>
     ///<!-- Output: Cross product with more parameters:  x.1 { P1_M1=Meta1, P2_M1=, P2_M2=Meta2 } ; x.2 { P1_M1=Meta1, P2_M1=, P2_M2=Meta2 } ; x.3 { P1_M1=Meta1, P2_M1=Meta1 that is overwritten, P2_M2=A different Meta2 } ; y.1 { P1_M1=Meta1, P2_M1=, P2_M2=Meta2 } ; y.2 { P1_M1=Meta1, P2_M1=, P2_M2=Meta2 } ; y.3 { P1_M1=Meta1, P2_M1=Meta1 that is overwritten, P2_M2=A different Meta2 } ; z.1 { P1_M1=Meta1, P2_M1=, P2_M2=Meta2 } ; z.2 { P1_M1=Meta1, P2_M1=, P2_M2=Meta2 } ; z.3 { P1_M1=Meta1, P2_M1=Meta1 that is overwritten, P2_M2=A different Meta2 } -->
     ///<Message Text="Cross product with more parameters: @(ComplexCrossProductResult->' %(Identity) { P1_M1=%(P1_M1), P2_M1=%(P2_M1), P2_M2=%(P2_M2) } ')"/>
-    ///<!-- Testing nullable parameter values -->
+    ///<!-- Testing <see cref="Nullable{T}"/> parameter values -->
     ///<MSBuild.ExtensionPack.Framework.DynamicExecute TaskAction="Run"
     ///Inputs="int? arg"
     ///Outputs="int? result"
@@ -560,7 +560,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///</MSBuild.ExtensionPack.Framework.DynamicExecute>
     ///<!-- Output: 33 + 3: 36 -->
     ///<Message Text="33 + 3: $(DefaultResult)"/>
-    ///<!-- Testing nullable parameter values with null argument (the output value is actually null in this case, which MSBuild converts to an empty string) -->
+    ///<!-- Testing <see langref="null"/>able parameter values with <see langref="null"/> argument (the output value is actually <see langref="null"/> in this case, which MSBuild converts to an empty string) -->
     ///<MSBuild.ExtensionPack.Framework.DynamicExecute TaskAction="Run"
     ///Inputs="int? arg"
     ///Outputs="int? result"
@@ -662,7 +662,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// Converts an MSBuild input value into a method input value.
         /// </summary>
-        /// <param name="type"> The input type that the method is expecting.</param>
+        /// <param name="type"> The input <see cref="Type"/> that the method is expecting.</param>
         /// <param name="value">The MSBuild input value.</param>
         /// <returns>A method input value.</returns>
         private static object ConvertArgument(Type type, ITaskItem[] value)
@@ -708,7 +708,11 @@ namespace MSBuild.ExtensionPack.Framework
         /// <returns>An MSBuild output value.</returns>
         private static ITaskItem[] ConvertResult(object value)
         {
-            // All result values are boxed, so nullable types without values are just null object references
+            // All result values are boxed, so
+            // <see cref="Nullable{T}"/>
+            // types without values are just
+            // <see langref="null"/>
+            // object references
             if (value is null)
             {
                 return new ITaskItem[0];
@@ -743,7 +747,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// Converts a scalar MSBuild input value into a method input value.
         /// </summary>
-        /// <param name="type"> The input type that the method is expecting.</param>
+        /// <param name="type"> The input <see cref="Type"/> that the method is expecting.</param>
         /// <param name="value">The MSBuild input value.</param>
         /// <returns>A method input value.</returns>
         private static object ConvertScalarArgument(Type type, ITaskItem value)
@@ -946,7 +950,11 @@ namespace MSBuild.ExtensionPack.Framework
                 yield break;
             }
 
-            // Each entry may have the type and name in its ItemSpec, or it may have the type in its metadata
+            // Each entry may have the
+            // <see cref="Type"/>
+            // and name in its ItemSpec, or it may have the
+            // <see cref="Type"/>
+            // in its metadata
             foreach (ITaskItem x in inputsOutputs)
             {
                 if (x.ItemSpec.Contains(" "))
@@ -961,9 +969,9 @@ namespace MSBuild.ExtensionPack.Framework
         }
 
         /// <summary>
-        /// Splits a string containing a type followed by a name, separated by any number of space characters.
+        /// Splits a string containing a <see cref="Type"/> followed by a name, separated by any number of space characters.
         /// </summary>
-        /// <param name="typeAndName">The string containing the type and name.</param>
+        /// <param name="typeAndName">The string containing the <see cref="Type"/> and name.</param>
         /// <returns>An object containing the split string.</returns>
         private static NameAndType ParseTypeAndName(string typeAndName)
         {
@@ -1241,10 +1249,10 @@ namespace MSBuild.ExtensionPack.Framework
             #region Public Methods
 
             /// <summary>
-            /// Gets an input parameter's CLI type.
+            /// Gets an input parameter's CLI <see cref="Type"/>.
             /// </summary>
             /// <param name="inputIndex">The zero-based index of the input parameter to retrieve.</param>
-            /// <returns>The type of the input parameter.</returns>
+            /// <returns>The <see cref="Type"/> of the input parameter.</returns>
             public Type GetInputParameterType(int inputIndex)
             {
                 int i = this.methodDefinition.GetInputArgumentIndex(inputIndex);
@@ -1257,10 +1265,10 @@ namespace MSBuild.ExtensionPack.Framework
             }
 
             /// <summary>
-            /// Gets an input parameter's CLI type.
+            /// Gets an input parameter's CLI <see cref="Type"/>.
             /// </summary>
             /// <param name="inputName">The name of the input parameter to retrieve.</param>
-            /// <returns>The type of the input parameter.</returns>
+            /// <returns>The <see cref="Type"/> of the input parameter.</returns>
             public Type GetInputParameterType(string inputName)
             {
                 int i = this.methodDefinition.GetInputArgumentIndex(inputName);
@@ -1343,10 +1351,10 @@ namespace MSBuild.ExtensionPack.Framework
             }
 
             /// <summary>
-            /// Gets an output argument value. Returns null if the output argument does not exist.
+            /// Gets an output argument value. Returns <see langref="null"/> if the output argument does not exist.
             /// </summary>
             /// <param name="outputIndex">The zero-based index of the output argument to retrieve.</param>
-            /// <returns>The value of the output argument, or null if the index is out of bounds.</returns>
+            /// <returns>The value of the output argument, or <see langref="null"/> if the index is out of bounds.</returns>
             public object TryGetOutput(int outputIndex)
             {
                 int i = this.methodDefinition.GetOutputArgumentIndex(outputIndex);
@@ -1688,14 +1696,16 @@ namespace MSBuild.ExtensionPack.Framework
         public ITaskItem[] Input3 { get; set; }
 
         /// <summary>
-        /// Specifies the inputs for <see cref="Code"/>. Each input has a type and a name.
+        /// Specifies the inputs for <see cref="Code"/>. Each input has a <see cref="Type"/> and a name.
         /// </summary>
         /// <remarks>
         /// <para>This is an optional parameter for the <b>Define</b> and <b>Run</b> task actions.</para>
-        /// <para>This may be set to a string containing a comma-delimited or semicolon-delimited sequence of (type, name) pairs.</para>
+        /// <para>
+        /// This may be set to a string containing a comma-delimited or semicolon-delimited sequence of ( <see cref="Type"/>, name) pairs.
+        /// </para>
         /// <para>
         /// Otherwise, each input is represented by a task item. The name of an input is taken from the metadata "Name", if it
-        /// exists; otherwise, it is taken from the item's identity. The type of an input is taken from the metadata "Type".
+        /// exists; otherwise, it is taken from the item's identity. The <see cref="Type"/> of an input is taken from the metadata "Type".
         /// </para>
         /// </remarks>
         /// <seealso cref="NoDefaultParameters"/>
@@ -1798,14 +1808,16 @@ namespace MSBuild.ExtensionPack.Framework
         public string OutputMethodId { get; private set; }
 
         /// <summary>
-        /// Specifies the outputs for <see cref="Code"/>. Each output has a type and a name.
+        /// Specifies the outputs for <see cref="Code"/>. Each output has a <see cref="Type"/> and a name.
         /// </summary>
         /// <remarks>
         /// <para>This is an optional parameter for the <b>Define</b> and <b>Run</b> task actions.</para>
-        /// <para>This may be set to a string containing a comma-delimited or semicolon-delimited sequence of (type, name) pairs.</para>
+        /// <para>
+        /// This may be set to a string containing a comma-delimited or semicolon-delimited sequence of ( <see cref="Type"/>, name) pairs.
+        /// </para>
         /// <para>
         /// Otherwise, each output is represented by a task item. The name of an output is taken from the metadata "Name", if it
-        /// exists; otherwise, it is the item's identity. The type of an output is taken from the metadata "Type".
+        /// exists; otherwise, it is the item's identity. The <see cref="Type"/> of an output is taken from the metadata "Type".
         /// </para>
         /// </remarks>
         public ITaskItem[] Outputs { get; set; }

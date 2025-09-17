@@ -21,8 +21,8 @@ namespace MSBuild.ExtensionPack.Base.Property
     /// <summary>
     /// Implements an abstract generic indexer to support updating the public properties of an object by name.
     /// </summary>
-    /// <typeparam name="T">Specifies the type of object instance to apply the indexer to.</typeparam>
-    /// <typeparam name="TValue">Specifies the value type returned or updated by the indexer.</typeparam>
+    /// <typeparam name="T">Specifies the <see cref="Type"/> of object instance to apply the indexer to.</typeparam>
+    /// <typeparam name="TValue">Specifies the value <see cref="Type"/> returned or updated by the indexer.</typeparam>
     public abstract class GenericIndexer<T, TValue> where T : IList<TValue?>, new()
     {
         #region Public Indexers
@@ -30,7 +30,7 @@ namespace MSBuild.ExtensionPack.Base.Property
         /// <summary>
         /// Indexer to support update the public properties of arbitrary objects.
         /// </summary>
-        /// <param name="index">Specifies the indexer of type <see name="Index"/> for update</param>
+        /// <param name="index">Specifies the indexer of <see cref="Type"/><see name="Index"/> for update</param>
         /// <returns>Returns a value of <typeparamref name="TValue"/> for the getter; otherwise, nothing for the setter.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Throws if <see cref="ValidateIndex(Index)"/> returns <see langref="false"/>.</exception>
         public TValue? this[Index index]
@@ -77,8 +77,8 @@ namespace MSBuild.ExtensionPack.Base.Property
         }
 
         /// <summary>
-        /// Encapsulates setting a value of <typeparamref name="TValue"/> at position of type <see cref="Index"/> in <see
-        /// cref="Instance"/> of <typeparamref name="T"/> to set.
+        /// Encapsulates setting a value of <typeparamref name="TValue"/> at position of <see cref="Type"/><see cref="Index"/> in
+        /// <see cref="Instance"/> of <typeparamref name="T"/> to set.
         /// </summary>
         /// <param name="index">
         /// Specifies the indexer of <see cref="Index"/> to set a value of <see cref="Instance"/> of <typeparamref name="T"/> with

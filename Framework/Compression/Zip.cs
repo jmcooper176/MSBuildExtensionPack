@@ -1,22 +1,26 @@
 ﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
 //
-// Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-// Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS”
-// BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-// governing permissions and limitations under the License.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
-// SPDX-License-Identifier: Apache-2.0 Copyright (c) 2025, John Merryweather Cooper. All Rights Reserved. Ignore Spelling: cyclonedx Cli
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+
 #pragma warning disable 618
 
 namespace MSBuild.ExtensionPack.Compression
 {
     using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Utility;
 
     using System;
     using System.Collections.Generic;
@@ -97,11 +101,17 @@ namespace MSBuild.ExtensionPack.Compression
     /// </example>
     public class Zip : BaseTask
     {
+        #region Private Fields
+
         private const string AddFilesTaskAction = "AddFiles";
         private const string CreateTaskAction = "Create";
         private const string ExtractTaskAction = "Extract";
         private bool preserveAttributes = true;
         private Zip64Option useZip64WhenSaving = Zip64Option.Default;
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         private void AddFiles()
         {
@@ -296,6 +306,10 @@ namespace MSBuild.ExtensionPack.Compression
             }
         }
 
+        #endregion Private Methods
+
+        #region Protected Methods
+
         /// <summary>
         /// This is the main InternalExecute method that all tasks should implement
         /// </summary>
@@ -325,6 +339,10 @@ namespace MSBuild.ExtensionPack.Compression
                     return;
             }
         }
+
+        #endregion Protected Methods
+
+        #region Public Properties
 
         /// <summary>
         /// Sets the files to Compress
@@ -364,7 +382,8 @@ namespace MSBuild.ExtensionPack.Compression
 
         /// <summary>
         /// This is only applicable when the <b>TaskAction</b> is <i>Create</i> or <i>AddFiles</i>. Specifies whether file (folder)
-        /// attributes like <i>Hidden</i> or <i>Read-only</i> should be left intact during adding to the archive. The default is <c>true</c>.
+        /// attributes like <i>Hidden</i> or <i>Read-only</i> should be left intact during adding to the archive. The default is
+        /// <see langref="true"/>.
         /// </summary>
         public bool PreserveAttributes
         {
@@ -392,5 +411,7 @@ namespace MSBuild.ExtensionPack.Compression
         /// </summary>
         [Required]
         public ITaskItem ZipFileName { get; set; }
+
+        #endregion Public Properties
     }
 }

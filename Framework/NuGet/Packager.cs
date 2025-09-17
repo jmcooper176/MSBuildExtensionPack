@@ -357,7 +357,7 @@ namespace MSBuild.ExtensionPack.NuGet
         ///]]>
         /// </code>
         /// </example>
-        public ITaskItem[] ContentFiles { get; set; }
+        public IEnumerable<ITaskItem> ContentFiles { get; set; }
 
         /// <summary>
         /// Gets or sets the Copyright text of the NuGet package.
@@ -368,7 +368,7 @@ namespace MSBuild.ExtensionPack.NuGet
         /// Gets or sets the Dependencies of the NuGet package. An Example of ItemGroup passed to this property
         /// <ItemGroup><Dependencies Include="log4net"><Framework>net40</Framework><Version>1.2.10</Version></Dependencies></ItemGroup>
         /// </summary>
-        public ITaskItem[] Dependencies { get; set; }
+        public IEnumerable<ITaskItem> Dependencies { get; set; }
 
         /// <summary>
         /// Gets or sets the long description of the package.
@@ -383,7 +383,7 @@ namespace MSBuild.ExtensionPack.NuGet
         /// <ItemGroup><FrameworkAssemblies
         /// Include="Microsoft.Data.SqlClient.Entity"><Framework>net45</Framework></FrameworkAssemblies><FrameworkAssemblies Include="System.ComponentModel.DataAnnotations"><Framework>net40</Framework></FrameworkAssemblies></ItemGroup>
         /// </example>
-        public ITaskItem[] FrameworkAssemblies { get; set; }
+        public IEnumerable<ITaskItem> FrameworkAssemblies { get; set; }
 
         /// <summary>
         /// Gets or sets a URL for the image to use as the icon for the package in the Manage NuGet Packages dialog box.
@@ -422,7 +422,7 @@ namespace MSBuild.ExtensionPack.NuGet
         ///]]>
         /// </code>
         /// </example>
-        public ITaskItem[] LibraryFiles { get; set; }
+        public IEnumerable<ITaskItem> LibraryFiles { get; set; }
 
         /// <summary>
         /// Gets or sets a link to the license that the package is under.
@@ -465,7 +465,7 @@ namespace MSBuild.ExtensionPack.NuGet
         ///]]>
         /// </code>
         /// </example>
-        public ITaskItem[] References { get; set; }
+        public IEnumerable<ITaskItem> References { get; set; }
 
         /// <summary>
         /// Gets or sets the Release Notes of the NuGet package. This field only shows up when the package is an update to a
@@ -515,7 +515,7 @@ namespace MSBuild.ExtensionPack.NuGet
         ///]]>
         /// </code>
         /// </example>
-        public ITaskItem[] ToolsFiles { get; set; }
+        public IEnumerable<ITaskItem> ToolsFiles { get; set; }
 
         /// <summary>
         /// Gets or sets the version of the package. The version of the package, in a format like 1.2.3.

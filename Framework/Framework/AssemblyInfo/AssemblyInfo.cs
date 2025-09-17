@@ -715,7 +715,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         }
 
         /// <summary>
-        /// The type of update to use when setting the <see cref="AssemblyBuildNumber">AssemblyBuildNumber</see> property.
+        /// The <see cref="Type"/> of update to use when setting the <see cref="AssemblyBuildNumber">AssemblyBuildNumber</see> property.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1435,7 +1435,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// <remarks>
         /// <para>
         /// To specify whether the assembly should be visible to COM set this to true and provide a valid GUID using the <see
-        /// cref="Guid">Guid</see> property. The default value is <em>null</em>.
+        /// cref="Guid">Guid</see> property. The default value is <see langref="null"/>.
         /// </para>
         /// <para>
         /// When using the MSBuild.ExtensionPack.VersionNumber.Targets file set this using the <em>AssemblyComVisible</em> property.
@@ -1551,7 +1551,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         /// <summary>
         /// Executes the AssemblyInfo task.
         /// </summary>
-        /// <returns>True if the task was run sucecssfully. False if the task failed.</returns>
+        /// <returns>True if the task was run successfully. False if the task failed.</returns>
         public override bool Execute()
         {
             FileInfo? writerInfo = null;

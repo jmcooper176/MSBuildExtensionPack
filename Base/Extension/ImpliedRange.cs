@@ -40,7 +40,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         Unknown = 0L,
 
         /// <summary>
-        /// Any null value of a reference type throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see langref="null"/> value of a reference <see cref="Type"/> throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         [Display(Name = "Equal to Null", ShortName = "IsNull")]
         [Description("Any null value of a reference type throws an 'ArgumentOutOfRangeException'")]
@@ -55,35 +55,35 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsNot = 0x00_00_00_00_00_00_00_02,
 
         /// <summary>
-        /// Any not null value of a reference type throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any not <see langref="null"/> value of a reference <see cref="Type"/> throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         [Display(Name = "Not Equal to Null", ShortName = "IsNotNull")]
         [Description("Any not null value of a reference type throws an 'ArgumentOutOfRangeException'")]
         IsNotNull = IsNot | IsNull,
 
         /// <summary>
-        /// Any empty value of a containing type throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any empty value of a containing <see cref="Type"/> throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         [Display(Name = "Empty Container", ShortName = "IsEmpty")]
         [Description("Any empty containing type throws an 'ArgumentOutOfRangeException'")]
         IsEmpty = 0x00_00_00_00_00_00_00_04,
 
         /// <summary>
-        /// Any empty or null containing type throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any empty or <see langref="null"/> containing <see cref="Type"/> throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         [Display(Name = "Empty or Null Container", ShortName = "IsEmptyOrNull")]
         [Description("Any empty or null containing type throws an 'ArgumentOutOfRangeException'")]
         IsNullOrEmpty = IsNull | IsEmpty,
 
         /// <summary>
-        /// Any non-empty containing type throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any non-empty containing <see cref="Type"/> throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         [Display(Name = "Non-Empty Container", ShortName = "IsNotEmpty")]
         [Description("Any non-empty containing type throws an 'ArgumentOutOfRangeException'")]
         IsNotEmpty = IsNot | IsEmpty,
 
         /// <summary>
-        /// Any non-empty and not null containing type throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any non-empty and not <see langref="null"/> containing <see cref="Type"/> throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         [Display(Name = "Non-Empty and Not Null Container", ShortName = "IsNotEmptyAndNotNull")]
         [Description("Any non-empty value and not null containing type throws an 'ArgumentOutOfRangeException'")]
@@ -132,18 +132,18 @@ namespace MSBuild.ExtensionPack.Base.Extension
         NoValue = 0x00_00_00_00_00_00_04_00,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="Array"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="Array"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsArray = 0x00_00_00_00_00_00_08_00,
 
         /// <summary>
-        /// Any <see cref="Array"/> that is null or empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Array"/> that is <see langref="null"/> or empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrEmptyArray = IsNull | IsEmpty | IsArray,
 
         /// <summary>
-        /// Any <see cref="Array"/> that is not null and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Array"/> that is not <see langref="null"/> and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotNullAndNotEmptyArray = IsNot | IsNull | IsEmpty | IsArray,
 
@@ -154,12 +154,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsCollection = 0x00_00_00_00_00_00_10_00,
 
         /// <summary>
-        /// Any <see cref="ICollection{T}"/> that is null or empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="ICollection{T}"/> that is <see langref="null"/> or empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrEmptyCollection = IsNull | IsEmpty | IsCollection,
 
         /// <summary>
-        /// Any <see cref="ICollection{T}"/> that is not null and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="ICollection{T}"/> that is not <see langref="null"/> and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotNullAndNotEmptyCollection = IsNot | IsNull | IsEmpty | IsCollection,
 
@@ -170,12 +170,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsDictionary = 0x00_00_00_00_00_00_20_00,
 
         /// <summary>
-        /// Any <see cref="IDictionary{TKey, TValue}"/> that is null or empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="IDictionary{TKey, TValue}"/> that is <see langref="null"/> or empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrEmptyDictionary = IsNull | IsEmpty | IsDictionary,
 
         /// <summary>
-        /// Any <see cref="IDictionary{TKey, TValue}"/> that is not null and not empty will throw an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="IDictionary{TKey, TValue}"/> that is not <see langref="null"/> and not empty will throw an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotNullAndNotEmptyDictionary = IsNot | IsNull | IsEmpty | IsDictionary,
 
@@ -186,50 +186,50 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsEnumerable = 0x00_00_00_00_00_00_40_00,
 
         /// <summary>
-        /// Any <see cref="IEnumerable{T}"/> that is null or empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="IEnumerable{T}"/> that is <see langref="null"/> or empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrEmptyEnumerable = IsNull | IsEmpty | IsEnumerable,
 
         /// <summary>
-        /// Any <see cref="IEnumerable{T}"/> that is not null and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="IEnumerable{T}"/> that is not <see langref="null"/> and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotNullAndNotEmptyEnumerable = IsNot | IsNull | IsEmpty | IsEnumerable,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="string"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="string"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsString = 0x00_00_00_00_00_00_80_00,
 
         /// <summary>
-        /// Any <see cref="string"/> that is not null and empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="string"/> that is not <see langref="null"/> and empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsEmptyString = IsEmpty | IsString,
 
         /// <summary>
-        /// Any <see cref="string"/> that is null or empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="string"/> that is <see langref="null"/> or empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrEmptyString = IsNull | IsEmpty | IsString,
 
         /// <summary>
-        /// Any <see cref="string"/> that is not null and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="string"/> that is not <see langref="null"/> and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotNullAndNotEmptyString = IsNot | IsNull | IsEmpty | IsString,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="Nullable{T}"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="Nullable{T}"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsNullable = 0x00_00_00_00_00_01_00_00,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="char"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="char"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsChar = 0x00_00_00_00_00_02_00_00,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="decimal"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="decimal"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsDecimal = 0x00_00_00_00_00_04_00_00,
@@ -268,34 +268,37 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsLessThanOrEqualDecimal = IsLessThanOrEqual | IsDecimal,
 
         /// <summary>
-        /// Any <see cref="Nullable{T}"/> where the underlying type is a <see langref="struct"/> that has no value throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Nullable{T}"/> where the underlying <see cref="Type"/> is a <see langref="struct"/> that has no value
+        /// throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         HasNoValueNullableDecimal = NoValue | IsNullable | IsDecimal,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="double"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="double"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsDouble = 0x00_00_00_00_00_08_00_00,
 
         /// <summary>
-        /// Any <see cref="Nullable{T}"/> where the underlying type is a <see langref="struct"/> that has no value throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Nullable{T}"/> where the underlying <see cref="Type"/> is a <see langref="struct"/> that has no value
+        /// throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         HasNoValueNullableDouble = NoValue | IsNullable | IsDouble,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="float"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="float"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsFloat = 0x00_00_00_00_00_10_00_00,
 
         /// <summary>
-        /// Any <see cref="Nullable{T}"/> where the underlying type is a <see langref="struct"/> that has no value throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Nullable{T}"/> where the underlying <see cref="Type"/> is a <see langref="struct"/> that has no value
+        /// throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         HasNoValueNullableFloat = NoValue | IsNullable | IsFloat,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="Int32"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="Int32"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsInteger = 0x00_00_00_00_00_20_00_00,
@@ -341,12 +344,13 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsLessThanOrEqualInteger = IsLessThanOrEqual | IsInteger,
 
         /// <summary>
-        /// Any <see cref="Nullable{T}"/> where the underlying type is a <see langref="struct"/> that has no value throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Nullable{T}"/> where the underlying <see cref="Type"/> is a <see langref="struct"/> that has no value
+        /// throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         HasNoValueNullableInteger = NoValue | IsNullable | IsInteger,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="Int64"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="Int64"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsLongInteger = 0x00_00_00_00_00_40_00_00,
@@ -392,39 +396,40 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsLessThanOrEqualLongInteger = IsLessThanOrEqual | IsLongInteger,
 
         /// <summary>
-        /// Any <see cref="Nullable{T}"/> where the underlying type is a <see langref="struct"/> that has no value throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Nullable{T}"/> where the underlying <see cref="Type"/> is a <see langref="struct"/> that has no value
+        /// throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         HasNoValueNullableLongInteger = NoValue | IsNullable | IsLongInteger,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="TimeSpan"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="TimeSpan"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsTimeSpan = 0x00_00_00_00_00_80_00_00,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="StringBuilder"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="StringBuilder"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsStringBuilder = 0x00_00_00_00_01_00_00_00,
 
         /// <summary>
-        /// Any <see cref="StringBuilder"/> that is not null and empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="StringBuilder"/> that is not <see langref="null"/> and empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsEmptyStringBuilder = IsEmpty | IsStringBuilder,
 
         /// <summary>
-        /// Any <see cref="StringBuilder"/> that is null or empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="StringBuilder"/> that is <see langref="null"/> or empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrEmptyStringBuilder = IsNull | IsEmpty | IsStringBuilder,
 
         /// <summary>
-        /// Any <see cref="StringBuilder"/> that is not null and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="StringBuilder"/> that is not <see langref="null"/> and not empty throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotNullAndNotEmptyStringBuilder = IsNot | IsNull | IsEmpty | IsStringBuilder,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is derived from <see cref="Enum"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is derived from <see cref="Enum"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsEnum = 0x00_00_00_00_02_00_00_00,
@@ -440,7 +445,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsNotEqualToEnum = IsNot | IsEnum | IsEqual,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <see cref="ASCIIEncoding"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <see cref="ASCIIEncoding"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsAscii = 0x00_00_00_00_04_00_00_00,
@@ -451,19 +456,20 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsAsciiChar = IsAscii | IsChar,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <see cref="UTF8Encoding"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <see cref="UTF8Encoding"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsUtf8 = 0x00_00_00_00_08_00_00_00,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <c>16-bit</c><see cref="UnicodeEncoding"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to
+        /// <c>16-bit</c><see cref="UnicodeEncoding"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsUnicode = 0x00_00_00_00_10_00_00_00,
 
         /// <summary>
-        /// The underlying type for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <see cref="UTF32Encoding"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="char"/> restricted to <see cref="UTF32Encoding"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsUtf32 = 0x00_00_00_00_20_00_00_00,
@@ -642,7 +648,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsWhiteSpace = 0x00_00_01_00_00_00_00_00,
 
         /// <summary>
-        /// Any <see cref="string"/> that is null, empty, or all whitespace throws an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="string"/> that is <see langref="null"/>, empty, or all whitespace throws an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNullOrWhiteSpaceString = IsNull | IsEmpty | IsWhiteSpace | IsString,
 
@@ -919,7 +925,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsEqualToNegativeZeroFloat = IsEqual | IsNegativeZero | IsFloat,
 
         /// <summary>
-        /// Any type not a <see cref="float"/> or <see cref="double"/> that is equal to zero will throw an <see cref="ArgumentOutOfRangeException"/>.
+        /// Any <see cref="Type"/> not a <see cref="float"/> or <see cref="double"/> that is equal to zero will throw an <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsZero = 0x01_00_00_00_00_00_00_00,
 
@@ -1008,14 +1014,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IsDefined = 0x80_00_00_00_00_00_00_00,
 
         /// <summary>
-        /// Any <see cref="Enum"/> where the value of any integral type or <see cref="string"/> is not <see
+        /// Any <see cref="Enum"/> where the value of any integral <see cref="Type"/> or <see cref="string"/> is not <see
         /// cref="Enum.IsDefined(Type, object)"/> throws <see cref="ArgumentOutOfRangeException"/>.
         /// </summary>
         IsNotDefinedEnum = IsNot | IsEnum | IsDefined,
     }
 
     /// <summary>
-    /// Extension methods to recover custom attributes using <see cref="CustomAttribute"/> from <see cref="ImpliedRange"/> fields.
+    /// Extension methods to recover custom <see cref="Attribute"/> s using <see cref="CustomAttribute"/> from <see
+    /// cref="ImpliedRange"/> fields.
     /// </summary>
     public static class ImpliedRangeExtension
     {

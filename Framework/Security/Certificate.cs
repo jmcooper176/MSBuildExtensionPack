@@ -359,7 +359,9 @@ namespace MSBuild.ExtensionPack.Security
 
                             Marshal.Copy(pbytes, keyFileBytes, 0, cbbytes);
 
-                            // Copy eveything except tailing null byte
+                            // Copy eveything except tailing
+                            // <see langref="null"/>
+                            // byte
                             keyFileName = System.Text.Encoding.ASCII.GetString(keyFileBytes, 0, keyFileBytes.Length - 1);
                         }
                     }
