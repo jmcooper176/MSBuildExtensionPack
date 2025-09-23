@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,8 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.Base.Enumeration
 {
     public enum HResult : uint
     {
@@ -42,12 +41,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static int GetSeverity(this int hr)
         {
-            return (hr >> 31) & SEVERITY_BIT;
+            return hr >> 31 & SEVERITY_BIT;
         }
 
         public static bool IsError(this int hr)
         {
-            return ((ulong)hr) >> 31 == SEVERITY_ERROR;
+            return (ulong)hr >> 31 == SEVERITY_ERROR;
         }
 
         public static HResult MakeHResult(ulong severity, ulong facilityCode, WinError code)
@@ -82,7 +81,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new ArgumentException($"Parameter {nameof(severity)} with value '{severity}' is invalid.", nameof(severity));
             }
 
-            return Convert.ToUInt32((severity << 31) | (facilityCode << 16) | code.ToWinErrorCode());
+            return Convert.ToUInt32(severity << 31 | facilityCode << 16 | code.ToWinErrorCode());
         }
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentOutOfRangeException.ThrowIfLessThan(facilityCode, FacilityCode.FACILITY_NULL, nameof(facilityCode));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(facilityCode, FacilityCode.FACILITY_OPC, nameof(facilityCode));
 
-            return Convert.ToInt32(code <= WinError.ERROR_SUCCESS ? code.ToWinErrorCode() : (code.ToWinErrorCode() | ((uint)facilityCode << 16) | SEVERITY_MASK));
+            return Convert.ToInt32(code <= WinError.ERROR_SUCCESS ? code.ToWinErrorCode() : code.ToWinErrorCode() | (uint)facilityCode << 16 | SEVERITY_MASK);
         }
 
         public static int ToHResultCode(this int ntStatus)

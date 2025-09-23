@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -20,17 +20,16 @@
 
 namespace MSBuild.ExtensionPack.CodeQuality
 {
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
-    using MSBuild.ExtensionPack.Base.Wmi;
-
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Wmi;
 
     /// <summary>
     /// The FxCop task provides a basic wrapper over FxCopCmd.exe. See http://msdn.microsoft.com/en-gb/library/bb429449(VS.80).aspx

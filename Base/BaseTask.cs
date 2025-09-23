@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,16 +15,17 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
 namespace MSBuild.ExtensionPack.Base
 {
+    using System;
+    using System.Reflection;
+    using System.Runtime.CompilerServices;
+
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
 
+    using MSBuild.ExtensionPack.Base.Interface;
     using MSBuild.ExtensionPack.Base.SystemAttribute;
-
-    using System;
-    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Provides a common task for all the MSBuildExtensionPack Tasks
@@ -37,11 +38,11 @@ namespace MSBuild.ExtensionPack.Base
         /// Executes this instance.
         /// </summary>
         /// <returns>bool</returns>
-        protected bool Execute([CallerFilePath] string? file = null, [CallerLineNumber] int lineNumber = 0)
+        protected bool Execute([CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = 0)
         {
             string code = $"{nameof(BaseTask)}MSG0001";
             string helpKeyWord = $"{this.HelpKeywordPrefix}{nameof(BaseTask)}HLP0001";
-            file = Path.GetFullPath(file!);
+            filePath = Path.GetFullPath(filePath!);
             string taskAction = TaskAction ?? "none";
 
             try
@@ -53,9 +54,9 @@ namespace MSBuild.ExtensionPack.Base
                     code,
                     helpKeyWord,
                     $"{0}({1}) : Execute : Task {nameof(BaseTask)} with Task Action {TaskAction}.",
-                    file,
+                    filePath,
                     lineNumber,
-                    file,
+                    filePath,
                     lineNumber,
                     nameof(BaseTask),
                     taskAction);
@@ -68,7 +69,7 @@ namespace MSBuild.ExtensionPack.Base
             }
             catch (Exception ex)
             {
-                this.Log.LogErrorFromException(ex, LogExceptionStackTrace, LogExceptionDetail, file);
+                this.Log.LogErrorFromException(ex, LogExceptionStackTrace, LogExceptionDetail, filePath);
             }
 
             return !this.Log.HasLoggedErrors;
@@ -86,12 +87,15 @@ namespace MSBuild.ExtensionPack.Base
         {
             get
             {
-                ObsoleteCustomAttribute obsolete = new();
-                var inError = obsolete.GetObsoleteAttributeIsError<BaseTask>(obsolete.GetCustomAttributeForType<BaseTask>());
+                var inError = CustomAttribute.TryGetCustomAttribute<ObsoleteCustomAttribute>(this.GetType().GetTypeInfo(), inherit: false, out ObsoleteCustomAttribute? value) && value?.IsErrorAttribute() == true;
+
                 this.Log.LogTaskError(
                     () => inError,
                     "Task {0} is marked obsolete and 'IsError' is '{1}'",
+                    null,
+                    0,
                     this.GetType().Name, inError);
+
                 return inError;
             }
         }
@@ -116,6 +120,11 @@ namespace MSBuild.ExtensionPack.Base
         /// Gets or sets a value indicating the task action string.
         /// </summary>
         public virtual string? TaskAction { get; set; }
+
+        bool IBaseTask.ErrorOnDeprecated { get; set; }
+        bool IBaseTask.LogExceptionDetail { get; set; }
+        bool IBaseTask.LogExceptionStackTrace { get; set; }
+        bool IBaseTask.SuppressTaskMessages { get; set; }
 
         #endregion Public Properties
 

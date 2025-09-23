@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,9 +15,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
-using Microsoft.Build.Framework;
-
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
@@ -25,6 +22,10 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+
+using Microsoft.Build.Framework;
+
+using MSBuild.ExtensionPack.Base.Enumeration;
 
 namespace MSBuild.ExtensionPack.Base.Extension
 {
@@ -2313,16 +2314,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
-        /// Determines whether the specified builder is empty.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns><see langref="true"/> if the specified builder is empty; otherwise, <see langref="false"/>.</returns>
-        public static bool IsEmpty(StringBuilder builder)
-        {
-            return builder.Count() < 1;
-        }
-
-        /// <summary>
         /// Determines whether the specified builder is match.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -2374,78 +2365,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
 
             return builder.Count() > 0 && builder.Slice(startIndex, count).IsMatch(pattern);
-        }
-
-        /// <summary>
-        /// Determines whether [is <see langref="null"/> or empty] [the specified builder].
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns><see langref="true"/> if [is <see langref="null"/> or empty] [the specified builder]; otherwise, <see langref="false"/>.</returns>
-        public static bool IsNullOrEmpty(StringBuilder? builder)
-        {
-            return builder?.Count() < 1;
-        }
-
-        /// <summary>
-        /// Determines whether [is <see langref="null"/> or empty] [the specified array].
-        /// </summary>
-        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
-        /// <param name="array">The array.</param>
-        /// <returns><see langref="true"/> if [is <see langref="null"/> or empty] [the specified array]; otherwise, <see langref="false"/>.</returns>
-        public static bool IsNullOrEmpty<TElement>(TElement[]? array)
-        {
-            return IsNullOrEmpty(collection: array);
-        }
-
-        /// <summary>
-        /// Determines whether /[is <see langref="null"/> or empty] [the specified <see cref="ICollection{T}"/>].
-        /// </summary>
-        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
-        /// <param name="collection">The <see cref="ICollection{T}"/>.</param>
-        /// <returns>
-        /// <see langref="true"/> if [is <see langref="null"/> or empty] [the specified <see cref="ICollection{T}"/>]; otherwise,
-        /// <see langref="false"/>.
-        /// </returns>
-        public static bool IsNullOrEmpty<TValue>(ICollection<TValue>? collection)
-        {
-            return collection?.Count < 1;
-        }
-
-        /// <summary>
-        /// Determines whether [is <see langref="null"/> or empty] [the specified dictionary].
-        /// </summary>
-        /// <typeparam name="TKey">The <see cref="Type"/> of the key.</typeparam>
-        /// <typeparam name="TValue">The <see cref="Type"/> of the value.</typeparam>
-        /// <param name="dictionary">The dictionary.</param>
-        /// <returns>
-        /// <see langref="true"/> if [is <see langref="null"/> or empty] [the specified dictionary]; otherwise, <see langref="false"/>.
-        /// </returns>
-        public static bool IsNullOrEmpty<TKey, TValue>(IDictionary<TKey, TValue?>? dictionary)
-        {
-            return IsNullOrEmpty(collection: dictionary);
-        }
-
-        /// <summary>
-        /// Determines whether [is <see langref="null"/> or empty] [the specified the set].
-        /// </summary>
-        /// <typeparam name="TElement">The <see cref="Type"/> of the element.</typeparam>
-        /// <param name="theSet">The set.</param>
-        /// <returns><see langref="true"/> if [is <see langref="null"/> or empty] [the specified the set]; otherwise, <see langref="false"/>.</returns>
-        public static bool IsNullOrEmpty<TElement>(ISet<TElement> theSet)
-        {
-            return IsNullOrEmpty(collection: theSet);
-        }
-
-        /// <summary>
-        /// Determines whether [is <see langref="null"/> or white space] [the specified builder].
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>
-        /// <see langref="true"/> if [is <see langref="null"/> or white space] [the specified builder]; otherwise, <see langref="false"/>.
-        /// </returns>
-        public static bool IsNullOrWhiteSpace(StringBuilder? builder)
-        {
-            return IsNullOrEmpty(builder) || (builder.All(c => char.IsWhiteSpace(c)));
         }
 
         /// <summary>

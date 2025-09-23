@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -18,17 +18,19 @@
 
 // Ignore Spelling: Exe
 
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
-using MSBuild.ExtensionPack.Base.Validator;
-
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Resources;
 using System.Security;
 using System.Text;
+
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+using MSBuild.ExtensionPack.Base.Interface;
+using MSBuild.ExtensionPack.Base.SecureFile;
+using MSBuild.ExtensionPack.Base.Validator;
 
 namespace MSBuild.ExtensionPack.Base
 {
@@ -105,6 +107,7 @@ namespace MSBuild.ExtensionPack.Base
         /// <inheritdoc/>
         protected override MessageImportance StandardOutputLoggingImportance => base.StandardOutputLoggingImportance;
 
+        protected virtual TempDirectory TempDirectory => new(".rsp");
         protected CancellationToken ToolCanceled { get; private set; }
 
         /// <inheritdoc/>
@@ -156,26 +159,23 @@ namespace MSBuild.ExtensionPack.Base
         {
             int retries = 6;
 
-            if (path is not null && !PreserveTempFiles)
+            while (path is not null && path.Exists && !PreserveTempFiles)
             {
-                while (path.Exists)
+                try
                 {
-                    try
+                    path.Delete();
+                }
+                catch (IOException)
+                {
+                    if (retries-- > 0)
                     {
-                        path.Delete();
+                        Thread.Sleep(TimeSpan.FromSeconds(5.0));
+                        continue;
                     }
-                    catch (IOException)
-                    {
-                        if (retries-- > 0)
-                        {
-                            Thread.Sleep(TimeSpan.FromSeconds(5.0));
-                            continue;
-                        }
-                    }
-                    catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
-                    {
-                        throw;
-                    }
+                }
+                catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
+                {
+                    throw;
                 }
             }
         }
@@ -223,7 +223,7 @@ namespace MSBuild.ExtensionPack.Base
                 }
             }
 
-            // TODO: set large fields to 
+            // TODO: set large fields to
             // <see langref="null"/>
             ToolTimer = null;
             ToolTaskProcess = null;
@@ -297,7 +297,7 @@ namespace MSBuild.ExtensionPack.Base
             return base.GetResponseFileSwitch(responseFilePath);
         }
 
-        protected virtual FileInfo? GetTemporaryResponseFile(string responseFileCommands, out string responsFileSwitch)
+        protected virtual FileInfo? GetTemporaryResponseFile(string responseFileCommands, out string responseFileSwitch)
         {
         }
 

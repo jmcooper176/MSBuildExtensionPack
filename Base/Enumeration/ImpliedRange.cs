@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,21 +15,20 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
-using MSBuild.ExtensionPack.Base.SystemAttribute;
-
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace MSBuild.ExtensionPack.Base.Extension
+using MSBuild.ExtensionPack.Base.SystemAttribute;
+
+namespace MSBuild.ExtensionPack.Base.Enumeration
 {
     /// <summary>
     /// Implied ranges for <see cref="ArgumentOutOfRangeException"/> for single values.
     /// </summary>
     /// <remarks>FF_FF_FF_FF_FF_FF_FF_FF</remarks>
     [Flags]
-    public enum ImpliedRange : UInt64
+    public enum ImpliedRange : ulong
     {
         /// <summary>
         /// Unknown <see cref="ImpliedRange"/> value.
@@ -298,7 +297,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         HasNoValueNullableFloat = NoValue | IsNullable | IsFloat,
 
         /// <summary>
-        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="Int32"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="int"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsInteger = 0x00_00_00_00_00_20_00_00,
@@ -350,7 +349,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         HasNoValueNullableInteger = NoValue | IsNullable | IsInteger,
 
         /// <summary>
-        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="Int64"/>.
+        /// The underlying <see cref="Type"/> for the <see cref="ImpliedRange"/> is <see cref="long"/>.
         /// </summary>
         /// <remarks>It is an error to pass this <see cref="ImpliedRange"/> value by itself.</remarks>
         IsLongInteger = 0x00_00_00_00_00_40_00_00,
@@ -1040,7 +1039,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>A <see cref="bool"/> or <see langref="null"/> representing the state of the <see cref="DisplayAttribute.AutoGenerateField"/>.</returns>
         public static bool? GetAutoGenerateField(this ImpliedRange value, bool inherit = false)
         {
-            return GetDisplayAttribute(value, inherit)?.AutoGenerateField;
+            return value.GetDisplayAttribute(inherit)?.AutoGenerateField;
         }
 
         /// <summary>
@@ -1055,7 +1054,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>A <see cref="bool"/> or <see langref="null"/> representing the state of the <see cref="DisplayAttribute.AutoGenerateFilter"/>.</returns>
         public static bool? GetAutoGenerateFilter(this ImpliedRange value, bool inherit = false)
         {
-            return GetDisplayAttribute(value, inherit)?.AutoGenerateFilter;
+            return value.GetDisplayAttribute(inherit)?.AutoGenerateFilter;
         }
 
         /// <summary>
@@ -1085,7 +1084,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>A <see cref="string"/> or <see langref="null"/> representing the description text of the <see cref="DisplayAttribute"/>.</returns>
         public static string? GetDescription2(this ImpliedRange value, bool inherit = false)
         {
-            return GetDisplayAttribute(value, inherit)?.Description;
+            return value.GetDisplayAttribute(inherit)?.Description;
         }
 
         /// <summary>

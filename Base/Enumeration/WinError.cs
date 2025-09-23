@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,11 +15,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.Base.Enumeration
 {
     public enum WinError : uint
     {
@@ -769,7 +768,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>A <see cref="uint"/> representing the <see cref="WinError"/>.</returns>
         public static uint ToWinErrorCode(this WinError code)
         {
-            return Enum.IsDefined<WinError>(code) ? (uint)code : (uint)WinError.ERROR_UNKNOWN_ERROR;
+            return Enum.IsDefined(code) ? (uint)code : (uint)WinError.ERROR_UNKNOWN_ERROR;
         }
 
         /// <summary>

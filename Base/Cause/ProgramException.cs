@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,17 +15,18 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace MSBuild.ExtensionPack.Base.Extension
+using MSBuild.ExtensionPack.Base.Enumeration;
+
+namespace MSBuild.ExtensionPack.Base.Cause
 {
     /// <summary>
     /// Implements <see cref="ProgramException"/>.
     /// </summary>
-    /// <seealso cref="System.Exception"/>
+    /// <seealso cref="Exception"/>
     public class ProgramException : Exception
     {
         #region Public Constructors
@@ -58,9 +59,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramException"/> class.
         /// </summary>
-        /// <param name="message">        
-        /// Specifies the message string to override part of <see cref="ProgramException.Message"/> with.
-        /// </param>
+        /// <param name="message">        Specifies the message string to override part of <see cref="Message"/> with.</param>
         /// <param name="path">           Specifies the source file path for this <see cref="Exception"/>.</param>
         /// <param name="lineNumber">     Specifies the line number origin in <paramref name="path"/> for this <see cref="Exception"/>.</param>
         /// <param name="columnNumber">   Specifies the column number origin in <paramref name="path"/> for this <see cref="Exception"/>.</param>
@@ -87,9 +86,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramException"/> class.
         /// </summary>
-        /// <param name="message">        
-        /// Specifies the message string to override part of <see cref="ProgramException.Message"/> with.
-        /// </param>
+        /// <param name="message">        Specifies the message string to override part of <see cref="Message"/> with.</param>
         /// <param name="innerException"> Specifies the <see cref="Exception"/> cause of this <see cref="Exception"/>.</param>
         /// <param name="path">           Specifies the source file path for this <see cref="Exception"/>.</param>
         /// <param name="lineNumber">     Specifies the line number origin in <paramref name="path"/> for this <see cref="Exception"/>.</param>
@@ -110,9 +107,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             Application = Assembly.GetEntryAssembly()?.FullName ?? AppDomain.CurrentDomain.FriendlyName;
             FilePath = new(path!);
-            HResult = ExceptionExtension.ToHResult(ExceptionExtension.ERROR_FATAL_APP_EXIT);
+            HResult = HResultExtension.ToHResultCode(FacilityCode.FACILITY_WIN32, WinError.ERROR_FATAL_APP_EXIT);
             MemberName = memberName!;
-            Origin = Tuple.Create<int, int, int, int>(lineNumber, columnNumber, endLineNumber, endColumnNumber);
+            Origin = Tuple.Create(lineNumber, columnNumber, endLineNumber, endColumnNumber);
 #if MAN_CRITICAL
             IsPersonCritical = true;
             RecommendAction = $"Aborting Application '{Application}'";
@@ -209,7 +206,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             using var tokenSource = new CancellationTokenSource();
             var taskToRun = processAsync(tokenSource.Token);
-            Task<TResult?> winner = (Task<TResult?>)await Task.WhenAny(processAsync(tokenSource.Token), NullTaskWithDelay<TResult>(Timeout));
+            var winner = (Task<TResult?>)await Task.WhenAny(processAsync(tokenSource.Token), NullTaskWithDelay<TResult>(Timeout));
 
             if (winner == taskToRun)
             {

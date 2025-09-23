@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,7 +15,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -67,7 +66,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
 
             // overridden properties
             IsDefault = string.IsNullOrEmpty(message) && number == BASE_NUMBER;
-            Message = message ?? $"Default {this.GetType().Name} Constructor";
+            Message = message ?? $"Protected {this.GetType().Name} Constructor(string?, int, bool)";
             TypeId = this.GetType().GUID;
         }
 
@@ -91,6 +90,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public ObsoleteCustomAttribute()
                     : this(null, BASE_NUMBER, false)
         {
+            Message = $"Default Public {this.GetType().Name} Constructor()";
         }
 
         /// <summary>
@@ -100,6 +100,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public ObsoleteCustomAttribute(bool isError)
                     : this(null, BASE_NUMBER, isError)
         {
+            Message = $"Public {this.GetType().Name} Constructor(bool)";
         }
 
         /// <summary>
@@ -109,6 +110,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public ObsoleteCustomAttribute(string? message)
             : this(message, counter++, false)
         {
+            Message = message ?? $"Public {this.GetType().Name} Constructor(string?)";
         }
 
         /// <summary>
@@ -119,6 +121,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public ObsoleteCustomAttribute(string? message, bool isError)
             : this(message, counter++, isError)
         {
+            Message = message ?? $"Public {this.GetType().Name} Constructor(string?, bool)";
         }
 
         /// <summary>
@@ -129,6 +132,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public ObsoleteCustomAttribute(string? message, string? urlFormat)
             : this(message, counter++, false)
         {
+            Message = message ?? $"Public {this.GetType().Name} Constructor(string?, string?)";
             UrlFormat = urlFormat;
         }
 
@@ -141,6 +145,7 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         public ObsoleteCustomAttribute(string? message, string? urlFormat, bool isError)
             : this(message, counter++, isError)
         {
+            Message = message ?? $"Public {this.GetType().Name} Constructor(string?, string?, bool)";
             UrlFormat = urlFormat;
         }
 
@@ -258,9 +263,9 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         }
 
         /// <summary>
-        /// Determines whether [is error <see cref="Attribute"/>].
+        /// Determines whether [is error attribute] is set.
         /// </summary>
-        /// <returns><see langref="true"/> if [is error <see cref="Attribute"/>]; otherwise, <see langref="false"/>.</returns>
+        /// <returns><see langref="true"/> if [is error attribute is set]; otherwise, <see langref="false"/>.</returns>
         public virtual bool IsErrorAttribute()
         {
             return IsError;

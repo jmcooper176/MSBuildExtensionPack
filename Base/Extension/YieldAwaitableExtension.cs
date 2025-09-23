@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,40 +15,27 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
+using System.Runtime.CompilerServices;
 
-using MSBuild.ExtensionPack.Communication.Extended;
-
-namespace MSBuild.ExtensionPack.Communication.Ftp.Ftp
+namespace MSBuild.ExtensionPack.Base.Extension
 {
-    using System;
-
     /// <summary>
-    /// Helper class used to convert FILETIME to DateTime
+    /// Static class implementing <see cref="YieldAwaitable"/> extensions to support threading.
     /// </summary>
-    internal static class Extensions
+    public static class YieldAwaitableExtension
     {
-        #region Public Methods
-
         /// <summary>
-        /// Converts given datetime in FILETIME struct format and convert it to .Net DateTime.
+        /// Converts a <see cref="YieldAwaitable"/> to a <see cref="ConfiguredTaskYieldAwaitable"/>.
         /// </summary>
-        /// <param name="time">The given time in FileTime structure format</param>
-        /// <returns>The DateTime equivalent of the given fileTime</returns>
-        public static DateTime? ToDateTime(this NativeMethods.FILETIME time)
+        /// <param name="yieldAwaitable">           The result of <see cref="Task.Yield()"/>.</param>
+        /// <param name="continueOnCapturedContext">
+        /// A value indicating whether the continuation should run on the captured <see cref="SynchronizationContext"/>, if any.
+        /// </param>
+        /// <returns>An awaitable.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "yieldAwaitable", Justification = "This allows the extension method syntax to work.")]
+        public static ConfiguredTaskYieldAwaitable ConfigureAwait(this YieldAwaitable yieldAwaitable, bool continueOnCapturedContext)
         {
-            if (time.dwHighDateTime == 0 && time.dwLowDateTime == 0)
-            {
-                return null;
-            }
-
-            unchecked
-            {
-                uint low = (uint)time.dwLowDateTime;
-                long ft = (long)time.dwHighDateTime << 32 | low;
-                return DateTime.FromFileTimeUtc(ft);
-            }
+            return new ConfiguredTaskYieldAwaitable(continueOnCapturedContext);
         }
-
-        #endregion Public Methods
     }
 }

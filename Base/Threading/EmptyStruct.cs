@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,34 +15,19 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
+using System.Runtime.InteropServices;
 
-namespace MSBuild.ExtensionPack.Computer.HostsFile
+namespace MSBuild.ExtensionPack.Base.Threading
 {
-    using System.IO;
-
-    internal sealed class HostsFileReader : IHostsFileReader
+    /// <summary>
+    /// Read-only <see langref="struct"/> to optimize for size over the 4-bytes required for an <see cref="object"/>.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Size = 1)]
+    internal readonly struct EmptyStruct
     {
-        #region Private Methods
-
-        private Computer.HostsFile.HostsFile.IHostsFile Read(string path, bool truncate)
-        {
-            if (File.Exists(path))
-            {
-                return new Computer.HostsFile.HostsFile.HostsFileEntries(File.ReadAllLines(path), truncate);
-            }
-
-            return new Computer.HostsFile.HostsFile.HostsFileEntries(Array.Empty<string>());
-        }
-
-        #endregion Private Methods
-    }
-
-    public interface IHostsFileReader
-    {
-        #region Public Methods
-
-        Computer.HostsFile.HostsFile.IHostsFile Read(string path, bool truncate);
-
-        #endregion Public Methods
+        /// <summary>
+        /// Gets a value representing an instance of <see cref="EmptyStruct"/>.
+        /// </summary>
+        internal static EmptyStruct Instance => default;
     }
 }

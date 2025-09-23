@@ -4,7 +4,7 @@
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 // (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -15,42 +15,18 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.Computer.HostsFile
 {
-    public struct FacilityCode
+    using System.IO;
+
+    internal sealed class HostsFileWriter : IHostsFileWriter
     {
-        #region Public Fields
-
-        public const int FACILITY_MASK = 0x0000_FFFF;
-        public const int FACILITY_NT_BIT = 0x1000_0000;
-        public const int FACILITY_NULL = 0;
-
-        public const int FACILITY_OPC = 81;
-
-        public const int FACILITY_WIN32 = 7;
-
-        #endregion Public Fields
-    }
-
-    public static class WindowsFacilityCodeExtension
-    {
-        #region Public Fields
-
-        public const int HR_MASK = 0x0000_1FFF;
-
-        #endregion Public Fields
-
         #region Public Methods
 
-        public static int GetFacilityCodeFromHResult(this int hr)
+        public void Write(string path, Computer.HostsFile.HostsFile.IHostsFile hostsFile)
         {
-            return (hr >> 16) & HR_MASK;
-        }
-
-        public static int GetFacilityCodeFromStatusCode(this int code)
-        {
-            return GetFacilityCodeFromHResult(code);
+            using StreamWriter sw = new(path);
+            hostsFile.Save(sw);
         }
 
         #endregion Public Methods
