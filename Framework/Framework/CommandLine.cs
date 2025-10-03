@@ -96,6 +96,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="Task"/>
     public class CommandLine : Task
     {
         #region Private Fields
@@ -392,7 +393,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// </summary>
         /// <remarks>Exec Equivalent: Outputs</remarks>
         [Output]
-        public ITaskItem[] Outputs { get; set; }
+        public IEnumerable<ITaskItem> Outputs { get; set; }
 
         /// <summary>
         /// Gets or sets the StdErr stream encoding. Specifies the encoding of the captured task standard error stream. The default

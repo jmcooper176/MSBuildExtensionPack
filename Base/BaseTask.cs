@@ -18,6 +18,7 @@
 namespace MSBuild.ExtensionPack.Base
 {
     using System;
+    using System.Globalization;
     using System.Reflection;
     using System.Runtime.CompilerServices;
 
@@ -25,6 +26,7 @@ namespace MSBuild.ExtensionPack.Base
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base.Interface;
+    using MSBuild.ExtensionPack.Base.Logging;
     using MSBuild.ExtensionPack.Base.SystemAttribute;
 
     /// <summary>
@@ -40,39 +42,56 @@ namespace MSBuild.ExtensionPack.Base
         /// <returns>bool</returns>
         protected bool Execute([CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = 0)
         {
-            string code = $"{nameof(BaseTask)}MSG0001";
+            string errorCode = $"{nameof(BaseTask)}ERR0002";
+            string helpKeyWord = $"{this.HelpKeywordPrefix}{nameof(BaseTask)}HLP0002";
+            FileInfo taskFilePath = new(filePath!);
+
+            if (ValidateTaskAction())
+            {
+                this.Log.LogTaskError(TaskAction, errorCode, helpKeyWord, CultureInfo.CurrentCulture, "Property TaskAction is set to an invalid task action '{0}'", taskFilePath.FullName, lineNumber, this.TaskAction);
+                return !this.Log.HasLoggedErrors;
+            }
+
+            TaskActionRouter(taskFilePath.FullName, lineNumber);
+            return !this.Log.HasLoggedErrors;
+        }
+
+        /// <inheritdoc/>
+        public virtual void TaskActionRouter([CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = 0)
+        {
+            string errorCode = $"{nameof(BaseTask)}ERR0001";
+            string messageCode = $"{nameof(BaseTask)}MSG0001";
+            string warningCode = $"{nameof(BaseTask)}WRN0001";
             string helpKeyWord = $"{this.HelpKeywordPrefix}{nameof(BaseTask)}HLP0001";
-            filePath = Path.GetFullPath(filePath!);
-            string taskAction = TaskAction ?? "none";
+
+            this.Log.LogTaskMessage(
+                    () => !SuppressTaskMessages,
+                    MessageImportance.Low,
+                    TaskAction,
+                    messageCode,
+                    helpKeyWord,
+                    "{0}({1}) : Execute : Task {2} with Task Action {3}.",
+                    filePath,
+                    lineNumber,
+                    this.GetType().Name,
+                    TaskAction);
 
             try
             {
-                this.Log.LogTaskMessage(
-                    () => !SuppressTaskMessages,
-                    MessageImportance.Low,
-                    taskAction,
-                    code,
-                    helpKeyWord,
-                    $"{0}({1}) : Execute : Task {nameof(BaseTask)} with Task Action {TaskAction}.",
-                    filePath,
-                    lineNumber,
-                    filePath,
-                    lineNumber,
-                    nameof(BaseTask),
-                    taskAction);
-
-                switch (TaskAction)
+                switch (TaskAction.ToUpperInvariant())
                 {
-                    default:
+                    case "NONE":
+                        this.Log.LogTaskWarning(TaskAction, warningCode, helpKeyWord, "Nothing to do.", filePath, lineNumber);
                         break;
+
+                    default:
+                        throw new InvalidOperationException($"Property TaskAction value '{TaskAction}' is invalid.");
                 }
             }
             catch (Exception ex)
             {
-                this.Log.LogErrorFromException(ex, LogExceptionStackTrace, LogExceptionDetail, filePath);
+                this.Log.LogTaskError(ex, LogExceptionStackTrace, LogExceptionDetail, filePath);
             }
-
-            return !this.Log.HasLoggedErrors;
         }
 
         #endregion Protected Methods
@@ -87,16 +106,18 @@ namespace MSBuild.ExtensionPack.Base
         {
             get
             {
-                var inError = CustomAttribute.TryGetCustomAttribute<ObsoleteCustomAttribute>(this.GetType().GetTypeInfo(), inherit: false, out ObsoleteCustomAttribute? value) && value?.IsErrorAttribute() == true;
+                var inError = (CustomAttribute.TryGetCustomAttribute<ObsoleteCustomAttribute>(this.GetType().GetTypeInfo(), inherit: false, out ObsoleteCustomAttribute? value) && value?.IsErrorAttribute() == true)
+                    || (Attribute.IsDefined(this.GetType().GetTypeInfo(), typeof(ObsoleteAttribute), inherit: false) && ((ObsoleteAttribute?)Attribute.GetCustomAttribute(this.GetType().GetTypeInfo(), typeof(ObsoleteAttribute), inherit: false))?.IsError == true);
 
                 this.Log.LogTaskError(
                     () => inError,
                     "Task {0} is marked obsolete and 'IsError' is '{1}'",
                     null,
                     0,
-                    this.GetType().Name, inError);
+                    this.GetType().Name,
+                    inError);
 
-                return inError;
+                return this.Log.HasLoggedErrors;
             }
         }
 
@@ -111,20 +132,16 @@ namespace MSBuild.ExtensionPack.Base
         public bool LogExceptionStackTrace => Logging.GetLogExceptionStackTrace();
 
         /// <summary>
-        /// Gets a value indicating whether to suppress all Message logging by tasks; otherwise, all messages will be logged.
+        /// Gets a value indicating whether to suppress all message logging by tasks; otherwise, all messages will be logged.
         /// </summary>
         /// <remarks>Errors and Warnings are never affected.</remarks>
-        public bool SuppressTaskMessages => Logging.GetSuppressTaskMessages();
+        public bool SuppressTaskMessages { get; set; } = Logging.GetSuppressTaskMessages();
 
         /// <summary>
-        /// Gets or sets a value indicating the task action string.
+        /// Gets or sets a value indicating the sub-task action string for <see cref="BaseTask"/>.
         /// </summary>
-        public virtual string? TaskAction { get; set; }
-
-        bool IBaseTask.ErrorOnDeprecated { get; set; }
-        bool IBaseTask.LogExceptionDetail { get; set; }
-        bool IBaseTask.LogExceptionStackTrace { get; set; }
-        bool IBaseTask.SuppressTaskMessages { get; set; }
+        [Required]
+        public virtual string TaskAction { get; set; } = "None";
 
         #endregion Public Properties
 
@@ -133,7 +150,19 @@ namespace MSBuild.ExtensionPack.Base
         /// <inheritdoc/>
         public override bool Execute()
         {
-            return this.Execute(null);
+            return this.Execute(null, 0);
+        }
+
+        /// <inheritdoc/>
+        public bool ValidateTaskAction()
+        {
+            return ValidateTaskAction(this.TaskAction);
+        }
+
+        /// <inheritdoc/>
+        public virtual bool ValidateTaskAction([System.Diagnostics.CodeAnalysis.AllowNull] string taskAction)
+        {
+            return string.IsNullOrWhiteSpace(taskAction) || taskAction.Equals("None", StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion Public Methods

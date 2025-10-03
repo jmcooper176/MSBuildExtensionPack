@@ -273,7 +273,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(character: new ReadOnlySpan<char>(in character), comparison);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(character: new ReadOnlySpan<char>(in character), comparison);
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(character, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
         }
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparison);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparison);
         }
 
         /// <summary>
@@ -369,7 +369,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparer ?? EqualityComparer<char>.Default);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(value: new ReadOnlySpan<char>(value.ToCharArray()), 0, comparer ?? EqualityComparer<char>.Default);
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) && builder!.Contains(value, startIndex, StringComparison.Ordinal);
+            return !AssertExtension.IsNullOrEmpty(builder) && builder!.Contains(value, startIndex, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -870,7 +870,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <param name="value">   The value.</param>
         /// <param name="capacity">The capacity.</param>
         /// <returns></returns>
-/        public static StringBuilder Create(object? value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
+        public static StringBuilder Create(object? value, int capacity = OPTIMAL_INITIAL_STRINGBUILDER_CAPACITY)
         {
             return Create(capacity).Append(value);
         }
@@ -957,7 +957,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <returns></returns>
-/        public static StringBuilder Create(StreamReader reader)
+        public static StringBuilder Create(StreamReader reader)
         {
             return Create(reader.ReadToEnd());
         }
@@ -1539,7 +1539,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return IsEmpty(builder) ? Create(defaultValue, 1) : builder;
+            return AssertExtension.IsEmpty(builder) ? Create(defaultValue, 1) : builder;
         }
 
         /// <summary>
@@ -1782,7 +1782,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            return IsEmpty(builder) ? 0 : builder.Count() - 1;
+            return AssertExtension.IsEmpty(builder) ? 0 : builder.Count() - 1;
         }
 
         /// <summary>
@@ -1839,7 +1839,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) ? builder!.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
+            return !AssertExtension.IsNullOrEmpty(builder) ? builder!.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
         }
 
         /// <summary>
@@ -1853,7 +1853,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
+            return !AssertExtension.IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
         }
 
         /// <summary>
@@ -1866,7 +1866,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
+            return !AssertExtension.IsNullOrEmpty(builder) ? builder.IndexByIndexOf(character, StringComparison.Ordinal) : -1;
         }
 
         /// <summary>
@@ -1880,7 +1880,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -1910,7 +1910,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -1931,7 +1931,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentOutOfRangeException.ThrowIfNegative(startIndex.Value, nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex.Value, builder.Count(), nameof(startIndex));
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -1978,7 +1978,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
             }
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -2010,7 +2010,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
             }
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -2044,7 +2044,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) ? builder!.IndexOf(character, StringComparison.Ordinal) : -1;
+            return !AssertExtension.IsNullOrEmpty(builder) ? builder!.IndexOf(character, StringComparison.Ordinal) : -1;
         }
 
         /// <summary>
@@ -2056,7 +2056,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns></returns>
         public static int IndexOf([AllowNull] this StringBuilder builder, char character, StringComparison comparison)
         {
-            return !IsNullOrEmpty(builder) ? builder.IndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
+            return !AssertExtension.IsNullOrEmpty(builder) ? builder.IndexOf(character: new ReadOnlySpan<char>(in character), comparison) : -1;
         }
 
         /// <summary>
@@ -2069,7 +2069,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            return !IsNullOrEmpty(builder) ? builder.IndexOf(character, StringComparison.Ordinal) : -1;
+            return !AssertExtension.IsNullOrEmpty(builder) ? builder.IndexOf(character, StringComparison.Ordinal) : -1;
         }
 
         /// <summary>
@@ -2083,7 +2083,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -2113,7 +2113,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -2134,7 +2134,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -2181,7 +2181,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
             }
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -2213,7 +2213,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
             }
 
-            if (IsNullOrEmpty(builder))
+            if (AssertExtension.IsNullOrEmpty(builder))
             {
                 return -1;
             }
@@ -3389,7 +3389,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             List<TResult> accumulator = [];
 
-            if (!IsNullOrEmpty(builder))
+            if (!AssertExtension.IsNullOrEmpty(builder))
             {
                 foreach (var item in builder)
                 {
@@ -3414,7 +3414,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             List<TResult> accumulator = [];
 
-            if (!IsNullOrEmpty(builder))
+            if (!AssertExtension.IsNullOrEmpty(builder))
             {
                 int index = 0;
 

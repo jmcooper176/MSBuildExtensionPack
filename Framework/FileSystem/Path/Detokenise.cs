@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem
+namespace MSBuild.ExtensionPack.FileSystem.Path
 {
     using System;
     using System.Collections.Generic;
@@ -119,6 +119,7 @@ namespace MSBuild.ExtensionPack.FileSystem
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class Detokenise : BaseTask
     {
         #region Private Fields

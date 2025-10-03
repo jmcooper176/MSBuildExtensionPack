@@ -25,6 +25,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -72,6 +73,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class EnvironmentVariable : BaseTask
     {
         #region Private Fields
@@ -203,7 +205,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// is deleted.
         /// </summary>
         [Output]
-        public string[] Value { get; set; }
+        public IEnumerable<string> Value { get; set; }
 
         /// <summary>
         /// The name of the Environment Variable to get or set.

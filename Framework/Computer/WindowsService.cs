@@ -27,6 +27,9 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Framework;
     using Microsoft.Win32;
 
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
+
     /// <summary>
     /// Severity of the error if the Create method fails to start. The value indicates the action taken by the startup program if
     /// failure occurs. All errors are logged by the system.
@@ -396,6 +399,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class WindowsService : BaseTask
     {
         #region Private Fields
@@ -1222,7 +1226,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// <summary>
         /// Sets the services upon which the installed service depends.
         /// </summary>
-        public ITaskItem[] ServiceDependencies { get; set; }
+        public IEnumerable<ITaskItem> ServiceDependencies { get; set; }
 
         /// <summary>
         /// The Display Name of the service. Defaults to ServiceName.

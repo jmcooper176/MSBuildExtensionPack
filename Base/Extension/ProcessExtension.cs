@@ -24,6 +24,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     public static class ProcessExtension
     {
+        #region Public Methods
+
         /// <summary>
         /// Returns a task that completes when the process exits and provides the exit code of that process.
         /// </summary>
@@ -60,5 +62,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 process.Exited -= exitHandler;
             }
         }
+
+        #endregion Public Methods
     }
 }

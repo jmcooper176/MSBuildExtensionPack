@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Framework.AssemblyInfo.AssemblyInfo
+namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
 {
     using System;
     using System.Collections.Generic;

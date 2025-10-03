@@ -297,7 +297,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// Sets the arguments to use for invoking a method. The arguments must be specified with a <see cref="Type"/>, i.e. <Args Include="1"><Type>int</Type></Args>
         /// </summary>
-        public ITaskItem[] NetArguments { get; set; }
+        public IEnumerable<ITaskItem> NetArguments { get; set; }
 
         /// <summary>
         /// Sets the name of the Assembly
@@ -324,7 +324,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// CultureDisplayName, FullName, PublicKeyToken, AssemblyInformationalVersion
         /// </summary>
         [Output]
-        public ITaskItem[] OutputItems
+        public IEnumerable<ITaskItem> OutputItems
         {
             get => this.outputItems.ToArray();
             set => this.outputItems = new List<ITaskItem>(value);

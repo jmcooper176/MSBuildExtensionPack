@@ -207,6 +207,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class MSBuildHelper : BaseTask
     {
         #region Private Fields
@@ -681,7 +682,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// Sets InputItems1.
         /// </summary>
-        public ITaskItem[] InputItems1
+        public IEnumerable<ITaskItem> InputItems1
         {
             get => this.inputItems1.ToArray();
             set => this.inputItems1 = new List<ITaskItem>(value);
@@ -690,7 +691,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// Sets InputItems2.
         /// </summary>
-        public ITaskItem[] InputItems2
+        public IEnumerable<ITaskItem> InputItems2
         {
             get => this.inputItems2.ToArray();
             set => this.inputItems2 = new List<ITaskItem>(value);
@@ -721,7 +722,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// Gets the OutputItems.
         /// </summary>
         [Output]
-        public ITaskItem[] OutputItems
+        public IEnumerable<ITaskItem> OutputItems
         {
             get => this.outputItems?.ToArray();
             set => this.outputItems = new List<ITaskItem>(value);

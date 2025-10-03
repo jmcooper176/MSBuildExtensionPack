@@ -31,6 +31,8 @@ namespace MSBuild.ExtensionPack.Base.Threading
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public readonly struct TaskSchedulerAwaitable(TaskScheduler taskScheduler, bool alwaysYield = false)
     {
+        #region Private Fields
+
         /// <summary>
         /// A value indicating whether the awaitable will always call the caller to yield.
         /// </summary>
@@ -41,6 +43,10 @@ namespace MSBuild.ExtensionPack.Base.Threading
         /// </summary>
         private readonly TaskScheduler taskScheduler = taskScheduler;
 
+        #endregion Private Fields
+
+        #region Public Methods
+
         /// <summary>
         /// Gets an awaitable that schedules continuations on the specified scheduler.
         /// </summary>
@@ -49,5 +55,7 @@ namespace MSBuild.ExtensionPack.Base.Threading
         {
             return new TaskSchedulerAwaiter(taskScheduler, alwaysYield);
         }
+
+        #endregion Public Methods
     }
 }

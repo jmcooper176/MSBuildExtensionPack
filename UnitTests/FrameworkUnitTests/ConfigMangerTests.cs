@@ -20,7 +20,7 @@ using System.Xml;
 
 using Microsoft.Build.Utilities;
 
-namespace MSBuild.ExtensionPack.FrameworkTests.Computer
+namespace MSBuild.ExtensionPack.Framework.Tests
 {
     [TestClass]
     public sealed class DotNetFrameworkTest

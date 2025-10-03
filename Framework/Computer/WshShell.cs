@@ -48,6 +48,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class WshShell : BaseTask
     {
         #region Private Fields

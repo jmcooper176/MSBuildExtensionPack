@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     /// <summary>
     /// The <c>FtpDirectoryInfo</c> class encapsulates a remote FTP directory.
     /// </summary>
+    /// <seealso cref="FileSystemInfo"/>
     [Serializable]
     public class FtpDirectoryInfo : FileSystemInfo
     {
@@ -93,23 +94,23 @@ namespace MSBuild.ExtensionPack.Communication.FTP
             FtpConnection.DeleteDirectory(Name);
         }
 
-        public FtpDirectoryInfo[] GetDirectories()
+        public IEnumerable<FtpDirectoryInfo> GetDirectories()
         {
             return FtpConnection.GetDirectories(FullPath);
         }
 
-        public FtpDirectoryInfo[] GetDirectories(string path)
+        public IEnumerable<FtpDirectoryInfo> GetDirectories(string path)
         {
             path = Path.Combine(FullPath, path);
             return FtpConnection.GetDirectories(path);
         }
 
-        public FtpFileInfo[] GetFiles()
+        public IEnumerable<FtpFileInfo> GetFiles()
         {
             return GetFiles(FtpConnection.GetCurrentDirectory());
         }
 
-        public FtpFileInfo[] GetFiles(string mask)
+        public IEnumerable<FtpFileInfo> GetFiles(string mask)
         {
             return FtpConnection.GetFiles(mask);
         }

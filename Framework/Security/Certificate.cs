@@ -31,7 +31,7 @@ namespace MSBuild.ExtensionPack.Security
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Security.Extended;
+    using MSBuild.ExtensionPack.Framework;
 
     internal enum CryptGetProvParamType
     {
@@ -255,6 +255,7 @@ namespace MSBuild.ExtensionPack.Security
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class Certificate : BaseTask
     {
         #region Private Fields

@@ -60,6 +60,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Gac : BaseTask
     {
         #region Private Methods

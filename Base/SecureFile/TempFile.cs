@@ -40,11 +40,17 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
     /// <seealso cref="IEqualityComparer{String}"/>
     public partial class TempFile : IDisposable, IAsyncDisposable, IEqualityComparer<TempFile>, IEqualityComparer<FileInfo>, IEqualityComparer<string>
     {
+        #region Private Fields
+
         /// <summary>
         /// If <see langref="true"/>, this instance has been disposed by <see cref="Dispose(bool)"/>; otherwise, this instance has
         /// not been disposed.
         /// </summary>
         private bool disposedValue;
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         /// <summary>
         /// File base name regular expression to ensure template is in correct form.
@@ -52,6 +58,10 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
         /// <returns>Returns the <see cref="Regex"/> regular expression.</returns>
         [GeneratedRegex(@"^[A-Za-z0-9\-_].+(?:X){18}$", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
         private static partial Regex BaseNameTemplateRegex();
+
+        #endregion Private Methods
+
+        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -79,6 +89,10 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
 
             disposedValue = true;
         }
+
+        #endregion Protected Methods
+
+        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TempDirectory"/> class.
@@ -108,6 +122,10 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
             : this(Path.GetTempPath() ?? Environment.GetEnvironmentVariable("TEMP") ?? Environment.GetEnvironmentVariable("TMP") ?? Environment.GetEnvironmentVariable("TMPDIR"), leaf)
         {
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
 
         /// <summary>
         /// Gets a value indicating the <see cref="FileAccess"/> mode for the created file.
@@ -164,6 +182,10 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
         /// </summary>
         [SupportedOSPlatform("Windows")]
         public virtual FileSystemRights WindowsFileSystemRights => TempDirectory.WindowsFileSystemRights;
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Combines parent directory <see cref="DirectoryInfo"/><paramref name="directory"/> with <paramref name="template"/> and
@@ -641,5 +663,7 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
                 return fileName;
             }
         }
+
+        #endregion Public Methods
     }
 }

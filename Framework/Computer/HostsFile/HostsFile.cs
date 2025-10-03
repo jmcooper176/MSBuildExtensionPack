@@ -28,6 +28,8 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Interface;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -73,18 +75,19 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public sealed class HostsFile : BaseTask
     {
         #region Private Fields
 
-        private readonly Computer.HostsFile.HostsFile.IHostsFileReader hostsFileReader;
+        private readonly IHostsFileReader hostsFileReader;
         private readonly IHostsFileWriter hostsFileWriter;
 
         #endregion Private Fields
 
         #region Private Methods
 
-        private bool SetHostEntry(ITaskItem hostEntry, Computer.HostsFile.HostsFile.IHostsFile hostsFile)
+        private bool SetHostEntry(ITaskItem hostEntry, IHostsFile hostsFile)
         {
             var ipAddress = hostEntry.GetMetadata("IPAddress");
             var hostName = hostEntry.ItemSpec;
@@ -248,7 +251,7 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
 
         #region Internal Constructors
 
-        internal HostsFile(Computer.HostsFile.HostsFile.IHostsFileReader hostsFileReader, IHostsFileWriter hostsFileWriter)
+        internal HostsFile(IHostsFileReader hostsFileReader, IHostsFileWriter hostsFileWriter)
         {
             this.hostsFileReader = hostsFileReader;
             this.hostsFileWriter = hostsFileWriter;
@@ -258,7 +261,7 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
 
         #region Public Constructors
 
-        public HostsFile() : this(new Computer.HostsFile.HostsFile.HostsFileReader(), new HostsFileWriter())
+        public HostsFile() : this(HostsFileReader(), new HostsFileWriter())
         {
         }
 

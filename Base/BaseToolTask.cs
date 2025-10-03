@@ -34,6 +34,11 @@ using MSBuild.ExtensionPack.Base.Validator;
 
 namespace MSBuild.ExtensionPack.Base
 {
+    /// <summary>
+    /// </summary>
+    /// <seealso cref="Microsoft.Build.Utilities.ToolTask"/>
+    /// <seealso cref="MSBuild.ExtensionPack.Base.Interface.IBaseTask"/>
+    /// <seealso cref="System.IDisposable"/>
     public abstract class BaseToolTask : ToolTask, IBaseTask, IDisposable
     {
         #region Private Fields

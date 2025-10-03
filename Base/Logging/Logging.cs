@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Base
+namespace MSBuild.ExtensionPack.Base.Logging
 {
     using System;
     using System.Diagnostics;
@@ -24,6 +24,8 @@ namespace MSBuild.ExtensionPack.Base
 
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base.Logging;
 
     public static class Logging
     {

@@ -29,6 +29,7 @@ namespace MSBuild.ExtensionPack.Compression
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -69,6 +70,7 @@ namespace MSBuild.ExtensionPack.Compression
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseToolTask"/>
     public class Cab : BaseToolTask
     {
         #region Private Methods

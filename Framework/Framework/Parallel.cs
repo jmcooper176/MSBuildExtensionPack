@@ -25,6 +25,8 @@ namespace MSBuild.ExtensionPack.Framework
 
     using Microsoft.Build.Framework;
 
+    using MSBuild.ExtensionPack.Base;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -87,6 +89,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Parallel : BaseTask
     {
         #region Private Fields
@@ -492,7 +495,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// Specifies the Targets to execute. Properties and Targets metadata can be set depending on the TaskAction. See the samples.
         /// </summary>
         [Required]
-        public ITaskItem[] Targets { get; set; }
+        public IEnumerable<ITaskItem> Targets { get; set; }
 
         /// <summary>
         /// Specifies whether to wait for all Targets to complete execution before returning to MSBuild or whether to wait for all

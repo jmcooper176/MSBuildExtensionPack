@@ -57,6 +57,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Signing : BaseTask
     {
         #region Private Fields

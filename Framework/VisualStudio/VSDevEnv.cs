@@ -47,6 +47,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="ToolTask"/>
     public class VSDevEnv : ToolTask
     {
         #region Protected Properties
@@ -151,9 +152,9 @@ namespace MSBuild.ExtensionPack.VisualStudio
         public bool Rebuild { get; set; }
 
         /// <summary>
-        /// The version of Visual Studio to run, e.g. 8.0, 9.0, 10.0. Default is 9.0
+        /// The version of Visual Studio to run, e.g. 8.0, 9.0, 10.0, 11.0, 12.0, 14.0, 15.0, 16.0, 17.0, 18.0. Default is 17.0
         /// </summary>
-        public string Version { get; set; } = "9.0";
+        public string Version { get; set; } = "17.0";
 
         #endregion Public Properties
     }

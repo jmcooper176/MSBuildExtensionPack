@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     /// <summary>
     /// The <c>FtpFileInfo</c> class encapsulates a remote FTP directory.
     /// </summary>
+    /// <seealso cref="FileSystemInfo"/>
     [Serializable]
     public sealed class FtpFileInfo : FileSystemInfo
     {

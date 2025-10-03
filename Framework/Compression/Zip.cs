@@ -27,6 +27,9 @@ namespace MSBuild.ExtensionPack.Compression
 
     using Microsoft.Build.Framework;
 
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -98,6 +101,7 @@ namespace MSBuild.ExtensionPack.Compression
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Zip : BaseTask
     {
         #region Private Fields

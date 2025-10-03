@@ -57,6 +57,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Metadata : BaseTask
     {
         #region Private Fields
@@ -186,7 +187,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// Sets the source Items.
         /// </summary>
         [Required]
-        public ITaskItem[] Items { get; set; }
+        public IEnumerable<ITaskItem> Items { get; set; }
 
         /// <summary>
         /// Sets the string which contains the metadata. <br/> This should be in the format <i>n1=v1;n2=v2;...</i>
@@ -198,7 +199,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// Gets the item which contains the result.
         /// </summary>
         [Output]
-        public ITaskItem[] ResultItems { get; protected set; }
+        public IEnumerable<ITaskItem> ResultItems { get; protected set; }
 
         #endregion Public Properties
     }

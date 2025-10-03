@@ -24,6 +24,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     public static class TaskSchedulerExtension
     {
+        #region Public Methods
+
         /// <summary>
         /// Gets a <see cref="TaskSchedulerAwaiter"/> that schedules continuations on the specified scheduler.
         /// </summary>
@@ -47,5 +49,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             return new TaskSchedulerAwaitable(scheduler, alwaysYield);
         }
+
+        #endregion Public Methods
     }
 }

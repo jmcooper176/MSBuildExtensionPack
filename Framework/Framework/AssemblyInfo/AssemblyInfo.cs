@@ -28,43 +28,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
 
-    /// <summary>
-    /// Specifies how certain version numbers are incremented by the task.
-    /// </summary>
-    public enum IncrementMethod
-    {
-        /// <summary>
-        /// Do not auto-increment the number.
-        /// </summary>
-        NoIncrement = 0,
-
-        /// <summary>
-        /// Add one to the current number.
-        /// </summary>
-        AutoIncrement = 1,
-
-        /// <summary>
-        /// Format the current date and time using a formatting string, and use that as the number.
-        /// </summary>
-        DateString = 2,
-
-        /// <summary>
-        /// Format the current date as the two digit year and the day of the year, and use that as the number, i.e. the revision
-        /// number for 7/03/2009 is 09184
-        /// </summary>
-        Julian = 3,
-
-        /// <summary>
-        /// Format the current date as YYWWDW where YY is the year, WW is the week number and DW is the day of the week e.g. 2 Feb
-        /// 2010 would be 10062. 15 March 2010 will be 10121 and 19 December 2010 10475.
-        /// </summary>
-        YearWeekDay = 4,
-
-        /// <summary>
-        /// Calculate the number of days elapsed since a given StartDate. Take note of the StartDate, PaddingCount and PaddingDigit parameters.
-        /// </summary>
-        ElapsedDays = 5
-    }
+    using MSBuild.ExtensionPack.Base.Enumeration;
 
     /// <summary>
     /// The AssemblyInfo task provides a way to manipulate the content of AssemblyInfo files at build time. It works with C#, VB,
@@ -176,6 +140,7 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="Task"/>
     public class AssemblyInfo : Task
     {
         #region Private Fields
@@ -636,28 +601,6 @@ namespace MSBuild.ExtensionPack.Framework.AssemblyInfo
         }
 
         #endregion Private Methods
-
-        #region Private Structs
-
-        private struct AssemblyVersionSettings
-        {
-            #region Public Fields
-
-            public string BuildNumber;
-            public string BuildNumberFormat;
-            public IncrementMethod BuildNumberType;
-            public string MajorVersion;
-            public string MinorVersion;
-            public string Revision;
-            public string RevisionFormat;
-            public bool RevisionReset;
-            public IncrementMethod RevisionType;
-            public string Version;
-
-            #endregion Public Fields
-        }
-
-        #endregion Private Structs
 
         #region Public Properties
 

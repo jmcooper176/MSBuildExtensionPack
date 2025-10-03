@@ -20,13 +20,13 @@ namespace MSBuild.ExtensionPack.FileSystem
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
     using System.Management;
 
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Enumeration;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -76,6 +76,7 @@ namespace MSBuild.ExtensionPack.FileSystem
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class Share : BaseTask
     {
         #region Private Fields
@@ -88,63 +89,6 @@ namespace MSBuild.ExtensionPack.FileSystem
         private int newPermissionCount;
 
         #endregion Private Fields
-
-        #region Private Enums
-
-        private enum ReturnCode : uint
-        {
-            /// <summary>
-            /// Success
-            /// </summary>
-            Success = 0,
-
-            /// <summary>
-            /// AccessDenied
-            /// </summary>
-            AccessDenied = 2,
-
-            /// <summary>
-            /// UnknownFailure
-            /// </summary>
-            UnknownFailure = 8,
-
-            /// <summary>
-            /// InvalidName
-            /// </summary>
-            InvalidName = 9,
-
-            /// <summary>
-            /// InvalidLevel
-            /// </summary>
-            InvalidLevel = 10,
-
-            /// <summary>
-            /// InvalidParameter
-            /// </summary>
-            InvalidParameter = 21,
-
-            /// <summary>
-            /// ShareAlreadyExists
-            /// </summary>
-            ShareAlreadyExists = 22,
-
-            /// <summary>
-            /// RedirectedPath
-            /// </summary>
-            RedirectedPath = 23,
-
-            /// <summary>
-            /// UnknownDeviceOrDirectory
-            /// </summary>
-            UnknownDeviceOrDirectory = 24,
-
-            /// <summary>
-            /// NetNameNotFound
-            /// </summary>
-            NetNameNotFound = 25
-        }
-
-        #endregion Private Enums
 
         #region Private Methods
 

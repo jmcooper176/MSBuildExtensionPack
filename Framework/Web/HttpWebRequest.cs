@@ -69,6 +69,7 @@ namespace MSBuild.ExtensionPack.Web
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class HttpWebRequest : BaseTask
     {
         #region Private Fields

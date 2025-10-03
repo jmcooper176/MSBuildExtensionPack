@@ -118,6 +118,7 @@ namespace MSBuild.ExtensionPack.Xml
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class XmlTask : BaseTask
     {
         #region Private Fields

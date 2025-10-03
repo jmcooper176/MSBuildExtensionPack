@@ -64,6 +64,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class VC6 : BaseTask
     {
         #region Private Fields
@@ -268,7 +269,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// the workspace/project.
         /// </remarks>
         [Required]
-        public ITaskItem[] Projects { get; set; }
+        public IEnumerable<ITaskItem> Projects { get; set; }
 
         /// <summary>
         /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.

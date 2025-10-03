@@ -27,6 +27,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -75,6 +76,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Process : BaseTask
     {
         #region Private Fields
@@ -321,7 +323,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// <summary>
         /// Sets the Parameters for Create. Use #~# separate name and value.
         /// </summary>
-        public ITaskItem[] Parameters { get; set; }
+        public IEnumerable<ITaskItem> Parameters { get; set; }
 
         /// <summary>
         /// Gets the list of processes. The process name is used as the identity and the following metadata is set: Caption,
@@ -331,7 +333,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// UserModeTime, VirtualSize, WindowsVersion, WorkingSetSize, WriteOperationCount, WriteTransferCount
         /// </summary>
         [Output]
-        public ITaskItem[] Processes { get; set; }
+        public IEnumerable<ITaskItem> Processes { get; set; }
 
         /// <summary>
         /// Gets or Sets the ProcessId

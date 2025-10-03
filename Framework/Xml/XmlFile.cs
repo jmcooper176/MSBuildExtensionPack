@@ -173,6 +173,7 @@ namespace MSBuild.ExtensionPack.Xml
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class XmlFile : BaseTask
     {
         #region Private Fields
@@ -747,7 +748,7 @@ namespace MSBuild.ExtensionPack.Xml
         /// Gets the elements selected using ReadElements
         /// </summary>
         [Output]
-        public ITaskItem[] Elements { get; set; }
+        public IEnumerable<ITaskItem> Elements { get; set; }
 
         /// <summary>
         /// Sets the file.
@@ -783,7 +784,7 @@ namespace MSBuild.ExtensionPack.Xml
         /// <summary>
         /// TaskItems specifiying "Prefix" and "Uri" attributes for use with the specified XPath
         /// </summary>
-        public ITaskItem[] Namespaces { get; set; }
+        public IEnumerable<ITaskItem> Namespaces { get; set; }
 
         /// <summary>
         /// Sets the parent element.

@@ -57,6 +57,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="ToolTask"/>
     public class GenericTool : ToolTask
     {
         #region Protected Properties
@@ -135,7 +136,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// The list of Error Exit Codes
         /// </summary>
         [Required]
-        public ITaskItem[] ErrorExitCodes { get; set; }
+        public IEnumerable<ITaskItem> ErrorExitCodes { get; set; }
 
         /// <summary>
         /// The Executable to call
@@ -151,7 +152,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// Sets the parameters to pass to the Executable. The parameter should be defined in the 'value' metadata of an Item.
         /// </summary>
-        public ITaskItem[] Parameters { get; set; }
+        public IEnumerable<ITaskItem> Parameters { get; set; }
 
         /// <summary>
         /// The real exit code returned from the Executable
@@ -163,13 +164,13 @@ namespace MSBuild.ExtensionPack.Framework
         /// The list of Success Exit Codes
         /// </summary>
         [Required]
-        public ITaskItem[] SuccessExitCodes { get; set; }
+        public IEnumerable<ITaskItem> SuccessExitCodes { get; set; }
 
         /// <summary>
         /// The list of Warning Exit Codes
         /// </summary>
         [Required]
-        public ITaskItem[] WarningExitCodes { get; set; }
+        public IEnumerable<ITaskItem> WarningExitCodes { get; set; }
 
         #endregion Public Properties
     }

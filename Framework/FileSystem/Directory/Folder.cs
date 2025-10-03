@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem
+namespace MSBuild.ExtensionPack.FileSystem.Directory
 {
     using System;
     using System.Collections.Generic;
@@ -28,6 +28,8 @@ namespace MSBuild.ExtensionPack.FileSystem
 
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -106,6 +108,7 @@ namespace MSBuild.ExtensionPack.FileSystem
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class Folder : BaseTask
     {
         #region Private Fields
@@ -628,7 +631,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// Gets the folder list
         /// </summary>
         [Output]
-        public ITaskItem[] Folders { get; set; }
+        public IEnumerable<ITaskItem> Folders { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether to delete readonly files when performing RemoveContent

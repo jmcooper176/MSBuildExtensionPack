@@ -27,6 +27,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -80,6 +81,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Network : BaseTask
     {
         #region Private Fields
@@ -260,7 +262,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// Gets the IP's
         /// </summary>
         [Output]
-        public ITaskItem[] IP { get; set; }
+        public IEnumerable<ITaskItem> IP { get; set; }
 
         /// <summary>
         /// Sets the number of pings to attempt. Default is 5.

@@ -108,6 +108,7 @@ namespace MSBuild.ExtensionPack.Management
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Wmi : BaseTask
     {
         #region Private Fields
@@ -265,10 +266,10 @@ namespace MSBuild.ExtensionPack.Management
         /// Gets the WMI info.
         /// </summary>
         [Output]
-        public ITaskItem[] Info
+        public IEnumerable<ITaskItem> Info
         {
             get => this.info.ToArray();
-            set => this.info = new List<ITaskItem>(value);
+            set => this.info = [.. value];
         }
 
         /// <summary>
@@ -284,7 +285,7 @@ namespace MSBuild.ExtensionPack.Management
         /// <summary>
         /// Sets the MethodParameters. Use #~# separate name and value.
         /// </summary>
-        public ITaskItem[] MethodParameters { get; set; }
+        public IEnumerable<ITaskItem> MethodParameters { get; set; }
 
         /// <summary>
         /// Sets the namespace.

@@ -69,6 +69,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class SourceSafe : BaseTask
     {
         #region Private Fields

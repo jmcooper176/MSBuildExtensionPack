@@ -27,6 +27,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Extension;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -79,6 +80,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class TfsVersion : BaseTask
     {
         #region Private Fields
@@ -427,7 +429,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// <summary>
         /// Sets the files to version
         /// </summary>
-        public ITaskItem[] Files { get; set; }
+        public IEnumerable<ITaskItem> Files { get; set; }
 
         /// <summary>
         /// Set to true to force SetVersion action to update files that do not have AssemblyVersion | AssemblyFileVersion present.

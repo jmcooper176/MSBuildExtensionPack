@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem
+namespace MSBuild.ExtensionPack.FileSystem.Directory
 {
     using System;
     using System.Collections.Generic;
@@ -83,6 +83,7 @@ namespace MSBuild.ExtensionPack.FileSystem
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class FindUnder : BaseTask
     {
         #region Private Fields
@@ -253,7 +254,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// The list of items (files and or directories) which were found.
         /// </summary>
         [Output]
-        public ITaskItem[] FoundItems { get; set; }
+        public IEnumerable<ITaskItem> FoundItems { get; set; }
 
         /// <summary>
         /// Set this value to only return files or folders modified after the given value

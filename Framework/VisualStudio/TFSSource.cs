@@ -124,6 +124,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class TfsSource : BaseTask
     {
         #region Private Fields
@@ -467,6 +468,18 @@ namespace MSBuild.ExtensionPack.VisualStudio
             string vstools = string.Empty;
             switch (this.Version)
             {
+                case "2026":
+                    vstools = Environment.GetEnvironmentVariable("VS180COMNTOOLS");
+                    break;
+
+                case "2022":
+                    vstools = Environment.GetEnvironmentVariable("VS170COMNTOOLS");
+                    break;
+
+                case "2019":
+                    vstools = Environment.GetEnvironmentVariable("VS160COMNTOOLS");
+                    break;
+
                 case "2015":
                     vstools = Environment.GetEnvironmentVariable("VS140COMNTOOLS");
                     break;
@@ -665,7 +678,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// <summary>
         /// Sets the Item Collection of files to use.
         /// </summary>
-        public ITaskItem[] ItemCol { get; set; }
+        public IEnumerable<ITaskItem> ItemCol { get; set; }
 
         /// <summary>
         /// Sets the files or folders to use.
@@ -726,7 +739,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// stores boolean.
         /// </summary>
         [Output]
-        public ITaskItem[] PendingChangesExistItem { get; set; }
+        public IEnumerable<ITaskItem> PendingChangesExistItem { get; set; }
 
         /// <summary>
         /// Sets whether the Tfs operation should be recursive. Default is true.

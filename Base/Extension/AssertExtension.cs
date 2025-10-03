@@ -27,6 +27,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
     public static class AssertExtension
     {
+        #region Public Methods
+
         /// <summary>
         /// Tests whether <paramref name="left"/> is equal to <paramref name="right"/> and calls <see cref="Debug.Fail(string?)"/>
         /// if they are NOT equal.
@@ -1125,5 +1127,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             return IsNullOrAll(builder, char.IsWhiteSpace);
         }
+
+        #endregion Public Methods
     }
 }

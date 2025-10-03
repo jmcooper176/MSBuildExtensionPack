@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Security.Extended
+namespace MSBuild.ExtensionPack.Security
 {
     using System;
     using System.Runtime.CompilerServices;

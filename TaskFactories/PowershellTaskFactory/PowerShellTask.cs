@@ -26,7 +26,10 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
     /// <summary>
     /// A task that executes a Windows PowerShell script.
     /// </summary>
-    internal class PowerShellTask : Task, IGeneratedTask, IDisposable
+    /// <seealso cref="Task"/>
+    /// <seealso cref="IGeneratedTask"/>
+    /// <seealso cref="IDisposable"/>
+    public class PowerShellTask : Task, IGeneratedTask, IDisposable
     {
         #region Private Fields
 

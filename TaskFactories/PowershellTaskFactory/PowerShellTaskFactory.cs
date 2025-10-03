@@ -82,6 +82,7 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="ITaskFactory"/>
     public class PowerShellTaskFactory : ITaskFactory
     {
         #region Private Fields

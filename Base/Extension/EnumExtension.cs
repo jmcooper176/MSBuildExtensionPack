@@ -16,6 +16,7 @@
 //
 // SPDX-License-Identifier: MIT
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 
 namespace MSBuild.ExtensionPack.Base.Extension
@@ -54,7 +55,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <returns>A <see cref="string"/> representing the name of <paramref name="value"/>.</returns>
         public static string? GetName<TEnum>(TEnum value) where TEnum : struct, Enum
         {
-            return Enum.GetName<TEnum>(value);
+            return Enum.GetName(value);
         }
 
         /// <summary>
@@ -88,15 +89,81 @@ namespace MSBuild.ExtensionPack.Base.Extension
         }
 
         /// <summary>
+        /// Gets the <see cref="Enum"/> value for <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">Specifies the type of the <see cref="Enum"/>.</typeparam>
+        /// <param name="value">Specifies the string or underlying type value.</param>
+        /// <returns>A <see cref="TEnum"/> associated with <paramref name="value"/>.</returns>
+        public static TEnum GetValue<TEnum>([DisallowNull] object value) where TEnum : struct, Enum
+        {
+            return ToObject<TEnum>(value);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Enum"/> value for <paramref name="name"/>.
+        /// </summary>
+        /// <typeparam name="TEnum">Specifies the type of the <see cref="Enum"/>.</typeparam>
+        /// <param name="name">Specifies the <see cref="Enum"/> string name.</param>
+        /// <returns>A <see cref="TEnum"/> associated with <paramref name="name"/>.</returns>
+        public static TEnum GetValue<TEnum>([AllowNull] string name) where TEnum : struct, Enum
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+            return ToObject<TEnum>(name);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Enum"/> value of <see cref="Type"/><paramref name="enumType"/> for <paramref name="value"/>.
+        /// </summary>
+        /// <param name="enumType">Specifies the <see cref="Type"/> of the <see cref="Enum"/>.</param>
+        /// <param name="value">   Specifies the string or underlying type value.</param>
+        /// <returns>An <see cref="object"/> representing an <see cref="Enum"/> associated with <paramref name="value"/>.</returns>
+        /// <exception cref="ArgumentException">Throws if <paramref name="enumType"/> is not an <see cref="Enum"/><see cref="Type"/>.</exception>
+        public static object GetValue(Type enumType, [DisallowNull] object value)
+        {
+            if (!IsEnum(enumType))
+            {
+                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
+            }
+
+            return Enum.ToObject(enumType, value);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Enum"/> value of <see cref="Type"/><paramref name="enumType"/> for <paramref name="name"/>.
+        /// </summary>
+        /// <param name="enumType">Specifies the type of the <see cref="Enum"/>.</param>
+        /// <param name="name">    Specifies the string name of the <see cref="Enum"/>.</param>
+        /// <returns>An <see cref="object"/> representing an <see cref="Enum"/> associated with <paramref name="name"/>.</returns>
+        /// <exception cref="ArgumentNullException">Throws if <paramref name="name"/> is null, empty, or all whitespace.</exception>
+        /// <exception cref="ArgumentException"></exception>
+        public static object GetValue(Type enumType, [AllowNull] string name)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+            if (!IsEnum(enumType))
+            {
+                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
+            }
+
+            return Enum.ToObject(enumType, name);
+        }
+
+        /// <summary>
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static object? GetValue<TEnum>(string? name) where TEnum : struct, Enum
+        public static object GetValueAsUnderlyingType<TEnum>([AllowNull] string name) where TEnum : struct, Enum
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 
-            return IndexAsUnderlyingType<TEnum>().TryGetValue(name, out var value) ? value : default;
+            return ToUnderlyingType<TEnum>(name);
+        }
+
+        public static object GetValueAsUnderlyingType<TEnum>(TEnum value) where TEnum : struct, Enum
+        {
+            return ToUnderlyingType<TEnum>(Enum.GetName<TEnum>(value));
         }
 
         /// <summary>
@@ -104,9 +171,19 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <typeparam name="TEnum"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static object? GetValue<TEnum>(TEnum value) where TEnum : struct, Enum
+        public static object GetValueAsUnderlyingType<TEnum, TUnderlyingType>(TEnum value) where TEnum : struct, Enum where TUnderlyingType : struct
         {
-            return GetValue<TEnum>(Enum.GetName<TEnum>(value));
+            return ToUnderlyingType<TEnum, TUnderlyingType>(value);
+        }
+
+        public static object GetValueAsUnderlyingType(Type enumType, object? value)
+        {
+            if (!IsEnum(enumType))
+            {
+                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
+            }
+
+            return ToUnderlyingType(enumType, value);
         }
 
         /// <summary>
@@ -159,7 +236,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <typeparam name="TEnum"></typeparam>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IEnumerable<Tuple<TEnum, char>> Index<TEnum>([AllowNull] this StringBuilder builder) where TEnum : struct, System.Enum
+        public static IEnumerable<Tuple<TEnum, char>> Index<TEnum>([AllowNull] this StringBuilder builder) where TEnum : struct, Enum
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
@@ -228,6 +305,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             return IsAssignableTo(typeof(TUnderlyingType), value);
         }
 
+        public static bool IsEnum(this Type type)
+        {
+            return type.IsEnum;
+        }
+
         /// <summary>
         /// Create a <typeparamref name="TEnum"/> instance from a <paramref name="value"/>.
         /// </summary>
@@ -243,6 +325,53 @@ namespace MSBuild.ExtensionPack.Base.Extension
             Type valueType = GetUnderlyingType<TEnum>();
 
             return IsAssignableTo(valueType, value) ? (TEnum)Enum.ToObject(typeof(TEnum), value) : throw new ArgumentException($"Parameter {nameof(value)} of Type '{value.GetType().FullName}' is not assignable to the Enum Underlying Type {valueType.FullName}.", nameof(value));
+        }
+
+        public static object ToUnderlyingType<TEnum>([AllowNull] string name) where TEnum : struct, Enum
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+            return ToUnderlyingType(typeof(TEnum), name);
+        }
+
+        public static object ToUnderlyingType(Type enumType, [AllowNull] string name)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+            if (!IsEnum(enumType))
+            {
+                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
+            }
+
+            return ToUnderlyingType(enumType, Enum.ToObject(enumType, name));
+        }
+
+        public static object ToUnderlyingType(Type enumType, object? value)
+        {
+            if (!IsEnum(enumType))
+            {
+                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
+            }
+
+            Type underlyingType = Enum.GetUnderlyingType(enumType);
+
+            return underlyingType switch
+            {
+                Type t when t == typeof(sbyte) => Convert.ToSByte(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(byte) => Convert.ToByte(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(short) => Convert.ToInt16(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(int) => Convert.ToInt32(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(long) => Convert.ToInt64(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(ushort) => Convert.ToUInt16(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(uint) => Convert.ToUInt32(value, CultureInfo.InvariantCulture),
+                Type t when t == typeof(ulong) => Convert.ToUInt64(value, CultureInfo.InvariantCulture),
+                _ => throw new NotSupportedException($"Underlying type {underlyingType.FullName} is not supported as an 'Enum' underlying type."),
+            };
+        }
+
+        public static object ToUnderlyingType<TEnum, TUnderlyingType>(TEnum value) where TEnum : struct, Enum where TUnderlyingType : struct
+        {
+            return ToUnderlyingType(typeof(TEnum), value);
         }
 
         #endregion Public Methods

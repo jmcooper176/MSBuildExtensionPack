@@ -29,6 +29,8 @@ namespace MSBuild.ExtensionPack.Framework
     using Microsoft.Build.Utilities;
     using Microsoft.CSharp;
 
+    using MSBuild.ExtensionPack.Base;
+
     // TODO: Possible future extensions: Advanced conversions (supporting more user-defined types via IFormattable, constructors,
     // ToString, TypeConverter/TypeDescriptor, or Reflection/AssignableFrom) Languages other than C# (not too hard if we convert to
     // CodeDOM) Remote execution support
@@ -631,6 +633,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public sealed class DynamicExecute : BaseTask
     {
         #region Private Fields
@@ -705,7 +708,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// </summary>
         /// <param name="value">The value returned by the method.</param>
         /// <returns>An MSBuild output value.</returns>
-        private static ITaskItem[] ConvertResult(object value)
+        private static IEnumerable<ITaskItem> ConvertResult(object value)
         {
             // All result values are boxed, so
             // <see cref="Nullable{T}"/>
@@ -924,7 +927,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// </summary>
         /// <param name="inputsOutputs">The inputs or outputs value.</param>
         /// <returns>A sequence of <see cref="NameAndType"/> objects.</returns>
-        private static IEnumerable<NameAndType> ParseInputsOutputs(ITaskItem[] inputsOutputs)
+        private static IEnumerable<NameAndType> ParseInputsOutputs(IEnumerable<ITaskItem> inputsOutputs)
         {
             // If no inputs or outputs are defined, then yield an empty sequence.
             if (inputsOutputs is null || inputsOutputs.Length == 0)
@@ -1205,330 +1208,6 @@ namespace MSBuild.ExtensionPack.Framework
 
         #endregion Private Methods
 
-        #region Private Classes
-
-        /// <summary>
-        /// Represents a closure, including values for the default, input, and output parameters.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// A "parameter index" is a 0-based index into the array of parameters. It may refer to a default, input, or output parameter.
-        /// </para>
-        /// </remarks>
-        private class Closure
-        {
-            #region Private Fields
-
-            /// <summary>
-            /// The arguments (and return values) for this closure.
-            /// </summary>
-            private readonly object[] arguments;
-
-            /// <summary>
-            /// The underlying method definition.
-            /// </summary>
-            private readonly MethodDefinition methodDefinition;
-
-            #endregion Private Fields
-
-            #region Public Constructors
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Closure"/> class. Creates a new closure, allocating space for the parameters.
-            /// </summary>
-            /// <param name="methodDefinition">The method definition used to create the new closure.</param>
-            public Closure(MethodDefinition methodDefinition)
-            {
-                this.methodDefinition = methodDefinition;
-                this.arguments = new object[methodDefinition.NumberOfParameters];
-            }
-
-            #endregion Public Constructors
-
-            #region Public Methods
-
-            /// <summary>
-            /// Gets an input parameter's CLI <see cref="Type"/>.
-            /// </summary>
-            /// <param name="inputIndex">The zero-based index of the input parameter to retrieve.</param>
-            /// <returns>The <see cref="Type"/> of the input parameter.</returns>
-            public Type GetInputParameterType(int inputIndex)
-            {
-                int i = this.methodDefinition.GetInputArgumentIndex(inputIndex);
-                if (i == -1)
-                {
-                    throw new ArgumentOutOfRangeException("DynamicExecute closure input index out of bounds: " + inputIndex.ToString(CultureInfo.CurrentCulture));
-                }
-
-                return this.methodDefinition.CompiledMethod.GetParameters()[i].ParameterType;
-            }
-
-            /// <summary>
-            /// Gets an input parameter's CLI <see cref="Type"/>.
-            /// </summary>
-            /// <param name="inputName">The name of the input parameter to retrieve.</param>
-            /// <returns>The <see cref="Type"/> of the input parameter.</returns>
-            public Type GetInputParameterType(string inputName)
-            {
-                int i = this.methodDefinition.GetInputArgumentIndex(inputName);
-                if (i == -1)
-                {
-                    throw new KeyNotFoundException("DynamicExecute closure input name not recognized: " + inputName);
-                }
-
-                return this.methodDefinition.CompiledMethod.GetParameters()[i].ParameterType;
-            }
-
-            /// <summary>
-            /// Gets an output argument value.
-            /// </summary>
-            /// <param name="outputName">The name of the output argument to retrieve.</param>
-            /// <returns>The value of the output argument.</returns>
-            public object GetOutput(string outputName)
-            {
-                int i = this.methodDefinition.GetOutputArgumentIndex(outputName);
-                if (i == -1)
-                {
-                    throw new KeyNotFoundException("DynamicExecute closure output name not recognized: " + outputName);
-                }
-
-                return this.arguments[i];
-            }
-
-            /// <summary>
-            /// Executes the underlying compiled method, with the currently-defined arguments.
-            /// </summary>
-            public void Run()
-            {
-                this.methodDefinition.CompiledMethod.Invoke(null, this.arguments);
-            }
-
-            /// <summary>
-            /// Sets an input argument to a value.
-            /// </summary>
-            /// <param name="inputIndex">The zero-based index of the input parameter to set.</param>
-            /// <param name="value">     The value to set.</param>
-            public void SetArgument(int inputIndex, object value)
-            {
-                int i = this.methodDefinition.GetInputArgumentIndex(inputIndex);
-                if (i == -1)
-                {
-                    throw new ArgumentOutOfRangeException("DynamicExecute closure input index out of bounds: " + inputIndex.ToString(CultureInfo.CurrentCulture));
-                }
-
-                this.arguments[i] = value;
-            }
-
-            /// <summary>
-            /// Sets an input argument to a value.
-            /// </summary>
-            /// <param name="inputName">The name of the input parameter to set.</param>
-            /// <param name="value">    The value to set.</param>
-            public void SetArgument(string inputName, object value)
-            {
-                int i = this.methodDefinition.GetInputArgumentIndex(inputName);
-                if (i == -1)
-                {
-                    throw new KeyNotFoundException("DynamicExecute closure input name not recognized: " + inputName);
-                }
-
-                this.arguments[i] = value;
-            }
-
-            /// <summary>
-            /// Sets a default argument to a value. Invalid default parameter indices are ignored.
-            /// </summary>
-            /// <param name="defaultParameterIndex">The zero-based index of the default parameter to set.</param>
-            /// <param name="value">                The value to set.</param>
-            public void SetDefaultArgument(int defaultParameterIndex, object value)
-            {
-                int i = this.methodDefinition.GetDefaultArgumentIndex(defaultParameterIndex);
-                if (i != -1)
-                {
-                    this.arguments[i] = value;
-                }
-            }
-
-            /// <summary>
-            /// Gets an output argument value. Returns <see langref="null"/> if the output argument does not exist.
-            /// </summary>
-            /// <param name="outputIndex">The zero-based index of the output argument to retrieve.</param>
-            /// <returns>The value of the output argument, or <see langref="null"/> if the index is out of bounds.</returns>
-            public object TryGetOutput(int outputIndex)
-            {
-                int i = this.methodDefinition.GetOutputArgumentIndex(outputIndex);
-                if (i == -1)
-                {
-                    return null;
-                }
-
-                return this.arguments[i];
-            }
-
-            #endregion Public Methods
-        }
-
-        /// <summary>
-        /// Represents a compiled DynamicExecute method definition.
-        /// </summary>
-        private class MethodDefinition
-        {
-            #region Private Fields
-
-            /// <summary>
-            /// The actual compiled method.
-            /// </summary>
-            private readonly MethodInfo compiledMethod;
-
-            /// <summary>
-            /// The names of input parameters for this method.
-            /// </summary>
-            private readonly string[] inputs;
-
-            /// <summary>
-            /// The number of default parameters for this method.
-            /// </summary>
-            private readonly int numberOfDefaultParameters;
-
-            /// <summary>
-            /// The names of output parameters for this method.
-            /// </summary>
-            private readonly string[] outputs;
-
-            #endregion Private Fields
-
-            #region Public Constructors
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="MethodDefinition"/> class, creating a new method definition.
-            /// </summary>
-            /// <param name="compiledMethod">           The underlying compiled method.</param>
-            /// <param name="numberOfDefaultParameters">The number of default parameters for this method.</param>
-            /// <param name="inputs">                   The inputs for the method.</param>
-            /// <param name="outputs">                  The outputs for the method.</param>
-            public MethodDefinition(MethodInfo compiledMethod, int numberOfDefaultParameters, IEnumerable<string> inputs, IEnumerable<string> outputs)
-            {
-                this.compiledMethod = compiledMethod;
-                this.numberOfDefaultParameters = numberOfDefaultParameters;
-                this.inputs = inputs.ToArray();
-                this.outputs = outputs.ToArray();
-            }
-
-            #endregion Public Constructors
-
-            #region Public Properties
-
-            /// <summary>
-            /// Returns the actual compiled method.
-            /// </summary>
-            public MethodInfo CompiledMethod => this.compiledMethod;
-
-            /// <summary>
-            /// Returns the total number of parameters required to invoke the method (including default, explicit, and return values).
-            /// </summary>
-            public int NumberOfParameters => this.numberOfDefaultParameters + this.inputs.Length + this.outputs.Length;
-
-            #endregion Public Properties
-
-            #region Public Methods
-
-            /// <summary>
-            /// Returns the argument index for the given default parameter, or -1 if it is not defined.
-            /// </summary>
-            /// <param name="defaultIndex">The zero-based index of the default parameter.</param>
-            /// <returns>The argument index for the default parameter, or -1 if that parameter is not defined.</returns>
-            public int GetDefaultArgumentIndex(int defaultIndex)
-            {
-                if (defaultIndex >= 0 && defaultIndex < this.numberOfDefaultParameters)
-                {
-                    return defaultIndex;
-                }
-
-                return -1;
-            }
-
-            /// <summary>
-            /// Returns the argument index for the given input parameter, or -1 if it is not defined.
-            /// </summary>
-            /// <param name="inputIndex">The zero-based index of the input parameter.</param>
-            /// <returns>The argument index for the input parameter, or -1 if that parameter is not defined.</returns>
-            public int GetInputArgumentIndex(int inputIndex)
-            {
-                if (inputIndex < 0 || inputIndex >= this.inputs.Length)
-                {
-                    return -1;
-                }
-
-                return this.numberOfDefaultParameters + inputIndex;
-            }
-
-            /// <summary>
-            /// Returns the argument index for the given input parameter, or -1 if it is not defined.
-            /// </summary>
-            /// <param name="inputName">The name of the input parameter.</param>
-            /// <returns>The argument index for the input parameter, or -1 if that parameter is not defined.</returns>
-            public int GetInputArgumentIndex(string inputName)
-            {
-                for (int i = 0; i != this.inputs.Length; ++i)
-                {
-                    if (this.inputs[i] == inputName)
-                    {
-                        return this.numberOfDefaultParameters + i;
-                    }
-                }
-
-                return -1;
-            }
-
-            /// <summary>
-            /// Returns the argument index for the given output parameter, or -1 if it is not defined.
-            /// </summary>
-            /// <param name="outputIndex">The zero-based index of the output parameter.</param>
-            /// <returns>The argument index for the output parameter, or -1 if that parameter is not defined.</returns>
-            public int GetOutputArgumentIndex(int outputIndex)
-            {
-                if (outputIndex < 0 || outputIndex >= this.outputs.Length)
-                {
-                    return -1;
-                }
-
-                return this.numberOfDefaultParameters + this.inputs.Length + outputIndex;
-            }
-
-            /// <summary>
-            /// Returns the argument index for the given output parameter, or -1 if it is not defined.
-            /// </summary>
-            /// <param name="outputName">The name of the output parameter.</param>
-            /// <returns>The argument index for the output parameter, or -1 if that parameter is not defined.</returns>
-            public int GetOutputArgumentIndex(string outputName)
-            {
-                for (int i = 0; i != this.outputs.Length; ++i)
-                {
-                    if (this.outputs[i] == outputName)
-                    {
-                        return this.numberOfDefaultParameters + this.inputs.Length + i;
-                    }
-                }
-
-                return -1;
-            }
-
-            #endregion Public Methods
-        }
-
-        private class NameAndType
-        {
-            #region Public Properties
-
-            public string Name { get; set; }
-
-            public string Type { get; set; }
-
-            #endregion Public Properties
-        }
-
-        #endregion Private Classes
-
         #region Protected Methods
 
         protected override void InternalExecute()
@@ -1676,7 +1355,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <remarks>
         /// <para>This is an optional parameter for the <b>Run</b> and <b>Call</b> task actions.</para>
         /// </remarks>
-        public ITaskItem[] Input1 { get; set; }
+        public IEnumerable<ITaskItem> Input1 { get; set; }
 
         /// <summary>
         /// The value for the second input parameter.
@@ -1684,7 +1363,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <remarks>
         /// <para>This is an optional parameter for the <b>Run</b> and <b>Call</b> task actions.</para>
         /// </remarks>
-        public ITaskItem[] Input2 { get; set; }
+        public IEnumerable<ITaskItem> Input2 { get; set; }
 
         /// <summary>
         /// The value for the third input parameter.
@@ -1692,7 +1371,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <remarks>
         /// <para>This is an optional parameter for the <b>Run</b> and <b>Call</b> task actions.</para>
         /// </remarks>
-        public ITaskItem[] Input3 { get; set; }
+        public IEnumerable<ITaskItem> Input3 { get; set; }
 
         /// <summary>
         /// Specifies the inputs for <see cref="Code"/>. Each input has a <see cref="Type"/> and a name.
@@ -1708,7 +1387,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// </para>
         /// </remarks>
         /// <seealso cref="NoDefaultParameters"/>
-        public ITaskItem[] Inputs { get; set; }
+        public IEnumerable<ITaskItem> Inputs { get; set; }
 
         /// <summary>
         /// The value to set.
@@ -1716,7 +1395,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <remarks>
         /// <para>This is a required parameter for the <b>SetInput</b> task action.</para>
         /// </remarks>
-        public ITaskItem[] InputValue { get; set; }
+        public IEnumerable<ITaskItem> InputValue { get; set; }
 
         /// <summary>
         /// The identifier of the method definition.
@@ -1768,7 +1447,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para>This is an output for the <b>Run</b> and <b>Call</b> task actions.</para>
         /// </remarks>
         [Output]
-        public ITaskItem[] Output1 { get; private set; }
+        public IEnumerable<ITaskItem> Output1 { get; private set; }
 
         /// <summary>
         /// The value of the second closure output.
@@ -1777,7 +1456,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para>This is an output for the <b>Run</b> and <b>Call</b> task actions.</para>
         /// </remarks>
         [Output]
-        public ITaskItem[] Output2 { get; private set; }
+        public IEnumerable<ITaskItem> Output2 { get; private set; }
 
         /// <summary>
         /// The value of the third closure output.
@@ -1786,7 +1465,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para>This is an output for the <b>Run</b> and <b>Call</b> task actions.</para>
         /// </remarks>
         [Output]
-        public ITaskItem[] Output3 { get; private set; }
+        public IEnumerable<ITaskItem> Output3 { get; private set; }
 
         /// <summary>
         /// The ID of a closure instance.
@@ -1819,7 +1498,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// exists; otherwise, it is the item's identity. The <see cref="Type"/> of an output is taken from the metadata "Type".
         /// </para>
         /// </remarks>
-        public ITaskItem[] Outputs { get; set; }
+        public IEnumerable<ITaskItem> Outputs { get; set; }
 
         /// <summary>
         /// The value of a closure output.
@@ -1828,7 +1507,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para>This is an output for the <b>GetOutput</b> task action.</para>
         /// </remarks>
         [Output]
-        public ITaskItem[] OutputValue { get; private set; }
+        public IEnumerable<ITaskItem> OutputValue { get; private set; }
 
         /// <summary>
         /// Specifies additional references for <see cref="Code"/>.
@@ -1848,7 +1527,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// </para>
         /// </remarks>
         /// <seealso cref="NoDefaultReferences"/>
-        public ITaskItem[] References { get; set; }
+        public IEnumerable<ITaskItem> References { get; set; }
 
         /// <summary>
         /// Specifies additional "using namespaces" for <see cref="Code"/>. These are namespaces that are brought into the code's scope.
@@ -1861,7 +1540,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// </para>
         /// </remarks>
         /// <seealso cref="NoDefaultUsingNamespaces"/>
-        public ITaskItem[] UsingNamespaces { get; set; }
+        public IEnumerable<ITaskItem> UsingNamespaces { get; set; }
 
         #endregion Public Properties
     }

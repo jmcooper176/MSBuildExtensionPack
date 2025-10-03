@@ -24,6 +24,8 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
 
     using Microsoft.Build.Framework;
 
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Cause;
     using MSBuild.ExtensionPack.Communication.FTP;
 
     /// <summary>
@@ -82,6 +84,7 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Ftp : BaseTask
     {
         #region Private Fields
@@ -376,7 +379,7 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
         /// <summary>
         /// The list of files that needs to be transfered over FTP
         /// </summary>
-        public ITaskItem[] FileNames { get; set; }
+        public IEnumerable<ITaskItem> FileNames { get; set; }
 
         /// <summary>
         /// Sets the Host of the FTP Site.

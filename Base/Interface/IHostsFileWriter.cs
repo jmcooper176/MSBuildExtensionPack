@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer.HostsFile
+namespace MSBuild.ExtensionPack.Base.Interface
 {
     using System.IO;
 
@@ -23,7 +23,7 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     {
         #region Public Methods
 
-        public void Write(string path, Computer.HostsFile.HostsFile.IHostsFile hostsFile)
+        public void Write(string path, IHostsFile hostsFile)
         {
             using StreamWriter sw = new(path);
             hostsFile.Save(sw);

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer.HostsFile
+namespace MSBuild.ExtensionPack.Base.Interface
 {
     using System.IO;
 
@@ -23,7 +23,7 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     {
         #region Private Methods
 
-        private Computer.HostsFile.HostsFile.IHostsFile Read(string path, bool truncate)
+        private IHostsFile Read(string path, bool truncate)
         {
             if (File.Exists(path))
             {
@@ -40,7 +40,7 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     {
         #region Public Methods
 
-        Computer.HostsFile.HostsFile.IHostsFile Read(string path, bool truncate);
+        IHostsFile Read(string path, bool truncate);
 
         #endregion Public Methods
     }

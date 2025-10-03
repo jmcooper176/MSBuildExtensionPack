@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem
+namespace MSBuild.ExtensionPack.FileSystem.Tool
 {
     using System.IO;
 
@@ -23,8 +23,8 @@ namespace MSBuild.ExtensionPack.FileSystem
     using Microsoft.Build.Utilities;
 
     /// <summary>
-    /// This task wraps RoboCopy. Successful non-zero exit codes from Robocopy are set to zero to not break MSBuild. Use the
-    /// ReturnCode property to access the exit code from Robocopy
+    /// This task wraps RoboCopy. Successful non-zero exit codes from RoboCopy are set to zero to not break MSBuild. Use the
+    /// ReturnCode property to access the exit code from RoboCopy
     /// </summary>
     /// <example>
     /// <code lang="xml">

@@ -28,6 +28,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -68,6 +69,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class SystemDrive : BaseTask
     {
         #region Private Fields
@@ -324,7 +326,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// RootDirectory (LocalMachine only)
         /// </summary>
         [Output]
-        public ITaskItem[] Drives
+        public IEnumerable<ITaskItem> Drives
         {
             get => this.drives.ToArray();
             set => this.drives = new List<ITaskItem>(value);
@@ -338,7 +340,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// <summary>
         /// Sets the drives to skip. ITaskItem
         /// </summary>
-        public ITaskItem[] SkipDrives
+        public IEnumerable<ITaskItem> SkipDrives
         {
             get => this.skipDrives.ToArray();
             set => this.skipDrives = new List<ITaskItem>(value);

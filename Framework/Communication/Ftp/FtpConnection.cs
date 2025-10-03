@@ -27,6 +27,8 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     using System.Runtime.InteropServices;
     using System.Text;
 
+    using MSBuild.ExtensionPack.Base.Cause;
+
     /// <summary>
     /// The <c>FtpConnection</c> class provides the ability to connect and perform operations on FTP servers.
     /// </summary>
@@ -35,6 +37,7 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     /// <param name="port">    The port to make the connection on</param>
     /// <param name="userName">The userName used to make the FTP connection</param>
     /// <param name="password">The Password used to make the FTP connection</param>
+    /// <seealso cref="IDisposable"/>
     public class FtpConnection(string host, int port, string userName, string password) : IDisposable
     {
         #region Private Fields
@@ -212,14 +215,9 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         /// <param name="directory">The directory file path.</param>
         public static void SetLocalDirectory(string directory)
         {
-            if (Directory.Exists(directory))
-            {
-                Environment.CurrentDirectory = directory;
-            }
-            else
-            {
-                throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture, "{0} is not a directory!", directory));
-            }
+            Environment.CurrentDirectory = Directory.Exists(directory)
+                ? directory
+                : throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture, "{0} is not a directory!", directory));
         }
 
         /// <summary>
@@ -365,7 +363,7 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         /// Retrieves the list of all directories in the ftp directory currently selected.
         /// </summary>
         /// <returns>Returns the list of diretories present in the current ftp directory.</returns>
-        public FtpDirectoryInfo[] GetDirectories()
+        public IEnumerable<FtpDirectoryInfo> GetDirectories()
         {
             return GetDirectories(GetCurrentDirectory());
         }
@@ -375,7 +373,7 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         /// </summary>
         /// <param name="path">The remote ftp directory path.</param>
         /// <returns>Returns the list of diretories present in the given ftp directory.</returns>
-        public FtpDirectoryInfo[] GetDirectories(string path)
+        public IEnumerable<FtpDirectoryInfo> GetDirectories(string path)
         {
             if (connectionHandle == IntPtr.Zero)
             {
@@ -470,14 +468,11 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         /// Retrieves the list of all files in the ftp directory currently selected
         /// </summary>
         /// <returns>Returns the list of files present in the current ftp directory.</returns>
-        public FtpFileInfo[] GetFiles()
+        public IEnumerable<FtpFileInfo> GetFiles()
         {
-            if (connectionHandle == IntPtr.Zero)
-            {
-                throw new FtpException("The user is not connected to the FTP server. Please connect and try again.");
-            }
-
-            return GetFiles(GetCurrentDirectory());
+            return connectionHandle == IntPtr.Zero
+                ? throw new FtpException("The user is not connected to the FTP server. Please connect and try again.")
+                : GetFiles(GetCurrentDirectory());
         }
 
         /// <summary>
@@ -485,7 +480,7 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         /// </summary>
         /// <param name="mask">The search criteria to return files.</param>
         /// <returns>Returns the list of files present in the current ftp directory.</returns>
-        public FtpFileInfo[] GetFiles(string mask)
+        public IEnumerable<FtpFileInfo> GetFiles(string mask)
         {
             if (connectionHandle == IntPtr.Zero)
             {

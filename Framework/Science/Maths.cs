@@ -146,6 +146,7 @@ namespace MSBuild.ExtensionPack.Science
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Maths : BaseTask
     {
         #region Private Fields

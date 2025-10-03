@@ -79,6 +79,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public sealed class ConfigManager : BaseTask
     {
         #region Private Fields

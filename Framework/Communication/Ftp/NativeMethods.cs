@@ -28,10 +28,16 @@ namespace MSBuild.ExtensionPack.Communication.Extended
     /// </summary>
     [ExcludeFromCodeCoverage]
     [CompilerGeneratedAttribute]
-    internal static class NativeMethods
+    internal static partial class NativeMethods
     {
+        #region Private Fields
+
         private const uint FormatMessageFromSystem = 4096;
         private const uint FormatMessageIgnoreInserts = 512;
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         [System.Runtime.InteropServices.DllImportAttribute("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
         private static extern uint FormatMessage(uint dwFlags, System.IntPtr lpSource, uint dwMessageId, uint dwLanguageId, [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.LPTStr)] System.Text.StringBuilder lpBuffer, uint nSize, System.IntPtr arguments);
@@ -41,6 +47,10 @@ namespace MSBuild.ExtensionPack.Communication.Extended
 
         [System.Runtime.InteropServices.DllImportAttribute("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
         private static extern System.IntPtr LoadLibrary([System.Runtime.InteropServices.InAttribute][System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.LPTStr)] string lpLibFileName);
+
+        #endregion Private Methods
+
+        #region Internal Methods
 
         internal static string TranslateInternetError(uint errorCode)
         {
@@ -64,6 +74,10 @@ namespace MSBuild.ExtensionPack.Communication.Extended
                 FreeLibrary(hModule);
             }
         }
+
+        #endregion Internal Methods
+
+        #region Public Fields
 
         public const int ErrorInternetExtendedError = (InternetErrorBase + 3);
         public const int ErrorNoMoreFiles = 18;
@@ -90,6 +104,10 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         public const int InternetServiceFtp = 1;
         public const int MaxPath = 260;
         public const int NoError = 0;
+
+        #endregion Public Fields
+
+        #region Public Methods
 
         [DllImport("wininet.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int FtpCommand(
@@ -219,6 +237,10 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             [In] int dwFlags,
             [In][Out] int dwContext);
 
+        #endregion Public Methods
+
+        #region Public Structs
+
         [StructLayout(LayoutKind.Sequential)]
         public struct FILETIME
         {
@@ -259,5 +281,7 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
             public char[] alternateFileName;
         }
+
+        #endregion Public Structs
     }
 }

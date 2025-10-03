@@ -19,10 +19,12 @@ namespace MSBuild.ExtensionPack.Computer.Extended
 {
     using System;
     using System.DirectoryServices.AccountManagement;
+    using System.Windows.Forms;
 
     /// <summary>
     /// Gets a user's AD validated password
     /// </summary>
+    /// <seealso cref="Form"/>
     public partial class GetPasswordForm : Form
     {
         #region Private Fields

@@ -29,6 +29,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
     using MSBuild.ExtensionPack.Base.Wmi;
 
     /// <summary>
@@ -84,6 +85,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class FxCop : BaseTask
     {
         #region Private Fields

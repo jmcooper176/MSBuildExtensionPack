@@ -25,6 +25,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -82,6 +83,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class PerformanceCounters : BaseTask
     {
         #region Private Fields
@@ -270,7 +272,7 @@ namespace MSBuild.ExtensionPack.Computer
         /// <summary>
         /// Sets the TaskItem[] that specifies the counters to create as part of the new category.
         /// </summary>
-        public ITaskItem[] CounterList { get; set; }
+        public IEnumerable<ITaskItem> CounterList { get; set; }
 
         /// <summary>
         /// Sets the name of the counter.

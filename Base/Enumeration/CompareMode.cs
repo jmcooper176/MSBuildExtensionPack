@@ -15,22 +15,25 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.CodeQuality
+namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    /// <summary>
+    /// Enumeration of the <see cref="System.Reflection.Assembly"/> comparison modes.
+    /// </summary>
     public enum CompareMode
     {
         /// <summary>
-        /// None
+        /// None. No comparison mode.
         /// </summary>
         None,
 
         /// <summary>
-        /// StrongName
+        /// Comparison via <see cref="System.Reflection.Assembly"/> strong name.
         /// </summary>
         StrongName,
 
         /// <summary>
-        /// StrongNameIgnoringVersion
+        /// Comparison via <see cref="System.Reflection.Assembly"/> similar to <see cref="StrongName"/> but excluding the <see cref="System.Reflection.AssemblyName.Version"/>.
         /// </summary>
         StrongNameIgnoringVersion
     }

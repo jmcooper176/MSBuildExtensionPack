@@ -25,6 +25,8 @@ using System.Security;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
+using MSBuild.ExtensionPack.Base.Logging;
+
 namespace MSBuild.ExtensionPack.Base.Wmi
 {
     /// <summary>

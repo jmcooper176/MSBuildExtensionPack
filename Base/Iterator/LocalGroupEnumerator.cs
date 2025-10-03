@@ -24,7 +24,13 @@ namespace MSBuild.ExtensionPack.Base.Iterator
     [SupportedOSPlatform("Windows")]
     public class LocalGroupEnumerator : IDisposable, IEnumerator<DirectoryEntry>
     {
+        #region Private Fields
+
         private bool disposedValue;
+
+        #endregion Private Fields
+
+        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -44,9 +50,21 @@ namespace MSBuild.ExtensionPack.Base.Iterator
             }
         }
 
+        #endregion Protected Methods
+
+        #region Internal Fields
+
         internal int index = 0;
 
+        #endregion Internal Fields
+
+        #region Internal Properties
+
         internal DirectoryEntry LocalMachine { get; }
+
+        #endregion Internal Properties
+
+        #region Public Constructors
 
         public LocalGroupEnumerator(string? machineName = null)
                     : this(new DirectoryEntry($"WinNT://{machineName ?? Environment.MachineName}"))
@@ -76,6 +94,10 @@ namespace MSBuild.ExtensionPack.Base.Iterator
             Current = LocalGroups[index];
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
         public DirectoryEntry Current { get; private set; }
         public List<DirectoryEntry> LocalGroups { get; }
 
@@ -91,6 +113,10 @@ namespace MSBuild.ExtensionPack.Base.Iterator
                 return Current;
             }
         }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public void Dispose()
         {
@@ -111,5 +137,7 @@ namespace MSBuild.ExtensionPack.Base.Iterator
             index = 0;
             Current = LocalGroups[index];
         }
+
+        #endregion Public Methods
     }
 }

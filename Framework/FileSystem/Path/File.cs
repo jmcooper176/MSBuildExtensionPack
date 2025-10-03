@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem
+namespace MSBuild.ExtensionPack.FileSystem.Path
 {
     using System;
     using System.Collections.Generic;
@@ -29,6 +29,8 @@ namespace MSBuild.ExtensionPack.FileSystem
 
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -110,7 +112,7 @@ namespace MSBuild.ExtensionPack.FileSystem
     ///<!-- Concatenate Files -->
     ///<MSBuild.ExtensionPack.FileSystem.File TaskAction="Concatenate" Files="@(FilesToConcatenate)" TargetPath="c:\concatenatedfile.txt"/>
     ///<!-- Check whether files contain matching content -->
-    ///<MSBuild.ExtensionPack.FileSystem.File TaskAction="CheckContainsContent" Files="@(FilesToCheck)" RegexPattern="Hello">
+    ///<MSBuild.ExtensionPack.FileSystem.File TaskAction="TestFileContentHasMatch" Files="@(FilesToCheck)" RegexPattern="Hello">
     ///<Output TaskParameter="Result" PropertyName="TheResult"/>
     ///</MSBuild.ExtensionPack.FileSystem.File>
     ///<Message Text="$(TheResult)"/>
@@ -175,13 +177,13 @@ namespace MSBuild.ExtensionPack.FileSystem
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class File : BaseTask
     {
         #region Private Fields
 
         private const string AddAttributesTaskAction = "AddAttributes";
         private const string AddSecurityTaskAction = "AddSecurity";
-        private const string CheckContainsContentTaskAction = "CheckContainsContent";
         private const string ConcatenateTaskAction = "Concatenate";
         private const string CountLinesTaskAction = "CountLines";
         private const string CreateTaskAction = "Create";
@@ -194,6 +196,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         private const string RemoveSecurityTaskAction = "RemoveSecurity";
         private const string ReplaceTaskAction = "Replace";
         private const string SetAttributesTaskAction = "SetAttributes";
+        private const string TestFileContentHasMatchTaskAction = "TestFileContentHasMatch";
         private const string WriteLinesTaskAction = "WriteLines";
 
         private AccessControlType accessType;
@@ -209,40 +212,46 @@ namespace MSBuild.ExtensionPack.FileSystem
 
         #region Private Methods
 
+        /// <summary>
+        /// Sets the attributes.
+        /// </summary>
+        /// <param name="attributes">The attributes.</param>
+        /// <returns></returns>
         private static FileAttributes SetAttributes(string[] attributes)
         {
             FileAttributes flags = new FileAttributes();
-            if (Array.IndexOf(attributes, "Archive") >= 0)
+
+            if (attributes.Any(a => string.Equals("Archive", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.Archive;
             }
 
-            if (Array.IndexOf(attributes, "Compressed") >= 0)
+            if (attributes.Any(a => string.Equals("Compressed", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.Compressed;
             }
 
-            if (Array.IndexOf(attributes, "Encrypted") >= 0)
+            if (attributes.Any(a => string.Equals("Encrypted", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.Encrypted;
             }
 
-            if (Array.IndexOf(attributes, "Hidden") >= 0)
+            if (attributes.Any(a => string.Equals("Archive", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.Hidden;
             }
 
-            if (Array.IndexOf(attributes, "Normal") >= 0)
+            if (attributes.Any(a => string.Equals("Normal", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.Normal;
             }
 
-            if (Array.IndexOf(attributes, "ReadOnly") >= 0)
+            if (attributes.Any(a => string.Equals("ReadOnly", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.ReadOnly;
             }
 
-            if (Array.IndexOf(attributes, "System") >= 0)
+            if (attributes.Any(a => string.Equals("System", a, StringComparison.OrdinalIgnoreCase)))
             {
                 flags |= FileAttributes.System;
             }
@@ -250,7 +259,10 @@ namespace MSBuild.ExtensionPack.FileSystem
             return flags;
         }
 
-        private void CheckContainsContent()
+        /// <summary>
+        /// Checks whether the file content contains one or more matches to a <see cref="Regex"/>.
+        /// </summary>
+        private void AnyContentHasMatch()
         {
             if (this.Files is null)
             {
@@ -466,14 +478,10 @@ namespace MSBuild.ExtensionPack.FileSystem
             }
 
             this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting Checksum for file: {0}", this.Path));
-            using (FileStream fs = System.IO.File.OpenRead(this.Path.GetMetadata("FullPath")))
-            {
-                using (MD5CryptoServiceProvider csp = new MD5CryptoServiceProvider())
-                {
-                    byte[] hash = csp.ComputeHash(fs);
-                    this.Checksum = BitConverter.ToString(hash).Replace("-", string.Empty).ToUpperInvariant();
-                }
-            }
+            using FileStream fs = System.IO.File.OpenRead(this.Path.GetMetadata("FullPath"));
+            using MD5 csp = MD5.Create();
+            byte[] hash = csp.ComputeHash(fs);
+            this.Checksum = Convert.ToHexString(hash).ToUpperInvariant();
         }
 
         private void Move()
@@ -1036,8 +1044,8 @@ namespace MSBuild.ExtensionPack.FileSystem
                     this.FilterByContent();
                     break;
 
-                case CheckContainsContentTaskAction:
-                    this.CheckContainsContent();
+                case TestFileContentHasMatchTaskAction:
+                    this.AnyContentHasMatch();
                     break;
 
                 case GetChecksumTaskAction:
@@ -1096,7 +1104,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         public string AccessType
         {
             get => this.accessType.ToString();
-            set => this.accessType = (AccessControlType)Enum.Parse(typeof(AccessControlType), value);
+            set => this.accessType = Enum.Parse<AccessControlType>(value);
         }
 
         /// <summary>
@@ -1162,7 +1170,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// An ItemList of files to process. If calling SetAttributes, RemoveAttributes or AddAttributes, include the attributes in
         /// an Attributes metadata tag, separated by a semicolon.
         /// </summary>
-        public ITaskItem[] Files { get; set; }
+        public IList<ITaskItem> Files { get; set; }
 
         /// <summary>
         /// Gets the number of included files
@@ -1184,7 +1192,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// Sets the Lines to use. For WriteLines this is interpreted as plain text. For RemoveLines this is interpreted as a
         /// regular expression
         /// </summary>
-        public ITaskItem[] Lines { get; set; }
+        public IEnumerable<ITaskItem> Lines { get; set; }
 
         /// <summary>
         /// Used with AvoidRegex. Set to true to match the whole line. The default is false i.e. a line.Contains operation is used.
@@ -1219,7 +1227,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// None|IgnoreCase|Multiline|ExplicitCapture|Compiled|Singleline|IgnorePatternWhitespace|RightToLeft|RightToLeft|ECMAScript|CultureInvariant
         /// Default is RegexOptions.Compiled
         /// </summary>
-        public string RegexOptionList
+        public string? RegexOptionList
         {
             get => null;
 
@@ -1336,7 +1344,7 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// </code>
         /// </remarks>
         /// </summary>
-        public IEnumerable<ITaskItem> Users { get; set; }
+        public IList<ITaskItem>? Users { get; set; }
 
         #endregion Public Properties
     }

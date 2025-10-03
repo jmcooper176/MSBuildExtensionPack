@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack.Communication
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -57,6 +58,7 @@ namespace MSBuild.ExtensionPack.Communication
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseToolTask"/>
     public class Email : BaseToolTask
     {
         #region Private Fields
@@ -142,7 +144,7 @@ namespace MSBuild.ExtensionPack.Communication
         /// <summary>
         /// An Item Collection of full paths of files to attach to the email.
         /// </summary>
-        public ITaskItem[] Attachments { get; set; }
+        public IEnumerable<ITaskItem> Attachments { get; set; }
 
         /// <summary>
         /// The body of the email.
@@ -169,7 +171,7 @@ namespace MSBuild.ExtensionPack.Communication
         /// Sets the Item Colleciton of email address to send the email to.
         /// </summary>
         [Required]
-        public ITaskItem[] MailTo { get; set; }
+        public IEnumerable<ITaskItem> MailTo { get; set; }
 
         public string Password { get; set; }
 

@@ -82,6 +82,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="Task"/>
     public class XProduct : Task
     {
         #region Private Methods
@@ -140,52 +141,52 @@ namespace MSBuild.ExtensionPack.Framework
         /// <summary>
         /// ItemGroup1
         /// </summary>
-        public ITaskItem[] Group1 { get; set; }
+        public IEnumerable<ITaskItem> Group1 { get; set; }
 
         /// <summary>
         /// ItemGroup10
         /// </summary>
-        public ITaskItem[] Group10 { get; set; }
+        public IEnumerable<ITaskItem> Group10 { get; set; }
 
         /// <summary>
         /// ItemGroup2
         /// </summary>
-        public ITaskItem[] Group2 { get; set; }
+        public IEnumerable<ITaskItem> Group2 { get; set; }
 
         /// <summary>
         /// ItemGroup3
         /// </summary>
-        public ITaskItem[] Group3 { get; set; }
+        public IEnumerable<ITaskItem> Group3 { get; set; }
 
         /// <summary>
         /// ItemGroup4
         /// </summary>
-        public ITaskItem[] Group4 { get; set; }
+        public IEnumerable<ITaskItem> Group4 { get; set; }
 
         /// <summary>
         /// ItemGroup5
         /// </summary>
-        public ITaskItem[] Group5 { get; set; }
+        public IEnumerable<ITaskItem> Group5 { get; set; }
 
         /// <summary>
         /// ItemGroup6
         /// </summary>
-        public ITaskItem[] Group6 { get; set; }
+        public IEnumerable<ITaskItem> Group6 { get; set; }
 
         /// <summary>
         /// ItemGroup7
         /// </summary>
-        public ITaskItem[] Group7 { get; set; }
+        public IEnumerable<ITaskItem> Group7 { get; set; }
 
         /// <summary>
         /// ItemGroup8
         /// </summary>
-        public ITaskItem[] Group8 { get; set; }
+        public IEnumerable<ITaskItem> Group8 { get; set; }
 
         /// <summary>
         /// ItemGroup9
         /// </summary>
-        public ITaskItem[] Group9 { get; set; }
+        public IEnumerable<ITaskItem> Group9 { get; set; }
 
         /// <summary>
         /// Specifies the format to use for the new ItemGroup names
@@ -196,7 +197,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// The cross-product result output.
         /// </summary>
         [Output]
-        public ITaskItem[] Result { get; set; }
+        public IEnumerable<ITaskItem> Result { get; set; }
 
         #endregion Public Properties
 

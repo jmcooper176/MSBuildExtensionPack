@@ -15,41 +15,58 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace MSBuild.ExtensionPack.Base.Enumeration
 {
-    /// <summary>
-    /// AutoArg enumeration
-    /// </summary>
-    public enum AutoArg
+    public enum ReturnCode : uint
     {
         /// <summary>
-        /// AcceptMerge
+        /// Success
         /// </summary>
-        AcceptMerge,
+        Success = 0,
 
         /// <summary>
-        /// AcceptTheirs
+        /// AccessDenied
         /// </summary>
-        AcceptTheirs,
+        AccessDenied = 2,
 
         /// <summary>
-        /// AcceptYours
+        /// UnknownFailure
         /// </summary>
-        AcceptYours,
+        UnknownFailure = 8,
 
         /// <summary>
-        /// OverwriteLocal
+        /// InvalidName
         /// </summary>
-        OverwriteLocal,
+        InvalidName = 9,
 
         /// <summary>
-        /// DeleteConflict
+        /// InvalidLevel
         /// </summary>
-        DeleteConflict,
+        InvalidLevel = 10,
 
         /// <summary>
-        /// AcceptYoursRenameTheirs
+        /// InvalidParameter
         /// </summary>
-        AcceptYoursRenameTheirs
+        InvalidParameter = 21,
+
+        /// <summary>
+        /// ShareAlreadyExists
+        /// </summary>
+        ShareAlreadyExists = 22,
+
+        /// <summary>
+        /// RedirectedPath
+        /// </summary>
+        RedirectedPath = 23,
+
+        /// <summary>
+        /// UnknownDeviceOrDirectory
+        /// </summary>
+        UnknownDeviceOrDirectory = 24,
+
+        /// <summary>
+        /// NetNameNotFound
+        /// </summary>
+        NetNameNotFound = 25
     }
 }

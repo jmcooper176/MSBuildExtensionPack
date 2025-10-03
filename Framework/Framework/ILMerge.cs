@@ -50,6 +50,7 @@ namespace MSBuild.ExtensionPack.Framework
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="ToolTask"/>
     public class ILMerge : ToolTask
     {
         #region Protected Properties
@@ -214,7 +215,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Default: no duplicates of public types allowed.
         /// </summary>
-        public ITaskItem[] AllowDuplicateTypes { get; set; }
+        public IEnumerable<ITaskItem> AllowDuplicateTypes { get; set; }
 
         /// <summary>
         /// If set, any assembly-level attributes names that have the same <see cref="Type"/> are copied over into the target
@@ -366,7 +367,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// Sets the input assemblies to merge.
         /// </summary>
         [Required]
-        public ITaskItem[] InputAssemblies { get; set; }
+        public IEnumerable<ITaskItem> InputAssemblies { get; set; }
 
         /// <summary>
         /// This controls whether types in assemblies other than the primary assembly have their visibility modified. When it is
@@ -442,7 +443,7 @@ namespace MSBuild.ExtensionPack.Framework
         /// <para/>
         /// Command line option: /lib:directory
         /// </summary>
-        public ITaskItem[] SearchDirectories { get; set; }
+        public IEnumerable<ITaskItem> SearchDirectories { get; set; }
 
         /// <summary>
         /// Once merging is complete, this property is true if and only if the primary assembly had a strong name, but the target

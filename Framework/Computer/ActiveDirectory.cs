@@ -32,6 +32,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
     using MSBuild.ExtensionPack.Computer.Extended;
 
     /// <summary>
@@ -149,6 +150,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class ActiveDirectory : BaseTask
     {
         #region Private Fields

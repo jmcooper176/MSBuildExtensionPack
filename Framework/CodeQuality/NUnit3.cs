@@ -87,6 +87,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="ToolTask"/>
     public class NUnit3 : ToolTask
     {
         #region Private Methods
@@ -256,7 +257,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
         /// </summary>
         /// <value>The assemblies.</value>
         [Required]
-        public ITaskItem[] Assemblies { get; set; }
+        public IEnumerable<ITaskItem> Assemblies { get; set; }
 
         /// <summary>
         /// Sets the Project configuration (e.g.: Debug) to load

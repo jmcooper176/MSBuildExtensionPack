@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack.Computer
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -66,6 +67,7 @@ namespace MSBuild.ExtensionPack.Computer
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask" />
     public class EventSource : BaseTask
     {
         #region Private Fields

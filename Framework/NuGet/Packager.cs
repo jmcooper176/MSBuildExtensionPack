@@ -74,6 +74,7 @@ namespace MSBuild.ExtensionPack.NuGet
     ///]]>
     /// </code>
     /// </example>
+    /// <seealso cref="BaseTask"/>
     public class Packager : BaseTask
     {
         #region Private Fields
