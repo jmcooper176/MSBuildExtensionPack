@@ -24,14 +24,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
 
     public static class HResultExtension
     {
-        #region Public Fields
-
-        public const int SEVERITY_BIT = 0x0000_0001;
-        public const ulong SEVERITY_ERROR = 1UL;
-        public const uint SEVERITY_MASK = 0x8000_0000;
-
-        #endregion Public Fields
-
         #region Public Methods
 
         public static bool Failed(this int hr)
@@ -41,12 +33,12 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
 
         public static int GetSeverity(this int hr)
         {
-            return hr >> 31 & SEVERITY_BIT;
+            return hr >> 31 & HResultMask.SEVERITY_BIT;
         }
 
         public static bool IsError(this int hr)
         {
-            return (ulong)hr >> 31 == SEVERITY_ERROR;
+            return (ulong)hr >> 31 == HResultMask.SEVERITY_ERROR;
         }
 
         public static HResult MakeHResult(ulong severity, ulong facilityCode, WinError code)
@@ -56,12 +48,9 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             ArgumentOutOfRangeException.ThrowIfLessThan(code.ToWinErrorCode(), WinError.ERROR_SUCCESS.ToWinErrorCode(), nameof(code));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(code.ToWinErrorCode(), WinError.ERROR_UNKNOWN_ERROR.ToWinErrorCode(), nameof(code));
 
-            if (severity != 0UL && severity != 1UL)
-            {
-                throw new ArgumentException($"Parameter {nameof(severity)} with value '{severity}' is invalid.", nameof(severity));
-            }
-
-            return (HResult)Enum.ToObject(typeof(HResult), ToHResultCode(severity, facilityCode, code));
+            return severity != 0UL && severity != 1UL
+                ? throw new ArgumentException($"Parameter {nameof(severity)} with value '{severity}' is invalid.", nameof(severity))
+                : (HResult)Enum.ToObject(typeof(HResult), ToHResultCode(severity, facilityCode, code));
         }
 
         public static bool Succeeded(this int hr)
@@ -76,12 +65,9 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             ArgumentOutOfRangeException.ThrowIfLessThan(code.ToWinErrorCode(), WinError.ERROR_SUCCESS.ToWinErrorCode(), nameof(code));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(code.ToWinErrorCode(), WinError.ERROR_UNKNOWN_ERROR.ToWinErrorCode(), nameof(code));
 
-            if (severity != 0UL && severity != 1UL)
-            {
-                throw new ArgumentException($"Parameter {nameof(severity)} with value '{severity}' is invalid.", nameof(severity));
-            }
-
-            return Convert.ToUInt32(severity << 31 | facilityCode << 16 | code.ToWinErrorCode());
+            return severity != 0UL && severity != 1UL
+                ? throw new ArgumentException($"Parameter {nameof(severity)} with value '{severity}' is invalid.", nameof(severity))
+                : Convert.ToUInt32(severity << 31 | facilityCode << 16 | code.ToWinErrorCode());
         }
 
         /// <summary>
@@ -94,17 +80,44 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         {
             ArgumentOutOfRangeException.ThrowIfLessThan(code.ToWinErrorCode(), WinError.ERROR_SUCCESS.ToWinErrorCode(), nameof(code));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(code.ToWinErrorCode(), WinError.ERROR_UNKNOWN_ERROR.ToWinErrorCode(), nameof(code));
-            ArgumentOutOfRangeException.ThrowIfLessThan(facilityCode, FacilityCode.FACILITY_NULL, nameof(facilityCode));
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(facilityCode, FacilityCode.FACILITY_OPC, nameof(facilityCode));
+            ArgumentOutOfRangeException.ThrowIfLessThan(facilityCode, FacilityCode.FACILITY_NULL.ToInt32(), nameof(facilityCode));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(facilityCode, FacilityCode.FACILITY_OPC.ToInt32(), nameof(facilityCode));
 
-            return Convert.ToInt32(code <= WinError.ERROR_SUCCESS ? code.ToWinErrorCode() : code.ToWinErrorCode() | (uint)facilityCode << 16 | SEVERITY_MASK);
+            return Convert.ToInt32(code <= WinError.ERROR_SUCCESS ? code.ToWinErrorCode() : code.ToWinErrorCode() | (uint)facilityCode << 16 | HResultMask.SEVERITY_MASK);
         }
 
         public static int ToHResultCode(this int ntStatus)
         {
-            return ntStatus | FacilityCode.FACILITY_NT_BIT;
+            return ntStatus | FacilityCodeMask.FACILITY_NT_BIT;
         }
 
         #endregion Public Methods
+    }
+
+    public static class HResultMask
+    {
+        #region Public Fields
+
+        /// <summary>
+        /// Mask to isolate the Windows error code or status code from an HRESULT value.
+        /// </summary>
+        public const int HRESULT_MASK = 0x0000_1FFF;
+
+        /// <summary>
+        /// <see cref="int"/> bit value in the HRESULT that indicates whether the value represents information, warning, or error.
+        /// </summary>
+        public const int SEVERITY_BIT = 1;
+
+        /// <summary>
+        /// <see cref="ulong"/> bit value in the HRESULT that indicates whether the value represents information, warning, or error.
+        /// </summary>
+        public const ulong SEVERITY_ERROR = 1UL;
+
+        /// <summary>
+        /// Mask to isolate the severity bit from an HRESULT value.
+        /// </summary>
+        public const uint SEVERITY_MASK = 0x8000_0000;
+
+        #endregion Public Fields
     }
 }

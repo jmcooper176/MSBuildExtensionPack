@@ -287,26 +287,15 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// The source of the error code is the open connectivity (OPC) service.
         /// </summary>
         FACILITY_OPC = 81,
-
-        /// <summary>
-        /// Mask to isolate the Windows error code or status code from an HRESULT value.
-        /// </summary>
-        HRESULT_MASK = 0x0000_1FFF,
-
-        /// <summary>
-        /// Mask to remove the facility code and facility Windows NT Bit from an HRESULT value.
-        /// </summary>
-        FACILITY_MASK = 0x0000_FFFF,
-
-        /// <summary>
-        /// Mask to isolate the Windows NT Bit from an HRESULT value.
-        /// </summary>
-        FACILITY_NT_BIT = 0x1000_0000,
     }
 
     public static class WindowsFacilityCodeExtension
     {
         #region Public Methods
+
+        public static bool Equals(int left, FacilityCode right) => left == right.ToInt32();
+
+        public static bool Equals(FacilityCode left, int right) => Equals(right, left);
 
         /// <summary>
         /// Extension method to determine whether the <see cref="DisplayAttribute.AutoGenerateField"/> is set for the <see
@@ -403,16 +392,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             return CustomAttribute.GetCustomAttribute<DisplayAttribute, FacilityCode>(value, inherit);
         }
 
-        public static int GetFacilityCodeFromHResult(this int hr)
-        {
-            return hr >> 16 & (int)EnumExtension.GetValueAsUnderlyingType(FacilityCode.HRESULT_MASK);
-        }
-
-        public static int GetFacilityCodeFromStatusCode(this int code)
-        {
-            return code.GetFacilityCodeFromHResult();
-        }
-
         /// <summary>
         /// Extension method to recover the group name string from the <see cref="DisplayAttribute"/> on an <see
         /// cref="FacilityCode"/> field.
@@ -485,74 +464,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             return value.GetDisplayAttribute(inherit)?.ResourceType;
         }
 
-        public static bool IsHResultFromFacilityCode(this int hr, FacilityCode facilityCode)
-        {
-            return hr.GetFacilityCodeFromHResult() == (int)facilityCode;
-        }
-
-        public static bool IsHResultFromFacilityCode(this int hr, int facilityCode)
-        {
-            return hr.GetFacilityCodeFromHResult() == facilityCode;
-        }
-
-        public static bool IsHResultFromFacilityCode(this int hr, string facilityCodeName)
-        {
-            if (string.IsNullOrWhiteSpace(facilityCodeName))
-            {
-                return false;
-            }
-            if (!Enum.TryParse<FacilityCode>(facilityCodeName, true, out var facilityCode))
-            {
-                return false;
-            }
-            return hr.GetFacilityCodeFromHResult() == (int)facilityCode;
-        }
-
-        public static bool IsHResultFromFacilityCode(this int hr, FacilityCode? facilityCode)
-        {
-            if (facilityCode == null)
-            {
-                return false;
-            }
-            return hr.GetFacilityCodeFromHResult() == (int)facilityCode;
-        }
-
-        public static bool IsHResultFromFacilityCode(this int hr, Enum? facilityCode)
-        {
-            if (facilityCode == null)
-            {
-                return false;
-            }
-            if (facilityCode.GetType() != typeof(FacilityCode))
-            {
-                return false;
-            }
-            return hr.GetFacilityCodeFromHResult() == Convert.ToInt32(facilityCode);
-        }
-
-        public static bool IsStatusCodeFromFacilityCode(this int code, int facilityCode)
-        {
-            return code.GetFacilityCodeFromHResult() == facilityCode;
-        }
-
-        public static bool IsStatusCodeFromFacilityCode(this int code, string facilityCodeName)
-        {
-            if (string.IsNullOrWhiteSpace(facilityCodeName))
-            {
-                return false;
-            }
-            if (!Enum.TryParse<FacilityCode>(facilityCodeName, true, out var facilityCode))
-            {
-                return false;
-            }
-            return code.GetFacilityCodeFromHResult() == (int)facilityCode;
-        }
-
-        public static bool IsStatusCodeFromFacilityCode(this int code, FacilityCode facilityCode)
-        {
-            return code.GetFacilityCodeFromHResult() == facilityCode.ToInt32();
-        }
-
         /// <summary>
         /// Extension method to recover the short name string from the <see cref="DisplayAttribute"/> on an <see
         /// cref="FacilityCode"/> field.
@@ -563,24 +474,90 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// be considered.
         /// </param>
         /// <returns>A <see cref="string"/> or <see langref="null"/> representing the short name of the <see cref="DisplayAttribute"/>.</returns>
-        public static string? ShortName(this FacilityCode value, bool inherit = false)
+        public static string? GetShortName(this FacilityCode value, bool inherit = false)
         {
             return value.GetDisplayAttribute(inherit)?.ShortName;
         }
 
+        /// <summary>
+        /// Determines whether the provided <c>HResult</c> contains the specified facility code.
+        /// </summary>
+        /// <param name="hr">          Specifies the <c>HResult</c> to inspect.</param>
+        /// <param name="facilityCode">Specifies the <see cref="FacilityCode"/> to search for in <paramref name="hr"/>.</param>
+        /// <returns><c>true</c><paramref name="hr"/> contains <paramref name="facilityCode"/>; otherwise, <c>false</c>.</returns>
+        public static bool IsHResultFromFacilityCode(this int hr, FacilityCode facilityCode)
+        {
+            return Equals(hr.ParseFacilityCodeFromHResult(), facilityCode);
+        }
+
+        /// <summary>
+        /// Determines whether the provided <c>HResult</c> contains the specified facility code.
+        /// </summary>
+        /// <param name="hr">          Specifies the <c>HResult</c> to inspect.</param>
+        /// <param name="facilityCode">Specifies the facility code to search for in <paramref name="hr"/>.</param>
+        /// <returns><c>true</c><paramref name="hr"/> contains <paramref name="facilityCode"/>; otherwise, <c>false</c>.</returns>
+        public static bool IsHResultFromFacilityCode(this int hr, int facilityCode)
+        {
+            return hr.ParseFacilityCodeFromHResult() == facilityCode;
+        }
+
+        /// <summary>
+        /// Determines whether the provided <c>HResult</c> contains the specified facility code.
+        /// </summary>
+        /// <param name="hr">              Specifies the <c>HResult</c> to inspect.</param>
+        /// <param name="facilityCodeName">Specifies the facility code name to search for in <paramref name="hr"/>.</param>
+        /// <returns><c>true</c><paramref name="hr"/> contains <paramref name="facilityCodeName"/>; otherwise, <c>false</c>.</returns>
+        public static bool IsHResultFromFacilityCode(this int hr, string facilityCodeName)
+        {
+            return !string.IsNullOrWhiteSpace(facilityCodeName)
+                && (Enum.TryParse<FacilityCode>(facilityCodeName, true, out var facilityCode)
+                && Equals(hr.ParseFacilityCodeFromHResult(), facilityCode));
+        }
+
+        public static bool IsStatusCodeFromFacilityCode(this int code, int facilityCode)
+        {
+            return code.ParseFacilityCodeFromHResult() == facilityCode;
+        }
+
+        public static bool IsStatusCodeFromFacilityCode(this int code, string facilityCodeName)
+        {
+            return !string.IsNullOrWhiteSpace(facilityCodeName)
+                && (Enum.TryParse<FacilityCode>(facilityCodeName, true, out var facilityCode)
+                && Equals(code.ParseFacilityCodeFromHResult(), facilityCode));
+        }
+
+        public static bool IsStatusCodeFromFacilityCode(this int code, FacilityCode facilityCode)
+        {
+            return Equals(code.ParseFacilityCodeFromHResult(), facilityCode);
+        }
+
+        public static bool NotEquals(int left, FacilityCode right) => left != right.ToInt32();
+
+        public static bool NotEquals(FacilityCode left, int right) => NotEquals(right, left);
+
+        public static int ParseFacilityCodeFromHResult(this int hr)
+        {
+            return hr >> 16 & HResultMask.HRESULT_MASK;
+        }
+
+        public static int ParseFacilityCodeFromStatusCode(this int code)
+        {
+            return code.ParseFacilityCodeFromHResult();
+        }
+
         public static FacilityCode ToFacilityCode(this int hr)
         {
-            return (FacilityCode)(hr.GetFacilityCodeFromHResult());
+            return (FacilityCode)Enum.ToObject(typeof(FacilityCode), hr.ParseFacilityCodeFromHResult());
         }
 
         public static FacilityCode ToFacilityCodeFromStatusCode(this int code)
         {
-            return (FacilityCode)(code.GetFacilityCodeFromHResult());
+            return (FacilityCode)(code.ParseFacilityCodeFromHResult());
         }
 
         public static int ToHResult(this FacilityCode facilityCode, int code)
         {
-            return (int)facilityCode << 16 | (code & FacilityCode.HRESULT_MASK.ToInt32());
+            return (int)facilityCode << 16 | (code & HResultMask.HRESULT_MASK);
         }
 
         public static int ToInt32(this FacilityCode facilityCode) => (int)EnumExtension.ToUnderlyingType<FacilityCode, int>(facilityCode);
@@ -591,5 +568,22 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         }
 
         #endregion Public Methods
+    }
+
+    public class FacilityCodeMask
+    {
+        #region Public Fields
+
+        /// <summary>
+        /// Mask to remove the facility code and facility Windows NT Bit from an HRESULT value.
+        /// </summary>
+        public const int FACILITY_MASK = 0x0000_FFFF;
+
+        /// <summary>
+        /// Mask to isolate the Windows NT Bit from an HRESULT value.
+        /// </summary>
+        public const int FACILITY_NT_BIT = 0x1000_0000;
+
+        #endregion Public Fields
     }
 }

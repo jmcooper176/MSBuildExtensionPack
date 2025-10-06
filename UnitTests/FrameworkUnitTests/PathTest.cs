@@ -17,6 +17,8 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Framework.Tests
 {
+    using MSBuild.ExtensionPack;
+
     [TestClass]
     public class PathTest
     {
@@ -43,7 +45,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_ChangeExtension()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\myfile.myex";
             target.Extension = "log";
             target.BuildEngine = new MockBuildEngine();
@@ -60,7 +62,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_Combine()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\myfile";
             target.Filepath2 = @"log.txt";
             target.BuildEngine = new MockBuildEngine();
@@ -77,7 +79,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetDirectoryName()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\mydir\myfile.txt";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetDirectoryName";
@@ -93,7 +95,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetExtension()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\myfile.myex";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetExtension";
@@ -109,7 +111,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetFileName()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\myfile.myex";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetFileName";
@@ -125,7 +127,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetFileNameWithoutExtension()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\myfile.myex";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetFileNameWithoutExtension";
@@ -141,7 +143,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetFullPath()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\myfile.myex";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetFullPath";
@@ -157,7 +159,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetPathRoot()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\mypath\mypath2\myfile.myex";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetPathRoot";
@@ -173,7 +175,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_GetTempPath()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "GetTempPath";
 
@@ -188,7 +190,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_HasExtensionFalse()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\mypath\mypath2\myfile";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "HasExtension";
@@ -204,7 +206,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_HasExtensionTrue()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"C:\mypath\mypath2\myfile.myex";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "HasExtension";
@@ -220,7 +222,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_InvalidTaskAction()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "NotValid";
 
@@ -235,7 +237,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_IsPathRootedFalse()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"..\myfile.txt";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "IsPathRooted";
@@ -251,7 +253,7 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void Path_IsPathRootedTrue()
         {
             // arrange
-            MSBuild.ExtensionPack.Framework.Path target = new MSBuild.ExtensionPack.Framework.Path();
+            Path target = new MSBuild.ExtensionPack.Framework.Path();
             target.Filepath = @"c:\myfile.txt";
             target.BuildEngine = new MockBuildEngine();
             target.TaskAction = "IsPathRooted";
