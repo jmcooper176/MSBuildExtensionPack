@@ -582,7 +582,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// Mask to isolate the Windows NT Bit from an HRESULT value.
         /// </summary>
-        public const int FACILITY_NT_BIT = 0x1000_0000;
+        public const int FACILITY_NT_BIT = 0x10_00_00_00;
 
         #endregion Public Fields
     }

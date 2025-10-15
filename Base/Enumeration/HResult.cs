@@ -17,9 +17,5861 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
-    public enum HResult : uint
+    using Microsoft.VisualStudio;
+
+    /// <summary>
+    /// Enumeration of <c>HRESULT</c> values.
+    /// </summary>
+    public enum HResult : int
     {
-        E_OUTOFMEMORY,
+        /// <summary>
+        /// FORMATETC not supported
+        /// </summary>
+        CACHE_S_FIRST = 0x00040170,
+
+        /// <summary>
+        /// FORMATETC not supported
+        /// </summary>
+        CACHE_S_FORMATETC_NOTSUPPORTED = 0x00040170,
+
+        /// <summary>
+        /// Same cache
+        /// </summary>
+        CACHE_S_SAMECACHE = 0x00040171,
+
+        /// <summary>
+        /// Some cache(s) not updated
+        /// </summary>
+        CACHE_S_SOMECACHES_NOTUPDATED = 0x00040172,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CACHE_S_LAST = 0x0004017F,
+
+        /// <summary>
+        /// CATID does not exist
+        /// </summary>
+        CAT_E_FIRST = (int)(0x80040160 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// CATID does not exist
+        /// </summary>
+        CAT_E_CATIDNOEXIST = (int)(0x80040160 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Description not found
+        /// </summary>
+        CAT_E_LAST = (int)(0x80040161 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Description not found
+        /// </summary>
+        CAT_E_NODESCRIPTION = (int)(0x80040161 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A required certificate is not within its validity period when verifying against the current system clock or the
+        /// timestamp in the signed file.
+        /// </summary>
+        CERT_E_EXPIRED = (int)(0x800B0101 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The validity periods of the certification chain do not nest correctly.
+        /// </summary>
+        CERT_E_VALIDITYPERIODNESTING = (int)(0x800B0102 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate that can only be used as an end-entity is being used as a CA or visa versa.
+        /// </summary>
+        CERT_E_ROLE = (int)(0x800B0103 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A path length constraint in the certification chain has been violated.
+        /// </summary>
+        CERT_E_PATHLENCONST = (int)(0x800B0104 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate contains an unknown extension that is marked 'critical'.
+        /// </summary>
+        CERT_E_CRITICAL = (int)(0x800B0105 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate being used for a purpose other than the ones specified by its CA.
+        /// </summary>
+        CERT_E_PURPOSE = (int)(0x800B0106 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A parent of a given certificate in fact did not issue that child certificate.
+        /// </summary>
+        CERT_E_ISSUERCHAINING = (int)(0x800B0107 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate is missing or has an empty value for an important field, such as a subject or issuer name.
+        /// </summary>
+        CERT_E_MALFORMED = (int)(0x800B0108 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate chain processed, but terminated in a root certificate which is not trusted by the trust provider.
+        /// </summary>
+        CERT_E_UNTRUSTEDROOT = (int)(0x800B0109 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An internal certificate chaining error has occurred.
+        /// </summary>
+        CERT_E_CHAINING = (int)(0x800B010A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Thread local storage failure
+        /// </summary>
+        CO_E_INIT_TLS = (int)(0x80004006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Get shared memory allocator failure
+        /// </summary>
+        CO_E_INIT_SHARED_ALLOCATOR = (int)(0x80004007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Get memory allocator failure
+        /// </summary>
+        CO_E_INIT_MEMORY_ALLOCATOR = (int)(0x80004008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to initialize class cache
+        /// </summary>
+        CO_E_INIT_CLASS_CACHE = (int)(0x80004009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to initialize RPC services
+        /// </summary>
+        CO_E_INIT_RPC_CHANNEL = (int)(0x8000400A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot set thread local storage channel control
+        /// </summary>
+        CO_E_INIT_TLS_SET_CHANNEL_CONTROL = (int)(0x8000400B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not allocate thread local storage channel control
+        /// </summary>
+        CO_E_INIT_TLS_CHANNEL_CONTROL = (int)(0x8000400C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The user supplied memory allocator is unacceptable
+        /// </summary>
+        CO_E_INIT_UNACCEPTED_USER_ALLOCATOR = (int)(0x8000400D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The OLE service mutex already exists
+        /// </summary>
+        CO_E_INIT_SCM_MUTEX_EXISTS = (int)(0x8000400E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The OLE service file mapping already exists
+        /// </summary>
+        CO_E_INIT_SCM_FILE_MAPPING_EXISTS = (int)(0x8000400F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to map view of file for OLE service
+        /// </summary>
+        CO_E_INIT_SCM_MAP_VIEW_OF_FILE = (int)(0x80004010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Failure attempting to launch OLE service
+        /// </summary>
+        CO_E_INIT_SCM_EXEC_FAILURE = (int)(0x80004011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There was an attempt to call CoInitialize a second time while single threaded
+        /// </summary>
+        CO_E_INIT_ONLY_SINGLE_THREADED = (int)(0x80004012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A Remote activation was necessary but was not allowed
+        /// </summary>
+        CO_E_CANT_REMOTE = (int)(0x80004013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A Remote activation was necessary but the server name provided was invalid
+        /// </summary>
+        CO_E_BAD_SERVER_NAME = (int)(0x80004014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The class is configured to run as a security id different from the caller
+        /// </summary>
+        CO_E_WRONG_SERVER_IDENTITY = (int)(0x80004015 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Use of Ole1 services requiring DDE windows is disabled
+        /// </summary>
+        CO_E_OLE1DDE_DISABLED = (int)(0x80004016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary> A RunAs specification must be <domain name>\<user name> or simply <user name> </summary>
+        CO_E_RUNAS_SYNTAX = (int)(0x80004017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server process could not be started. The pathname may be incorrect.
+        /// </summary>
+        CO_E_CREATEPROCESS_FAILURE = (int)(0x80004018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server process could not be started as the configured identity. The pathname may be incorrect or unavailable.
+        /// </summary>
+        CO_E_RUNAS_CREATEPROCESS_FAILURE = (int)(0x80004019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server process could not be started because the configured identity is incorrect. Check the username and password.
+        /// </summary>
+        CO_E_RUNAS_LOGON_FAILURE = (int)(0x8000401A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The client is not allowed to launch this server.
+        /// </summary>
+        CO_E_LAUNCH_PERMSSION_DENIED = (int)(0x8000401B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The service providing this server could not be started.
+        /// </summary>
+        CO_E_START_SERVICE_FAILURE = (int)(0x8000401C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This computer was unable to communicate with the computer providing the server.
+        /// </summary>
+        CO_E_REMOTE_COMMUNICATION_FAILURE = (int)(0x8000401D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server did not respond after being launched.
+        /// </summary>
+        CO_E_SERVER_START_TIMEOUT = (int)(0x8000401E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The registration information for this server is inconsistent or incomplete.
+        /// </summary>
+        CO_E_CLSREG_INCONSISTENT = (int)(0x8000401F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The registration information for this interface is inconsistent or incomplete.
+        /// </summary>
+        CO_E_IIDREG_INCONSISTENT = (int)(0x80004020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation attempted is not supported.
+        /// </summary>
+        CO_E_NOT_SUPPORTED = (int)(0x80004021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A dll must be loaded.
+        /// </summary>
+        CO_E_RELOAD_DLL = (int)(0x80004022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A Microsoft Software Installer error was encountered.
+        /// </summary>
+        CO_E_MSI_ERROR = (int)(0x80004023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified activation could not occur in the client context as specified.
+        /// </summary>
+        CO_E_ATTEMPT_TO_CREATE_OUTSIDE_CLIENT_CONTEXT = (int)(0x80004024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Activations on the server are paused.
+        /// </summary>
+        CO_E_SERVER_PAUSED = (int)(0x80004025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Activations on the server are not paused.
+        /// </summary>
+        CO_E_SERVER_NOT_PAUSED = (int)(0x80004026 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component or application containing the component has been disabled.
+        /// </summary>
+        CO_E_CLASS_DISABLED = (int)(0x80004027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The common language runtime is not available
+        /// </summary>
+        CO_E_CLRNOTAVAILABLE = (int)(0x80004028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The thread-pool rejected the submitted asynchronous work.
+        /// </summary>
+        CO_E_ASYNC_WORK_REJECTED = (int)(0x80004029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server started, but did not finish initializing in a timely fashion.
+        /// </summary>
+        CO_E_SERVER_INIT_TIMEOUT = (int)(0x8000402A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to complete the call since there is no COM+ security context inside IObjectControl.Activate.
+        /// </summary>
+        CO_E_NO_SECCTX_IN_ACTIVATE = (int)(0x8000402B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The provided tracker configuration is invalid
+        /// </summary>
+        CO_E_TRACKER_CONFIG = (int)(0x80004030 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The provided thread pool configuration is invalid
+        /// </summary>
+        CO_E_THREADPOOL_CONFIG = (int)(0x80004031 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The provided side-by-side configuration is invalid
+        /// </summary>
+        CO_E_SXS_CONFIG = (int)(0x80004032 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server principal name (SPN) obtained during security negotiation is malformed.
+        /// </summary>
+        CO_E_MALFORMED_SPN = (int)(0x80004033 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to impersonate DCOM client
+        /// </summary>
+        CO_E_FAILEDTOIMPERSONATE = VSConstants.CO_E_FAILEDTOIMPERSONATE,
+
+        /// <summary>
+        /// Unable to obtain server's security context
+        /// </summary>
+        CO_E_FAILEDTOGETSECCTX = VSConstants.CO_E_FAILEDTOGETSECCTX,
+
+        /// <summary>
+        /// Unable to open the access token of the current thread
+        /// </summary>
+        CO_E_FAILEDTOOPENTHREADTOKEN = VSConstants.CO_E_FAILEDTOOPENTHREADTOKEN,
+
+        /// <summary>
+        /// Unable to obtain user info from an access token
+        /// </summary>
+        CO_E_FAILEDTOGETTOKENINFO = VSConstants.CO_E_FAILEDTOGETTOKENINFO,
+
+        /// <summary>
+        /// The client who called IAccessControl::IsAccessPermitted was not the trustee provided to the method
+        /// </summary>
+        CO_E_TRUSTEEDOESNTMATCHCLIENT = VSConstants.CO_E_TRUSTEEDOESNTMATCHCLIENT,
+
+        /// <summary>
+        /// Unable to obtain the client's security blanket
+        /// </summary>
+        CO_E_FAILEDTOQUERYCLIENTBLANKET = VSConstants.CO_E_FAILEDTOQUERYCLIENTBLANKET,
+
+        /// <summary>
+        /// Unable to set a discretionary ACL into a security descriptor
+        /// </summary>
+        CO_E_FAILEDTOSETDACL = VSConstants.CO_E_FAILEDTOSETDACL,
+
+        /// <summary>
+        /// The system function, AccessCheck, returned false
+        /// </summary>
+        CO_E_ACCESSCHECKFAILED = VSConstants.CO_E_ACCESSCHECKFAILED,
+
+        /// <summary>
+        /// Either NetAccessDel or NetAccessAdd returned an error code.
+        /// </summary>
+        CO_E_NETACCESSAPIFAILED = VSConstants.CO_E_NETACCESSAPIFAILED,
+
+        /// <summary> One of the trustee strings provided by the user did not conform to the <Domain>\<Name> syntax and it was not
+        /// the "*" string </summary>
+        CO_E_WRONGTRUSTEENAMESYNTAX = (int)(0x8001012C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One of the security identifiers provided by the user was invalid
+        /// </summary>
+        CO_E_INVALIDSID = VSConstants.CO_E_INVALIDSID,
+
+        /// <summary>
+        /// Unable to convert a wide character trustee string to a multibyte trustee string
+        /// </summary>
+        CO_E_CONVERSIONFAILED = VSConstants.CO_E_CONVERSIONFAILED,
+
+        /// <summary>
+        /// Unable to find a security identifier that corresponds to a trustee string provided by the user
+        /// </summary>
+        CO_E_NOMATCHINGSIDFOUND = VSConstants.CO_E_NOMATCHINGSIDFOUND,
+
+        /// <summary>
+        /// The system function, LookupAccountSID, failed
+        /// </summary>
+        CO_E_LOOKUPACCSIDFAILED = VSConstants.CO_E_LOOKUPACCSIDFAILED,
+
+        /// <summary>
+        /// Unable to find a trustee name that corresponds to a security identifier provided by the user
+        /// </summary>
+        CO_E_NOMATCHINGNAMEFOUND = VSConstants.CO_E_NOMATCHINGNAMEFOUND,
+
+        /// <summary>
+        /// The system function, LookupAccountName, failed
+        /// </summary>
+        CO_E_LOOKUPACCNAMEFAILED = VSConstants.CO_E_LOOKUPACCNAMEFAILED,
+
+        /// <summary>
+        /// Unable to set or reset a serialization handle
+        /// </summary>
+        CO_E_SETSERLHNDLFAILED = VSConstants.CO_E_SETSERLHNDLFAILED,
+
+        /// <summary>
+        /// Unable to obtain the Windows directory
+        /// </summary>
+        CO_E_FAILEDTOGETWINDIR = VSConstants.CO_E_FAILEDTOGETWINDIR,
+
+        /// <summary>
+        /// Path too long
+        /// </summary>
+        CO_E_PATHTOOLONG = VSConstants.CO_E_PATHTOOLONG,
+
+        /// <summary>
+        /// Unable to generate a uuid.
+        /// </summary>
+        CO_E_FAILEDTOGENUUID = VSConstants.CO_E_FAILEDTOGENUUID,
+
+        /// <summary>
+        /// Unable to create file
+        /// </summary>
+        CO_E_FAILEDTOCREATEFILE = VSConstants.CO_E_FAILEDTOCREATEFILE,
+
+        /// <summary>
+        /// Unable to close a serialization handle or a file handle.
+        /// </summary>
+        CO_E_FAILEDTOCLOSEHANDLE = VSConstants.CO_E_FAILEDTOCLOSEHANDLE,
+
+        /// <summary>
+        /// The number of ACEs in an ACL exceeds the system limit.
+        /// </summary>
+        CO_E_EXCEEDSYSACLLIMIT = VSConstants.CO_E_EXCEEDSYSACLLIMIT,
+
+        /// <summary>
+        /// Not all the DENY_ACCESS ACEs are arranged in front of the GRANT_ACCESS ACEs in the stream.
+        /// </summary>
+        CO_E_ACESINWRONGORDER = VSConstants.CO_E_ACESINWRONGORDER,
+
+        /// <summary>
+        /// The version of ACL format in the stream is not supported by this implementation of IAccessControl
+        /// </summary>
+        CO_E_INCOMPATIBLESTREAMVERSION = VSConstants.CO_E_INCOMPATIBLESTREAMVERSION,
+
+        /// <summary>
+        /// Unable to open the access token of the server process
+        /// </summary>
+        CO_E_FAILEDTOOPENPROCESSTOKEN = VSConstants.CO_E_FAILEDTOOPENPROCESSTOKEN,
+
+        /// <summary>
+        /// Unable to decode the ACL in the stream provided by the user
+        /// </summary>
+        CO_E_DECODEFAILED = VSConstants.CO_E_DECODEFAILED,
+
+        /// <summary>
+        /// The COM IAccessControl object is not initialized
+        /// </summary>
+        CO_E_ACNOTINITIALIZED = VSConstants.CO_E_ACNOTINITIALIZED,
+
+        /// <summary>
+        /// Call Cancellation is disabled
+        /// </summary>
+        CO_E_CANCEL_DISABLED = VSConstants.CO_E_CANCEL_DISABLED,
+
+        /// <summary>
+        /// Unknown interface.
+        /// </summary>
+        DISP_E_UNKNOWNINTERFACE = VSConstants.DISP_E_UNKNOWNINTERFACE,
+
+        /// <summary>
+        /// Member not found.
+        /// </summary>
+        DISP_E_MEMBERNOTFOUND = VSConstants.DISP_E_MEMBERNOTFOUND,
+
+        /// <summary>
+        /// Parameter not found.
+        /// </summary>
+        DISP_E_PARAMNOTFOUND = VSConstants.DISP_E_PARAMNOTFOUND,
+
+        /// <summary>
+        /// Type mismatch.
+        /// </summary>
+        DISP_E_TYPEMISMATCH = VSConstants.DISP_E_TYPEMISMATCH,
+
+        /// <summary>
+        /// Unknown name.
+        /// </summary>
+        DISP_E_UNKNOWNNAME = VSConstants.DISP_E_UNKNOWNNAME,
+
+        /// <summary>
+        /// No named arguments.
+        /// </summary>
+        DISP_E_NONAMEDARGS = VSConstants.DISP_E_NONAMEDARGS,
+
+        /// <summary>
+        /// Bad variable type.
+        /// </summary>
+        DISP_E_BADVARTYPE = VSConstants.DISP_E_BADVARTYPE,
+
+        /// <summary>
+        /// Exception occurred.
+        /// </summary>
+        DISP_E_EXCEPTION = VSConstants.DISP_E_EXCEPTION,
+
+        /// <summary>
+        /// Out of present range.
+        /// </summary>
+        DISP_E_OVERFLOW = VSConstants.DISP_E_OVERFLOW,
+
+        /// <summary>
+        /// Invalid index.
+        /// </summary>
+        DISP_E_BADINDEX = VSConstants.DISP_E_BADINDEX,
+
+        /// <summary>
+        /// Unknown language.
+        /// </summary>
+        DISP_E_UNKNOWNLCID = VSConstants.DISP_E_UNKNOWNLCID,
+
+        /// <summary>
+        /// Memory is locked.
+        /// </summary>
+        DISP_E_ARRAYISLOCKED = VSConstants.DISP_E_ARRAYISLOCKED,
+
+        /// <summary>
+        /// Invalid number of parameters.
+        /// </summary>
+        DISP_E_BADPARAMCOUNT = VSConstants.DISP_E_BADPARAMCOUNT,
+
+        /// <summary>
+        /// Parameter not optional.
+        /// </summary>
+        DISP_E_PARAMNOTOPTIONAL = VSConstants.DISP_E_PARAMNOTOPTIONAL,
+
+        /// <summary>
+        /// Invalid callee.
+        /// </summary>
+        DISP_E_BADCALLEE = VSConstants.DISP_E_BADCALLEE,
+
+        /// <summary>
+        /// Does not support a collection.
+        /// </summary>
+        DISP_E_NOTACOLLECTION = VSConstants.DISP_E_NOTACOLLECTION,
+
+        /// <summary>
+        /// Division by zero.
+        /// </summary>
+        DISP_E_DIVBYZERO = VSConstants.DISP_E_DIVBYZERO,
+
+        /// <summary>
+        /// Buffer too small
+        /// </summary>
+        DISP_E_BUFFERTOOSMALL = VSConstants.DISP_E_BUFFERTOOSMALL,
+
+        /// <summary>
+        /// The data necessary to complete this operation is not yet available.
+        /// </summary>
+        E_PENDING = VSConstants.E_PENDING,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a call to a not implemented method.
+        /// </summary>
+        E_NOTIMPL = VSConstants.E_NOTIMPL,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for the request of a not-implemented interface.
+        /// </summary>
+        E_NOINTERFACE = VSConstants.E_NOINTERFACE,
+
+        /// <summary>
+        /// Invalid pointer
+        /// </summary>
+        E_POINTER = VSConstants.E_POINTER,
+
+        /// <summary>
+        /// Operation aborted
+        /// </summary>
+        E_ABORT = VSConstants.E_ABORT,
+
+        /// <summary>
+        /// Unspecified error
+        /// </summary>
+        E_FAIL = VSConstants.E_FAIL,
+
+        /// <summary>
+        /// Invalid OLEVERB structure
+        /// </summary>
+        OLE_E_FIRST = (int)(0x80040000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid OLEVERB structure
+        /// </summary>
+        OLE_E_OLEVERB = VSConstants.OLE_E_OLEVERB,
+
+        /// <summary>
+        /// Invalid advise flags
+        /// </summary>
+        OLE_E_ADVF = VSConstants.OLE_E_ADVF,
+
+        /// <summary>
+        /// Can't enumerate any more, because the associated data is missing
+        /// </summary>
+        OLE_E_ENUM_NOMORE = VSConstants.OLE_E_ENUM_NOMORE,
+
+        /// <summary>
+        /// This implementation doesn't take advises
+        /// </summary>
+        OLE_E_ADVISENOTSUPPORTED = VSConstants.OLE_E_ADVISENOTSUPPORTED,
+
+        /// <summary>
+        /// There is no connection for this connection ID
+        /// </summary>
+        OLE_E_NOCONNECTION = VSConstants.OLE_E_NOCONNECTION,
+
+        /// <summary>
+        /// Need to run the object to perform this operation
+        /// </summary>
+        OLE_E_NOTRUNNING = VSConstants.OLE_E_NOTRUNNING,
+
+        /// <summary>
+        /// There is no cache to operate on
+        /// </summary>
+        OLE_E_NOCACHE = VSConstants.OLE_E_NOCACHE,
+
+        /// <summary>
+        /// Uninitialized object
+        /// </summary>
+        OLE_E_BLANK = VSConstants.OLE_E_BLANK,
+
+        /// <summary>
+        /// Linked object's source class has changed
+        /// </summary>
+        OLE_E_CLASSDIFF = VSConstants.OLE_E_CLASSDIFF,
+
+        /// <summary>
+        /// Not able to get the moniker of the object
+        /// </summary>
+        OLE_E_CANT_GETMONIKER = VSConstants.OLE_E_CANT_GETMONIKER,
+
+        /// <summary>
+        /// Not able to bind to the source
+        /// </summary>
+        OLE_E_CANT_BINDTOSOURCE = VSConstants.OLE_E_CANT_BINDTOSOURCE,
+
+        /// <summary>
+        /// Object is static, operation not allowed
+        /// </summary>
+        OLE_E_STATIC = VSConstants.OLE_E_STATIC,
+
+        /// <summary>
+        /// User canceled out of save dialog
+        /// </summary>
+        OLE_E_PROMPTSAVECANCELLED = VSConstants.OLE_E_PROMPTSAVECANCELLED,
+
+        /// <summary>
+        /// Invalid rectangle
+        /// </summary>
+        OLE_E_INVALIDRECT = VSConstants.OLE_E_INVALIDRECT,
+
+        /// <summary>
+        /// compobj.dll is too old for the ole2.dll initialized
+        /// </summary>
+        OLE_E_WRONGCOMPOBJ = VSConstants.OLE_E_WRONGCOMPOBJ,
+
+        /// <summary>
+        /// Invalid window handle
+        /// </summary>
+        OLE_E_INVALIDHWND = VSConstants.OLE_E_INVALIDHWND,
+
+        /// <summary>
+        /// Object is not in any of the inplace active states
+        /// </summary>
+        OLE_E_NOT_INPLACEACTIVE = VSConstants.OLE_E_NOT_INPLACEACTIVE,
+
+        /// <summary>
+        /// Not able to convert object
+        /// </summary>
+        OLE_E_CANTCONVERT = VSConstants.OLE_E_CANTCONVERT,
+
+        /// <summary>
+        /// Not able to perform the operation because object is not given storage yet
+        /// </summary>
+        OLE_E_NOSTORAGE = VSConstants.OLE_E_NOSTORAGE,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for an unexpected condition.
+        /// </summary>
+        E_UNEXPECTED = VSConstants.E_UNEXPECTED,
+
+        /// <summary>
+        /// Call was rejected by callee.
+        /// </summary>
+        RPC_E_CALL_REJECTED = VSConstants.RPC_E_CALL_REJECTED,
+
+        /// <summary>
+        /// Call was canceled by the message filter.
+        /// </summary>
+        RPC_E_CALL_CANCELED = VSConstants.RPC_E_CALL_CANCELED,
+
+        /// <summary>
+        /// The caller is dispatching an intertask SendMessage call and cannot call out via PostMessage.
+        /// </summary>
+        RPC_E_CANTPOST_INSENDCALL = VSConstants.RPC_E_CANTPOST_INSENDCALL,
+
+        /// <summary>
+        /// The caller is dispatching an asynchronous call and cannot make an outgoing call on behalf of this call.
+        /// </summary>
+        RPC_E_CANTCALLOUT_INASYNCCALL = VSConstants.RPC_E_CANTCALLOUT_INASYNCCALL,
+
+        /// <summary>
+        /// It is illegal to call out while inside message filter.
+        /// </summary>
+        RPC_E_CANTCALLOUT_INEXTERNALCALL = VSConstants.RPC_E_CANTCALLOUT_INEXTERNALCALL,
+
+        /// <summary>
+        /// The connection terminated or is in a bogus state and cannot be used any more. Other connections are still valid.
+        /// </summary>
+        RPC_E_CONNECTION_TERMINATED = VSConstants.RPC_E_CONNECTION_TERMINATED,
+
+        /// <summary>
+        /// The callee (server [not server application]) is not available and disappeared, all connections are invalid. The call may
+        /// have executed.
+        /// </summary>
+        RPC_E_SERVER_DIED = VSConstants.RPC_E_SERVER_DIED,
+
+        /// <summary>
+        /// The caller (client) disappeared while the callee (server) was processing a call.
+        /// </summary>
+        RPC_E_CLIENT_DIED = VSConstants.RPC_E_CLIENT_DIED,
+
+        /// <summary>
+        /// The data packet with the marshalled parameter data is incorrect.
+        /// </summary>
+        RPC_E_INVALID_DATAPACKET = VSConstants.RPC_E_INVALID_DATAPACKET,
+
+        /// <summary>
+        /// The call was not transmitted properly, the message queue was full and was not emptied after yielding.
+        /// </summary>
+        RPC_E_CANTTRANSMIT_CALL = VSConstants.RPC_E_CANTTRANSMIT_CALL,
+
+        /// <summary>
+        /// The client (caller) cannot marshall the parameter data - low memory, etc.
+        /// </summary>
+        RPC_E_CLIENT_CANTMARSHAL_DATA = VSConstants.RPC_E_CLIENT_CANTMARSHAL_DATA,
+
+        /// <summary>
+        /// The client (caller) cannot unmarshall the return data - low memory, etc.
+        /// </summary>
+        RPC_E_CLIENT_CANTUNMARSHAL_DATA = VSConstants.RPC_E_CLIENT_CANTUNMARSHAL_DATA,
+
+        /// <summary>
+        /// The server (callee) cannot marshall the return data - low memory, etc.
+        /// </summary>
+        RPC_E_SERVER_CANTMARSHAL_DATA = VSConstants.RPC_E_SERVER_CANTMARSHAL_DATA,
+
+        /// <summary>
+        /// The server (callee) cannot unmarshall the parameter data - low memory, etc.
+        /// </summary>
+        RPC_E_SERVER_CANTUNMARSHAL_DATA = VSConstants.RPC_E_SERVER_CANTUNMARSHAL_DATA,
+
+        /// <summary>
+        /// Received data is invalid, could be server or client data.
+        /// </summary>
+        RPC_E_INVALID_DATA = VSConstants.RPC_E_INVALID_DATA,
+
+        /// <summary>
+        /// A particular parameter is invalid and cannot be (un)marshalled.
+        /// </summary>
+        RPC_E_INVALID_PARAMETER = VSConstants.RPC_E_INVALID_PARAMETER,
+
+        /// <summary>
+        /// There is no second outgoing call on same channel in DDE conversation.
+        /// </summary>
+        RPC_E_CANTCALLOUT_AGAIN = VSConstants.RPC_E_CANTCALLOUT_AGAIN,
+
+        /// <summary>
+        /// The callee (server [not server application]) is not available and disappeared, all connections are invalid. The call did
+        /// not execute.
+        /// </summary>
+        RPC_E_SERVER_DIED_DNE = VSConstants.RPC_E_SERVER_DIED_DNE,
+
+        /// <summary>
+        /// System call failed.
+        /// </summary>
+        RPC_E_SYS_CALL_FAILED = VSConstants.RPC_E_SYS_CALL_FAILED,
+
+        /// <summary>
+        /// Could not allocate some required resource (memory, events, ...)
+        /// </summary>
+        RPC_E_OUT_OF_RESOURCES = VSConstants.RPC_E_OUT_OF_RESOURCES,
+
+        /// <summary>
+        /// Attempted to make calls on more than one thread in single threaded mode.
+        /// </summary>
+        RPC_E_ATTEMPTED_MULTITHREAD = VSConstants.RPC_E_ATTEMPTED_MULTITHREAD,
+
+        /// <summary>
+        /// The requested interface is not registered on the server object.
+        /// </summary>
+        RPC_E_NOT_REGISTERED = VSConstants.RPC_E_NOT_REGISTERED,
+
+        /// <summary>
+        /// RPC could not call the server or could not return the results of calling the server.
+        /// </summary>
+        RPC_E_FAULT = VSConstants.RPC_E_FAULT,
+
+        /// <summary>
+        /// The server threw an exception.
+        /// </summary>
+        RPC_E_SERVERFAULT = VSConstants.RPC_E_SERVERFAULT,
+
+        /// <summary>
+        /// Cannot change thread mode after it is set.
+        /// </summary>
+        RPC_E_CHANGED_MODE = VSConstants.RPC_E_CHANGED_MODE,
+
+        /// <summary>
+        /// The method called does not exist on the server.
+        /// </summary>
+        RPC_E_INVALIDMETHOD = VSConstants.RPC_E_INVALIDMETHOD,
+
+        /// <summary>
+        /// The object invoked has disconnected from its clients.
+        /// </summary>
+        RPC_E_DISCONNECTED = VSConstants.RPC_E_DISCONNECTED,
+
+        /// <summary>
+        /// The object invoked chose not to process the call now. Try again later.
+        /// </summary>
+        RPC_E_RETRY = VSConstants.RPC_E_RETRY,
+
+        /// <summary>
+        /// The message filter indicated that the application is busy.
+        /// </summary>
+        RPC_E_SERVERCALL_RETRYLATER = VSConstants.RPC_E_SERVERCALL_RETRYLATER,
+
+        /// <summary>
+        /// The message filter rejected the call.
+        /// </summary>
+        RPC_E_SERVERCALL_REJECTED = VSConstants.RPC_E_SERVERCALL_REJECTED,
+
+        /// <summary>
+        /// A call control interfaces was called with invalid data.
+        /// </summary>
+        RPC_E_INVALID_CALLDATA = VSConstants.RPC_E_INVALID_CALLDATA,
+
+        /// <summary>
+        /// An outgoing call cannot be made since the application is dispatching an input-synchronous call.
+        /// </summary>
+        RPC_E_CANTCALLOUT_ININPUTSYNCCALL = VSConstants.RPC_E_CANTCALLOUT_ININPUTSYNCCALL,
+
+        /// <summary>
+        /// The application called an interface that was marshalled for a different thread.
+        /// </summary>
+        RPC_E_WRONG_THREAD = VSConstants.RPC_E_WRONG_THREAD,
+
+        /// <summary>
+        /// CoInitialize has not been called on the current thread.
+        /// </summary>
+        RPC_E_THREAD_NOT_INIT = VSConstants.RPC_E_THREAD_NOT_INIT,
+
+        /// <summary>
+        /// The version of OLE on the client and server machines does not match.
+        /// </summary>
+        RPC_E_VERSION_MISMATCH = VSConstants.RPC_E_VERSION_MISMATCH,
+
+        /// <summary>
+        /// OLE received a packet with an invalid header.
+        /// </summary>
+        RPC_E_INVALID_HEADER = VSConstants.RPC_E_INVALID_HEADER,
+
+        /// <summary>
+        /// OLE received a packet with an invalid extension.
+        /// </summary>
+        RPC_E_INVALID_EXTENSION = VSConstants.RPC_E_INVALID_EXTENSION,
+
+        /// <summary>
+        /// The requested object or interface does not exist.
+        /// </summary>
+        RPC_E_INVALID_IPID = VSConstants.RPC_E_INVALID_IPID,
+
+        /// <summary>
+        /// Call context cannot be accessed after call completed.
+        /// </summary>
+        RPC_E_CALL_COMPLETE = VSConstants.RPC_E_CALL_COMPLETE,
+
+        /// <summary>
+        /// Impersonate on unsecure calls is not supported.
+        /// </summary>
+        RPC_E_UNSECURE_CALL = VSConstants.RPC_E_UNSECURE_CALL,
+
+        /// <summary>
+        /// Security must be initialized before any interfaces are marshalled or unmarshalled. It cannot be changed once initialized.
+        /// </summary>
+        RPC_E_TOO_LATE = VSConstants.RPC_E_TOO_LATE,
+
+        /// <summary>
+        /// No security packages are installed on this machine or the user is not logged on or there are no compatible security
+        /// packages between the client and server.
+        /// </summary>
+        RPC_E_NO_GOOD_SECURITY_PACKAGES = VSConstants.RPC_E_NO_GOOD_SECURITY_PACKAGES,
+
+        /// <summary>
+        /// Access is denied.
+        /// </summary>
+        RPC_E_ACCESS_DENIED = VSConstants.RPC_E_ACCESS_DENIED,
+
+        /// <summary>
+        /// Remote calls are not allowed for this process.
+        /// </summary>
+        RPC_E_REMOTE_DISABLED = VSConstants.RPC_E_REMOTE_DISABLED,
+
+        /// <summary>
+        /// The marshaled interface data packet (OBJREF) has an invalid or unknown format.
+        /// </summary>
+        RPC_E_INVALID_OBJREF = VSConstants.RPC_E_INVALID_OBJREF,
+
+        /// <summary>
+        /// No context is associated with this call. This happens for some custom marshalled calls and on the client side of the call.
+        /// </summary>
+        RPC_E_NO_CONTEXT = VSConstants.RPC_E_NO_CONTEXT,
+
+        /// <summary>
+        /// This operation returned because the timeout period expired.
+        /// </summary>
+        RPC_E_TIMEOUT = VSConstants.RPC_E_TIMEOUT,
+
+        /// <summary>
+        /// There are no synchronize objects to wait on.
+        /// </summary>
+        RPC_E_NO_SYNC = VSConstants.RPC_E_NO_SYNC,
+
+        /// <summary>
+        /// Full subject issuer chain SSL principal name expected from the server.
+        /// </summary>
+        RPC_E_FULLSIC_REQUIRED = VSConstants.RPC_E_FULLSIC_REQUIRED,
+
+        /// <summary>
+        /// Principal name is not a valid MSSTD name.
+        /// </summary>
+        RPC_E_INVALID_STD_NAME = VSConstants.RPC_E_INVALID_STD_NAME,
+
+        /// <summary>
+        /// The requested object does not exist.
+        /// </summary>
+        RPC_E_INVALID_OBJECT = VSConstants.RPC_E_INVALID_OBJECT,
+
+        /// <summary>
+        /// OLE has sent a request and is waiting for a reply.
+        /// </summary>
+        RPC_S_CALLPENDING = VSConstants.RPC_S_CALLPENDING,
+
+        /// <summary>
+        /// OLE is waiting before retrying a request.
+        /// </summary>
+        RPC_S_WAITONTIMER = VSConstants.RPC_S_WAITONTIMER,
+
+        /// <summary>
+        /// Unable to perform requested operation.
+        /// </summary>
+        STG_E_INVALIDFUNCTION = (int)(0x80030001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// %1 could not be found.
+        /// </summary>
+        STG_E_FILENOTFOUND = (int)(0x80030002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The path %1 could not be found.
+        /// </summary>
+        STG_E_PATHNOTFOUND = (int)(0x80030003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There are insufficient resources to open another file.
+        /// </summary>
+        STG_E_TOOMANYOPENFILES = (int)(0x80030004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Access Denied.
+        /// </summary>
+        STG_E_ACCESSDENIED = (int)(0x80030005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Attempted an operation on an invalid object.
+        /// </summary>
+        STG_E_INVALIDHANDLE = (int)(0x80030006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is insufficient memory available to complete operation.
+        /// </summary>
+        STG_E_INSUFFICIENTMEMORY = (int)(0x80030008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid pointer error.
+        /// </summary>
+        STG_E_INVALIDPOINTER = (int)(0x80030009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There are no more entries to return.
+        /// </summary>
+        STG_E_NOMOREFILES = (int)(0x80030012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Disk is write-protected.
+        /// </summary>
+        STG_E_DISKISWRITEPROTECTED = (int)(0x80030013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred during a seek operation.
+        /// </summary>
+        STG_E_SEEKERROR = (int)(0x80030019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A disk error occurred during a write operation.
+        /// </summary>
+        STG_E_WRITEFAULT = (int)(0x8003001D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A disk error occurred during a read operation.
+        /// </summary>
+        STG_E_READFAULT = (int)(0x8003001E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A share violation has occurred.
+        /// </summary>
+        STG_E_SHAREVIOLATION = (int)(0x80030020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A lock violation has occurred.
+        /// </summary>
+        STG_E_LOCKVIOLATION = (int)(0x80030021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// %1 already exists.
+        /// </summary>
+        STG_E_FILEALREADYEXISTS = (int)(0x80030050 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid parameter error.
+        /// </summary>
+        STG_E_INVALIDPARAMETER = (int)(0x80030057 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is insufficient disk space to complete operation.
+        /// </summary>
+        STG_E_MEDIUMFULL = (int)(0x80030070 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Illegal write of non-simple property to simple property set.
+        /// </summary>
+        STG_E_PROPSETMISMATCHED = (int)(0x800300F0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An API call exited abnormally.
+        /// </summary>
+        STG_E_ABNORMALAPIEXIT = (int)(0x800300FA - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file %1 is not a valid compound file.
+        /// </summary>
+        STG_E_INVALIDHEADER = (int)(0x800300FB - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The name %1 is not valid.
+        /// </summary>
+        STG_E_INVALIDNAME = (int)(0x800300FC - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unexpected error occurred.
+        /// </summary>
+        STG_E_UNKNOWN = (int)(0x800300FD - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// That function is not implemented.
+        /// </summary>
+        STG_E_UNIMPLEMENTEDFUNCTION = (int)(0x800300FE - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid flag error.
+        /// </summary>
+        STG_E_INVALIDFLAG = (int)(0x800300FF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Attempted to use an object that is busy.
+        /// </summary>
+        STG_E_INUSE = (int)(0x80030100 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The storage has been changed since the last commit.
+        /// </summary>
+        STG_E_NOTCURRENT = (int)(0x80030101 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Attempted to use an object that has ceased to exist.
+        /// </summary>
+        STG_E_REVERTED = (int)(0x80030102 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Can't save.
+        /// </summary>
+        STG_E_CANTSAVE = (int)(0x80030103 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The compound file %1 was produced with an incompatible version of storage.
+        /// </summary>
+        STG_E_OLDFORMAT = (int)(0x80030104 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The compound file %1 was produced with a newer version of storage.
+        /// </summary>
+        STG_E_OLDDLL = (int)(0x80030105 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Share.exe or equivalent is required for operation.
+        /// </summary>
+        STG_E_SHAREREQUIRED = (int)(0x80030106 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Illegal operation called on non-file based storage.
+        /// </summary>
+        STG_E_NOTFILEBASEDSTORAGE = (int)(0x80030107 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Illegal operation called on object with extant marshallings.
+        /// </summary>
+        STG_E_EXTANTMARSHALLINGS = (int)(0x80030108 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The docfile has been corrupted.
+        /// </summary>
+        STG_E_DOCFILECORRUPT = (int)(0x80030109 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OLE32.DLL has been loaded at the wrong address.
+        /// </summary>
+        STG_E_BADBASEADDRESS = (int)(0x80030110 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The compound file is too large for the current implementation
+        /// </summary>
+        STG_E_DOCFILETOOLARGE = (int)(0x80030111 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The compound file was not created with the STGM_SIMPLE flag
+        /// </summary>
+        STG_E_NOTSIMPLEFORMAT = (int)(0x80030112 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file download was aborted abnormally. The file is incomplete.
+        /// </summary>
+        STG_E_INCOMPLETE = (int)(0x80030201 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file download has been terminated.
+        /// </summary>
+        STG_E_TERMINATED = (int)(0x80030202 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Generic Copy Protection Error.
+        /// </summary>
+        STG_E_STATUS_COPY_PROTECTION_FAILURE = (int)(0x80030305 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Copy Protection Error - DVD CSS Authentication failed.
+        /// </summary>
+        STG_E_CSS_AUTHENTICATION_FAILURE = (int)(0x80030306 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Copy Protection Error - The given sector does not have a valid CSS key.
+        /// </summary>
+        STG_E_CSS_KEY_NOT_PRESENT = (int)(0x80030307 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Copy Protection Error - DVD session key not established.
+        /// </summary>
+        STG_E_CSS_KEY_NOT_ESTABLISHED = (int)(0x80030308 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Copy Protection Error - The read failed because the sector is encrypted.
+        /// </summary>
+        STG_E_CSS_SCRAMBLED_SECTOR = (int)(0x80030309 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Copy Protection Error - The current DVD's region does not correspond to the region setting of the drive.
+        /// </summary>
+        STG_E_CSS_REGION_MISMATCH = (int)(0x8003030A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Copy Protection Error - The drive's region setting may be permanent or the number of user resets has been exhausted.
+        /// </summary>
+        STG_E_RESETS_EXHAUSTED = (int)(0x8003030B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Buffer too small.
+        /// </summary>
+        TYPE_E_BUFFERTOOSMALL = (int)(0x80028016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Field name not defined in the record.
+        /// </summary>
+        TYPE_E_FIELDNOTFOUND = (int)(0x80028017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Old format or invalid type library.
+        /// </summary>
+        TYPE_E_INVDATAREAD = (int)(0x80028018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Old format or invalid type library.
+        /// </summary>
+        TYPE_E_UNSUPFORMAT = (int)(0x80028019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error accessing the OLE registry.
+        /// </summary>
+        TYPE_E_REGISTRYACCESS = (int)(0x8002801C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Library not registered.
+        /// </summary>
+        TYPE_E_LIBNOTREGISTERED = (int)(0x8002801D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bound to unknown type.
+        /// </summary>
+        TYPE_E_UNDEFINEDTYPE = (int)(0x80028027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Qualified name disallowed.
+        /// </summary>
+        TYPE_E_QUALIFIEDNAMEDISALLOWED = (int)(0x80028028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid forward reference, or reference to uncompiled type.
+        /// </summary>
+        TYPE_E_INVALIDSTATE = (int)(0x80028029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Type mismatch.
+        /// </summary>
+        TYPE_E_WRONGTYPEKIND = (int)(0x8002802A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Element not found.
+        /// </summary>
+        TYPE_E_ELEMENTNOTFOUND = (int)(0x8002802B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Ambiguous name.
+        /// </summary>
+        TYPE_E_AMBIGUOUSNAME = (int)(0x8002802C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Name already exists in the library.
+        /// </summary>
+        TYPE_E_NAMECONFLICT = (int)(0x8002802D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unknown LCID.
+        /// </summary>
+        TYPE_E_UNKNOWNLCID = (int)(0x8002802E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Function not defined in specified DLL.
+        /// </summary>
+        TYPE_E_DLLFUNCTIONNOTFOUND = (int)(0x8002802F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Wrong module kind for the operation.
+        /// </summary>
+        TYPE_E_BADMODULEKIND = (int)(0x800288BD - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Size may not exceed 64K.
+        /// </summary>
+        TYPE_E_SIZETOOBIG = (int)(0x800288C5 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Duplicate ID in inheritance hierarchy.
+        /// </summary>
+        TYPE_E_DUPLICATEID = (int)(0x800288C6 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Incorrect inheritance depth in standard OLE hmember.
+        /// </summary>
+        TYPE_E_INVALIDID = (int)(0x800288CF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Type mismatch.
+        /// </summary>
+        TYPE_E_TYPEMISMATCH = (int)(0x80028CA0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid number of arguments.
+        /// </summary>
+        TYPE_E_OUTOFBOUNDS = (int)(0x80028CA1 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// I/O Error.
+        /// </summary>
+        TYPE_E_IOERROR = (int)(0x80028CA2 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error creating unique tmp file.
+        /// </summary>
+        TYPE_E_CANTCREATETMPFILE = (int)(0x80028CA3 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error loading type library/DLL.
+        /// </summary>
+        TYPE_E_CANTLOADLIBRARY = (int)(0x80029C4A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Inconsistent property functions.
+        /// </summary>
+        TYPE_E_INCONSISTENTPROPFUNCS = (int)(0x80029C83 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Circular dependency between types/modules.
+        /// </summary>
+        TYPE_E_CIRCULARTYPE = (int)(0x80029C84 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid FORMATETC structure
+        /// </summary>
+        DV_E_FORMATETC = (int)(0x80040064 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid DVTARGETDEVICE structure
+        /// </summary>
+        DV_E_DVTARGETDEVICE = (int)(0x80040065 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid STDGMEDIUM structure
+        /// </summary>
+        DV_E_STGMEDIUM = (int)(0x80040066 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid STATDATA structure
+        /// </summary>
+        DV_E_STATDATA = (int)(0x80040067 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid lindex
+        /// </summary>
+        DV_E_LINDEX = (int)(0x80040068 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid tymed
+        /// </summary>
+        DV_E_TYMED = (int)(0x80040069 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid clipboard format
+        /// </summary>
+        DV_E_CLIPFORMAT = (int)(0x8004006A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid aspect(s)
+        /// </summary>
+        DV_E_DVASPECT = (int)(0x8004006B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// tdSize parameter of the DVTARGETDEVICE structure is invalid
+        /// </summary>
+        DV_E_DVTARGETDEVICE_SIZE = (int)(0x8004006C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object doesn't support IViewObject interface
+        /// </summary>
+        DV_E_NOIVIEWOBJECT = (int)(0x8004006D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        OLE_E_LAST = (int)(0x800400FF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Trying to revoke a drop target that has not been registered
+        /// </summary>
+        DRAGDROP_E_FIRST = (int)(0x80040100 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Trying to revoke a drop target that has not been registered
+        /// </summary>
+        DRAGDROP_E_NOTREGISTERED = (int)(0x80040100 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This window has already been registered as a drop target
+        /// </summary>
+        DRAGDROP_E_ALREADYREGISTERED = (int)(0x80040101 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid window handle
+        /// </summary>
+        DRAGDROP_E_INVALIDHWND = (int)(0x80040102 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DRAGDROP_E_LAST = (int)(0x8004010F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Class does not support aggregation (or class object is remote)
+        /// </summary>
+        CLASSFACTORY_E_FIRST = (int)(0x80040110 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Class does not support aggregation (or class object is remote)
+        /// </summary>
+        CLASS_E_NOAGGREGATION = (int)(0x80040110 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ClassFactory cannot supply requested class
+        /// </summary>
+        CLASS_E_CLASSNOTAVAILABLE = (int)(0x80040111 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Class is not licensed for use
+        /// </summary>
+        CLASS_E_NOTLICENSED = (int)(0x80040112 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLASSFACTORY_E_LAST = (int)(0x8004011F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        MARSHAL_E_FIRST = (int)(0x80040120 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        MARSHAL_E_LAST = (int)(0x8004012F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DATA_E_FIRST = (int)(0x80040130 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DATA_E_LAST = (int)(0x8004013F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error drawing view
+        /// </summary>
+        VIEW_E_FIRST = (int)(0x80040140 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error drawing view
+        /// </summary>
+        VIEW_E_DRAW = (int)(0x80040140 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        VIEW_E_LAST = (int)(0x8004014F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not read key from registry
+        /// </summary>
+        REGDB_E_FIRST = (int)(0x80040150 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not read key from registry
+        /// </summary>
+        REGDB_E_READREGDB = (int)(0x80040150 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not write key to registry
+        /// </summary>
+        REGDB_E_WRITEREGDB = (int)(0x80040151 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not find the key in the registry
+        /// </summary>
+        REGDB_E_KEYMISSING = (int)(0x80040152 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid value for registry
+        /// </summary>
+        REGDB_E_INVALIDVALUE = (int)(0x80040153 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Class not registered
+        /// </summary>
+        REGDB_E_CLASSNOTREG = (int)(0x80040154 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Interface not registered
+        /// </summary>
+        REGDB_E_IIDNOTREG = (int)(0x80040155 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Threading model entry is not valid
+        /// </summary>
+        REGDB_E_BADTHREADINGMODEL = (int)(0x80040156 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        REGDB_E_LAST = (int)(0x8004015F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No package in the software installation data in the Active Directory meets this criteria.
+        /// </summary>
+        CS_E_FIRST = (int)(0x80040164 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No package in the software installation data in the Active Directory meets this criteria.
+        /// </summary>
+        CS_E_PACKAGE_NOTFOUND = (int)(0x80040164 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Deleting this will break the referential integrity of the software installation data in the Active Directory.
+        /// </summary>
+        CS_E_NOT_DELETABLE = (int)(0x80040165 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The CLSID was not found in the software installation data in the Active Directory.
+        /// </summary>
+        CS_E_CLASS_NOTFOUND = (int)(0x80040166 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The software installation data in the Active Directory is corrupt.
+        /// </summary>
+        CS_E_INVALID_VERSION = (int)(0x80040167 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no software installation data in the Active Directory.
+        /// </summary>
+        CS_E_NO_CLASSSTORE = (int)(0x80040168 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no software installation data object in the Active Directory.
+        /// </summary>
+        CS_E_OBJECT_NOTFOUND = (int)(0x80040169 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The software installation data object in the Active Directory already exists.
+        /// </summary>
+        CS_E_OBJECT_ALREADY_EXISTS = (int)(0x8004016A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The path to the software installation data in the Active Directory is not correct.
+        /// </summary>
+        CS_E_INVALID_PATH = (int)(0x8004016B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A network error interrupted the operation.
+        /// </summary>
+        CS_E_NETWORK_ERROR = (int)(0x8004016C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The size of this object exceeds the maximum size set by the Administrator.
+        /// </summary>
+        CS_E_ADMIN_LIMIT_EXCEEDED = (int)(0x8004016D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The schema for the software installation data in the Active Directory does not match the required schema.
+        /// </summary>
+        CS_E_SCHEMA_MISMATCH = (int)(0x8004016E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred in the software installation data in the Active Directory.
+        /// </summary>
+        CS_E_LAST = (int)(0x8004016F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred in the software installation data in the Active Directory.
+        /// </summary>
+        CS_E_INTERNAL_ERROR = (int)(0x8004016F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cache not updated
+        /// </summary>
+        CACHE_E_FIRST = (int)(0x80040170 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cache not updated
+        /// </summary>
+        CACHE_E_NOCACHE_UPDATED = (int)(0x80040170 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CACHE_E_LAST = (int)(0x8004017F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No verbs for OLE object
+        /// </summary>
+        OLEOBJ_E_FIRST = (int)(0x80040180 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No verbs for OLE object
+        /// </summary>
+        OLEOBJ_E_NOVERBS = (int)(0x80040180 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid verb for OLE object
+        /// </summary>
+        OLEOBJ_E_INVALIDVERB = (int)(0x80040181 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        OLEOBJ_E_LAST = (int)(0x8004018F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIENTSITE_E_FIRST = (int)(0x80040190 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIENTSITE_E_LAST = (int)(0x8004019F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Undo is not available
+        /// </summary>
+        INPLACE_E_NOTUNDOABLE = (int)(0x800401A0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Undo is not available
+        /// </summary>
+        INPLACE_E_FIRST = (int)(0x800401A0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Space for tools is not available
+        /// </summary>
+        INPLACE_E_NOTOOLSPACE = (int)(0x800401A1 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        INPLACE_E_LAST = (int)(0x800401AF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        ENUM_E_FIRST = (int)(0x800401B0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        ENUM_E_LAST = (int)(0x800401BF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OLESTREAM Get method failed
+        /// </summary>
+        CONVERT10_E_FIRST = (int)(0x800401C0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OLESTREAM Get method failed
+        /// </summary>
+        CONVERT10_E_OLESTREAM_GET = (int)(0x800401C0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OLESTREAM Put method failed
+        /// </summary>
+        CONVERT10_E_OLESTREAM_PUT = (int)(0x800401C1 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Contents of the OLESTREAM not in correct format
+        /// </summary>
+        CONVERT10_E_OLESTREAM_FMT = (int)(0x800401C2 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There was an error in a Windows GDI call while converting the bitmap to a DIB
+        /// </summary>
+        CONVERT10_E_OLESTREAM_BITMAP_TO_DIB = (int)(0x800401C3 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Contents of the IStorage not in correct format
+        /// </summary>
+        CONVERT10_E_STG_FMT = (int)(0x800401C4 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Contents of IStorage is missing one of the standard streams
+        /// </summary>
+        CONVERT10_E_STG_NO_STD_STREAM = (int)(0x800401C5 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There was an error in a Windows GDI call while converting the DIB to a bitmap.
+        /// </summary>
+        CONVERT10_E_STG_DIB_TO_BITMAP = (int)(0x800401C6 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CONVERT10_E_LAST = (int)(0x800401CF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OpenClipboard Failed
+        /// </summary>
+        CLIPBRD_E_FIRST = (int)(0x800401D0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OpenClipboard Failed
+        /// </summary>
+        CLIPBRD_E_CANT_OPEN = (int)(0x800401D0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// EmptyClipboard Failed
+        /// </summary>
+        CLIPBRD_E_CANT_EMPTY = (int)(0x800401D1 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// SetClipboard Failed
+        /// </summary>
+        CLIPBRD_E_CANT_SET = (int)(0x800401D2 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Data on clipboard is invalid
+        /// </summary>
+        CLIPBRD_E_BAD_DATA = (int)(0x800401D3 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// CloseClipboard Failed
+        /// </summary>
+        CLIPBRD_E_CANT_CLOSE = (int)(0x800401D4 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIPBRD_E_LAST = (int)(0x800401DF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker needs to be connected manually
+        /// </summary>
+        MK_E_FIRST = (int)(0x800401E0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker needs to be connected manually
+        /// </summary>
+        MK_E_CONNECTMANUALLY = (int)(0x800401E0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Operation exceeded deadline
+        /// </summary>
+        MK_E_EXCEEDEDDEADLINE = (int)(0x800401E1 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker needs to be generic
+        /// </summary>
+        MK_E_NEEDGENERIC = (int)(0x800401E2 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Operation unavailable
+        /// </summary>
+        MK_E_UNAVAILABLE = (int)(0x800401E3 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid syntax
+        /// </summary>
+        MK_E_SYNTAX = (int)(0x800401E4 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No object for moniker
+        /// </summary>
+        MK_E_NOOBJECT = (int)(0x800401E5 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad extension for file
+        /// </summary>
+        MK_E_INVALIDEXTENSION = (int)(0x800401E6 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Intermediate operation failed
+        /// </summary>
+        MK_E_INTERMEDIATEINTERFACENOTSUPPORTED = (int)(0x800401E7 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker is not bindable
+        /// </summary>
+        MK_E_NOTBINDABLE = (int)(0x800401E8 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker is not bound
+        /// </summary>
+        MK_E_NOTBOUND = (int)(0x800401E9 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker cannot open file
+        /// </summary>
+        MK_E_CANTOPENFILE = (int)(0x800401EA - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// User input required for operation to succeed
+        /// </summary>
+        MK_E_MUSTBOTHERUSER = (int)(0x800401EB - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker class has no inverse
+        /// </summary>
+        MK_E_NOINVERSE = (int)(0x800401EC - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker does not refer to storage
+        /// </summary>
+        MK_E_NOSTORAGE = (int)(0x800401ED - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No common prefix
+        /// </summary>
+        MK_E_NOPREFIX = (int)(0x800401EE - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker could not be enumerated
+        /// </summary>
+        MK_E_LAST = (int)(0x800401EF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker could not be enumerated
+        /// </summary>
+        MK_E_ENUMERATION_FAILED = (int)(0x800401EF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// CoInitialize has not been called.
+        /// </summary>
+        CO_E_FIRST = (int)(0x800401F0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// CoInitialize has not been called.
+        /// </summary>
+        CO_E_NOTINITIALIZED = (int)(0x800401F0 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// CoInitialize has already been called.
+        /// </summary>
+        CO_E_ALREADYINITIALIZED = (int)(0x800401F1 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Class of object cannot be determined
+        /// </summary>
+        CO_E_CANTDETERMINECLASS = (int)(0x800401F2 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid class string
+        /// </summary>
+        CO_E_CLASSSTRING = (int)(0x800401F3 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid interface string
+        /// </summary>
+        CO_E_IIDSTRING = (int)(0x800401F4 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Application not found
+        /// </summary>
+        CO_E_APPNOTFOUND = (int)(0x800401F5 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Application cannot be run more than once
+        /// </summary>
+        CO_E_APPSINGLEUSE = (int)(0x800401F6 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Some error in application program
+        /// </summary>
+        CO_E_ERRORINAPP = (int)(0x800401F7 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// DLL for class not found
+        /// </summary>
+        CO_E_DLLNOTFOUND = (int)(0x800401F8 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error in the DLL
+        /// </summary>
+        CO_E_ERRORINDLL = (int)(0x800401F9 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Wrong OS or OS version for application
+        /// </summary>
+        CO_E_WRONGOSFORAPP = (int)(0x800401FA - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object is not registered
+        /// </summary>
+        CO_E_OBJNOTREG = (int)(0x800401FB - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object is already registered
+        /// </summary>
+        CO_E_OBJISREG = (int)(0x800401FC - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object is not connected to server
+        /// </summary>
+        CO_E_OBJNOTCONNECTED = (int)(0x800401FD - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Application was launched but it didn't register a class factory
+        /// </summary>
+        CO_E_APPDIDNTREG = (int)(0x800401FE - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object has been released
+        /// </summary>
+        CO_E_LAST = (int)(0x800401FF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object has been released
+        /// </summary>
+        CO_E_RELEASED = (int)(0x800401FF - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        EVENT_E_FIRST = (int)(0x80040200 - HResultMask.MAGIC_SUBTRAHEND),
+
+        VS_E_BUSY = VSConstants.VS_E_BUSY,
+
+        /// <summary>
+        /// An event was unable to invoke any of the subscribers
+        /// </summary>
+        EVENT_E_ALL_SUBSCRIBERS_FAILED = (int)(0x80040201 - HResultMask.MAGIC_SUBTRAHEND),
+
+        VS_E_SPECIFYING_OUTPUT_UNSUPPORTED = VSConstants.VS_E_SPECIFYING_OUTPUT_UNSUPPORTED,
+
+        /// <summary>
+        /// A syntax error occurred trying to evaluate a query string
+        /// </summary>
+        EVENT_E_QUERYSYNTAX = (int)(0x80040203 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An invalid field name was used in a query string
+        /// </summary>
+        EVENT_E_QUERYFIELD = (int)(0x80040204 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unexpected exception was raised
+        /// </summary>
+        EVENT_E_INTERNALEXCEPTION = (int)(0x80040205 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unexpected internal error was detected
+        /// </summary>
+        EVENT_E_INTERNALERROR = (int)(0x80040206 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The owner SID on a per-user subscription doesn't exist
+        /// </summary>
+        EVENT_E_INVALID_PER_USER_SID = (int)(0x80040207 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A user-supplied component or subscriber raised an exception
+        /// </summary>
+        EVENT_E_USER_EXCEPTION = (int)(0x80040208 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An interface has too many methods to fire events from
+        /// </summary>
+        EVENT_E_TOO_MANY_METHODS = (int)(0x80040209 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A subscription cannot be stored unless its event class already exists
+        /// </summary>
+        EVENT_E_MISSING_EVENTCLASS = (int)(0x8004020A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Not all the objects requested could be removed
+        /// </summary>
+        EVENT_E_NOT_ALL_REMOVED = (int)(0x8004020B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ is required for this operation, but is not installed
+        /// </summary>
+        EVENT_E_COMPLUS_NOT_INSTALLED = (int)(0x8004020C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot modify or delete an object that was not added using the COM+ Admin SDK
+        /// </summary>
+        EVENT_E_CANT_MODIFY_OR_DELETE_UNCONFIGURED_OBJECT = (int)(0x8004020D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot modify or delete an object that was added using the COM+ Admin SDK
+        /// </summary>
+        EVENT_E_CANT_MODIFY_OR_DELETE_CONFIGURED_OBJECT = (int)(0x8004020E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The event class for this subscription is in an invalid partition
+        /// </summary>
+        EVENT_E_INVALID_EVENT_CLASS_PARTITION = (int)(0x8004020F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The owner of the PerUser subscription is not logged on to the system specified
+        /// </summary>
+        EVENT_E_PER_USER_SID_NOT_LOGGED_ON = (int)(0x80040210 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        EVENT_E_LAST = (int)(0x8004021F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Trigger not found.
+        /// </summary>
+        SCHED_E_TRIGGER_NOT_FOUND = (int)(0x80041309 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more of the properties that are needed to run this task have not been set.
+        /// </summary>
+        SCHED_E_TASK_NOT_READY = (int)(0x8004130A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no running instance of the task to terminate.
+        /// </summary>
+        SCHED_E_TASK_NOT_RUNNING = (int)(0x8004130B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Task Scheduler Service is not installed on this computer.
+        /// </summary>
+        SCHED_E_SERVICE_NOT_INSTALLED = (int)(0x8004130C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The task object could not be opened.
+        /// </summary>
+        SCHED_E_CANNOT_OPEN_TASK = (int)(0x8004130D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The object is either an invalid task object or is not a task object.
+        /// </summary>
+        SCHED_E_INVALID_TASK = (int)(0x8004130E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No account information could be found in the Task Scheduler security database for the task indicated.
+        /// </summary>
+        SCHED_E_ACCOUNT_INFORMATION_NOT_SET = (int)(0x8004130F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to establish existence of the account specified.
+        /// </summary>
+        SCHED_E_ACCOUNT_NAME_NOT_FOUND = (int)(0x80041310 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Corruption was detected in the Task Scheduler security database, the database has been reset.
+        /// </summary>
+        SCHED_E_ACCOUNT_DBASE_CORRUPT = (int)(0x80041311 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Task Scheduler security services are available only on Windows NT.
+        /// </summary>
+        SCHED_E_NO_SECURITY_SERVICES = (int)(0x80041312 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The task object version is either unsupported or invalid.
+        /// </summary>
+        SCHED_E_UNKNOWN_OBJECT_VERSION = (int)(0x80041313 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The task has been configured with an unsupported combination of account settings and run time options.
+        /// </summary>
+        SCHED_E_UNSUPPORTED_ACCOUNT_OPTION = (int)(0x80041314 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Task Scheduler Service is not running.
+        /// </summary>
+        SCHED_E_SERVICE_NOT_RUNNING = (int)(0x80041315 - HResultMask.MAGIC_SUBTRAHEND),
+
+        VS_E_PROJECTALREADYEXISTS = VSConstants.VS_E_PROJECTALREADYEXISTS,
+
+        VS_E_PACKAGENOTLOADED = VSConstants.VS_E_PACKAGENOTLOADED,
+
+        VS_E_PROJECTNOTLOADED = VSConstants.VS_E_PROJECTNOTLOADED,
+
+        VS_E_SOLUTIONNOTOPEN = VSConstants.VS_E_SOLUTIONNOTOPEN,
+
+        VS_E_SOLUTIONALREADYOPEN = VSConstants.VS_E_SOLUTIONALREADYOPEN,
+
+        VS_E_PROJECTMIGRATIONFAILED = VSConstants.VS_E_PROJECTMIGRATIONFAILED,
+
+        VS_E_INCOMPATIBLEDOCDATA = VSConstants.VS_E_INCOMPATIBLEDOCDATA,
+
+        VS_E_UNSUPPORTEDFORMAT = VSConstants.VS_E_UNSUPPORTEDFORMAT,
+
+        VS_E_WIZARDBACKBUTTONPRESS = VSConstants.VS_E_WIZARDBACKBUTTONPRESS,
+
+        VS_E_INCOMPATIBLEPROJECT = VSConstants.VS_E_INCOMPATIBLEPROJECT,
+
+        VS_E_INCOMPATIBLECLASSICPROJECT = VSConstants.VS_E_INCOMPATIBLECLASSICPROJECT,
+
+        VS_E_INCOMPATIBLEPROJECT_UNSUPPORTED_OS = VSConstants.VS_E_INCOMPATIBLEPROJECT_UNSUPPORTED_OS,
+
+        VS_E_PROMPTREQUIRED = VSConstants.VS_E_PROMPTREQUIRED,
+
+        VS_E_CIRCULARTASKDEPENDENCY = VSConstants.VS_E_CIRCULARTASKDEPENDENCY,
+
+        VS_E_EDITORDISABLED = VSConstants.VS_E_EDITORDISABLED,
+
+        UNDO_E_CLIENTABORT = VSConstants.UNDO_E_CLIENTABORT,
+
+        /// <summary>
+        /// Another single phase resource manager has already been enlisted in this transaction.
+        /// </summary>
+        XACT_E_FIRST = (int)(0x8004D000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Another single phase resource manager has already been enlisted in this transaction.
+        /// </summary>
+        XACT_E_ALREADYOTHERSINGLEPHASE = (int)(0x8004D000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A retaining commit or abort is not supported
+        /// </summary>
+        XACT_E_CANTRETAIN = (int)(0x8004D001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction failed to commit for an unknown reason. The transaction was aborted.
+        /// </summary>
+        XACT_E_COMMITFAILED = (int)(0x8004D002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot call commit on this transaction object because the calling application did not initiate the transaction.
+        /// </summary>
+        XACT_E_COMMITPREVENTED = (int)(0x8004D003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Instead of committing, the resource heuristically aborted.
+        /// </summary>
+        XACT_E_HEURISTICABORT = (int)(0x8004D004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Instead of aborting, the resource heuristically committed.
+        /// </summary>
+        XACT_E_HEURISTICCOMMIT = (int)(0x8004D005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Some of the states of the resource were committed while others were aborted, likely because of heuristic decisions.
+        /// </summary>
+        XACT_E_HEURISTICDAMAGE = (int)(0x8004D006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Some of the states of the resource may have been committed while others may have been aborted, likely because of
+        /// heuristic decisions.
+        /// </summary>
+        XACT_E_HEURISTICDANGER = (int)(0x8004D007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested isolation level is not valid or supported.
+        /// </summary>
+        XACT_E_ISOLATIONLEVEL = (int)(0x8004D008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction manager doesn't support an asynchronous operation for this method.
+        /// </summary>
+        XACT_E_NOASYNC = (int)(0x8004D009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to enlist in the transaction.
+        /// </summary>
+        XACT_E_NOENLIST = (int)(0x8004D00A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested semantics of retention of isolation across retaining commit and abort boundaries cannot be supported by
+        /// this transaction implementation, or isoFlags was not equal to zero.
+        /// </summary>
+        XACT_E_NOISORETAIN = (int)(0x8004D00B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no resource presently associated with this enlistment
+        /// </summary>
+        XACT_E_NORESOURCE = (int)(0x8004D00C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction failed to commit due to the failure of optimistic concurrency control in at least one of the resource managers.
+        /// </summary>
+        XACT_E_NOTCURRENT = (int)(0x8004D00D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction has already been implicitly or explicitly committed or aborted
+        /// </summary>
+        XACT_E_NOTRANSACTION = (int)(0x8004D00E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An invalid combination of flags was specified
+        /// </summary>
+        XACT_E_NOTSUPPORTED = (int)(0x8004D00F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The resource manager id is not associated with this transaction or the transaction manager.
+        /// </summary>
+        XACT_E_UNKNOWNRMGRID = (int)(0x8004D010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This method was called in the wrong state
+        /// </summary>
+        XACT_E_WRONGSTATE = (int)(0x8004D011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The indicated unit of work does not match the unit of work expected by the resource manager.
+        /// </summary>
+        XACT_E_WRONGUOW = (int)(0x8004D012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An enlistment in a transaction already exists.
+        /// </summary>
+        XACT_E_XTIONEXISTS = (int)(0x8004D013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An import object for the transaction could not be found.
+        /// </summary>
+        XACT_E_NOIMPORTOBJECT = (int)(0x8004D014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction cookie is invalid.
+        /// </summary>
+        XACT_E_INVALIDCOOKIE = (int)(0x8004D015 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction status is in doubt. A communication failure occurred, or a transaction manager or resource manager has failed
+        /// </summary>
+        XACT_E_INDOUBT = (int)(0x8004D016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A time-out was specified, but time-outs are not supported.
+        /// </summary>
+        XACT_E_NOTIMEOUT = (int)(0x8004D017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested operation is already in progress for the transaction.
+        /// </summary>
+        XACT_E_ALREADYINPROGRESS = (int)(0x8004D018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction has already been aborted.
+        /// </summary>
+        XACT_E_ABORTED = (int)(0x8004D019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Transaction Manager returned a log full error.
+        /// </summary>
+        XACT_E_LOGFULL = (int)(0x8004D01A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Transaction Manager is not available.
+        /// </summary>
+        XACT_E_TMNOTAVAILABLE = (int)(0x8004D01B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A connection with the transaction manager was lost.
+        /// </summary>
+        XACT_E_CONNECTION_DOWN = (int)(0x8004D01C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A request to establish a connection with the transaction manager was denied.
+        /// </summary>
+        XACT_E_CONNECTION_DENIED = (int)(0x8004D01D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Resource manager reenlistment to determine transaction status timed out.
+        /// </summary>
+        XACT_E_REENLISTTIMEOUT = (int)(0x8004D01E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This transaction manager failed to establish a connection with another TIP transaction manager.
+        /// </summary>
+        XACT_E_TIP_CONNECT_FAILED = (int)(0x8004D01F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This transaction manager encountered a protocol error with another TIP transaction manager.
+        /// </summary>
+        XACT_E_TIP_PROTOCOL_ERROR = (int)(0x8004D020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This transaction manager could not propagate a transaction from another TIP transaction manager.
+        /// </summary>
+        XACT_E_TIP_PULL_FAILED = (int)(0x8004D021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Transaction Manager on the destination machine is not available.
+        /// </summary>
+        XACT_E_DEST_TMNOTAVAILABLE = (int)(0x8004D022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Transaction Manager has disabled its support for TIP.
+        /// </summary>
+        XACT_E_TIP_DISABLED = (int)(0x8004D023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction manager has disabled its support for remote/network transactions.
+        /// </summary>
+        XACT_E_NETWORK_TX_DISABLED = (int)(0x8004D024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The partner transaction manager has disabled its support for remote/network transactions.
+        /// </summary>
+        XACT_E_PARTNER_NETWORK_TX_DISABLED = (int)(0x8004D025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The transaction manager has disabled its support for XA transactions.
+        /// </summary>
+        XACT_E_XA_TX_DISABLED = (int)(0x8004D026 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// MSDTC was unable to read its configuration information.
+        /// </summary>
+        XACT_E_UNABLE_TO_READ_DTC_CONFIG = (int)(0x8004D027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// MSDTC was unable to load the dtc proxy dll.
+        /// </summary>
+        XACT_E_UNABLE_TO_LOAD_DTC_PROXY = (int)(0x8004D028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The local transaction has aborted.
+        /// </summary>
+        XACT_E_LAST = (int)(0x8004D029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The local transaction has aborted.
+        /// </summary>
+        XACT_E_ABORTING = (int)(0x8004D029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// XACT_E_CLERKNOTFOUND
+        /// </summary>
+        XACT_E_CLERKNOTFOUND = (int)(0x8004D080 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// XACT_E_CLERKEXISTS
+        /// </summary>
+        XACT_E_CLERKEXISTS = (int)(0x8004D081 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// XACT_E_RECOVERYINPROGRESS
+        /// </summary>
+        XACT_E_RECOVERYINPROGRESS = (int)(0x8004D082 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// XACT_E_TRANSACTIONCLOSED
+        /// </summary>
+        XACT_E_TRANSACTIONCLOSED = (int)(0x8004D083 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// XACT_E_INVALIDLSN
+        /// </summary>
+        XACT_E_INVALIDLSN = (int)(0x8004D084 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// XACT_E_REPLAYREQUEST
+        /// </summary>
+        XACT_E_REPLAYREQUEST = (int)(0x8004D085 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CONTEXT_E_FIRST = (int)(0x8004E000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The root transaction wanted to commit, but transaction aborted
+        /// </summary>
+        CONTEXT_E_ABORTED = (int)(0x8004E002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// You made a method call on a COM+ component that has a transaction that has already aborted or in the process of aborting.
+        /// </summary>
+        CONTEXT_E_ABORTING = (int)(0x8004E003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no MTS object context
+        /// </summary>
+        CONTEXT_E_NOCONTEXT = (int)(0x8004E004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CONTEXT_E_WOULD_DEADLOCK = (int)(0x8004E005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component is configured to use synchronization and a thread has timed out waiting to enter the context.
+        /// </summary>
+        CONTEXT_E_SYNCH_TIMEOUT = (int)(0x8004E006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// You made a method call on a COM+ component that has a transaction that has already committed or aborted.
+        /// </summary>
+        CONTEXT_E_OLDREF = (int)(0x8004E007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified role was not configured for the application
+        /// </summary>
+        CONTEXT_E_ROLENOTFOUND = (int)(0x8004E00C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ was unable to talk to the Microsoft Distributed Transaction Coordinator
+        /// </summary>
+        CONTEXT_E_TMNOTAVAILABLE = (int)(0x8004E00F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unexpected error occurred during COM+ Activation.
+        /// </summary>
+        CO_E_ACTIVATIONFAILED = (int)(0x8004E021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ Activation failed. Check the event log for more information
+        /// </summary>
+        CO_E_ACTIVATIONFAILED_EVENTLOGGED = (int)(0x8004E022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ Activation failed due to a catalog or configuration error.
+        /// </summary>
+        CO_E_ACTIVATIONFAILED_CATALOGERROR = (int)(0x8004E023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ activation failed because the activation could not be completed in the specified amount of time.
+        /// </summary>
+        CO_E_ACTIVATIONFAILED_TIMEOUT = (int)(0x8004E024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ Activation failed because an initialization function failed. Check the event log for more information.
+        /// </summary>
+        CO_E_INITIALIZATIONFAILED = (int)(0x8004E025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested operation requires that JIT be in the current context and it is not
+        /// </summary>
+        CONTEXT_E_NOJIT = (int)(0x8004E026 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested operation requires that the current context have a Transaction, and it does not
+        /// </summary>
+        CONTEXT_E_NOTRANSACTION = (int)(0x8004E027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The components threading model has changed after install into a COM+ Application. Please re-install component.
+        /// </summary>
+        CO_E_THREADINGMODEL_CHANGED = (int)(0x8004E028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// IIS intrinsics not available. Start your work with IIS.
+        /// </summary>
+        CO_E_NOIISINTRINSICS = (int)(0x8004E029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An attempt to write a cookie failed.
+        /// </summary>
+        CO_E_NOCOOKIES = (int)(0x8004E02A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An attempt to use a database generated a database specific error.
+        /// </summary>
+        CO_E_DBERROR = (int)(0x8004E02B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ component you created must use object pooling to work.
+        /// </summary>
+        CO_E_NOTPOOLED = (int)(0x8004E02C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ component you created must use object construction to work correctly.
+        /// </summary>
+        CO_E_NOTCONSTRUCTED = (int)(0x8004E02D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ component requires synchronization, and it is not configured for it.
+        /// </summary>
+        CO_E_NOSYNCHRONIZATION = (int)(0x8004E02E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The TxIsolation Level property for the COM+ component being created is stronger than the TxIsolationLevel for the "root"
+        /// component for the transaction. The creation failed.
+        /// </summary>
+        CONTEXT_E_LAST = (int)(0x8004E02F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The TxIsolation Level property for the COM+ component being created is stronger than the TxIsolationLevel for the "root"
+        /// component for the transaction. The creation failed.
+        /// </summary>
+        CO_E_ISOLEVELMISMATCH = (int)(0x8004E02F - HResultMask.MAGIC_SUBTRAHEND),
+
+        COR_E_FILENOTFOUND = VSConstants.COR_E_FILENOTFOUND,
+
+        COR_E_DIRECTORYNOTFOUND = VSConstants.COR_E_DIRECTORYNOTFOUND,
+
+        /// <summary>
+        /// General access denied error
+        /// </summary>
+        E_ACCESSDENIED = VSConstants.E_ACCESSDENIED,
+
+        /// <summary>
+        /// Invalid handle
+        /// </summary>
+        E_HANDLE = VSConstants.E_HANDLE,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for out of memory
+        /// </summary>
+        E_OUTOFMEMORY = VSConstants.E_OUTOFMEMORY,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for an invalid argument.
+        /// </summary>
+        E_INVALIDARG = VSConstants.E_INVALIDARG,
+
+        /// <summary>
+        /// Attempt to create a class object failed
+        /// </summary>
+        CO_E_CLASS_CREATE_FAILED = (int)(0x80080001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OLE service could not bind object
+        /// </summary>
+        CO_E_SCM_ERROR = (int)(0x80080002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// RPC communication failed with OLE service
+        /// </summary>
+        CO_E_SCM_RPC_FAILURE = (int)(0x80080003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad path to object
+        /// </summary>
+        CO_E_BAD_PATH = (int)(0x80080004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Server execution failed
+        /// </summary>
+        CO_E_SERVER_EXEC_FAILURE = (int)(0x80080005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OLE service could not communicate with the object server
+        /// </summary>
+        CO_E_OBJSRV_RPC_FAILURE = (int)(0x80080006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Moniker path could not be normalized
+        /// </summary>
+        MK_E_NO_NORMALIZED = (int)(0x80080007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object server is stopping when OLE service contacts it
+        /// </summary>
+        CO_E_SERVER_STOPPING = (int)(0x80080008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An invalid root block pointer was specified
+        /// </summary>
+        MEM_E_INVALID_ROOT = (int)(0x80080009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An allocation chain contained an invalid link pointer
+        /// </summary>
+        MEM_E_INVALID_LINK = (int)(0x80080010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested allocation size was too large
+        /// </summary>
+        MEM_E_INVALID_SIZE = (int)(0x80080011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad UID.
+        /// </summary>
+        NTE_BAD_UID = (int)(0x80090001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad Hash.
+        /// </summary>
+        NTE_BAD_HASH = (int)(0x80090002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad Key.
+        /// </summary>
+        NTE_BAD_KEY = (int)(0x80090003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad Length.
+        /// </summary>
+        NTE_BAD_LEN = (int)(0x80090004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad Data.
+        /// </summary>
+        NTE_BAD_DATA = (int)(0x80090005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid Signature.
+        /// </summary>
+        NTE_BAD_SIGNATURE = (int)(0x80090006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Bad Version of provider.
+        /// </summary>
+        NTE_BAD_VER = (int)(0x80090007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid algorithm specified.
+        /// </summary>
+        NTE_BAD_ALGID = (int)(0x80090008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid flags specified.
+        /// </summary>
+        NTE_BAD_FLAGS = (int)(0x80090009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid type specified.
+        /// </summary>
+        NTE_BAD_TYPE = (int)(0x8009000A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Key not valid for use in specified state.
+        /// </summary>
+        NTE_BAD_KEY_STATE = (int)(0x8009000B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Hash not valid for use in specified state.
+        /// </summary>
+        NTE_BAD_HASH_STATE = (int)(0x8009000C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Key does not exist.
+        /// </summary>
+        NTE_NO_KEY = (int)(0x8009000D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Insufficient memory available for the operation.
+        /// </summary>
+        NTE_NO_MEMORY = (int)(0x8009000E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object already exists.
+        /// </summary>
+        NTE_EXISTS = (int)(0x8009000F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Access denied.
+        /// </summary>
+        NTE_PERM = (int)(0x80090010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object was not found.
+        /// </summary>
+        NTE_NOT_FOUND = (int)(0x80090011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Data already encrypted.
+        /// </summary>
+        NTE_DOUBLE_ENCRYPT = (int)(0x80090012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid provider specified.
+        /// </summary>
+        NTE_BAD_PROVIDER = (int)(0x80090013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid provider type specified.
+        /// </summary>
+        NTE_BAD_PROV_TYPE = (int)(0x80090014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider's public key is invalid.
+        /// </summary>
+        NTE_BAD_PUBLIC_KEY = (int)(0x80090015 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Keyset does not exist
+        /// </summary>
+        NTE_BAD_KEYSET = (int)(0x80090016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider type not defined.
+        /// </summary>
+        NTE_PROV_TYPE_NOT_DEF = (int)(0x80090017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider type as registered is invalid.
+        /// </summary>
+        NTE_PROV_TYPE_ENTRY_BAD = (int)(0x80090018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The keyset is not defined.
+        /// </summary>
+        NTE_KEYSET_NOT_DEF = (int)(0x80090019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Keyset as registered is invalid.
+        /// </summary>
+        NTE_KEYSET_ENTRY_BAD = (int)(0x8009001A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider type does not match registered value.
+        /// </summary>
+        NTE_PROV_TYPE_NO_MATCH = (int)(0x8009001B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The digital signature file is corrupt.
+        /// </summary>
+        NTE_SIGNATURE_FILE_BAD = (int)(0x8009001C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider DLL failed to initialize correctly.
+        /// </summary>
+        NTE_PROVIDER_DLL_FAIL = (int)(0x8009001D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider DLL could not be found.
+        /// </summary>
+        NTE_PROV_DLL_NOT_FOUND = (int)(0x8009001E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Keyset parameter is invalid.
+        /// </summary>
+        NTE_BAD_KEYSET_PARAM = (int)(0x8009001F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An internal error occurred.
+        /// </summary>
+        NTE_FAIL = (int)(0x80090020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A base error occurred.
+        /// </summary>
+        NTE_SYS_ERR = (int)(0x80090021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Provider could not perform the action since the context was acquired as silent.
+        /// </summary>
+        NTE_SILENT_CONTEXT = (int)(0x80090022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The security token does not have storage space available for an additional container.
+        /// </summary>
+        NTE_TOKEN_KEYSET_STORAGE_FULL = (int)(0x80090023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The profile for the user is a temporary profile.
+        /// </summary>
+        NTE_TEMPORARY_PROFILE = (int)(0x80090024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The key parameters could not be set because the CSP uses fixed parameters.
+        /// </summary>
+        NTE_FIXEDPARAMETER = (int)(0x80090025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Not enough memory is available to complete this request
+        /// </summary>
+        SEC_E_INSUFFICIENT_MEMORY = (int)(0x80090300 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The handle specified is invalid
+        /// </summary>
+        SEC_E_INVALID_HANDLE = (int)(0x80090301 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The function requested is not supported
+        /// </summary>
+        SEC_E_UNSUPPORTED_FUNCTION = (int)(0x80090302 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_NOT_SUPPORTED = SEC_E_UNSUPPORTED_FUNCTION,
+
+        /// <summary>
+        /// The specified target is unknown or unreachable
+        /// </summary>
+        SEC_E_TARGET_UNKNOWN = (int)(0x80090303 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Local Security Authority cannot be contacted
+        /// </summary>
+        SEC_E_INTERNAL_ERROR = (int)(0x80090304 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_NO_SPM = SEC_E_INTERNAL_ERROR,
+
+        /// <summary>
+        /// The requested security package does not exist
+        /// </summary>
+        SEC_E_SECPKG_NOT_FOUND = (int)(0x80090305 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The caller is not the owner of the desired credentials
+        /// </summary>
+        SEC_E_NOT_OWNER = (int)(0x80090306 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The security package failed to initialize, and cannot be installed
+        /// </summary>
+        SEC_E_CANNOT_INSTALL = (int)(0x80090307 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The token supplied to the function is invalid
+        /// </summary>
+        SEC_E_INVALID_TOKEN = (int)(0x80090308 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The security package is not able to marshall the logon buffer, so the logon attempt has failed
+        /// </summary>
+        SEC_E_CANNOT_PACK = (int)(0x80090309 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The per-message Quality of Protection is not supported by the security package
+        /// </summary>
+        SEC_E_QOP_NOT_SUPPORTED = (int)(0x8009030A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The security context does not allow impersonation of the client
+        /// </summary>
+        SEC_E_NO_IMPERSONATION = (int)(0x8009030B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The logon attempt failed
+        /// </summary>
+        SEC_E_LOGON_DENIED = (int)(0x8009030C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The credentials supplied to the package were not recognized
+        /// </summary>
+        SEC_E_UNKNOWN_CREDENTIALS = (int)(0x8009030D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No credentials are available in the security package
+        /// </summary>
+        SEC_E_NO_CREDENTIALS = (int)(0x8009030E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The message or signature supplied for verification has been altered
+        /// </summary>
+        SEC_E_MESSAGE_ALTERED = (int)(0x8009030F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The message supplied for verification is out of sequence
+        /// </summary>
+        SEC_E_OUT_OF_SEQUENCE = (int)(0x80090310 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No authority could be contacted for authentication.
+        /// </summary>
+        SEC_E_NO_AUTHENTICATING_AUTHORITY = (int)(0x80090311 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested security package does not exist
+        /// </summary>
+        SEC_E_BAD_PKGID = (int)(0x80090316 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The context has expired and can no longer be used.
+        /// </summary>
+        SEC_E_CONTEXT_EXPIRED = (int)(0x80090317 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The supplied message is incomplete. The signature was not verified.
+        /// </summary>
+        SEC_E_INCOMPLETE_MESSAGE = (int)(0x80090318 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The credentials supplied were not complete, and could not be verified. The context could not be initialized.
+        /// </summary>
+        SEC_E_INCOMPLETE_CREDENTIALS = (int)(0x80090320 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The buffers supplied to a function was too small.
+        /// </summary>
+        SEC_E_BUFFER_TOO_SMALL = (int)(0x80090321 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The target principal name is incorrect.
+        /// </summary>
+        SEC_E_WRONG_PRINCIPAL = (int)(0x80090322 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The clocks on the client and server machines are skewed.
+        /// </summary>
+        SEC_E_TIME_SKEW = (int)(0x80090324 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate chain was issued by an authority that is not trusted.
+        /// </summary>
+        SEC_E_UNTRUSTED_ROOT = (int)(0x80090325 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The message received was unexpected or badly formatted.
+        /// </summary>
+        SEC_E_ILLEGAL_MESSAGE = (int)(0x80090326 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unknown error occurred while processing the certificate.
+        /// </summary>
+        SEC_E_CERT_UNKNOWN = (int)(0x80090327 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The received certificate has expired.
+        /// </summary>
+        SEC_E_CERT_EXPIRED = (int)(0x80090328 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified data could not be encrypted.
+        /// </summary>
+        SEC_E_ENCRYPT_FAILURE = (int)(0x80090329 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified data could not be decrypted.
+        /// </summary>
+        SEC_E_DECRYPT_FAILURE = (int)(0x80090330 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The client and server cannot communicate, because they do not possess a common algorithm.
+        /// </summary>
+        SEC_E_ALGORITHM_MISMATCH = (int)(0x80090331 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The security context could not be established due to a failure in the requested quality of service (e.g. mutual
+        /// authentication or delegation).
+        /// </summary>
+        SEC_E_SECURITY_QOS_FAILED = (int)(0x80090332 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A security context was deleted before the context was completed. This is considered a logon failure.
+        /// </summary>
+        SEC_E_UNFINISHED_CONTEXT_DELETED = (int)(0x80090333 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The client is trying to negotiate a context and the server requires user-to-user but didn't send a TGT reply.
+        /// </summary>
+        SEC_E_NO_TGT_REPLY = (int)(0x80090334 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to accomplish the requested task because the local machine does not have any IP addresses.
+        /// </summary>
+        SEC_E_NO_IP_ADDRESSES = (int)(0x80090335 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The supplied credential handle does not match the credential associated with the security context.
+        /// </summary>
+        SEC_E_WRONG_CREDENTIAL_HANDLE = (int)(0x80090336 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The crypto system or checksum function is invalid because a required function is unavailable.
+        /// </summary>
+        SEC_E_CRYPTO_SYSTEM_INVALID = (int)(0x80090337 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The number of maximum ticket referrals has been exceeded.
+        /// </summary>
+        SEC_E_MAX_REFERRALS_EXCEEDED = (int)(0x80090338 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The local machine must be a Kerberos KDC (domain controller) and it is not.
+        /// </summary>
+        SEC_E_MUST_BE_KDC = (int)(0x80090339 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The other end of the security negotiation is requires strong crypto but it is not supported on the local machine.
+        /// </summary>
+        SEC_E_STRONG_CRYPTO_NOT_SUPPORTED = (int)(0x8009033A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The KDC reply contained more than one principal name.
+        /// </summary>
+        SEC_E_TOO_MANY_PRINCIPALS = (int)(0x8009033B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Expected to find PA data for a hint of what etype to use, but it was not found.
+        /// </summary>
+        SEC_E_NO_PA_DATA = (int)(0x8009033C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The client cert name does not matches the user name or the KDC name is incorrect.
+        /// </summary>
+        SEC_E_PKINIT_NAME_MISMATCH = (int)(0x8009033D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Smartcard logon is required and was not used.
+        /// </summary>
+        SEC_E_SMARTCARD_LOGON_REQUIRED = (int)(0x8009033E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A system shutdown is in progress.
+        /// </summary>
+        SEC_E_SHUTDOWN_IN_PROGRESS = (int)(0x8009033F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An invalid request was sent to the KDC.
+        /// </summary>
+        SEC_E_KDC_INVALID_REQUEST = (int)(0x80090340 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The KDC was unable to generate a referral for the service requested.
+        /// </summary>
+        SEC_E_KDC_UNABLE_TO_REFER = (int)(0x80090341 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The encryption type requested is not supported by the KDC.
+        /// </summary>
+        SEC_E_KDC_UNKNOWN_ETYPE = (int)(0x80090342 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unsupported preauthentication mechanism was presented to the kerberos package.
+        /// </summary>
+        SEC_E_UNSUPPORTED_PREAUTH = (int)(0x80090343 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested operation requires delegation to be enabled on the machine.
+        /// </summary>
+        SEC_E_DELEGATION_REQUIRED = (int)(0x80090345 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Client's supplied SSPI channel bindings were incorrect.
+        /// </summary>
+        SEC_E_BAD_BINDINGS = (int)(0x80090346 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The received certificate was mapped to multiple accounts.
+        /// </summary>
+        SEC_E_MULTIPLE_ACCOUNTS = (int)(0x80090347 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// SEC_E_NO_KERB_KEY
+        /// </summary>
+        SEC_E_NO_KERB_KEY = (int)(0x80090348 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_CERT_WRONG_USAGE = (int)(0x80090349 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_DOWNGRADE_DETECTED = (int)(0x80090350 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_SMARTCARD_CERT_REVOKED = (int)(0x80090351 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_ISSUING_CA_UNTRUSTED = (int)(0x80090352 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_REVOCATION_OFFLINE_C = (int)(0x80090353 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_PKINIT_CLIENT_FAILURE = (int)(0x80090354 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_SMARTCARD_CERT_EXPIRED = (int)(0x80090355 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_NO_S4U_PROT_SUPPORT = (int)(0x80090356 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SEC_E_CROSSREALM_DELEGATION_FAILURE = (int)(0x80090357 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred while performing an operation on a cryptographic message.
+        /// </summary>
+        CRYPT_E_MSG_ERROR = (int)(0x80091001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unknown cryptographic algorithm.
+        /// </summary>
+        CRYPT_E_UNKNOWN_ALGO = (int)(0x80091002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The object identifier is poorly formatted.
+        /// </summary>
+        CRYPT_E_OID_FORMAT = (int)(0x80091003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid cryptographic message type.
+        /// </summary>
+        CRYPT_E_INVALID_MSG_TYPE = (int)(0x80091004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unexpected cryptographic message encoding.
+        /// </summary>
+        CRYPT_E_UNEXPECTED_ENCODING = (int)(0x80091005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The cryptographic message does not contain an expected authenticated attribute.
+        /// </summary>
+        CRYPT_E_AUTH_ATTR_MISSING = (int)(0x80091006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The hash value is not correct.
+        /// </summary>
+        CRYPT_E_HASH_VALUE = (int)(0x80091007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The index value is not valid.
+        /// </summary>
+        CRYPT_E_INVALID_INDEX = (int)(0x80091008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The content of the cryptographic message has already been decrypted.
+        /// </summary>
+        CRYPT_E_ALREADY_DECRYPTED = (int)(0x80091009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The content of the cryptographic message has not been decrypted yet.
+        /// </summary>
+        CRYPT_E_NOT_DECRYPTED = (int)(0x8009100A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The enveloped-data message does not contain the specified recipient.
+        /// </summary>
+        CRYPT_E_RECIPIENT_NOT_FOUND = (int)(0x8009100B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid control type.
+        /// </summary>
+        CRYPT_E_CONTROL_TYPE = (int)(0x8009100C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid issuer and/or serial number.
+        /// </summary>
+        CRYPT_E_ISSUER_SERIALNUMBER = (int)(0x8009100D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot find the original signer.
+        /// </summary>
+        CRYPT_E_SIGNER_NOT_FOUND = (int)(0x8009100E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The cryptographic message does not contain all of the requested attributes.
+        /// </summary>
+        CRYPT_E_ATTRIBUTES_MISSING = (int)(0x8009100F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The streamed cryptographic message is not ready to return data.
+        /// </summary>
+        CRYPT_E_STREAM_MSG_NOT_READY = (int)(0x80091010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The streamed cryptographic message requires more data to complete the decode operation.
+        /// </summary>
+        CRYPT_E_STREAM_INSUFFICIENT_DATA = (int)(0x80091011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The length specified for the output data was insufficient.
+        /// </summary>
+        CRYPT_E_BAD_LEN = (int)(0x80092001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred during encode or decode operation.
+        /// </summary>
+        CRYPT_E_BAD_ENCODE = (int)(0x80092002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred while reading or writing to a file.
+        /// </summary>
+        CRYPT_E_FILE_ERROR = (int)(0x80092003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot find object or property.
+        /// </summary>
+        CRYPT_E_NOT_FOUND = (int)(0x80092004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The object or property already exists.
+        /// </summary>
+        CRYPT_E_EXISTS = (int)(0x80092005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No provider was specified for the store or object.
+        /// </summary>
+        CRYPT_E_NO_PROVIDER = (int)(0x80092006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified certificate is self signed.
+        /// </summary>
+        CRYPT_E_SELF_SIGNED = (int)(0x80092007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The previous certificate or CRL context was deleted.
+        /// </summary>
+        CRYPT_E_DELETED_PREV = (int)(0x80092008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot find the requested object.
+        /// </summary>
+        CRYPT_E_NO_MATCH = (int)(0x80092009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate does not have a property that references a private key.
+        /// </summary>
+        CRYPT_E_UNEXPECTED_MSG_TYPE = (int)(0x8009200A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot find the certificate and private key for decryption.
+        /// </summary>
+        CRYPT_E_NO_KEY_PROPERTY = (int)(0x8009200B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot find the certificate and private key to use for decryption.
+        /// </summary>
+        CRYPT_E_NO_DECRYPT_CERT = (int)(0x8009200C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Not a cryptographic message or the cryptographic message is not formatted correctly.
+        /// </summary>
+        CRYPT_E_BAD_MSG = (int)(0x8009200D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The signed cryptographic message does not have a signer for the specified signer index.
+        /// </summary>
+        CRYPT_E_NO_SIGNER = (int)(0x8009200E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Final closure is pending until additional frees or closes.
+        /// </summary>
+        CRYPT_E_PENDING_CLOSE = (int)(0x8009200F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate is revoked.
+        /// </summary>
+        CRYPT_E_REVOKED = (int)(0x80092010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No Dll or exported function was found to verify revocation.
+        /// </summary>
+        CRYPT_E_NO_REVOCATION_DLL = (int)(0x80092011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The revocation function was unable to check revocation for the certificate.
+        /// </summary>
+        CRYPT_E_NO_REVOCATION_CHECK = (int)(0x80092012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The revocation function was unable to check revocation because the revocation server was offline.
+        /// </summary>
+        CRYPT_E_REVOCATION_OFFLINE = (int)(0x80092013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate is not in the revocation server's database.
+        /// </summary>
+        CRYPT_E_NOT_IN_REVOCATION_DATABASE = (int)(0x80092014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The string contains a non-numeric character.
+        /// </summary>
+        CRYPT_E_INVALID_NUMERIC_STRING = (int)(0x80092020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The string contains a non-printable character.
+        /// </summary>
+        CRYPT_E_INVALID_PRINTABLE_STRING = (int)(0x80092021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The string contains a character not in the 7 bit ASCII character set.
+        /// </summary>
+        CRYPT_E_INVALID_IA5_STRING = (int)(0x80092022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The string contains an invalid X500 name attribute key, oid, value or delimiter.
+        /// </summary>
+        CRYPT_E_INVALID_X500_STRING = (int)(0x80092023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The dwValueType for the CERT_NAME_VALUE is not one of the character strings. Most likely it is either a
+        /// CERT_RDN_ENCODED_BLOB or CERT_TDN_OCTED_STRING.
+        /// </summary>
+        CRYPT_E_NOT_CHAR_STRING = (int)(0x80092024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Put operation can not continue. The file needs to be resized. However, there is already a signature present. A
+        /// complete signing operation must be done.
+        /// </summary>
+        CRYPT_E_FILERESIZED = (int)(0x80092025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The cryptographic operation failed due to a local security option setting.
+        /// </summary>
+        CRYPT_E_SECURITY_SETTINGS = (int)(0x80092026 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No DLL or exported function was found to verify subject usage.
+        /// </summary>
+        CRYPT_E_NO_VERIFY_USAGE_DLL = (int)(0x80092027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The called function was unable to do a usage check on the subject.
+        /// </summary>
+        CRYPT_E_NO_VERIFY_USAGE_CHECK = (int)(0x80092028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Since the server was offline, the called function was unable to complete the usage check.
+        /// </summary>
+        CRYPT_E_VERIFY_USAGE_OFFLINE = (int)(0x80092029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The subject was not found in a Certificate Trust List (CTL).
+        /// </summary>
+        CRYPT_E_NOT_IN_CTL = (int)(0x8009202A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// None of the signers of the cryptographic message or certificate trust list is trusted.
+        /// </summary>
+        CRYPT_E_NO_TRUSTED_SIGNER = (int)(0x8009202B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The public key's algorithm parameters are missing.
+        /// </summary>
+        CRYPT_E_MISSING_PUBKEY_PARA = (int)(0x8009202C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS Certificate encode/decode error code base
+        ///
+        /// See asn1code.h for a definition of the OSS runtime errors. The OSS error values are offset by CRYPT_E_OSS_ERROR.
+        /// </summary>
+        CRYPT_E_OSS_ERROR = (int)(0x80093000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Output Buffer is too small.
+        /// </summary>
+        OSS_MORE_BUF = (int)(0x80093001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Signed integer is encoded as a unsigned integer.
+        /// </summary>
+        OSS_NEGATIVE_UINTEGER = (int)(0x80093002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Unknown ASN.1 data type.
+        /// </summary>
+        OSS_PDU_RANGE = (int)(0x80093003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Output buffer is too small, the decoded data has been truncated.
+        /// </summary>
+        OSS_MORE_INPUT = (int)(0x80093004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_DATA_ERROR = (int)(0x80093005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid argument.
+        /// </summary>
+        OSS_BAD_ARG = (int)(0x80093006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Encode/Decode version mismatch.
+        /// </summary>
+        OSS_BAD_VERSION = (int)(0x80093007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Out of memory.
+        /// </summary>
+        OSS_OUT_MEMORY = (int)(0x80093008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Encode/Decode Error.
+        /// </summary>
+        OSS_PDU_MISMATCH = (int)(0x80093009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Internal Error.
+        /// </summary>
+        OSS_LIMITED = (int)(0x8009300A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_BAD_PTR = (int)(0x8009300B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_BAD_TIME = (int)(0x8009300C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Unsupported BER indefinite-length encoding.
+        /// </summary>
+        OSS_INDEFINITE_NOT_SUPPORTED = (int)(0x8009300D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Access violation.
+        /// </summary>
+        OSS_MEM_ERROR = (int)(0x8009300E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_BAD_TABLE = (int)(0x8009300F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_TOO_Int32 = (int)(0x80093010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_CONSTRAINT_VIOLATED = (int)(0x80093011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Internal Error.
+        /// </summary>
+        OSS_FATAL_ERROR = (int)(0x80093012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Multi-threading conflict.
+        /// </summary>
+        OSS_ACCESS_SERIALIZATION_ERROR = (int)(0x80093013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_NULL_TBL = (int)(0x80093014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_NULL_FCN = (int)(0x80093015 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_BAD_ENCRULES = (int)(0x80093016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Encode/Decode function not implemented.
+        /// </summary>
+        OSS_UNAVAIL_ENCRULES = (int)(0x80093017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Trace file error.
+        /// </summary>
+        OSS_CANT_OPEN_TRACE_WINDOW = (int)(0x80093018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Function not implemented.
+        /// </summary>
+        OSS_UNIMPLEMENTED = (int)(0x80093019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_OID_DLL_NOT_LINKED = (int)(0x8009301A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Trace file error.
+        /// </summary>
+        OSS_CANT_OPEN_TRACE_FILE = (int)(0x8009301B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Trace file error.
+        /// </summary>
+        OSS_TRACE_FILE_ALREADY_OPEN = (int)(0x8009301C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_TABLE_MISMATCH = (int)(0x8009301D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Invalid data.
+        /// </summary>
+        OSS_TYPE_NOT_SUPPORTED = (int)(0x8009301E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_REAL_DLL_NOT_LINKED = (int)(0x8009301F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_REAL_CODE_NOT_LINKED = (int)(0x80093020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_OUT_OF_RANGE = (int)(0x80093021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_COPIER_DLL_NOT_LINKED = (int)(0x80093022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_CONSTRAINT_DLL_NOT_LINKED = (int)(0x80093023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_COMPARATOR_DLL_NOT_LINKED = (int)(0x80093024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_COMPARATOR_CODE_NOT_LINKED = (int)(0x80093025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_MEM_MGR_DLL_NOT_LINKED = (int)(0x80093026 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_PDV_DLL_NOT_LINKED = (int)(0x80093027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_PDV_CODE_NOT_LINKED = (int)(0x80093028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_API_DLL_NOT_LINKED = (int)(0x80093029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_BERDER_DLL_NOT_LINKED = (int)(0x8009302A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_PER_DLL_NOT_LINKED = (int)(0x8009302B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Program link error.
+        /// </summary>
+        OSS_OPEN_TYPE_ERROR = (int)(0x8009302C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: System resource error.
+        /// </summary>
+        OSS_MUTEX_NOT_CREATED = (int)(0x8009302D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// OSS ASN.1 Error: Trace file error.
+        /// </summary>
+        OSS_CANT_CLOSE_TRACE_FILE = (int)(0x8009302E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 Certificate encode/decode error code base.
+        ///
+        /// The ASN1 error values are offset by CRYPT_E_ASN1_ERROR.
+        /// </summary>
+        CRYPT_E_ASN1_ERROR = (int)(0x80093100 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 internal encode or decode error.
+        /// </summary>
+        CRYPT_E_ASN1_INTERNAL = (int)(0x80093101 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 unexpected end of data.
+        /// </summary>
+        CRYPT_E_ASN1_EOD = (int)(0x80093102 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 corrupted data.
+        /// </summary>
+        CRYPT_E_ASN1_CORRUPT = (int)(0x80093103 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 value too large.
+        /// </summary>
+        CRYPT_E_ASN1_LARGE = (int)(0x80093104 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 constraint violated.
+        /// </summary>
+        CRYPT_E_ASN1_CONSTRAINT = (int)(0x80093105 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 out of memory.
+        /// </summary>
+        CRYPT_E_ASN1_MEMORY = (int)(0x80093106 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 buffer overflow.
+        /// </summary>
+        CRYPT_E_ASN1_OVERFLOW = (int)(0x80093107 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 function not supported for this PDU.
+        /// </summary>
+        CRYPT_E_ASN1_BADPDU = (int)(0x80093108 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad arguments to function call.
+        /// </summary>
+        CRYPT_E_ASN1_BADARGS = (int)(0x80093109 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad real value.
+        /// </summary>
+        CRYPT_E_ASN1_BADREAL = (int)(0x8009310A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad tag value met.
+        /// </summary>
+        CRYPT_E_ASN1_BADTAG = (int)(0x8009310B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad choice value.
+        /// </summary>
+        CRYPT_E_ASN1_CHOICE = (int)(0x8009310C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad encoding rule.
+        /// </summary>
+        CRYPT_E_ASN1_RULE = (int)(0x8009310D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad unicode (UTF8).
+        /// </summary>
+        CRYPT_E_ASN1_UTF8 = (int)(0x8009310E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 bad PDU type.
+        /// </summary>
+        CRYPT_E_ASN1_PDU_TYPE = (int)(0x80093133 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 not yet implemented.
+        /// </summary>
+        CRYPT_E_ASN1_NYI = (int)(0x80093134 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 skipped unknown extension(s).
+        /// </summary>
+        CRYPT_E_ASN1_EXTENDED = (int)(0x80093201 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// ASN1 end of data expected
+        /// </summary>
+        CRYPT_E_ASN1_NOEOD = (int)(0x80093202 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request subject name is invalid or too long.
+        /// </summary>
+        CERTSRV_E_BAD_REQUESTSUBJECT = (int)(0x80094001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request does not exist.
+        /// </summary>
+        CERTSRV_E_NO_REQUEST = (int)(0x80094002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request's current status does not allow this operation.
+        /// </summary>
+        CERTSRV_E_BAD_REQUESTSTATUS = (int)(0x80094003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested property value is empty.
+        /// </summary>
+        CERTSRV_E_PROPERTY_EMPTY = (int)(0x80094004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certification authority's certificate contains invalid data.
+        /// </summary>
+        CERTSRV_E_INVALID_CA_CERTIFICATE = (int)(0x80094005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Certificate service has been suspended for a database restore operation.
+        /// </summary>
+        CERTSRV_E_SERVER_SUSPENDED = (int)(0x80094006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate contains an encoded length that is potentially incompatible with older enrollment software.
+        /// </summary>
+        CERTSRV_E_ENCODING_LENGTH = (int)(0x80094007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation is denied. The user has multiple roles assigned and the certification authority is configured to enforce
+        /// role separation.
+        /// </summary>
+        CERTSRV_E_ROLECONFLICT = (int)(0x80094008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation is denied. It can only be performed by a certificate manager that is allowed to manage certificates for
+        /// the current requester.
+        /// </summary>
+        CERTSRV_E_RESTRICTEDOFFICER = (int)(0x80094009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot archive private key. The certification authority is not configured for key archival.
+        /// </summary>
+        CERTSRV_E_KEY_ARCHIVAL_NOT_CONFIGURED = (int)(0x8009400A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot archive private key. The certification authority could not verify one or more key recovery certificates.
+        /// </summary>
+        CERTSRV_E_NO_VALID_KRA = (int)(0x8009400B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is incorrectly formatted. The encrypted private key must be in an unauthenticated attribute in an outermost signature.
+        /// </summary>
+        CERTSRV_E_BAD_REQUEST_KEY_ARCHIVAL = (int)(0x8009400C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// At least one security principal must have the permission to manage this CA.
+        /// </summary>
+        CERTSRV_E_NO_CAADMIN_DEFINED = (int)(0x8009400D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request contains an invalid renewal certificate attribute.
+        /// </summary>
+        CERTSRV_E_BAD_RENEWAL_CERT_ATTRIBUTE = (int)(0x8009400E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An attempt was made to open a Certification Authority database session, but there are already too many active sessions.
+        /// The server may need to be configured to allow additional sessions.
+        /// </summary>
+        CERTSRV_E_NO_DB_SESSIONS = (int)(0x8009400F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A memory reference caused a data alignment fault.
+        /// </summary>
+        CERTSRV_E_ALIGNMENT_FAULT = (int)(0x80094010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The permissions on this certification authority do not allow the current user to enroll for certificates.
+        /// </summary>
+        CERTSRV_E_ENROLL_DENIED = (int)(0x80094011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The permissions on the certificate template do not allow the current user to enroll for this type of certificate.
+        /// </summary>
+        CERTSRV_E_TEMPLATE_DENIED = (int)(0x80094012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CERTSRV_E_DOWNLEVEL_DC_SSL_OR_UPGRADE = (int)(0x80094013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested certificate template is not supported by this CA.
+        /// </summary>
+        CERTSRV_E_UNSUPPORTED_CERT_TYPE = (int)(0x80094800 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request contains no certificate template information.
+        /// </summary>
+        CERTSRV_E_NO_CERT_TYPE = (int)(0x80094801 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request contains conflicting template information.
+        /// </summary>
+        CERTSRV_E_TEMPLATE_CONFLICT = (int)(0x80094802 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is missing a required Subject Alternate name extension.
+        /// </summary>
+        CERTSRV_E_SUBJECT_ALT_NAME_REQUIRED = (int)(0x80094803 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is missing a required private key for archival by the server.
+        /// </summary>
+        CERTSRV_E_ARCHIVED_KEY_REQUIRED = (int)(0x80094804 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is missing a required SMIME capabilities extension.
+        /// </summary>
+        CERTSRV_E_SMIME_REQUIRED = (int)(0x80094805 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request was made on behalf of a subject other than the caller. The certificate template must be configured to
+        /// require at least one signature to authorize the request.
+        /// </summary>
+        CERTSRV_E_BAD_RENEWAL_SUBJECT = (int)(0x80094806 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request template version is newer than the supported template version.
+        /// </summary>
+        CERTSRV_E_BAD_TEMPLATE_VERSION = (int)(0x80094807 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The template is missing a required signature policy attribute.
+        /// </summary>
+        CERTSRV_E_TEMPLATE_POLICY_REQUIRED = (int)(0x80094808 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is missing required signature policy information.
+        /// </summary>
+        CERTSRV_E_SIGNATURE_POLICY_REQUIRED = (int)(0x80094809 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is missing one or more required signatures.
+        /// </summary>
+        CERTSRV_E_SIGNATURE_COUNT = (int)(0x8009480A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more signatures did not include the required application or issuance policies. The request is missing one or more
+        /// required valid signatures.
+        /// </summary>
+        CERTSRV_E_SIGNATURE_REJECTED = (int)(0x8009480B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request is missing one or more required signature issuance policies.
+        /// </summary>
+        CERTSRV_E_ISSUANCE_POLICY_REQUIRED = (int)(0x8009480C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The UPN is unavailable and cannot be added to the Subject Alternate name.
+        /// </summary>
+        CERTSRV_E_SUBJECT_UPN_REQUIRED = (int)(0x8009480D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Active Directory GUID is unavailable and cannot be added to the Subject Alternate name.
+        /// </summary>
+        CERTSRV_E_SUBJECT_DIRECTORY_GUID_REQUIRED = (int)(0x8009480E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The DNS name is unavailable and cannot be added to the Subject Alternate name.
+        /// </summary>
+        CERTSRV_E_SUBJECT_DNS_REQUIRED = (int)(0x8009480F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The request includes a private key for archival by the server, but key archival is not enabled for the specified
+        /// certificate template.
+        /// </summary>
+        CERTSRV_E_ARCHIVED_KEY_UNEXPECTED = (int)(0x80094810 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The public key does not meet the minimum size required by the specified certificate template.
+        /// </summary>
+        CERTSRV_E_KEY_LENGTH = (int)(0x80094811 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CERTSRV_E_SUBJECT_EMAIL_REQUIRED = (int)(0x80094812 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CERTSRV_E_UNKNOWN_CERT_TYPE = (int)(0x80094813 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CERTSRV_E_CERT_TYPE_OVERLAP = (int)(0x80094814 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The key is not exportable.
+        /// </summary>
+        XENROLL_E_KEY_NOT_EXPORTABLE = (int)(0x80095000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// You cannot add the root CA certificate into your local store.
+        /// </summary>
+        XENROLL_E_CANNOT_ADD_ROOT_CERT = (int)(0x80095001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The key archival hash attribute was not found in the response.
+        /// </summary>
+        XENROLL_E_RESPONSE_KA_HASH_NOT_FOUND = (int)(0x80095002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unexpetced key archival hash attribute was found in the response.
+        /// </summary>
+        XENROLL_E_RESPONSE_UNEXPECTED_KA_HASH = (int)(0x80095003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is a key archival hash mismatch between the request and the response.
+        /// </summary>
+        XENROLL_E_RESPONSE_KA_HASH_MISMATCH = (int)(0x80095004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Signing certificate cannot include SMIME extension.
+        /// </summary>
+        XENROLL_E_KEYSPEC_SMIME_MISMATCH = (int)(0x80095005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A system-level error occurred while verifying trust.
+        /// </summary>
+        TRUST_E_SYSTEM_ERROR = (int)(0x80096001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate for the signer of the message is invalid or not found.
+        /// </summary>
+        TRUST_E_NO_SIGNER_CERT = (int)(0x80096002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One of the counter signatures was invalid.
+        /// </summary>
+        TRUST_E_COUNTER_SIGNER = (int)(0x80096003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The signature of the certificate can not be verified.
+        /// </summary>
+        TRUST_E_CERT_SIGNATURE = (int)(0x80096004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The timestamp signature and/or certificate could not be verified or is malformed.
+        /// </summary>
+        TRUST_E_TIME_STAMP = (int)(0x80096005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The digital signature of the object did not verify.
+        /// </summary>
+        TRUST_E_BAD_DIGEST = (int)(0x80096010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate's basic constraint extension has not been observed.
+        /// </summary>
+        TRUST_E_BASIC_CONSTRAINTS = (int)(0x80096019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate does not meet or contain the Authenticode financial extensions.
+        /// </summary>
+        TRUST_E_FINANCIAL_CRITERIA = (int)(0x8009601E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Tried to reference a part of the file outside the proper range.
+        /// </summary>
+        MSSIPOTF_E_OUTOFMEMRANGE = (int)(0x80097001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not retrieve an object from the file.
+        /// </summary>
+        MSSIPOTF_E_CANTGETOBJECT = (int)(0x80097002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Could not find the head table in the file.
+        /// </summary>
+        MSSIPOTF_E_NOHEADTABLE = (int)(0x80097003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The magic number in the head table is incorrect.
+        /// </summary>
+        MSSIPOTF_E_BAD_MAGICNUMBER = (int)(0x80097004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The offset table has incorrect values.
+        /// </summary>
+        MSSIPOTF_E_BAD_OFFSET_TABLE = (int)(0x80097005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Duplicate table tags or tags out of alphabetical order.
+        /// </summary>
+        MSSIPOTF_E_TABLE_TAGORDER = (int)(0x80097006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A table does not start on a long word boundary.
+        /// </summary>
+        MSSIPOTF_E_TABLE_Int32UInt16 = (int)(0x80097007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// First table does not appear after header information.
+        /// </summary>
+        MSSIPOTF_E_BAD_FIRST_TABLE_PLACEMENT = (int)(0x80097008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Two or more tables overlap.
+        /// </summary>
+        MSSIPOTF_E_TABLES_OVERLAP = (int)(0x80097009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Too many pad bytes between tables or pad bytes are not 0.
+        /// </summary>
+        MSSIPOTF_E_TABLE_PADBYTES = (int)(0x8009700A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// File is too small to contain the last table.
+        /// </summary>
+        MSSIPOTF_E_FILETOOSMALL = (int)(0x8009700B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A table checksum is incorrect.
+        /// </summary>
+        MSSIPOTF_E_TABLE_CHECKSUM = (int)(0x8009700C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file checksum is incorrect.
+        /// </summary>
+        MSSIPOTF_E_FILE_CHECKSUM = (int)(0x8009700D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The signature does not have the correct attributes for the policy.
+        /// </summary>
+        MSSIPOTF_E_FAILED_POLICY = (int)(0x80097010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file did not pass the hints check.
+        /// </summary>
+        MSSIPOTF_E_FAILED_HINTS_CHECK = (int)(0x80097011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file is not an OpenType file.
+        /// </summary>
+        MSSIPOTF_E_NOT_OPENTYPE = (int)(0x80097012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Failed on a file operation (open, map, read, write).
+        /// </summary>
+        MSSIPOTF_E_FILE = (int)(0x80097013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A call to a CryptoAPI function failed.
+        /// </summary>
+        MSSIPOTF_E_CRYPT = (int)(0x80097014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is a bad version number in the file.
+        /// </summary>
+        MSSIPOTF_E_BADVERSION = (int)(0x80097015 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The structure of the DSIG table is incorrect.
+        /// </summary>
+        MSSIPOTF_E_DSIG_STRUCTURE = (int)(0x80097016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A check failed in a partially constant table.
+        /// </summary>
+        MSSIPOTF_E_PCONST_CHECK = (int)(0x80097017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Some kind of structural error.
+        /// </summary>
+        MSSIPOTF_E_STRUCTURE = (int)(0x80097018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unknown trust provider.
+        /// </summary>
+        TRUST_E_PROVIDER_UNKNOWN = (int)(0x800B0001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The trust verification action specified is not supported by the specified trust provider.
+        /// </summary>
+        TRUST_E_ACTION_UNKNOWN = (int)(0x800B0002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The form specified for the subject is not one supported or known by the specified trust provider.
+        /// </summary>
+        TRUST_E_SUBJECT_FORM_UNKNOWN = (int)(0x800B0003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The subject is not trusted for the specified action.
+        /// </summary>
+        TRUST_E_SUBJECT_NOT_TRUSTED = (int)(0x800B0004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error due to problem in ASN.1 encoding process.
+        /// </summary>
+        DIGSIG_E_ENCODE = (int)(0x800B0005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error due to problem in ASN.1 decoding process.
+        /// </summary>
+        DIGSIG_E_DECODE = (int)(0x800B0006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Reading / writing Extensions where Attributes are appropriate, and visa versa.
+        /// </summary>
+        DIGSIG_E_EXTENSIBILITY = (int)(0x800B0007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unspecified cryptographic failure.
+        /// </summary>
+        DIGSIG_E_CRYPTO = (int)(0x800B0008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The size of the data could not be determined.
+        /// </summary>
+        PERSIST_E_SIZEDEFINITE = (int)(0x800B0009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The size of the indefinite-sized data could not be determined.
+        /// </summary>
+        PERSIST_E_SIZEINDEFINITE = (int)(0x800B000A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This object does not read and write self-sizing data.
+        /// </summary>
+        PERSIST_E_NOTSELFSIZING = (int)(0x800B000B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No signature was present in the subject.
+        /// </summary>
+        TRUST_E_NOSIGNATURE = (int)(0x800B0100 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Generic trust failure.
+        /// </summary>
+        TRUST_E_FAIL = (int)(0x800B010B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certificate was explicitly revoked by its issuer.
+        /// </summary>
+        CERT_E_REVOKED = (int)(0x800B010C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certification path terminates with the test root which is not trusted with the current policy settings.
+        /// </summary>
+        CERT_E_UNTRUSTEDTESTROOT = (int)(0x800B010D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The revocation process could not continue - the certificate(s) could not be checked.
+        /// </summary>
+        CERT_E_REVOCATION_FAILURE = (int)(0x800B010E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate's CN name does not match the passed value.
+        /// </summary>
+        CERT_E_CN_NO_MATCH = (int)(0x800B010F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate is not valid for the requested usage.
+        /// </summary>
+        CERT_E_WRONG_USAGE = (int)(0x800B0110 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate was explicitly marked as untrusted by the user.
+        /// </summary>
+        TRUST_E_EXPLICIT_DISTRUST = (int)(0x800B0111 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A certification chain processed correctly, but one of the CA certificates is not trusted by the policy provider.
+        /// </summary>
+        CERT_E_UNTRUSTEDCA = (int)(0x800B0112 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate has invalid policy.
+        /// </summary>
+        CERT_E_INVALID_POLICY = (int)(0x800B0113 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The certificate has an invalid name. The name is not included in the permitted list or is explicitly excluded.
+        /// </summary>
+        CERT_E_INVALID_NAME = (int)(0x800B0114 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A non-empty line was encountered in the INF before the start of a section.
+        /// </summary>
+        SPAPI_E_EXPECTED_SECTION_NAME = (int)(0x800F0000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A section name marker in the INF is not complete, or does not exist on a line by itself.
+        /// </summary>
+        SPAPI_E_BAD_SECTION_NAME_LINE = (int)(0x800F0001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An INF section was encountered whose name exceeds the maximum section name length.
+        /// </summary>
+        SPAPI_E_SECTION_NAME_TOO_Int32 = (int)(0x800F0002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The syntax of the INF is invalid.
+        /// </summary>
+        SPAPI_E_GENERAL_SYNTAX = (int)(0x800F0003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The style of the INF is different than what was requested.
+        /// </summary>
+        SPAPI_E_WRONG_INF_STYLE = (int)(0x800F0100 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The required section was not found in the INF.
+        /// </summary>
+        SPAPI_E_SECTION_NOT_FOUND = (int)(0x800F0101 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The required line was not found in the INF.
+        /// </summary>
+        SPAPI_E_LINE_NOT_FOUND = (int)(0x800F0102 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The files affected by the installation of this file queue have not been backed up for uninstall.
+        /// </summary>
+        SPAPI_E_NO_BACKUP = (int)(0x800F0103 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The INF or the device information set or element does not have an associated install class.
+        /// </summary>
+        SPAPI_E_NO_ASSOCIATED_CLASS = (int)(0x800F0200 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The INF or the device information set or element does not match the specified install class.
+        /// </summary>
+        SPAPI_E_CLASS_MISMATCH = (int)(0x800F0201 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An existing device was found that is a duplicate of the device being manually installed.
+        /// </summary>
+        SPAPI_E_DUPLICATE_FOUND = (int)(0x800F0202 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no driver selected for the device information set or element.
+        /// </summary>
+        SPAPI_E_NO_DRIVER_SELECTED = (int)(0x800F0203 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested device registry key does not exist.
+        /// </summary>
+        SPAPI_E_KEY_DOES_NOT_EXIST = (int)(0x800F0204 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device instance name is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_DEVINST_NAME = (int)(0x800F0205 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The install class is not present or is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_CLASS = (int)(0x800F0206 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device instance cannot be created because it already exists.
+        /// </summary>
+        SPAPI_E_DEVINST_ALREADY_EXISTS = (int)(0x800F0207 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation cannot be performed on a device information element that has not been registered.
+        /// </summary>
+        SPAPI_E_DEVINFO_NOT_REGISTERED = (int)(0x800F0208 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device property code is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_REG_PROPERTY = (int)(0x800F0209 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The INF from which a driver list is to be built does not exist.
+        /// </summary>
+        SPAPI_E_NO_INF = (int)(0x800F020A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device instance does not exist in the hardware tree.
+        /// </summary>
+        SPAPI_E_NO_SUCH_DEVINST = (int)(0x800F020B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The icon representing this install class cannot be loaded.
+        /// </summary>
+        SPAPI_E_CANT_LOAD_CLASS_ICON = (int)(0x800F020C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The class installer registry entry is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_CLASS_INSTALLER = (int)(0x800F020D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The class installer has indicated that the default action should be performed for this installation request.
+        /// </summary>
+        SPAPI_E_DI_DO_DEFAULT = (int)(0x800F020E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation does not require any files to be copied.
+        /// </summary>
+        SPAPI_E_DI_NOFILECOPY = (int)(0x800F020F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified hardware profile does not exist.
+        /// </summary>
+        SPAPI_E_INVALID_HWPROFILE = (int)(0x800F0210 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no device information element currently selected for this device information set.
+        /// </summary>
+        SPAPI_E_NO_DEVICE_SELECTED = (int)(0x800F0211 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation cannot be performed because the device information set is locked.
+        /// </summary>
+        SPAPI_E_DEVINFO_LIST_LOCKED = (int)(0x800F0212 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation cannot be performed because the device information element is locked.
+        /// </summary>
+        SPAPI_E_DEVINFO_DATA_LOCKED = (int)(0x800F0213 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified path does not contain any applicable device INFs.
+        /// </summary>
+        SPAPI_E_DI_BAD_PATH = (int)(0x800F0214 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No class installer parameters have been set for the device information set or element.
+        /// </summary>
+        SPAPI_E_NO_CLASSINSTALL_PARAMS = (int)(0x800F0215 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation cannot be performed because the file queue is locked.
+        /// </summary>
+        SPAPI_E_FILEQUEUE_LOCKED = (int)(0x800F0216 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A service installation section in this INF is invalid.
+        /// </summary>
+        SPAPI_E_BAD_SERVICE_INSTALLSECT = (int)(0x800F0217 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no class driver list for the device information element.
+        /// </summary>
+        SPAPI_E_NO_CLASS_DRIVER_LIST = (int)(0x800F0218 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The installation failed because a function driver was not specified for this device instance.
+        /// </summary>
+        SPAPI_E_NO_ASSOCIATED_SERVICE = (int)(0x800F0219 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is presently no default device interface designated for this interface class.
+        /// </summary>
+        SPAPI_E_NO_DEFAULT_DEVICE_INTERFACE = (int)(0x800F021A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation cannot be performed because the device interface is currently active.
+        /// </summary>
+        SPAPI_E_DEVICE_INTERFACE_ACTIVE = (int)(0x800F021B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation cannot be performed because the device interface has been removed from the system.
+        /// </summary>
+        SPAPI_E_DEVICE_INTERFACE_REMOVED = (int)(0x800F021C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An interface installation section in this INF is invalid.
+        /// </summary>
+        SPAPI_E_BAD_INTERFACE_INSTALLSECT = (int)(0x800F021D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This interface class does not exist in the system.
+        /// </summary>
+        SPAPI_E_NO_SUCH_INTERFACE_CLASS = (int)(0x800F021E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The reference string supplied for this interface device is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_REFERENCE_STRING = (int)(0x800F021F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified machine name does not conform to UNC naming conventions.
+        /// </summary>
+        SPAPI_E_INVALID_MACHINENAME = (int)(0x800F0220 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A general remote communication error occurred.
+        /// </summary>
+        SPAPI_E_REMOTE_COMM_FAILURE = (int)(0x800F0221 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The machine selected for remote communication is not available at this time.
+        /// </summary>
+        SPAPI_E_MACHINE_UNAVAILABLE = (int)(0x800F0222 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Plug and Play service is not available on the remote machine.
+        /// </summary>
+        SPAPI_E_NO_CONFIGMGR_SERVICES = (int)(0x800F0223 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The property page provider registry entry is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_PROPPAGE_PROVIDER = (int)(0x800F0224 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested device interface is not present in the system.
+        /// </summary>
+        SPAPI_E_NO_SUCH_DEVICE_INTERFACE = (int)(0x800F0225 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device's co-installer has additional work to perform after installation is complete.
+        /// </summary>
+        SPAPI_E_DI_POSTPROCESSING_REQUIRED = (int)(0x800F0226 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device's co-installer is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_COINSTALLER = (int)(0x800F0227 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There are no compatible drivers for this device.
+        /// </summary>
+        SPAPI_E_NO_COMPAT_DRIVERS = (int)(0x800F0228 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There is no icon that represents this device or device type.
+        /// </summary>
+        SPAPI_E_NO_DEVICE_ICON = (int)(0x800F0229 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A logical configuration specified in this INF is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_INF_LOGCONFIG = (int)(0x800F022A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The class installer has denied the request to install or upgrade this device.
+        /// </summary>
+        SPAPI_E_DI_DONT_INSTALL = (int)(0x800F022B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One of the filter drivers installed for this device is invalid.
+        /// </summary>
+        SPAPI_E_INVALID_FILTER_DRIVER = (int)(0x800F022C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The driver selected for this device does not support Windows XP.
+        /// </summary>
+        SPAPI_E_NON_WINDOWS_NT_DRIVER = (int)(0x800F022D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The driver selected for this device does not support Windows.
+        /// </summary>
+        SPAPI_E_NON_WINDOWS_DRIVER = (int)(0x800F022E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The third-party INF does not contain digital signature information.
+        /// </summary>
+        SPAPI_E_NO_CATALOG_FOR_OEM_INF = (int)(0x800F022F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An invalid attempt was made to use a device installation file queue for verification of digital signatures relative to
+        /// other platforms.
+        /// </summary>
+        SPAPI_E_DEVINSTALL_QUEUE_NONNATIVE = (int)(0x800F0230 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device cannot be disabled.
+        /// </summary>
+        SPAPI_E_NOT_DISABLEABLE = (int)(0x800F0231 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The device could not be dynamically removed.
+        /// </summary>
+        SPAPI_E_CANT_REMOVE_DEVINST = (int)(0x800F0232 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot copy to specified target.
+        /// </summary>
+        SPAPI_E_INVALID_TARGET = (int)(0x800F0233 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Driver is not intended for this platform.
+        /// </summary>
+        SPAPI_E_DRIVER_NONNATIVE = (int)(0x800F0234 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Operation not allowed in WOW64.
+        /// </summary>
+        SPAPI_E_IN_WOW64 = (int)(0x800F0235 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation involving unsigned file copying was rolled back, so that a system restore point could be set.
+        /// </summary>
+        SPAPI_E_SET_SYSTEM_RESTORE_POINT = (int)(0x800F0236 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An INF was copied into the Windows INF directory in an improper manner.
+        /// </summary>
+        SPAPI_E_INCORRECTLY_COPIED_INF = (int)(0x800F0237 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Security Configuration Editor (SCE) APIs have been disabled on this Embedded product.
+        /// </summary>
+        SPAPI_E_SCE_DISABLED = (int)(0x800F0238 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No installed components were detected.
+        /// </summary>
+        SPAPI_E_ERROR_NOT_INSTALLED = (int)(0x800F1000 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An internal consistency check failed.
+        /// </summary>
+        SCARD_F_INTERNAL_ERROR = (int)(0x80100001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The action was cancelled by an SCardCancel request.
+        /// </summary>
+        SCARD_E_CANCELLED = (int)(0x80100002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The supplied handle was invalid.
+        /// </summary>
+        SCARD_E_INVALID_HANDLE = (int)(0x80100003 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more of the supplied parameters could not be properly interpreted.
+        /// </summary>
+        SCARD_E_INVALID_PARAMETER = (int)(0x80100004 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Registry startup information is missing or invalid.
+        /// </summary>
+        SCARD_E_INVALID_TARGET = (int)(0x80100005 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Not enough memory available to complete this command.
+        /// </summary>
+        SCARD_E_NO_MEMORY = (int)(0x80100006 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An internal consistency timer has expired.
+        /// </summary>
+        SCARD_F_WAITED_TOO_Int32 = (int)(0x80100007 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The data buffer to receive returned data is too small for the returned data.
+        /// </summary>
+        SCARD_E_INSUFFICIENT_BUFFER = (int)(0x80100008 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified reader name is not recognized.
+        /// </summary>
+        SCARD_E_UNKNOWN_READER = (int)(0x80100009 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The user-specified timeout value has expired.
+        /// </summary>
+        SCARD_E_TIMEOUT = (int)(0x8010000A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The smart card cannot be accessed because of other connections outstanding.
+        /// </summary>
+        SCARD_E_SHARING_VIOLATION = (int)(0x8010000B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation requires a Smart Card, but no Smart Card is currently in the device.
+        /// </summary>
+        SCARD_E_NO_SMARTCARD = (int)(0x8010000C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified smart card name is not recognized.
+        /// </summary>
+        SCARD_E_UNKNOWN_CARD = (int)(0x8010000D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The system could not dispose of the media in the requested manner.
+        /// </summary>
+        SCARD_E_CANT_DISPOSE = (int)(0x8010000E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested protocols are incompatible with the protocol currently in use with the smart card.
+        /// </summary>
+        SCARD_E_PROTO_MISMATCH = (int)(0x8010000F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The reader or smart card is not ready to accept commands.
+        /// </summary>
+        SCARD_E_NOT_READY = (int)(0x80100010 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more of the supplied parameters values could not be properly interpreted.
+        /// </summary>
+        SCARD_E_INVALID_VALUE = (int)(0x80100011 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The action was cancelled by the system, presumably to log off or shut down.
+        /// </summary>
+        SCARD_E_SYSTEM_CANCELLED = (int)(0x80100012 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An internal communications error has been detected.
+        /// </summary>
+        SCARD_F_COMM_ERROR = (int)(0x80100013 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An internal error has been detected, but the source is unknown.
+        /// </summary>
+        SCARD_F_UNKNOWN_ERROR = (int)(0x80100014 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An ATR obtained from the registry is not a valid ATR string.
+        /// </summary>
+        SCARD_E_INVALID_ATR = (int)(0x80100015 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An attempt was made to end a non-existent transaction.
+        /// </summary>
+        SCARD_E_NOT_TRANSACTED = (int)(0x80100016 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified reader is not currently available for use.
+        /// </summary>
+        SCARD_E_READER_UNAVAILABLE = (int)(0x80100017 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The operation has been aborted to allow the server application to exit.
+        /// </summary>
+        SCARD_P_SHUTDOWN = (int)(0x80100018 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The PCI Receive buffer was too small.
+        /// </summary>
+        SCARD_E_PCI_TOO_SMALL = (int)(0x80100019 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The reader driver does not meet minimal requirements for support.
+        /// </summary>
+        SCARD_E_READER_UNSUPPORTED = (int)(0x8010001A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The reader driver did not produce a unique reader name.
+        /// </summary>
+        SCARD_E_DUPLICATE_READER = (int)(0x8010001B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The smart card does not meet minimal requirements for support.
+        /// </summary>
+        SCARD_E_CARD_UNSUPPORTED = (int)(0x8010001C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Smart card resource manager is not running.
+        /// </summary>
+        SCARD_E_NO_SERVICE = (int)(0x8010001D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Smart card resource manager has shut down.
+        /// </summary>
+        SCARD_E_SERVICE_STOPPED = (int)(0x8010001E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unexpected card error has occurred.
+        /// </summary>
+        SCARD_E_UNEXPECTED = (int)(0x8010001F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No Primary Provider can be found for the smart card.
+        /// </summary>
+        SCARD_E_ICC_INSTALLATION = (int)(0x80100020 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested order of object creation is not supported.
+        /// </summary>
+        SCARD_E_ICC_CREATEORDER = (int)(0x80100021 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This smart card does not support the requested feature.
+        /// </summary>
+        SCARD_E_UNSUPPORTED_FEATURE = (int)(0x80100022 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The identified directory does not exist in the smart card.
+        /// </summary>
+        SCARD_E_DIR_NOT_FOUND = (int)(0x80100023 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The identified file does not exist in the smart card.
+        /// </summary>
+        SCARD_E_FILE_NOT_FOUND = (int)(0x80100024 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The supplied path does not represent a smart card directory.
+        /// </summary>
+        SCARD_E_NO_DIR = (int)(0x80100025 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The supplied path does not represent a smart card file.
+        /// </summary>
+        SCARD_E_NO_FILE = (int)(0x80100026 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Access is denied to this file.
+        /// </summary>
+        SCARD_E_NO_ACCESS = (int)(0x80100027 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The smartcard does not have enough memory to store the information.
+        /// </summary>
+        SCARD_E_WRITE_TOO_MANY = (int)(0x80100028 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There was an error trying to set the smart card file object pointer.
+        /// </summary>
+        SCARD_E_BAD_SEEK = (int)(0x80100029 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The supplied PIN is incorrect.
+        /// </summary>
+        SCARD_E_INVALID_CHV = (int)(0x8010002A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unrecognized error code was returned from a layered component.
+        /// </summary>
+        SCARD_E_UNKNOWN_RES_MNG = (int)(0x8010002B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested certificate does not exist.
+        /// </summary>
+        SCARD_E_NO_SUCH_CERTIFICATE = (int)(0x8010002C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested certificate could not be obtained.
+        /// </summary>
+        SCARD_E_CERTIFICATE_UNAVAILABLE = (int)(0x8010002D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot find a smart card reader.
+        /// </summary>
+        SCARD_E_NO_READERS_AVAILABLE = (int)(0x8010002E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A communications error with the smart card has been detected. Retry the operation.
+        /// </summary>
+        SCARD_E_COMM_DATA_LOST = (int)(0x8010002F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The requested key container does not exist on the smart card.
+        /// </summary>
+        SCARD_E_NO_KEY_CONTAINER = (int)(0x80100030 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SCARD_E_SERVER_TOO_BUSY = (int)(0x80100031 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The reader cannot communicate with the smart card, due to ATR configuration conflicts.
+        /// </summary>
+        SCARD_W_UNSUPPORTED_CARD = (int)(0x80100065 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The smart card is not responding to a reset.
+        /// </summary>
+        SCARD_W_UNRESPONSIVE_CARD = (int)(0x80100066 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Power has been removed from the smart card, so that further communication is not possible.
+        /// </summary>
+        SCARD_W_UNPOWERED_CARD = (int)(0x80100067 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The smart card has been reset, so any shared state information is invalid.
+        /// </summary>
+        SCARD_W_RESET_CARD = (int)(0x80100068 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The smart card has been removed, so that further communication is not possible.
+        /// </summary>
+        SCARD_W_REMOVED_CARD = (int)(0x80100069 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Access was denied because of a security violation.
+        /// </summary>
+        SCARD_W_SECURITY_VIOLATION = (int)(0x8010006A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The card cannot be accessed because the wrong PIN was presented.
+        /// </summary>
+        SCARD_W_WRONG_CHV = (int)(0x8010006B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The card cannot be accessed because the maximum number of PIN entry attempts has been reached.
+        /// </summary>
+        SCARD_W_CHV_BLOCKED = (int)(0x8010006C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The end of the smart card file has been reached.
+        /// </summary>
+        SCARD_W_EOF = (int)(0x8010006D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The action was cancelled by the user.
+        /// </summary>
+        SCARD_W_CANCELLED_BY_USER = (int)(0x8010006E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No PIN was presented to the smart card.
+        /// </summary>
+        SCARD_W_CARD_NOT_AUTHENTICATED = (int)(0x8010006F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Errors occurred accessing one or more objects - the ErrorInfo collection may have more detail
+        /// </summary>
+        COMADMIN_E_OBJECTERRORS = (int)(0x80110401 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more of the object's properties are missing or invalid
+        /// </summary>
+        COMADMIN_E_OBJECTINVALID = (int)(0x80110402 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The object was not found in the catalog
+        /// </summary>
+        COMADMIN_E_KEYMISSING = (int)(0x80110403 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The object is already registered
+        /// </summary>
+        COMADMIN_E_ALREADYINSTALLED = (int)(0x80110404 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error occurred writing to the application file
+        /// </summary>
+        COMADMIN_E_APP_FILE_WRITEFAIL = (int)(0x80110407 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Error occurred reading the application file
+        /// </summary>
+        COMADMIN_E_APP_FILE_READFAIL = (int)(0x80110408 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Invalid version number in application file
+        /// </summary>
+        COMADMIN_E_APP_FILE_VERSION = (int)(0x80110409 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file path is invalid
+        /// </summary>
+        COMADMIN_E_BADPATH = (int)(0x8011040A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The application is already installed
+        /// </summary>
+        COMADMIN_E_APPLICATIONEXISTS = (int)(0x8011040B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The role already exists
+        /// </summary>
+        COMADMIN_E_ROLEEXISTS = (int)(0x8011040C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An error occurred copying the file
+        /// </summary>
+        COMADMIN_E_CANTCOPYFILE = (int)(0x8011040D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more users are not valid
+        /// </summary>
+        COMADMIN_E_NOUSER = (int)(0x8011040F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more users in the application file are not valid
+        /// </summary>
+        COMADMIN_E_INVALIDUSERIDS = (int)(0x80110410 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component's CLSID is missing or corrupt
+        /// </summary>
+        COMADMIN_E_NOREGISTRYCLSID = (int)(0x80110411 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component's progID is missing or corrupt
+        /// </summary>
+        COMADMIN_E_BADREGISTRYPROGID = (int)(0x80110412 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to set required authentication level for update request
+        /// </summary>
+        COMADMIN_E_AUTHENTICATIONLEVEL = (int)(0x80110413 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The identity or password set on the application is not valid
+        /// </summary>
+        COMADMIN_E_USERPASSWDNOTVALID = (int)(0x80110414 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Application file CLSIDs or IIDs do not match corresponding DLLs
+        /// </summary>
+        COMADMIN_E_CLSIDORIIDMISMATCH = (int)(0x80110418 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Interface information is either missing or changed
+        /// </summary>
+        COMADMIN_E_REMOTEINTERFACE = (int)(0x80110419 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// DllRegisterServer failed on component install
+        /// </summary>
+        COMADMIN_E_DLLREGISTERSERVER = (int)(0x8011041A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No server file share available
+        /// </summary>
+        COMADMIN_E_NOSERVERSHARE = (int)(0x8011041B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// DLL could not be loaded
+        /// </summary>
+        COMADMIN_E_DLLLOADFAILED = (int)(0x8011041D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The registered TypeLib ID is not valid
+        /// </summary>
+        COMADMIN_E_BADREGISTRYLIBID = (int)(0x8011041E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Application install directory not found
+        /// </summary>
+        COMADMIN_E_APPDIRNOTFOUND = (int)(0x8011041F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Errors occurred while in the component registrar
+        /// </summary>
+        COMADMIN_E_REGISTRARFAILED = (int)(0x80110423 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file does not exist
+        /// </summary>
+        COMADMIN_E_COMPFILE_DOESNOTEXIST = (int)(0x80110424 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The DLL could not be loaded
+        /// </summary>
+        COMADMIN_E_COMPFILE_LOADDLLFAIL = (int)(0x80110425 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// GetClassObject failed in the DLL
+        /// </summary>
+        COMADMIN_E_COMPFILE_GETCLASSOBJ = (int)(0x80110426 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The DLL does not support the components listed in the TypeLib
+        /// </summary>
+        COMADMIN_E_COMPFILE_CLASSNOTAVAIL = (int)(0x80110427 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The TypeLib could not be loaded
+        /// </summary>
+        COMADMIN_E_COMPFILE_BADTLB = (int)(0x80110428 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The file does not contain components or component information
+        /// </summary>
+        COMADMIN_E_COMPFILE_NOTINSTALLABLE = (int)(0x80110429 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Changes to this object and its sub-objects have been disabled
+        /// </summary>
+        COMADMIN_E_NOTCHANGEABLE = (int)(0x8011042A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The delete function has been disabled for this object
+        /// </summary>
+        COMADMIN_E_NOTDELETEABLE = (int)(0x8011042B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The server catalog version is not supported
+        /// </summary>
+        COMADMIN_E_SESSION = (int)(0x8011042C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component move was disallowed, because the source or destination application is either a system application or
+        /// currently locked against changes
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_LOCKED = (int)(0x8011042D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component move failed because the destination application no longer exists
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_BAD_DEST = (int)(0x8011042E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The system was unable to register the TypeLib
+        /// </summary>
+        COMADMIN_E_REGISTERTLB = (int)(0x80110430 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This operation can not be performed on the system application
+        /// </summary>
+        COMADMIN_E_SYSTEMAPP = (int)(0x80110433 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component registrar referenced in this file is not available
+        /// </summary>
+        COMADMIN_E_COMPFILE_NOREGISTRAR = (int)(0x80110434 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A component in the same DLL is already installed
+        /// </summary>
+        COMADMIN_E_COREQCOMPINSTALLED = (int)(0x80110435 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The service is not installed
+        /// </summary>
+        COMADMIN_E_SERVICENOTINSTALLED = (int)(0x80110436 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more property settings are either invalid or in conflict with each other
+        /// </summary>
+        COMADMIN_E_PROPERTYSAVEFAILED = (int)(0x80110437 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The object you are attempting to add or rename already exists
+        /// </summary>
+        COMADMIN_E_OBJECTEXISTS = (int)(0x80110438 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The component already exists
+        /// </summary>
+        COMADMIN_E_COMPONENTEXISTS = (int)(0x80110439 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The registration file is corrupt
+        /// </summary>
+        COMADMIN_E_REGFILE_CORRUPT = (int)(0x8011043B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The property value is too large
+        /// </summary>
+        COMADMIN_E_PROPERTY_OVERFLOW = (int)(0x8011043C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Object was not found in registry
+        /// </summary>
+        COMADMIN_E_NOTINREGISTRY = (int)(0x8011043E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This object is not poolable
+        /// </summary>
+        COMADMIN_E_OBJECTNOTPOOLABLE = (int)(0x8011043F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A CLSID with the same GUID as the new application ID is already installed on this machine
+        /// </summary>
+        COMADMIN_E_APPLID_MATCHES_CLSID = (int)(0x80110446 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A role assigned to a component, interface, or method did not exist in the application
+        /// </summary>
+        COMADMIN_E_ROLE_DOES_NOT_EXIST = (int)(0x80110447 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// You must have components in an application in order to start the application
+        /// </summary>
+        COMADMIN_E_START_APP_NEEDS_COMPONENTS = (int)(0x80110448 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This operation is not enabled on this platform
+        /// </summary>
+        COMADMIN_E_REQUIRES_DIFFERENT_PLATFORM = (int)(0x80110449 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Application Proxy is not exportable
+        /// </summary>
+        COMADMIN_E_CAN_NOT_EXPORT_APP_PROXY = (int)(0x8011044A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Failed to start application because it is either a library application or an application proxy
+        /// </summary>
+        COMADMIN_E_CAN_NOT_START_APP = (int)(0x8011044B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// System application is not exportable
+        /// </summary>
+        COMADMIN_E_CAN_NOT_EXPORT_SYS_APP = (int)(0x8011044C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Can not subscribe to this component (the component may have been imported)
+        /// </summary>
+        COMADMIN_E_CANT_SUBSCRIBE_TO_COMPONENT = (int)(0x8011044D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An event class cannot also be a subscriber component
+        /// </summary>
+        COMADMIN_E_EVENTCLASS_CANT_BE_SUBSCRIBER = (int)(0x8011044E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Library applications and application proxies are incompatible
+        /// </summary>
+        COMADMIN_E_LIB_APP_PROXY_INCOMPATIBLE = (int)(0x8011044F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This function is valid for the base partition only
+        /// </summary>
+        COMADMIN_E_BASE_PARTITION_ONLY = (int)(0x80110450 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// You cannot start an application that has been disabled
+        /// </summary>
+        COMADMIN_E_START_APP_DISABLED = (int)(0x80110451 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified partition name is already in use on this computer
+        /// </summary>
+        COMADMIN_E_CAT_DUPLICATE_PARTITION_NAME = (int)(0x80110457 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified partition name is invalid. Check that the name contains at least one visible character
+        /// </summary>
+        COMADMIN_E_CAT_INVALID_PARTITION_NAME = (int)(0x80110458 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The partition cannot be deleted because it is the default partition for one or more users
+        /// </summary>
+        COMADMIN_E_CAT_PARTITION_IN_USE = (int)(0x80110459 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The partition cannot be exported, because one or more components in the partition have the same file name
+        /// </summary>
+        COMADMIN_E_FILE_PARTITION_DUPLICATE_FILES = (int)(0x8011045A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Applications that contain one or more imported components cannot be installed into a non-base partition
+        /// </summary>
+        COMADMIN_E_CAT_IMPORTED_COMPONENTS_NOT_ALLOWED = (int)(0x8011045B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The application name is not unique and cannot be resolved to an application id
+        /// </summary>
+        COMADMIN_E_AMBIGUOUS_APPLICATION_NAME = (int)(0x8011045C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The partition name is not unique and cannot be resolved to a partition id
+        /// </summary>
+        COMADMIN_E_AMBIGUOUS_PARTITION_NAME = (int)(0x8011045D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ registry database has not been initialized
+        /// </summary>
+        COMADMIN_E_REGDB_NOTINITIALIZED = (int)(0x80110472 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ registry database is not open
+        /// </summary>
+        COMADMIN_E_REGDB_NOTOPEN = (int)(0x80110473 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ registry database detected a system error
+        /// </summary>
+        COMADMIN_E_REGDB_SYSTEMERR = (int)(0x80110474 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ registry database is already running
+        /// </summary>
+        COMADMIN_E_REGDB_ALREADYRUNNING = (int)(0x80110475 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// This version of the COM+ registry database cannot be migrated
+        /// </summary>
+        COMADMIN_E_MIG_VERSIONNOTSUPPORTED = (int)(0x80110480 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The schema version to be migrated could not be found in the COM+ registry database
+        /// </summary>
+        COMADMIN_E_MIG_SCHEMANOTFOUND = (int)(0x80110481 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There was a type mismatch between binaries
+        /// </summary>
+        COMADMIN_E_CAT_BITNESSMISMATCH = (int)(0x80110482 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A binary of unknown or invalid type was provided
+        /// </summary>
+        COMADMIN_E_CAT_UNACCEPTABLEBITNESS = (int)(0x80110483 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// There was a type mismatch between a binary and an application
+        /// </summary>
+        COMADMIN_E_CAT_WRONGAPPBITNESS = (int)(0x80110484 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The application cannot be paused or resumed
+        /// </summary>
+        COMADMIN_E_CAT_PAUSE_RESUME_NOT_SUPPORTED = (int)(0x80110485 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The COM+ Catalog Server threw an exception during execution
+        /// </summary>
+        COMADMIN_E_CAT_SERVERFAULT = (int)(0x80110486 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Only COM+ Applications marked "queued" can be invoked using the "queue" moniker
+        /// </summary>
+        COMQC_E_APPLICATION_NOT_QUEUED = (int)(0x80110600 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// At least one interface must be marked "queued" in order to create a queued component instance with the "queue" moniker
+        /// </summary>
+        COMQC_E_NO_QUEUEABLE_INTERFACES = (int)(0x80110601 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// MSMQ is required for the requested operation and is not installed
+        /// </summary>
+        COMQC_E_QUEUING_SERVICE_NOT_AVAILABLE = (int)(0x80110602 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Unable to marshal an interface that does not support IPersistStream
+        /// </summary>
+        COMQC_E_NO_IPERSISTSTREAM = (int)(0x80110603 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The message is improperly formatted or was damaged in transit
+        /// </summary>
+        COMQC_E_BAD_MESSAGE = (int)(0x80110604 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// An unauthenticated message was received by an application that accepts only authenticated messages
+        /// </summary>
+        COMQC_E_UNAUTHENTICATED = (int)(0x80110605 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The message was requeued or moved by a user not in the "QC Trusted User" role
+        /// </summary>
+        COMQC_E_UNTRUSTED_ENQUEUER = (int)(0x80110606 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Cannot create a duplicate resource of type Distributed Transaction Coordinator
+        /// </summary>
+        MSDTC_E_DUPLICATE_RESOURCE = (int)(0x80110701 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One of the objects being inserted or updated does not belong to a valid parent collection
+        /// </summary>
+        COMADMIN_E_OBJECT_PARENT_MISSING = (int)(0x80110808 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One of the specified objects cannot be found
+        /// </summary>
+        COMADMIN_E_OBJECT_DOES_NOT_EXIST = (int)(0x80110809 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified application is not currently running
+        /// </summary>
+        COMADMIN_E_APP_NOT_RUNNING = (int)(0x8011080A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The partition(s) specified are not valid.
+        /// </summary>
+        COMADMIN_E_INVALID_PARTITION = (int)(0x8011080B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// COM+ applications that run as NT service may not be pooled or recycled
+        /// </summary>
+        COMADMIN_E_SVCAPP_NOT_POOLABLE_OR_RECYCLABLE = (int)(0x8011080D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// One or more users are already assigned to a local partition set.
+        /// </summary>
+        COMADMIN_E_USER_IN_SET = (int)(0x8011080E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Library applications may not be recycled.
+        /// </summary>
+        COMADMIN_E_CANTRECYCLELIBRARYAPPS = (int)(0x8011080F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Applications running as NT services may not be recycled.
+        /// </summary>
+        COMADMIN_E_CANTRECYCLESERVICEAPPS = (int)(0x80110811 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The process has already been recycled.
+        /// </summary>
+        COMADMIN_E_PROCESSALREADYRECYCLED = (int)(0x80110812 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A paused process may not be recycled.
+        /// </summary>
+        COMADMIN_E_PAUSEDPROCESSMAYNOTBERECYCLED = (int)(0x80110813 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Library applications may not be NT services.
+        /// </summary>
+        COMADMIN_E_CANTMAKEINPROCSERVICE = (int)(0x80110814 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The ProgID provided to the copy operation is invalid. The ProgID is in use by another registered CLSID.
+        /// </summary>
+        COMADMIN_E_PROGIDINUSEBYCLSID = (int)(0x80110815 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The partition specified as default is not a member of the partition set.
+        /// </summary>
+        COMADMIN_E_DEFAULT_PARTITION_NOT_IN_SET = (int)(0x80110816 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A recycled process may not be paused.
+        /// </summary>
+        COMADMIN_E_RECYCLEDPROCESSMAYNOTBEPAUSED = (int)(0x80110817 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Access to the specified partition is denied.
+        /// </summary>
+        COMADMIN_E_PARTITION_ACCESSDENIED = (int)(0x80110818 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Only Application Files (*.MSI files) can be installed into partitions.
+        /// </summary>
+        COMADMIN_E_PARTITION_MSI_ONLY = (int)(0x80110819 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Applications containing one or more legacy components may not be exported to 1.0 format.
+        /// </summary>
+        COMADMIN_E_LEGACYCOMPS_NOT_ALLOWED_IN_1_0_FORMAT = (int)(0x8011081A - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Legacy components may not exist in non-base partitions.
+        /// </summary>
+        COMADMIN_E_LEGACYCOMPS_NOT_ALLOWED_IN_NONBASE_PARTITIONS = (int)(0x8011081B - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A component cannot be moved (or copied) from the System Application, an application proxy or a non-changeable application
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_SOURCE = (int)(0x8011081C - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A component cannot be moved (or copied) to the System Application, an application proxy or a non-changeable application
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_DEST = (int)(0x8011081D - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// A private component cannot be moved (or copied) to a library application or to the base partition
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_PRIVATE = (int)(0x8011081E - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The Base Application Partition exists in all partition sets and cannot be removed.
+        /// </summary>
+        COMADMIN_E_BASEPARTITION_REQUIRED_IN_SET = (int)(0x8011081F - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Alas, Event Class components cannot be aliased.
+        /// </summary>
+        COMADMIN_E_CANNOT_ALIAS_EVENTCLASS = (int)(0x80110820 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Access is denied because the component is private.
+        /// </summary>
+        COMADMIN_E_PRIVATE_ACCESSDENIED = (int)(0x80110821 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified SAFER level is invalid.
+        /// </summary>
+        COMADMIN_E_SAFERINVALID = (int)(0x80110822 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified user cannot write to the system registry
+        /// </summary>
+        COMADMIN_E_REGISTRY_ACCESSDENIED = (int)(0x80110823 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        COMADMIN_E_PARTITIONS_DISABLED = (int)(0x80110824 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The specified event is currently not being audited.
+        /// </summary>
+        ERROR_AUDITING_DISABLED = (int)(0xC0090001 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// The SID filtering operation removed all SIDs.
+        /// </summary>
+        ERROR_ALL_SIDS_FILTERED = (int)(0xC0090002 - HResultMask.MAGIC_SUBTRAHEND),
+
+        /// <summary>
+        /// Failed to open a file.
+        /// </summary>
+        NS_E_FILE_OPEN_FAILED = (int)(0xC00D001DL - 0x01_00_00_00_00),
+
+        /// <summary>
+        /// The operation completed successfully.
+        /// </summary>
+        S_OK = VSConstants.S_OK,
+
+        /// <summary>
+        /// The operation completed successfully.
+        /// </summary>
+        NTE_OP_OK = 0,
+
+        /// <summary>
+        /// Incorrect function.
+        /// </summary>
+        S_FALSE = VSConstants.S_FALSE,
+
+        /// <summary>
+        /// The underlying file was converted to compound file format.
+        /// </summary>
+        STG_S_CONVERTED = 0x00030200,
+
+        /// <summary>
+        /// The storage operation should block until more data is available.
+        /// </summary>
+        STG_S_BLOCK = 0x00030201,
+
+        /// <summary>
+        /// The storage operation should retry immediately.
+        /// </summary>
+        STG_S_RETRYNOW = 0x00030202,
+
+        /// <summary>
+        /// The notified event sink will not influence the storage operation.
+        /// </summary>
+        STG_S_MONITORING = 0x00030203,
+
+        /// <summary>
+        /// Multiple opens prevent consolidated. (commit succeeded).
+        /// </summary>
+        STG_S_MULTIPLEOPENS = 0x00030204,
+
+        /// <summary>
+        /// Consolidation of the storage file failed. (commit succeeded).
+        /// </summary>
+        STG_S_CONSOLIDATIONFAILED = 0x00030205,
+
+        /// <summary>
+        /// Consolidation of the storage file is inappropriate. (commit succeeded).
+        /// </summary>
+        STG_S_CANNOTCONSOLIDATE = 0x00030206,
+
+        /// <summary>
+        /// Use the registry database to provide the requested information
+        /// </summary>
+        OLE_S_FIRST = 0x00040000,
+
+        /// <summary>
+        /// Use the registry database to provide the requested information
+        /// </summary>
+        OLE_S_USEREG = 0x00040000,
+
+        /// <summary>
+        /// Success, but static
+        /// </summary>
+        OLE_S_STATIC = 0x00040001,
+
+        /// <summary>
+        /// Macintosh clipboard format
+        /// </summary>
+        OLE_S_MAC_CLIPFORMAT = 0x00040002,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        OLE_S_LAST = 0x000400FF,
+
+        /// <summary>
+        /// Successful drop took place
+        /// </summary>
+        DRAGDROP_S_FIRST = 0x00040100,
+
+        /// <summary>
+        /// Successful drop took place
+        /// </summary>
+        DRAGDROP_S_DROP = 0x00040100,
+
+        /// <summary>
+        /// Drag-drop operation canceled
+        /// </summary>
+        DRAGDROP_S_CANCEL = 0x00040101,
+
+        /// <summary>
+        /// Use the default cursor
+        /// </summary>
+        DRAGDROP_S_USEDEFAULTCURSORS = 0x00040102,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DRAGDROP_S_LAST = 0x0004010F,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLASSFACTORY_S_FIRST = 0x00040110,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLASSFACTORY_S_LAST = 0x0004011F,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        MARSHAL_S_FIRST = 0x00040120,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        MARSHAL_S_LAST = 0x0004012F,
+
+        /// <summary>
+        /// Data has same FORMATETC
+        /// </summary>
+        DATA_S_FIRST = 0x00040130,
+
+        /// <summary>
+        /// Data has same FORMATETC
+        /// </summary>
+        DATA_S_SAMEFORMATETC = 0x00040130,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DATA_S_LAST = 0x0004013F,
+
+        /// <summary>
+        /// View is already frozen
+        /// </summary>
+        VIEW_S_FIRST = 0x00040140,
+
+        /// <summary>
+        /// View is already frozen
+        /// </summary>
+        VIEW_S_ALREADY_FROZEN = 0x00040140,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        VIEW_S_LAST = 0x0004014F,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        REGDB_S_FIRST = 0x00040150,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        REGDB_S_LAST = 0x0004015F,
+
+        /// <summary>
+        /// Invalid verb for OLE object
+        /// </summary>
+        OLEOBJ_S_FIRST = 0x00040180,
+
+        /// <summary>
+        /// Invalid verb for OLE object
+        /// </summary>
+        OLEOBJ_S_INVALIDVERB = 0x00040180,
+
+        /// <summary>
+        /// Verb number is valid but verb cannot be done now
+        /// </summary>
+        OLEOBJ_S_CANNOT_DOVERB_NOW = 0x00040181,
+
+        /// <summary>
+        /// Invalid window handle passed
+        /// </summary>
+        OLEOBJ_S_INVALIDHWND = 0x00040182,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        OLEOBJ_S_LAST = 0x0004018F,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIENTSITE_S_FIRST = 0x00040190,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIENTSITE_S_LAST = 0x0004019F,
+
+        /// <summary>
+        /// Message is too long, some of it had to be truncated before displaying
+        /// </summary>
+        INPLACE_S_FIRST = 0x000401A0,
+
+        /// <summary>
+        /// Message is too long, some of it had to be truncated before displaying
+        /// </summary>
+        INPLACE_S_TRUNCATED = 0x000401A0,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        INPLACE_S_LAST = 0x000401AF,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        ENUM_S_FIRST = 0x000401B0,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        ENUM_S_LAST = 0x000401BF,
+
+        /// <summary>
+        /// Unable to convert OLESTREAM to IStorage
+        /// </summary>
+        CONVERT10_S_FIRST = 0x000401C0,
+
+        /// <summary>
+        /// Unable to convert OLESTREAM to IStorage
+        /// </summary>
+        CONVERT10_S_NO_PRESENTATION = 0x000401C0,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CONVERT10_S_LAST = 0x000401CF,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIPBRD_S_FIRST = 0x000401D0,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLIPBRD_S_LAST = 0x000401DF,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        MK_S_FIRST = 0x000401E0,
+
+        /// <summary>
+        /// Moniker reduced to itself
+        /// </summary>
+        MK_S_REDUCED_TO_SELF = 0x000401E2,
+
+        /// <summary>
+        /// Common prefix is this moniker
+        /// </summary>
+        MK_S_ME = 0x000401E4,
+
+        /// <summary>
+        /// Common prefix is input moniker
+        /// </summary>
+        MK_S_HIM = 0x000401E5,
+
+        /// <summary>
+        /// Common prefix is both monikers
+        /// </summary>
+        MK_S_US = 0x000401E6,
+
+        /// <summary>
+        /// Moniker is already registered in running object table
+        /// </summary>
+        MK_S_MONIKERALREADYREGISTERED = 0x000401E7,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        MK_S_LAST = 0x000401EF,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CO_S_FIRST = 0x000401F0,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CO_S_LAST = 0x000401FF,
+
+        /// <summary>
+        /// An event was able to invoke some but not all of the subscribers
+        /// </summary>
+        EVENT_S_FIRST = 0x00040200,
+
+        /// <summary>
+        /// An event was able to invoke some but not all of the subscribers
+        /// </summary>
+        EVENT_S_SOME_SUBSCRIBERS_FAILED = 0x00040200,
+
+        /// <summary>
+        /// An event was delivered but there were no subscribers
+        /// </summary>
+        EVENT_S_NOSUBSCRIBERS = 0x00040202,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        EVENT_S_LAST = 0x0004021F,
+
+        /// <summary>
+        /// The task is ready to run at its next scheduled time.
+        /// </summary>
+        SCHED_S_TASK_READY = 0x00041300,
+
+        /// <summary>
+        /// The task is currently running.
+        /// </summary>
+        SCHED_S_TASK_RUNNING = 0x00041301,
+
+        /// <summary>
+        /// The task will not run at the scheduled times because it has been disabled.
+        /// </summary>
+        SCHED_S_TASK_DISABLED = 0x00041302,
+
+        /// <summary>
+        /// The task has not yet run.
+        /// </summary>
+        SCHED_S_TASK_HAS_NOT_RUN = 0x00041303,
+
+        /// <summary>
+        /// There are no more runs scheduled for this task.
+        /// </summary>
+        SCHED_S_TASK_NO_MORE_RUNS = 0x00041304,
+
+        /// <summary>
+        /// One or more of the properties that are needed to run this task on a schedule have not been set.
+        /// </summary>
+        SCHED_S_TASK_NOT_SCHEDULED = 0x00041305,
+
+        /// <summary>
+        /// The last run of the task was terminated by the user.
+        /// </summary>
+        SCHED_S_TASK_TERMINATED = 0x00041306,
+
+        /// <summary>
+        /// Either the task has no triggers or the existing triggers are disabled or not set.
+        /// </summary>
+        SCHED_S_TASK_NO_VALID_TRIGGERS = 0x00041307,
+
+        /// <summary>
+        /// Event triggers don't have set run times.
+        /// </summary>
+        SCHED_S_EVENT_TRIGGER = 0x00041308,
+
+        VS_S_PROJECTFORWARDED = VSConstants.VS_S_PROJECTFORWARDED,
+
+        VS_S_TBXMARKER = VSConstants.VS_S_TBXMARKER,
+
+        VS_S_PROJECT_SAFEREPAIRREQUIRED = VSConstants.VS_S_PROJECT_SAFEREPAIRREQUIRED,
+
+        VS_S_PROJECT_UNSAFEREPAIRREQUIRED = VSConstants.VS_S_PROJECT_UNSAFEREPAIRREQUIRED,
+
+        VS_S_PROJECT_ONEWAYUPGRADEREQUIRED = VSConstants.VS_S_PROJECT_ONEWAYUPGRADEREQUIRED,
+
+        VS_S_INCOMPATIBLEPROJECT = VSConstants.VS_S_INCOMPATIBLEPROJECT,
+
+        /// <summary>
+        /// An asynchronous operation was specified. The operation has begun, but its outcome is not known yet.
+        /// </summary>
+        XACT_S_FIRST = 0x0004D000,
+
+        /// <summary>
+        /// An asynchronous operation was specified. The operation has begun, but its outcome is not known yet.
+        /// </summary>
+        XACT_S_ASYNC = 0x0004D000,
+
+        /// <summary>
+        /// XACT_S_DEFECT
+        /// </summary>
+        XACT_S_DEFECT = 0x0004D001,
+
+        /// <summary>
+        /// The method call succeeded because the transaction was read-only.
+        /// </summary>
+        XACT_S_READONLY = 0x0004D002,
+
+        /// <summary>
+        /// The transaction was successfully aborted. However, this is a coordinated transaction, and some number of enlisted
+        /// resources were aborted outright because they could not support abort-retaining semantics
+        /// </summary>
+        XACT_S_SOMENORETAIN = 0x0004D003,
+
+        /// <summary>
+        /// No changes were made during this call, but the sink wants another chance to look if any other sinks make further changes.
+        /// </summary>
+        XACT_S_OKINFORM = 0x0004D004,
+
+        /// <summary>
+        /// The sink is content and wishes the transaction to proceed. Changes were made to one or more resources during this call.
+        /// </summary>
+        XACT_S_MADECHANGESCONTENT = 0x0004D005,
+
+        /// <summary>
+        /// The sink is for the moment and wishes the transaction to proceed, but if other changes are made following this return by
+        /// other event sinks then this sink wants another chance to look
+        /// </summary>
+        XACT_S_MADECHANGESINFORM = 0x0004D006,
+
+        /// <summary>
+        /// The transaction was successfully aborted. However, the abort was non-retaining.
+        /// </summary>
+        XACT_S_ALLNORETAIN = 0x0004D007,
+
+        /// <summary>
+        /// An abort operation was already in progress.
+        /// </summary>
+        XACT_S_ABORTING = 0x0004D008,
+
+        /// <summary>
+        /// The resource manager has performed a single-phase commit of the transaction.
+        /// </summary>
+        XACT_S_SINGLEPHASE = 0x0004D009,
+
+        /// <summary>
+        /// The local transaction has not aborted.
+        /// </summary>
+        XACT_S_LOCALLY_OK = 0x0004D00A,
+
+        /// <summary>
+        /// The resource manager has requested to be the coordinator (last resource manager) for the transaction.
+        /// </summary>
+        XACT_S_LAST = 0x0004D010,
+
+        /// <summary>
+        /// The resource manager has requested to be the coordinator (last resource manager) for the transaction.
+        /// </summary>
+        XACT_S_LASTRESOURCEMANAGER = 0x0004D010,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CONTEXT_S_FIRST = 0x0004E000,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CONTEXT_S_LAST = 0x0004E02F,
+
+        /// <summary>
+        /// Not all the requested interfaces were available
+        /// </summary>
+        CO_S_NOTALLINTERFACES = 0x00080012,
+
+        /// <summary>
+        /// The specified machine name was not found in the cache.
+        /// </summary>
+        CO_S_MACHINENAMENOTFOUND = 0x00080013,
+
+        /// <summary>
+        /// The function completed successfully, but must be called again to complete the context
+        /// </summary>
+        SEC_I_CONTINUE_NEEDED = 0x00090312,
+
+        /// <summary>
+        /// The function completed successfully, but CompleteToken must be called
+        /// </summary>
+        SEC_I_COMPLETE_NEEDED = 0x00090313,
+
+        /// <summary>
+        /// The function completed successfully, but both CompleteToken and this function must be called to complete the context
+        /// </summary>
+        SEC_I_COMPLETE_AND_CONTINUE = 0x00090314,
+
+        /// <summary>
+        /// The logon was completed, but no network authority was available. The logon was made using locally known information
+        /// </summary>
+        SEC_I_LOCAL_LOGON = 0x00090315,
+
+        /// <summary>
+        /// The context has expired and can no longer be used.
+        /// </summary>
+        SEC_I_CONTEXT_EXPIRED = 0x00090317,
+
+        /// <summary>
+        /// The credentials supplied were not complete, and could not be verified. Additional information can be returned from the context.
+        /// </summary>
+        SEC_I_INCOMPLETE_CREDENTIALS = 0x00090320,
+
+        /// <summary>
+        /// The context data must be renegotiated with the peer.
+        /// </summary>
+        SEC_I_RENEGOTIATE = 0x00090321,
+
+        /// <summary>
+        /// There is no LSA mode context associated with this context.
+        /// </summary>
+        SEC_I_NO_LSA_CONTEXT = 0x00090323,
+
+        /// <summary>
+        /// The protected data needs to be re-protected.
+        /// </summary>
+        CRYPT_I_NEW_PROTECTION_REQUIRED = 0x00091012,
     }
 
     public static class HResultExtension
@@ -58,7 +5910,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             return hr >= WinError.ERROR_SUCCESS.ToWinErrorCode() && !hr.IsError();
         }
 
-        public static uint ToHResultCode(ulong severity, ulong facilityCode, WinError code)
+        public static int ToHResultCode(ulong severity, ulong facilityCode, WinError code)
         {
             ArgumentOutOfRangeException.ThrowIfLessThan(facilityCode, (ulong)FacilityCode.FACILITY_NULL, nameof(facilityCode));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(facilityCode, (ulong)FacilityCode.FACILITY_OPC, nameof(facilityCode));
@@ -67,7 +5919,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
 
             return severity != 0UL && severity != 1UL
                 ? throw new ArgumentException($"Parameter {nameof(severity)} with value '{severity}' is invalid.", nameof(severity))
-                : Convert.ToUInt32(severity << 31 | facilityCode << 16 | code.ToWinErrorCode());
+                : Convert.ToInt32(severity << 31 | facilityCode << 16 | code.ToWinErrorCode());
         }
 
         /// <summary>
@@ -101,7 +5953,9 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// Mask to isolate the Windows error code or status code from an HRESULT value.
         /// </summary>
-        public const int HRESULT_MASK = 0x0000_1FFF;
+        public const int HRESULT_MASK = 0x00_00_1F_FF;
+
+        public const long MAGIC_SUBTRAHEND = 0x1_00_00_00_00;
 
         /// <summary>
         /// <see cref="int"/> bit value in the HRESULT that indicates whether the value represents information, warning, or error.
@@ -116,7 +5970,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// Mask to isolate the severity bit from an HRESULT value.
         /// </summary>
-        public const uint SEVERITY_MASK = 0x8000_0000;
+        public const uint SEVERITY_MASK = 0x80_00_00_00;
 
         #endregion Public Fields
     }
