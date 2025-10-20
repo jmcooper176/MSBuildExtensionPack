@@ -40,12 +40,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.49.0" />
-    <PackageReference Include="Azure.Identity" Version="1.16.0" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Bcl.Cryptography" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Build" Version="17.14.8" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="17.14.8" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.14.8" />
+    <PackageReference Include="Azure.Identity" Version="1.17.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Bcl.Cryptography" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Build" Version="17.14.28" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.14.28" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.14.28" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -55,14 +55,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="9.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.10" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.47.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="3.2.4" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.77.1" />
@@ -70,36 +70,36 @@
     <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.77.1" />
     <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.19.4" />
     <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="8.14.0" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.5.3" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.5.4" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="172.76.0" />
     <PackageReference Include="Nerven.CommandLineParser" Version="0.4.0" />
-    <PackageReference Include="System.Collections.Immutable" Version="9.0.9" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.9" />
-    <PackageReference Include="System.DirectoryServices" Version="9.0.9" />
-    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="9.0.9" />
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.10" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.10" />
+    <PackageReference Include="System.DirectoryServices" Version="9.0.10" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="9.0.10" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-    <PackageReference Include="System.Management" Version="9.0.9" />
-    <PackageReference Include="Microsoft.AnalysisServices" Version="19.104.1" />
+    <PackageReference Include="System.Management" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AnalysisServices" Version="19.106.1" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" Version="2.0.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.9" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.10" />
     <PackageReference Include="System.Memory" Version="4.6.3" />
-    <PackageReference Include="System.Memory.Data" Version="9.0.9" />
+    <PackageReference Include="System.Memory.Data" Version="9.0.10" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.1" />
-    <PackageReference Include="System.Reflection.Metadata" Version="9.0.9" />
-    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.9" />
-    <PackageReference Include="System.Resources.Extensions" Version="9.0.9" />
-    <PackageReference Include="System.Runtime.Caching" Version="9.0.9" />
+    <PackageReference Include="System.Reflection.Metadata" Version="9.0.10" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.10" />
+    <PackageReference Include="System.Resources.Extensions" Version="9.0.10" />
+    <PackageReference Include="System.Runtime.Caching" Version="9.0.10" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="5.0.0" />
     <PackageReference Include="System.Security.Cryptography.OpenSsl" Version="5.0.0" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.9" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.10" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageReference Include="System.Security.Permissions" Version="9.0.9" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.9" />
-    <PackageReference Include="System.Text.Json" Version="9.0.9" />
-    <PackageReference Include="System.Windows.Extensions" Version="9.0.9" />
+    <PackageReference Include="System.Security.Permissions" Version="9.0.10" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.10" />
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
+    <PackageReference Include="System.Windows.Extensions" Version="9.0.10" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">
