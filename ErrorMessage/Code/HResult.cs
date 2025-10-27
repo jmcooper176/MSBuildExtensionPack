@@ -15,8 +15,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Base.Enumeration
+namespace MSBuild.ExtensionPack.ErrorMessage.Code
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
     using System.Security.Principal;
 
     using Microsoft.VisualStudio;
@@ -27,121 +29,73 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
     public enum HResult : int
     {
         /// <summary>
-        /// Error <c>HRESULT</c> for first <c>CACHE_S</c> value.
+        /// Error <c>HRESULT</c> for the data necessary to complete this operation is not yet available.
         /// </summary>
-        CACHE_S_FIRST = CACHE_S_FORMATETC_NOTSUPPORTED,
+        [Description("The data necessary to complete this operation is not yet available.")]
+        [Display(Name = "Error Pending Data", ShortName = "ErrorPending")]
+        E_PENDING = VSConstants.E_PENDING,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for FORMATETC not supported
+        /// Error <c>HRESULT</c> for a call to a not implemented method.
         /// </summary>
-        CACHE_S_FORMATETC_NOTSUPPORTED = 0x00040170,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        E_NOTIMPL = VSConstants.E_NOTIMPL,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for same cache
+        /// Error <c>HRESULT</c> for the request of a not-implemented interface.
         /// </summary>
-        CACHE_S_SAMECACHE = 0x00040171,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        E_NOINTERFACE = VSConstants.E_NOINTERFACE,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for some cache(s) not updated
+        /// Error <c>HRESULT</c> for invalid pointer
         /// </summary>
-        CACHE_S_SOMECACHES_NOTUPDATED = 0x00040172,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        E_POINTER = VSConstants.E_POINTER,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for no information available.
+        /// Error <c>HRESULT</c> for operation aborted
         /// </summary>
-        CACHE_S_LAST = 0x0004017F,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        E_ABORT = VSConstants.E_ABORT,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for CATID does not exist
+        /// Error <c>HRESULT</c> for unspecified error
         /// </summary>
-        CAT_E_FIRST = CAT_E_CATIDNOEXIST,
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for CATID does not exist
-        /// </summary>
-        CAT_E_CATIDNOEXIST = unchecked((int)(0x80040160)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for description not found
-        /// </summary>
-        CAT_E_LAST = CAT_E_NODESCRIPTION,
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for description not found
-        /// </summary>
-        CAT_E_NODESCRIPTION = unchecked((int)(0x80040161)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a required certificate is not within its validity period when verifying against the current
-        /// system clock or the timestamp in the signed file.
-        /// </summary>
-        CERT_E_EXPIRED = unchecked((int)(0x800B0101)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for the validity periods of the certification chain do not nest correctly.
-        /// </summary>
-        CERT_E_VALIDITYPERIODNESTING = unchecked((int)(0x800B0102)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a certificate that can only be used as an end-entity is being used as a CA or visa versa.
-        /// </summary>
-        CERT_E_ROLE = unchecked((int)(0x800B0103)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a path length constraint in the certification chain has been violated.
-        /// </summary>
-        CERT_E_PATHLENCONST = unchecked((int)(0x800B0104)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a certificate contains an unknown extension that is marked 'critical'.
-        /// </summary>
-        CERT_E_CRITICAL = unchecked((int)(0x800B0105)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a certificate being used for a purpose other than the ones specified by its CA.
-        /// </summary>
-        CERT_E_PURPOSE = unchecked((int)(0x800B0106)),
-
-        /// <summary>
-        /// A parent of a given certificate in fact did not issue that child certificate.
-        /// </summary>
-        CERT_E_ISSUERCHAINING = unchecked((int)(0x800B0107)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a certificate is missing or has an empty value for an important field, such as a subject or
-        /// issuer name.
-        /// </summary>
-        CERT_E_MALFORMED = unchecked((int)(0x800B0108)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for a certificate chain processed, but terminated in a root certificate which is not trusted by the
-        /// trust provider.
-        /// </summary>
-        CERT_E_UNTRUSTEDROOT = unchecked((int)(0x800B0109)),
-
-        /// <summary>
-        /// Error <c>HRESULT</c> for an internal certificate chaining error has occurred.
-        /// </summary>
-        CERT_E_CHAINING = unchecked((int)(0x800B010A)),
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        E_FAIL = VSConstants.E_FAIL,
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for thread local storage failure
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_TLS = unchecked((int)(0x80004006)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for get shared memory allocator failure
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_SHARED_ALLOCATOR = unchecked((int)(0x80004007)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for get memory allocator failure
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_MEMORY_ALLOCATOR = unchecked((int)(0x80004008)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for unable to initialize class cache
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_CLASS_CACHE = unchecked((int)(0x80004009)),
 
         /// <summary>
@@ -152,189 +106,575 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for cannot set thread local storage channel control
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_TLS_SET_CHANNEL_CONTROL = unchecked((int)(0x8000400B)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for could not allocate thread local storage channel control
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_TLS_CHANNEL_CONTROL = unchecked((int)(0x8000400C)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the user supplied memory allocator is unacceptable
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_UNACCEPTED_USER_ALLOCATOR = unchecked((int)(0x8000400D)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the OLE service mutex already exists
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_SCM_MUTEX_EXISTS = unchecked((int)(0x8000400E)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the OLE service file mapping already exists
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_SCM_FILE_MAPPING_EXISTS = unchecked((int)(0x8000400F)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for unable to map view of file for OLE service
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_SCM_MAP_VIEW_OF_FILE = unchecked((int)(0x80004010)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for failure attempting to launch OLE service
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_SCM_EXEC_FAILURE = unchecked((int)(0x80004011)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for there was an attempt to call CoInitialize a second time while single threaded
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_INIT_ONLY_SINGLE_THREADED = unchecked((int)(0x80004012)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for a remote activation was necessary but was not allowed
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_CANT_REMOTE = unchecked((int)(0x80004013)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for a remote activation was necessary but the server name provided was invalid
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_BAD_SERVER_NAME = unchecked((int)(0x80004014)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the class is configured to run as a security id different from the caller
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_WRONG_SERVER_IDENTITY = unchecked((int)(0x80004015)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for use of <c>OLE1</c> services requiring DDE windows is disabled
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_OLE1DDE_DISABLED = unchecked((int)(0x80004016)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for a RunAs specification must be {domain name}\{user name} or simply {user name}
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_RUNAS_SYNTAX = unchecked((int)(0x80004017)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the server process could not be started. The pathname may be incorrect.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_CREATEPROCESS_FAILURE = unchecked((int)(0x80004018)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the server process could not be started as the configured identity. The pathname may
         /// be incorrect or unavailable.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_RUNAS_CREATEPROCESS_FAILURE = unchecked((int)(0x80004019)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the server process could not be started because the configured identity is
         /// incorrect. Check the username and password.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_RUNAS_LOGON_FAILURE = unchecked((int)(0x8000401A)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the client is not allowed to launch this server.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_LAUNCH_PERMSSION_DENIED = unchecked((int)(0x8000401B)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the service providing this server could not be started.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_START_SERVICE_FAILURE = unchecked((int)(0x8000401C)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for this computer was unable to communicate with the computer providing the server.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_REMOTE_COMMUNICATION_FAILURE = unchecked((int)(0x8000401D)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the server did not respond after being launched.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_SERVER_START_TIMEOUT = unchecked((int)(0x8000401E)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the registration information for this server is inconsistent or incomplete.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_CLSREG_INCONSISTENT = unchecked((int)(0x8000401F)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the registration information for this interface is inconsistent or incomplete.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_IIDREG_INCONSISTENT = unchecked((int)(0x80004020)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the operation attempted is not supported.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_NOT_SUPPORTED = unchecked((int)(0x80004021)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for a dll must be loaded.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_RELOAD_DLL = unchecked((int)(0x80004022)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for a Microsoft Software Installer error was encountered.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_MSI_ERROR = unchecked((int)(0x80004023)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the specified activation could not occur in the client context as specified.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_ATTEMPT_TO_CREATE_OUTSIDE_CLIENT_CONTEXT = unchecked((int)(0x80004024)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for activations on the server are paused.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_SERVER_PAUSED = unchecked((int)(0x80004025)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for activations on the server are not paused.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_SERVER_NOT_PAUSED = unchecked((int)(0x80004026)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the component or application containing the component has been disabled.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_CLASS_DISABLED = unchecked((int)(0x80004027)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the common language runtime is not available
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_CLRNOTAVAILABLE = unchecked((int)(0x80004028)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the thread-pool rejected the submitted asynchronous work.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_ASYNC_WORK_REJECTED = unchecked((int)(0x80004029)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the server started, but did not finish initializing in a timely fashion.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_SERVER_INIT_TIMEOUT = unchecked((int)(0x8000402A)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for unable to complete the call since there is no <c>COM</c>+ security context inside IObjectControl.Activate.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_NO_SECCTX_IN_ACTIVATE = unchecked((int)(0x8000402B)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the provided tracker configuration is invalid
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_TRACKER_CONFIG = unchecked((int)(0x80004030)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the provided thread pool configuration is invalid
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_THREADPOOL_CONFIG = unchecked((int)(0x80004031)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the provided side-by-side configuration is invalid
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_SXS_CONFIG = unchecked((int)(0x80004032)),
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for the server principal name (SPN) obtained during security negotiation is malformed.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         CO_E_MALFORMED_SPN = unchecked((int)(0x80004033)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for an unexpected condition.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        E_UNEXPECTED = VSConstants.E_UNEXPECTED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for call was rejected by callee.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CALL_REJECTED = VSConstants.RPC_E_CALL_REJECTED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for call was canceled by the message filter.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CALL_CANCELED = VSConstants.RPC_E_CALL_CANCELED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the caller is dispatching an inter-task <c>SendMessage</c> call and cannot call out
+        /// via <c>PostMessage</c>.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CANTPOST_INSENDCALL = VSConstants.RPC_E_CANTPOST_INSENDCALL,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the caller is dispatching an asynchronous call and cannot make an outgoing call on
+        /// behalf of this call.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CANTCALLOUT_INASYNCCALL = VSConstants.RPC_E_CANTCALLOUT_INASYNCCALL,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for it is illegal to call out while inside message filter.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CANTCALLOUT_INEXTERNALCALL = VSConstants.RPC_E_CANTCALLOUT_INEXTERNALCALL,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the connection terminated or is in a bogus state and cannot be used any more. Other
+        /// connections are still valid.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CONNECTION_TERMINATED = VSConstants.RPC_E_CONNECTION_TERMINATED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the callee (server [not server application]) is not available and disappeared, all
+        /// connections are invalid. The call may have executed.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_SERVER_DIED = VSConstants.RPC_E_SERVER_DIED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the caller (client) disappeared while the callee (server) was processing a call.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CLIENT_DIED = VSConstants.RPC_E_CLIENT_DIED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the data packet with the marshaled parameter data is incorrect.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_INVALID_DATAPACKET = VSConstants.RPC_E_INVALID_DATAPACKET,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the call was not transmitted properly, the message queue was full and was not
+        /// emptied after yielding.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CANTTRANSMIT_CALL = VSConstants.RPC_E_CANTTRANSMIT_CALL,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the client (caller) cannot marshal the parameter data - low memory, etc.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CLIENT_CANTMARSHAL_DATA = VSConstants.RPC_E_CLIENT_CANTMARSHAL_DATA,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the client (caller) cannot unmarshal the return data - low memory, etc.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_CLIENT_CANTUNMARSHAL_DATA = VSConstants.RPC_E_CLIENT_CANTUNMARSHAL_DATA,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the server (callee) cannot marshal the return data - low memory, etc.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_SERVER_CANTMARSHAL_DATA = VSConstants.RPC_E_SERVER_CANTMARSHAL_DATA,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the server (callee) cannot unmarshal the parameter data - low memory, etc.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_SERVER_CANTUNMARSHAL_DATA = VSConstants.RPC_E_SERVER_CANTUNMARSHAL_DATA,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for received data is invalid, could be server or client data.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RPC_E_INVALID_DATA = VSConstants.RPC_E_INVALID_DATA,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for a particular parameter is invalid and cannot be (un)marshaled.
+        /// </summary>
+        RPC_E_INVALID_PARAMETER = VSConstants.RPC_E_INVALID_PARAMETER,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for there is no second outgoing call on same channel in DDE conversation.
+        /// </summary>
+        RPC_E_CANTCALLOUT_AGAIN = VSConstants.RPC_E_CANTCALLOUT_AGAIN,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the callee (server [not server application]) is not available and disappeared, all
+        /// connections are invalid. The call did not execute.
+        /// </summary>
+        RPC_E_SERVER_DIED_DNE = VSConstants.RPC_E_SERVER_DIED_DNE,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for system call failed.
+        /// </summary>
+        RPC_E_SYS_CALL_FAILED = VSConstants.RPC_E_SYS_CALL_FAILED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for could not allocate some required resource (memory, events, ...)
+        /// </summary>
+        RPC_E_OUT_OF_RESOURCES = VSConstants.RPC_E_OUT_OF_RESOURCES,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for attempted to make calls on more than one thread in single threaded mode.
+        /// </summary>
+        RPC_E_ATTEMPTED_MULTITHREAD = VSConstants.RPC_E_ATTEMPTED_MULTITHREAD,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the requested interface is not registered on the server object.
+        /// </summary>
+        RPC_E_NOT_REGISTERED = VSConstants.RPC_E_NOT_REGISTERED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for <c>RPC</c> could not call the server or could not return the results of calling the server.
+        /// </summary>
+        RPC_E_FAULT = VSConstants.RPC_E_FAULT,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the server threw an <see cref="Exception"/>.
+        /// </summary>
+        RPC_E_SERVERFAULT = VSConstants.RPC_E_SERVERFAULT,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for cannot change thread mode after it is set.
+        /// </summary>
+        RPC_E_CHANGED_MODE = VSConstants.RPC_E_CHANGED_MODE,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the method called does not exist on the server.
+        /// </summary>
+        RPC_E_INVALIDMETHOD = VSConstants.RPC_E_INVALIDMETHOD,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the object invoked has disconnected from its clients.
+        /// </summary>
+        RPC_E_DISCONNECTED = VSConstants.RPC_E_DISCONNECTED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the object invoked chose not to process the call now. Try again later.
+        /// </summary>
+        RPC_E_RETRY = VSConstants.RPC_E_RETRY,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the message filter indicated that the application is busy.
+        /// </summary>
+        RPC_E_SERVERCALL_RETRYLATER = VSConstants.RPC_E_SERVERCALL_RETRYLATER,
+
+        /// <summary>
+        /// The message filter rejected the call.
+        /// </summary>
+        RPC_E_SERVERCALL_REJECTED = VSConstants.RPC_E_SERVERCALL_REJECTED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for a call control interfaces was called with invalid data.
+        /// </summary>
+        RPC_E_INVALID_CALLDATA = VSConstants.RPC_E_INVALID_CALLDATA,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for an outgoing call cannot be made since the application is dispatching an
+        /// input-synchronous call.
+        /// </summary>
+        RPC_E_CANTCALLOUT_ININPUTSYNCCALL = VSConstants.RPC_E_CANTCALLOUT_ININPUTSYNCCALL,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the application called an interface that was marshaled for a different thread.
+        /// </summary>
+        RPC_E_WRONG_THREAD = VSConstants.RPC_E_WRONG_THREAD,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for <c>CoInitialize</c> has not been called on the current thread.
+        /// </summary>
+        RPC_E_THREAD_NOT_INIT = VSConstants.RPC_E_THREAD_NOT_INIT,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the version of <c>OLE</c> on the client and server machines does not match.
+        /// </summary>
+        RPC_E_VERSION_MISMATCH = VSConstants.RPC_E_VERSION_MISMATCH,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> received a packet with an invalid header.
+        /// </summary>
+        RPC_E_INVALID_HEADER = VSConstants.RPC_E_INVALID_HEADER,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> received a packet with an invalid extension.
+        /// </summary>
+        RPC_E_INVALID_EXTENSION = VSConstants.RPC_E_INVALID_EXTENSION,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the requested object or interface does not exist.
+        /// </summary>
+        RPC_E_INVALID_IPID = VSConstants.RPC_E_INVALID_IPID,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the requested object does not exist.
+        /// </summary>
+        RPC_E_INVALID_OBJECT = VSConstants.RPC_E_INVALID_OBJECT,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> has sent a request and is waiting for a reply.
+        /// </summary>
+        RPC_S_CALLPENDING = VSConstants.RPC_S_CALLPENDING,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> is waiting before retrying a request.
+        /// </summary>
+        RPC_S_WAITONTIMER = VSConstants.RPC_S_WAITONTIMER,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for call context cannot be accessed after call completed.
+        /// </summary>
+        RPC_E_CALL_COMPLETE = VSConstants.RPC_E_CALL_COMPLETE,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for impersonate on unsecured calls is not supported.
+        /// </summary>
+        RPC_E_UNSECURE_CALL = VSConstants.RPC_E_UNSECURE_CALL,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for security must be initialized before any interfaces are marshaled or unmarshaled. It
+        /// cannot be changed once initialized.
+        /// </summary>
+        RPC_E_TOO_LATE = VSConstants.RPC_E_TOO_LATE,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for no security packages are installed on this machine or the user is not logged on or
+        /// there are no compatible security packages between the client and server.
+        /// </summary>
+        RPC_E_NO_GOOD_SECURITY_PACKAGES = VSConstants.RPC_E_NO_GOOD_SECURITY_PACKAGES,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for access is denied.
+        /// </summary>
+        RPC_E_ACCESS_DENIED = VSConstants.RPC_E_ACCESS_DENIED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for remote calls are not allowed for this process.
+        /// </summary>
+        RPC_E_REMOTE_DISABLED = VSConstants.RPC_E_REMOTE_DISABLED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for the marshaled interface data packet (OBJREF) has an invalid or unknown format.
+        /// </summary>
+        RPC_E_INVALID_OBJREF = VSConstants.RPC_E_INVALID_OBJREF,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for no context is associated with this call. This happens for some custom marshaled
+        /// calls and on the client side of the call.
+        /// </summary>
+        RPC_E_NO_CONTEXT = VSConstants.RPC_E_NO_CONTEXT,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for this operation returned because the timeout period expired.
+        /// </summary>
+        RPC_E_TIMEOUT = VSConstants.RPC_E_TIMEOUT,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for there are no synchronize objects to wait on.
+        /// </summary>
+        RPC_E_NO_SYNC = VSConstants.RPC_E_NO_SYNC,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for full subject issuer chain SSL principal name expected from the server.
+        /// </summary>
+        RPC_E_FULLSIC_REQUIRED = VSConstants.RPC_E_FULLSIC_REQUIRED,
+
+        /// <summary>
+        /// <c>RPC</c> Error <c>HRESULT</c> for principal name is not a valid MSSTD name.
+        /// </summary>
+        RPC_E_INVALID_STD_NAME = VSConstants.RPC_E_INVALID_STD_NAME,
 
         /// <summary>
         /// <c>COM</c> Error <c>HRESULT</c> for unable to impersonate D <c>COM</c> client
@@ -576,494 +916,134 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         DISP_E_BUFFERTOOSMALL = VSConstants.DISP_E_BUFFERTOOSMALL,
 
         /// <summary>
-        /// Trying to revoke a drop target that has not been registered
+        /// Error <c>HRESULT</c> for buffer too small.
         /// </summary>
-        DRAGDROP_E_FIRST = DRAGDROP_E_NOTREGISTERED,
+        TYPE_E_BUFFERTOOSMALL = unchecked((int)(0x80028016)),
 
         /// <summary>
-        /// Trying to revoke a drop target that has not been registered
+        /// Error <c>HRESULT</c> for field name not defined in the record.
         /// </summary>
-        DRAGDROP_E_NOTREGISTERED = unchecked((int)(0x80040100)),
+        TYPE_E_FIELDNOTFOUND = unchecked((int)(0x80028017)),
 
         /// <summary>
-        /// This window has already been registered as a drop target
+        /// Old format or invalid type library.
         /// </summary>
-        DRAGDROP_E_ALREADYREGISTERED = unchecked((int)(0x80040101)),
+        TYPE_E_INVDATAREAD = unchecked((int)(0x80028018)),
 
         /// <summary>
-        /// Invalid window handle
+        /// Error <c>HRESULT</c> for old format or invalid type library.
         /// </summary>
-        DRAGDROP_E_INVALIDHWND = unchecked((int)(0x80040102)),
+        TYPE_E_UNSUPFORMAT = unchecked((int)(0x80028019)),
 
         /// <summary>
-        /// No information available.
+        /// Error <c>HRESULT</c> for error accessing the OLE registry.
         /// </summary>
-        DRAGDROP_E_LAST = unchecked((int)(0x8004010F)),
+        TYPE_E_REGISTRYACCESS = unchecked((int)(0x8002801C)),
 
         /// <summary>
-        /// Invalid FORMATETC structure
+        /// Error <c>HRESULT</c> for library not registered.
         /// </summary>
-        DV_E_FORMATETC = unchecked((int)(0x80040064)),
+        TYPE_E_LIBNOTREGISTERED = unchecked((int)(0x8002801D)),
 
         /// <summary>
-        /// Invalid DVTARGETDEVICE structure
+        /// Error <c>HRESULT</c> for bound to unknown type.
         /// </summary>
-        DV_E_DVTARGETDEVICE = unchecked((int)(0x80040065)),
+        TYPE_E_UNDEFINEDTYPE = unchecked((int)(0x80028027)),
 
         /// <summary>
-        /// Invalid STDGMEDIUM structure
+        /// Error <c>HRESULT</c> for qualified name disallowed.
         /// </summary>
-        DV_E_STGMEDIUM = unchecked((int)(0x80040066)),
+        TYPE_E_QUALIFIEDNAMEDISALLOWED = unchecked((int)(0x80028028)),
 
         /// <summary>
-        /// Invalid STATDATA structure
+        /// Error <c>HRESULT</c> for invalid forward reference, or reference to uncompiled type.
         /// </summary>
-        DV_E_STATDATA = unchecked((int)(0x80040067)),
+        TYPE_E_INVALIDSTATE = unchecked((int)(0x80028029)),
 
         /// <summary>
-        /// Invalid lindex
+        /// Error <c>HRESULT</c> for type mismatch.
         /// </summary>
-        DV_E_LINDEX = unchecked((int)(0x80040068)),
+        TYPE_E_WRONGTYPEKIND = unchecked((int)(0x8002802A)),
 
         /// <summary>
-        /// Invalid tymed
+        /// Error <c>HRESULT</c> for element not found.
         /// </summary>
-        DV_E_TYMED = unchecked((int)(0x80040069)),
+        TYPE_E_ELEMENTNOTFOUND = unchecked((int)(0x8002802B)),
 
         /// <summary>
-        /// Invalid clipboard format
+        /// Error <c>HRESULT</c> for ambiguous name.
         /// </summary>
-        DV_E_CLIPFORMAT = unchecked((int)(0x8004006A)),
+        TYPE_E_AMBIGUOUSNAME = unchecked((int)(0x8002802C)),
 
         /// <summary>
-        /// Invalid aspect(s)
+        /// Error <c>HRESULT</c> for name already exists in the library.
         /// </summary>
-        DV_E_DVASPECT = unchecked((int)(0x8004006B)),
+        TYPE_E_NAMECONFLICT = unchecked((int)(0x8002802D)),
 
         /// <summary>
-        /// tdSize parameter of the DVTARGETDEVICE structure is invalid
+        /// Error <c>HRESULT</c> for unknown LCID.
         /// </summary>
-        DV_E_DVTARGETDEVICE_SIZE = unchecked((int)(0x8004006C)),
+        TYPE_E_UNKNOWNLCID = unchecked((int)(0x8002802E)),
 
         /// <summary>
-        /// Object doesn't support IViewObject interface
+        /// Error <c>HRESULT</c> for function not defined in specified DLL.
         /// </summary>
-        DV_E_NOIVIEWOBJECT = unchecked((int)(0x8004006D)),
+        TYPE_E_DLLFUNCTIONNOTFOUND = unchecked((int)(0x8002802F)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for the data necessary to complete this operation is not yet available.
+        /// Error <c>HRESULT</c> for wrong module kind for the operation.
         /// </summary>
-        E_PENDING = VSConstants.E_PENDING,
+        TYPE_E_BADMODULEKIND = unchecked((int)(0x800288BD)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for a call to a not implemented method.
+        /// Error <c>HRESULT</c> for size may not exceed 64K.
         /// </summary>
-        E_NOTIMPL = VSConstants.E_NOTIMPL,
+        TYPE_E_SIZETOOBIG = unchecked((int)(0x800288C5)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for the request of a not-implemented interface.
+        /// Error <c>HRESULT</c> for duplicate ID in inheritance hierarchy.
         /// </summary>
-        E_NOINTERFACE = VSConstants.E_NOINTERFACE,
+        TYPE_E_DUPLICATEID = unchecked((int)(0x800288C6)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for invalid pointer
+        /// Error <c>HRESULT</c> for incorrect inheritance depth in standard OLE hmember.
         /// </summary>
-        E_POINTER = VSConstants.E_POINTER,
+        TYPE_E_INVALIDID = unchecked((int)(0x800288CF)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for operation aborted
+        /// Error <c>HRESULT</c> for type mismatch.
         /// </summary>
-        E_ABORT = VSConstants.E_ABORT,
+        TYPE_E_TYPEMISMATCH = unchecked((int)(0x80028CA0)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for unspecified error
+        /// Error <c>HRESULT</c> for invalid number of arguments.
         /// </summary>
-        E_FAIL = VSConstants.E_FAIL,
+        TYPE_E_OUTOFBOUNDS = unchecked((int)(0x80028CA1)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for an unexpected condition.
+        /// Error <c>HRESULT</c> for I/O Error.
         /// </summary>
-        E_UNEXPECTED = VSConstants.E_UNEXPECTED,
+        TYPE_E_IOERROR = unchecked((int)(0x80028CA2)),
 
         /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for invalid <c>OLEVERB</c> structure
+        /// Error <c>HRESULT</c> for error creating unique tmp file.
         /// </summary>
-        OLE_E_FIRST = OLE_E_OLEVERB,
+        TYPE_E_CANTCREATETMPFILE = unchecked((int)(0x80028CA3)),
 
         /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for invalid <c>OLEVERB</c> structure
+        /// Error <c>HRESULT</c> for error loading type library/DLL.
         /// </summary>
-        OLE_E_OLEVERB = VSConstants.OLE_E_OLEVERB,
+        TYPE_E_CANTLOADLIBRARY = unchecked((int)(0x80029C4A)),
 
         /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for invalid advise flags
+        /// Error <c>HRESULT</c> for inconsistent property functions.
         /// </summary>
-        OLE_E_ADVF = VSConstants.OLE_E_ADVF,
+        TYPE_E_INCONSISTENTPROPFUNCS = unchecked((int)(0x80029C83)),
 
         /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for cannot enumerate any more, because the associated data is missing
+        /// Error <c>HRESULT</c> for circular dependency between types/modules.
         /// </summary>
-        OLE_E_ENUM_NOMORE = VSConstants.OLE_E_ENUM_NOMORE,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for this implementation doesn't take advises
-        /// </summary>
-        OLE_E_ADVISENOTSUPPORTED = VSConstants.OLE_E_ADVISENOTSUPPORTED,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for there is no connection for this connection ID
-        /// </summary>
-        OLE_E_NOCONNECTION = VSConstants.OLE_E_NOCONNECTION,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for need to run the object to perform this operation
-        /// </summary>
-        OLE_E_NOTRUNNING = VSConstants.OLE_E_NOTRUNNING,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for there is no cache to operate on
-        /// </summary>
-        OLE_E_NOCACHE = VSConstants.OLE_E_NOCACHE,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for uninitialized object
-        /// </summary>
-        OLE_E_BLANK = VSConstants.OLE_E_BLANK,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for linked object's source class has changed
-        /// </summary>
-        OLE_E_CLASSDIFF = VSConstants.OLE_E_CLASSDIFF,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for not able to get the moniker of the object
-        /// </summary>
-        OLE_E_CANT_GETMONIKER = VSConstants.OLE_E_CANT_GETMONIKER,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for not able to bind to the source
-        /// </summary>
-        OLE_E_CANT_BINDTOSOURCE = VSConstants.OLE_E_CANT_BINDTOSOURCE,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for object is static, operation not allowed
-        /// </summary>
-        OLE_E_STATIC = VSConstants.OLE_E_STATIC,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for user canceled out of save dialog
-        /// </summary>
-        OLE_E_PROMPTSAVECANCELLED = VSConstants.OLE_E_PROMPTSAVECANCELLED,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for invalid rectangle
-        /// </summary>
-        OLE_E_INVALIDRECT = VSConstants.OLE_E_INVALIDRECT,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for compobj.dll is too old for the initializing ole2.dll
-        /// </summary>
-        OLE_E_WRONGCOMPOBJ = VSConstants.OLE_E_WRONGCOMPOBJ,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for invalid window handle
-        /// </summary>
-        OLE_E_INVALIDHWND = VSConstants.OLE_E_INVALIDHWND,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for object is not in any of the inplace active states
-        /// </summary>
-        OLE_E_NOT_INPLACEACTIVE = VSConstants.OLE_E_NOT_INPLACEACTIVE,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for not able to convert object
-        /// </summary>
-        OLE_E_CANTCONVERT = VSConstants.OLE_E_CANTCONVERT,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for not able to perform the operation because object is not given storage yet
-        /// </summary>
-        OLE_E_NOSTORAGE = VSConstants.OLE_E_NOSTORAGE,
-
-        /// <summary>
-        /// <c>OLE</c> Error <c>HRESULT</c> for no information available.
-        /// </summary>
-        OLE_E_LAST = unchecked((int)(0x800400FF)),
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for call was rejected by callee.
-        /// </summary>
-        RPC_E_CALL_REJECTED = VSConstants.RPC_E_CALL_REJECTED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for call was canceled by the message filter.
-        /// </summary>
-        RPC_E_CALL_CANCELED = VSConstants.RPC_E_CALL_CANCELED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the caller is dispatching an inter-task <c>SendMessage</c> call and cannot call out
-        /// via <c>PostMessage</c>.
-        /// </summary>
-        RPC_E_CANTPOST_INSENDCALL = VSConstants.RPC_E_CANTPOST_INSENDCALL,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the caller is dispatching an asynchronous call and cannot make an outgoing call on
-        /// behalf of this call.
-        /// </summary>
-        RPC_E_CANTCALLOUT_INASYNCCALL = VSConstants.RPC_E_CANTCALLOUT_INASYNCCALL,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for it is illegal to call out while inside message filter.
-        /// </summary>
-        RPC_E_CANTCALLOUT_INEXTERNALCALL = VSConstants.RPC_E_CANTCALLOUT_INEXTERNALCALL,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the connection terminated or is in a bogus state and cannot be used any more. Other
-        /// connections are still valid.
-        /// </summary>
-        RPC_E_CONNECTION_TERMINATED = VSConstants.RPC_E_CONNECTION_TERMINATED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the callee (server [not server application]) is not available and disappeared, all
-        /// connections are invalid. The call may have executed.
-        /// </summary>
-        RPC_E_SERVER_DIED = VSConstants.RPC_E_SERVER_DIED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the caller (client) disappeared while the callee (server) was processing a call.
-        /// </summary>
-        RPC_E_CLIENT_DIED = VSConstants.RPC_E_CLIENT_DIED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the data packet with the marshaled parameter data is incorrect.
-        /// </summary>
-        RPC_E_INVALID_DATAPACKET = VSConstants.RPC_E_INVALID_DATAPACKET,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the call was not transmitted properly, the message queue was full and was not
-        /// emptied after yielding.
-        /// </summary>
-        RPC_E_CANTTRANSMIT_CALL = VSConstants.RPC_E_CANTTRANSMIT_CALL,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the client (caller) cannot marshal the parameter data - low memory, etc.
-        /// </summary>
-        RPC_E_CLIENT_CANTMARSHAL_DATA = VSConstants.RPC_E_CLIENT_CANTMARSHAL_DATA,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the client (caller) cannot unmarshal the return data - low memory, etc.
-        /// </summary>
-        RPC_E_CLIENT_CANTUNMARSHAL_DATA = VSConstants.RPC_E_CLIENT_CANTUNMARSHAL_DATA,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the server (callee) cannot marshal the return data - low memory, etc.
-        /// </summary>
-        RPC_E_SERVER_CANTMARSHAL_DATA = VSConstants.RPC_E_SERVER_CANTMARSHAL_DATA,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the server (callee) cannot unmarshal the parameter data - low memory, etc.
-        /// </summary>
-        RPC_E_SERVER_CANTUNMARSHAL_DATA = VSConstants.RPC_E_SERVER_CANTUNMARSHAL_DATA,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for received data is invalid, could be server or client data.
-        /// </summary>
-        RPC_E_INVALID_DATA = VSConstants.RPC_E_INVALID_DATA,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for a particular parameter is invalid and cannot be (un)marshaled.
-        /// </summary>
-        RPC_E_INVALID_PARAMETER = VSConstants.RPC_E_INVALID_PARAMETER,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for there is no second outgoing call on same channel in DDE conversation.
-        /// </summary>
-        RPC_E_CANTCALLOUT_AGAIN = VSConstants.RPC_E_CANTCALLOUT_AGAIN,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the callee (server [not server application]) is not available and disappeared, all
-        /// connections are invalid. The call did not execute.
-        /// </summary>
-        RPC_E_SERVER_DIED_DNE = VSConstants.RPC_E_SERVER_DIED_DNE,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for system call failed.
-        /// </summary>
-        RPC_E_SYS_CALL_FAILED = VSConstants.RPC_E_SYS_CALL_FAILED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for could not allocate some required resource (memory, events, ...)
-        /// </summary>
-        RPC_E_OUT_OF_RESOURCES = VSConstants.RPC_E_OUT_OF_RESOURCES,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for attempted to make calls on more than one thread in single threaded mode.
-        /// </summary>
-        RPC_E_ATTEMPTED_MULTITHREAD = VSConstants.RPC_E_ATTEMPTED_MULTITHREAD,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the requested interface is not registered on the server object.
-        /// </summary>
-        RPC_E_NOT_REGISTERED = VSConstants.RPC_E_NOT_REGISTERED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for <c>RPC</c> could not call the server or could not return the results of calling the server.
-        /// </summary>
-        RPC_E_FAULT = VSConstants.RPC_E_FAULT,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the server threw an <see cref="Exception"/>.
-        /// </summary>
-        RPC_E_SERVERFAULT = VSConstants.RPC_E_SERVERFAULT,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for cannot change thread mode after it is set.
-        /// </summary>
-        RPC_E_CHANGED_MODE = VSConstants.RPC_E_CHANGED_MODE,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the method called does not exist on the server.
-        /// </summary>
-        RPC_E_INVALIDMETHOD = VSConstants.RPC_E_INVALIDMETHOD,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the object invoked has disconnected from its clients.
-        /// </summary>
-        RPC_E_DISCONNECTED = VSConstants.RPC_E_DISCONNECTED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the object invoked chose not to process the call now. Try again later.
-        /// </summary>
-        RPC_E_RETRY = VSConstants.RPC_E_RETRY,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the message filter indicated that the application is busy.
-        /// </summary>
-        RPC_E_SERVERCALL_RETRYLATER = VSConstants.RPC_E_SERVERCALL_RETRYLATER,
-
-        /// <summary>
-        /// The message filter rejected the call.
-        /// </summary>
-        RPC_E_SERVERCALL_REJECTED = VSConstants.RPC_E_SERVERCALL_REJECTED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for a call control interfaces was called with invalid data.
-        /// </summary>
-        RPC_E_INVALID_CALLDATA = VSConstants.RPC_E_INVALID_CALLDATA,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for an outgoing call cannot be made since the application is dispatching an
-        /// input-synchronous call.
-        /// </summary>
-        RPC_E_CANTCALLOUT_ININPUTSYNCCALL = VSConstants.RPC_E_CANTCALLOUT_ININPUTSYNCCALL,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the application called an interface that was marshaled for a different thread.
-        /// </summary>
-        RPC_E_WRONG_THREAD = VSConstants.RPC_E_WRONG_THREAD,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for <c>CoInitialize</c> has not been called on the current thread.
-        /// </summary>
-        RPC_E_THREAD_NOT_INIT = VSConstants.RPC_E_THREAD_NOT_INIT,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the version of <c>OLE</c> on the client and server machines does not match.
-        /// </summary>
-        RPC_E_VERSION_MISMATCH = VSConstants.RPC_E_VERSION_MISMATCH,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> received a packet with an invalid header.
-        /// </summary>
-        RPC_E_INVALID_HEADER = VSConstants.RPC_E_INVALID_HEADER,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> received a packet with an invalid extension.
-        /// </summary>
-        RPC_E_INVALID_EXTENSION = VSConstants.RPC_E_INVALID_EXTENSION,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the requested object or interface does not exist.
-        /// </summary>
-        RPC_E_INVALID_IPID = VSConstants.RPC_E_INVALID_IPID,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for call context cannot be accessed after call completed.
-        /// </summary>
-        RPC_E_CALL_COMPLETE = VSConstants.RPC_E_CALL_COMPLETE,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for impersonate on unsecured calls is not supported.
-        /// </summary>
-        RPC_E_UNSECURE_CALL = VSConstants.RPC_E_UNSECURE_CALL,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for security must be initialized before any interfaces are marshaled or unmarshaled. It
-        /// cannot be changed once initialized.
-        /// </summary>
-        RPC_E_TOO_LATE = VSConstants.RPC_E_TOO_LATE,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for no security packages are installed on this machine or the user is not logged on or
-        /// there are no compatible security packages between the client and server.
-        /// </summary>
-        RPC_E_NO_GOOD_SECURITY_PACKAGES = VSConstants.RPC_E_NO_GOOD_SECURITY_PACKAGES,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for access is denied.
-        /// </summary>
-        RPC_E_ACCESS_DENIED = VSConstants.RPC_E_ACCESS_DENIED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for remote calls are not allowed for this process.
-        /// </summary>
-        RPC_E_REMOTE_DISABLED = VSConstants.RPC_E_REMOTE_DISABLED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the marshaled interface data packet (OBJREF) has an invalid or unknown format.
-        /// </summary>
-        RPC_E_INVALID_OBJREF = VSConstants.RPC_E_INVALID_OBJREF,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for no context is associated with this call. This happens for some custom marshaled
-        /// calls and on the client side of the call.
-        /// </summary>
-        RPC_E_NO_CONTEXT = VSConstants.RPC_E_NO_CONTEXT,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for this operation returned because the timeout period expired.
-        /// </summary>
-        RPC_E_TIMEOUT = VSConstants.RPC_E_TIMEOUT,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for there are no synchronize objects to wait on.
-        /// </summary>
-        RPC_E_NO_SYNC = VSConstants.RPC_E_NO_SYNC,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for full subject issuer chain SSL principal name expected from the server.
-        /// </summary>
-        RPC_E_FULLSIC_REQUIRED = VSConstants.RPC_E_FULLSIC_REQUIRED,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for principal name is not a valid MSSTD name.
-        /// </summary>
-        RPC_E_INVALID_STD_NAME = VSConstants.RPC_E_INVALID_STD_NAME,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for the requested object does not exist.
-        /// </summary>
-        RPC_E_INVALID_OBJECT = VSConstants.RPC_E_INVALID_OBJECT,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> has sent a request and is waiting for a reply.
-        /// </summary>
-        RPC_S_CALLPENDING = VSConstants.RPC_S_CALLPENDING,
-
-        /// <summary>
-        /// <c>RPC</c> Error <c>HRESULT</c> for <c>OLE</c> is waiting before retrying a request.
-        /// </summary>
-        RPC_S_WAITONTIMER = VSConstants.RPC_S_WAITONTIMER,
+        TYPE_E_CIRCULARTYPE = unchecked((int)(0x80029C84)),
 
         /// <summary>
         /// <c>IStorage</c><c>COM</c> Error <c>HRESULT</c> for unable to perform requested operation.
@@ -1303,134 +1283,184 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         STG_E_RESETS_EXHAUSTED = unchecked((int)(0x8003030B)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for buffer too small.
+        /// <c>OLE</c> Error <c>HRESULT</c> for invalid <c>OLEVERB</c> structure
         /// </summary>
-        TYPE_E_BUFFERTOOSMALL = unchecked((int)(0x80028016)),
+        OLE_E_FIRST = OLE_E_OLEVERB,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for field name not defined in the record.
+        /// <c>OLE</c> Error <c>HRESULT</c> for invalid <c>OLEVERB</c> structure
         /// </summary>
-        TYPE_E_FIELDNOTFOUND = unchecked((int)(0x80028017)),
+        OLE_E_OLEVERB = VSConstants.OLE_E_OLEVERB,
 
         /// <summary>
-        /// Old format or invalid type library.
+        /// <c>OLE</c> Error <c>HRESULT</c> for invalid advise flags
         /// </summary>
-        TYPE_E_INVDATAREAD = unchecked((int)(0x80028018)),
+        OLE_E_ADVF = VSConstants.OLE_E_ADVF,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for old format or invalid type library.
+        /// <c>OLE</c> Error <c>HRESULT</c> for cannot enumerate any more, because the associated data is missing
         /// </summary>
-        TYPE_E_UNSUPFORMAT = unchecked((int)(0x80028019)),
+        OLE_E_ENUM_NOMORE = VSConstants.OLE_E_ENUM_NOMORE,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for error accessing the OLE registry.
+        /// <c>OLE</c> Error <c>HRESULT</c> for this implementation doesn't take advises
         /// </summary>
-        TYPE_E_REGISTRYACCESS = unchecked((int)(0x8002801C)),
+        OLE_E_ADVISENOTSUPPORTED = VSConstants.OLE_E_ADVISENOTSUPPORTED,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for library not registered.
+        /// <c>OLE</c> Error <c>HRESULT</c> for there is no connection for this connection ID
         /// </summary>
-        TYPE_E_LIBNOTREGISTERED = unchecked((int)(0x8002801D)),
+        OLE_E_NOCONNECTION = VSConstants.OLE_E_NOCONNECTION,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for bound to unknown type.
+        /// <c>OLE</c> Error <c>HRESULT</c> for need to run the object to perform this operation
         /// </summary>
-        TYPE_E_UNDEFINEDTYPE = unchecked((int)(0x80028027)),
+        OLE_E_NOTRUNNING = VSConstants.OLE_E_NOTRUNNING,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for qualified name disallowed.
+        /// <c>OLE</c> Error <c>HRESULT</c> for there is no cache to operate on
         /// </summary>
-        TYPE_E_QUALIFIEDNAMEDISALLOWED = unchecked((int)(0x80028028)),
+        OLE_E_NOCACHE = VSConstants.OLE_E_NOCACHE,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for invalid forward reference, or reference to uncompiled type.
+        /// <c>OLE</c> Error <c>HRESULT</c> for uninitialized object
         /// </summary>
-        TYPE_E_INVALIDSTATE = unchecked((int)(0x80028029)),
+        OLE_E_BLANK = VSConstants.OLE_E_BLANK,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for type mismatch.
+        /// <c>OLE</c> Error <c>HRESULT</c> for linked object's source class has changed
         /// </summary>
-        TYPE_E_WRONGTYPEKIND = unchecked((int)(0x8002802A)),
+        OLE_E_CLASSDIFF = VSConstants.OLE_E_CLASSDIFF,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for element not found.
+        /// <c>OLE</c> Error <c>HRESULT</c> for not able to get the moniker of the object
         /// </summary>
-        TYPE_E_ELEMENTNOTFOUND = unchecked((int)(0x8002802B)),
+        OLE_E_CANT_GETMONIKER = VSConstants.OLE_E_CANT_GETMONIKER,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for ambiguous name.
+        /// <c>OLE</c> Error <c>HRESULT</c> for not able to bind to the source
         /// </summary>
-        TYPE_E_AMBIGUOUSNAME = unchecked((int)(0x8002802C)),
+        OLE_E_CANT_BINDTOSOURCE = VSConstants.OLE_E_CANT_BINDTOSOURCE,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for name already exists in the library.
+        /// <c>OLE</c> Error <c>HRESULT</c> for object is static, operation not allowed
         /// </summary>
-        TYPE_E_NAMECONFLICT = unchecked((int)(0x8002802D)),
+        OLE_E_STATIC = VSConstants.OLE_E_STATIC,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for unknown LCID.
+        /// <c>OLE</c> Error <c>HRESULT</c> for user canceled out of save dialog
         /// </summary>
-        TYPE_E_UNKNOWNLCID = unchecked((int)(0x8002802E)),
+        OLE_E_PROMPTSAVECANCELLED = VSConstants.OLE_E_PROMPTSAVECANCELLED,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for function not defined in specified DLL.
+        /// <c>OLE</c> Error <c>HRESULT</c> for invalid rectangle
         /// </summary>
-        TYPE_E_DLLFUNCTIONNOTFOUND = unchecked((int)(0x8002802F)),
+        OLE_E_INVALIDRECT = VSConstants.OLE_E_INVALIDRECT,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for wrong module kind for the operation.
+        /// <c>OLE</c> Error <c>HRESULT</c> for compobj.dll is too old for the initializing ole2.dll
         /// </summary>
-        TYPE_E_BADMODULEKIND = unchecked((int)(0x800288BD)),
+        OLE_E_WRONGCOMPOBJ = VSConstants.OLE_E_WRONGCOMPOBJ,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for size may not exceed 64K.
+        /// <c>OLE</c> Error <c>HRESULT</c> for invalid window handle
         /// </summary>
-        TYPE_E_SIZETOOBIG = unchecked((int)(0x800288C5)),
+        OLE_E_INVALIDHWND = VSConstants.OLE_E_INVALIDHWND,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for duplicate ID in inheritance hierarchy.
+        /// <c>OLE</c> Error <c>HRESULT</c> for object is not in any of the inplace active states
         /// </summary>
-        TYPE_E_DUPLICATEID = unchecked((int)(0x800288C6)),
+        OLE_E_NOT_INPLACEACTIVE = VSConstants.OLE_E_NOT_INPLACEACTIVE,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for incorrect inheritance depth in standard OLE hmember.
+        /// <c>OLE</c> Error <c>HRESULT</c> for not able to convert object
         /// </summary>
-        TYPE_E_INVALIDID = unchecked((int)(0x800288CF)),
+        OLE_E_CANTCONVERT = VSConstants.OLE_E_CANTCONVERT,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for type mismatch.
+        /// <c>OLE</c> Error <c>HRESULT</c> for not able to perform the operation because object is not given storage yet
         /// </summary>
-        TYPE_E_TYPEMISMATCH = unchecked((int)(0x80028CA0)),
+        OLE_E_NOSTORAGE = VSConstants.OLE_E_NOSTORAGE,
 
         /// <summary>
-        /// Error <c>HRESULT</c> for invalid number of arguments.
+        /// Invalid FORMATETC structure
         /// </summary>
-        TYPE_E_OUTOFBOUNDS = unchecked((int)(0x80028CA1)),
+        DV_E_FORMATETC = unchecked((int)(0x80040064)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for I/O Error.
+        /// Invalid DVTARGETDEVICE structure
         /// </summary>
-        TYPE_E_IOERROR = unchecked((int)(0x80028CA2)),
+        DV_E_DVTARGETDEVICE = unchecked((int)(0x80040065)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for error creating unique tmp file.
+        /// Invalid STDGMEDIUM structure
         /// </summary>
-        TYPE_E_CANTCREATETMPFILE = unchecked((int)(0x80028CA3)),
+        DV_E_STGMEDIUM = unchecked((int)(0x80040066)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for error loading type library/DLL.
+        /// Invalid STATDATA structure
         /// </summary>
-        TYPE_E_CANTLOADLIBRARY = unchecked((int)(0x80029C4A)),
+        DV_E_STATDATA = unchecked((int)(0x80040067)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for inconsistent property functions.
+        /// Invalid lindex
         /// </summary>
-        TYPE_E_INCONSISTENTPROPFUNCS = unchecked((int)(0x80029C83)),
+        DV_E_LINDEX = unchecked((int)(0x80040068)),
 
         /// <summary>
-        /// Error <c>HRESULT</c> for circular dependency between types/modules.
+        /// Invalid tymed
         /// </summary>
-        TYPE_E_CIRCULARTYPE = unchecked((int)(0x80029C84)),
+        DV_E_TYMED = unchecked((int)(0x80040069)),
+
+        /// <summary>
+        /// Invalid clipboard format
+        /// </summary>
+        DV_E_CLIPFORMAT = unchecked((int)(0x8004006A)),
+
+        /// <summary>
+        /// Invalid aspect(s)
+        /// </summary>
+        DV_E_DVASPECT = unchecked((int)(0x8004006B)),
+
+        /// <summary>
+        /// tdSize parameter of the DVTARGETDEVICE structure is invalid
+        /// </summary>
+        DV_E_DVTARGETDEVICE_SIZE = unchecked((int)(0x8004006C)),
+
+        /// <summary>
+        /// Object doesn't support IViewObject interface
+        /// </summary>
+        DV_E_NOIVIEWOBJECT = unchecked((int)(0x8004006D)),
+
+        /// <summary>
+        /// <c>OLE</c> Error <c>HRESULT</c> for no information available.
+        /// </summary>
+        OLE_E_LAST = unchecked((int)(0x800400FF)),
+
+        /// <summary>
+        /// Trying to revoke a drop target that has not been registered
+        /// </summary>
+        DRAGDROP_E_FIRST = DRAGDROP_E_NOTREGISTERED,
+
+        /// <summary>
+        /// Trying to revoke a drop target that has not been registered
+        /// </summary>
+        DRAGDROP_E_NOTREGISTERED = unchecked((int)(0x80040100)),
+
+        /// <summary>
+        /// This window has already been registered as a drop target
+        /// </summary>
+        DRAGDROP_E_ALREADYREGISTERED = unchecked((int)(0x80040101)),
+
+        /// <summary>
+        /// Invalid window handle
+        /// </summary>
+        DRAGDROP_E_INVALIDHWND = unchecked((int)(0x80040102)),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DRAGDROP_E_LAST = unchecked((int)(0x8004010F)),
 
         /// <summary>
         /// Error <c>HRESULT</c> for class does not support aggregation (or class object is remote)
@@ -1536,6 +1566,26 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// Register Database Error <c>HRESULT</c> for no information available.
         /// </summary>
         REGDB_E_LAST = unchecked((int)(0x8004015F)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for CATID does not exist
+        /// </summary>
+        CAT_E_FIRST = CAT_E_CATIDNOEXIST,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for CATID does not exist
+        /// </summary>
+        CAT_E_CATIDNOEXIST = unchecked((int)(0x80040160)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for description not found
+        /// </summary>
+        CAT_E_LAST = CAT_E_NODESCRIPTION,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for description not found
+        /// </summary>
+        CAT_E_NODESCRIPTION = unchecked((int)(0x80040161)),
 
         /// <summary>
         /// Active Directory Error <c>HRESULT</c> for no package in the software installation data in the Active Directory meets
@@ -1959,16 +2009,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         EVENT_E_ALL_SUBSCRIBERS_FAILED = VS_E_SPECIFYING_OUTPUT_UNSUPPORTED,
 
         VS_E_SPECIFYING_OUTPUT_UNSUPPORTED = VSConstants.VS_E_SPECIFYING_OUTPUT_UNSUPPORTED,
-
-        /// <summary>
-        /// No information available.
-        /// </summary>
-        CLASSFACTORY_S_FIRST = 0x00040110,
-
-        /// <summary>
-        /// No information available.
-        /// </summary>
-        CLASSFACTORY_S_LAST = 0x0004011F,
 
         /// <summary>
         /// A syntax error occurred trying to evaluate a query string
@@ -2574,397 +2614,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// OLE service could not communicate with the object server
         /// </summary>
         CO_E_OBJSRV_RPC_FAILURE = unchecked((int)(0x80080006)),
-
-        /// <summary>
-        /// Errors occurred accessing one or more objects - the ErrorInfo collection may have more detail
-        /// </summary>
-        COMADMIN_E_OBJECTERRORS = unchecked((int)(0x80110401)),
-
-        /// <summary>
-        /// One or more of the object's properties are missing or invalid
-        /// </summary>
-        COMADMIN_E_OBJECTINVALID = unchecked((int)(0x80110402)),
-
-        /// <summary>
-        /// The object was not found in the catalog
-        /// </summary>
-        COMADMIN_E_KEYMISSING = unchecked((int)(0x80110403)),
-
-        /// <summary>
-        /// The object is already registered
-        /// </summary>
-        COMADMIN_E_ALREADYINSTALLED = unchecked((int)(0x80110404)),
-
-        /// <summary>
-        /// Error occurred writing to the application file
-        /// </summary>
-        COMADMIN_E_APP_FILE_WRITEFAIL = unchecked((int)(0x80110407)),
-
-        /// <summary>
-        /// Error occurred reading the application file
-        /// </summary>
-        COMADMIN_E_APP_FILE_READFAIL = unchecked((int)(0x80110408)),
-
-        /// <summary>
-        /// Invalid version number in application file
-        /// </summary>
-        COMADMIN_E_APP_FILE_VERSION = unchecked((int)(0x80110409)),
-
-        /// <summary>
-        /// The file path is invalid
-        /// </summary>
-        COMADMIN_E_BADPATH = unchecked((int)(0x8011040A)),
-
-        /// <summary>
-        /// The application is already installed
-        /// </summary>
-        COMADMIN_E_APPLICATIONEXISTS = unchecked((int)(0x8011040B)),
-
-        /// <summary>
-        /// The role already exists
-        /// </summary>
-        COMADMIN_E_ROLEEXISTS = unchecked((int)(0x8011040C)),
-
-        /// <summary>
-        /// An error occurred copying the file
-        /// </summary>
-        COMADMIN_E_CANTCOPYFILE = unchecked((int)(0x8011040D)),
-
-        /// <summary>
-        /// One or more users are not valid
-        /// </summary>
-        COMADMIN_E_NOUSER = unchecked((int)(0x8011040F)),
-
-        /// <summary>
-        /// One or more users in the application file are not valid
-        /// </summary>
-        COMADMIN_E_INVALIDUSERIDS = unchecked((int)(0x80110410)),
-
-        /// <summary>
-        /// The component's CLSID is missing or corrupt
-        /// </summary>
-        COMADMIN_E_NOREGISTRYCLSID = unchecked((int)(0x80110411)),
-
-        /// <summary>
-        /// The component's progID is missing or corrupt
-        /// </summary>
-        COMADMIN_E_BADREGISTRYPROGID = unchecked((int)(0x80110412)),
-
-        /// <summary>
-        /// Unable to set required authentication level for update request
-        /// </summary>
-        COMADMIN_E_AUTHENTICATIONLEVEL = unchecked((int)(0x80110413)),
-
-        /// <summary>
-        /// The identity or password set on the application is not valid
-        /// </summary>
-        COMADMIN_E_USERPASSWDNOTVALID = unchecked((int)(0x80110414)),
-
-        /// <summary>
-        /// Application file CLSIDs or IIDs do not match corresponding DLLs
-        /// </summary>
-        COMADMIN_E_CLSIDORIIDMISMATCH = unchecked((int)(0x80110418)),
-
-        /// <summary>
-        /// Interface information is either missing or changed
-        /// </summary>
-        COMADMIN_E_REMOTEINTERFACE = unchecked((int)(0x80110419)),
-
-        /// <summary>
-        /// DllRegisterServer failed on component install
-        /// </summary>
-        COMADMIN_E_DLLREGISTERSERVER = unchecked((int)(0x8011041A)),
-
-        /// <summary>
-        /// No server file share available
-        /// </summary>
-        COMADMIN_E_NOSERVERSHARE = unchecked((int)(0x8011041B)),
-
-        /// <summary>
-        /// DLL could not be loaded
-        /// </summary>
-        COMADMIN_E_DLLLOADFAILED = unchecked((int)(0x8011041D)),
-
-        /// <summary>
-        /// The registered TypeLib ID is not valid
-        /// </summary>
-        COMADMIN_E_BADREGISTRYLIBID = unchecked((int)(0x8011041E)),
-
-        /// <summary>
-        /// Application install directory not found
-        /// </summary>
-        COMADMIN_E_APPDIRNOTFOUND = unchecked((int)(0x8011041F)),
-
-        /// <summary>
-        /// Errors occurred while in the component registrar
-        /// </summary>
-        COMADMIN_E_REGISTRARFAILED = unchecked((int)(0x80110423)),
-
-        /// <summary>
-        /// The file does not exist
-        /// </summary>
-        COMADMIN_E_COMPFILE_DOESNOTEXIST = unchecked((int)(0x80110424)),
-
-        /// <summary>
-        /// The DLL could not be loaded
-        /// </summary>
-        COMADMIN_E_COMPFILE_LOADDLLFAIL = unchecked((int)(0x80110425)),
-
-        /// <summary>
-        /// GetClassObject failed in the DLL
-        /// </summary>
-        COMADMIN_E_COMPFILE_GETCLASSOBJ = unchecked((int)(0x80110426)),
-
-        /// <summary>
-        /// The DLL does not support the components listed in the TypeLib
-        /// </summary>
-        COMADMIN_E_COMPFILE_CLASSNOTAVAIL = unchecked((int)(0x80110427)),
-
-        /// <summary>
-        /// The TypeLib could not be loaded
-        /// </summary>
-        COMADMIN_E_COMPFILE_BADTLB = unchecked((int)(0x80110428)),
-
-        /// <summary>
-        /// The file does not contain components or component information
-        /// </summary>
-        COMADMIN_E_COMPFILE_NOTINSTALLABLE = unchecked((int)(0x80110429)),
-
-        /// <summary>
-        /// Changes to this object and its sub-objects have been disabled
-        /// </summary>
-        COMADMIN_E_NOTCHANGEABLE = unchecked((int)(0x8011042A)),
-
-        /// <summary>
-        /// The delete function has been disabled for this object
-        /// </summary>
-        COMADMIN_E_NOTDELETEABLE = unchecked((int)(0x8011042B)),
-
-        /// <summary>
-        /// The server catalog version is not supported
-        /// </summary>
-        COMADMIN_E_SESSION = unchecked((int)(0x8011042C)),
-
-        /// <summary>
-        /// The component move was disallowed, because the source or destination application is either a system application or
-        /// currently locked against changes
-        /// </summary>
-        COMADMIN_E_COMP_MOVE_LOCKED = unchecked((int)(0x8011042D)),
-
-        /// <summary>
-        /// The component move failed because the destination application no longer exists
-        /// </summary>
-        COMADMIN_E_COMP_MOVE_BAD_DEST = unchecked((int)(0x8011042E)),
-
-        /// <summary>
-        /// The system was unable to register the TypeLib
-        /// </summary>
-        COMADMIN_E_REGISTERTLB = unchecked((int)(0x80110430)),
-
-        /// <summary>
-        /// This operation can not be performed on the system application
-        /// </summary>
-        COMADMIN_E_SYSTEMAPP = unchecked((int)(0x80110433)),
-
-        /// <summary>
-        /// The component registrar referenced in this file is not available
-        /// </summary>
-        COMADMIN_E_COMPFILE_NOREGISTRAR = unchecked((int)(0x80110434)),
-
-        /// <summary>
-        /// A component in the same DLL is already installed
-        /// </summary>
-        COMADMIN_E_COREQCOMPINSTALLED = unchecked((int)(0x80110435)),
-
-        /// <summary>
-        /// The service is not installed
-        /// </summary>
-        COMADMIN_E_SERVICENOTINSTALLED = unchecked((int)(0x80110436)),
-
-        /// <summary>
-        /// One or more property settings are either invalid or in conflict with each other
-        /// </summary>
-        COMADMIN_E_PROPERTYSAVEFAILED = unchecked((int)(0x80110437)),
-
-        /// <summary>
-        /// The object you are attempting to add or rename already exists
-        /// </summary>
-        COMADMIN_E_OBJECTEXISTS = unchecked((int)(0x80110438)),
-
-        /// <summary>
-        /// The component already exists
-        /// </summary>
-        COMADMIN_E_COMPONENTEXISTS = unchecked((int)(0x80110439)),
-
-        /// <summary>
-        /// The registration file is corrupt
-        /// </summary>
-        COMADMIN_E_REGFILE_CORRUPT = unchecked((int)(0x8011043B)),
-
-        /// <summary>
-        /// The property value is too large
-        /// </summary>
-        COMADMIN_E_PROPERTY_OVERFLOW = unchecked((int)(0x8011043C)),
-
-        /// <summary>
-        /// Object was not found in registry
-        /// </summary>
-        COMADMIN_E_NOTINREGISTRY = unchecked((int)(0x8011043E)),
-
-        /// <summary>
-        /// This object is not poolable
-        /// </summary>
-        COMADMIN_E_OBJECTNOTPOOLABLE = unchecked((int)(0x8011043F)),
-
-        /// <summary>
-        /// A CLSID with the same GUID as the new application ID is already installed on this machine
-        /// </summary>
-        COMADMIN_E_APPLID_MATCHES_CLSID = unchecked((int)(0x80110446)),
-
-        /// <summary>
-        /// A role assigned to a component, interface, or method did not exist in the application
-        /// </summary>
-        COMADMIN_E_ROLE_DOES_NOT_EXIST = unchecked((int)(0x80110447)),
-
-        /// <summary>
-        /// You must have components in an application in order to start the application
-        /// </summary>
-        COMADMIN_E_START_APP_NEEDS_COMPONENTS = unchecked((int)(0x80110448)),
-
-        /// <summary>
-        /// This operation is not enabled on this platform
-        /// </summary>
-        COMADMIN_E_REQUIRES_DIFFERENT_PLATFORM = unchecked((int)(0x80110449)),
-
-        /// <summary>
-        /// Application Proxy is not exportable
-        /// </summary>
-        COMADMIN_E_CAN_NOT_EXPORT_APP_PROXY = unchecked((int)(0x8011044A)),
-
-        /// <summary>
-        /// Failed to start application because it is either a library application or an application proxy
-        /// </summary>
-        COMADMIN_E_CAN_NOT_START_APP = unchecked((int)(0x8011044B)),
-
-        /// <summary>
-        /// System application is not exportable
-        /// </summary>
-        COMADMIN_E_CAN_NOT_EXPORT_SYS_APP = unchecked((int)(0x8011044C)),
-
-        /// <summary>
-        /// Can not subscribe to this component (the component may have been imported)
-        /// </summary>
-        COMADMIN_E_CANT_SUBSCRIBE_TO_COMPONENT = unchecked((int)(0x8011044D)),
-
-        /// <summary>
-        /// An event class cannot also be a subscriber component
-        /// </summary>
-        COMADMIN_E_EVENTCLASS_CANT_BE_SUBSCRIBER = unchecked((int)(0x8011044E)),
-
-        /// <summary>
-        /// Library applications and application proxies are incompatible
-        /// </summary>
-        COMADMIN_E_LIB_APP_PROXY_INCOMPATIBLE = unchecked((int)(0x8011044F)),
-
-        /// <summary>
-        /// This function is valid for the base partition only
-        /// </summary>
-        COMADMIN_E_BASE_PARTITION_ONLY = unchecked((int)(0x80110450)),
-
-        /// <summary>
-        /// You cannot start an application that has been disabled
-        /// </summary>
-        COMADMIN_E_START_APP_DISABLED = unchecked((int)(0x80110451)),
-
-        /// <summary>
-        /// The specified partition name is already in use on this computer
-        /// </summary>
-        COMADMIN_E_CAT_DUPLICATE_PARTITION_NAME = unchecked((int)(0x80110457)),
-
-        /// <summary>
-        /// The specified partition name is invalid. Check that the name contains at least one visible character
-        /// </summary>
-        COMADMIN_E_CAT_INVALID_PARTITION_NAME = unchecked((int)(0x80110458)),
-
-        /// <summary>
-        /// The partition cannot be deleted because it is the default partition for one or more users
-        /// </summary>
-        COMADMIN_E_CAT_PARTITION_IN_USE = unchecked((int)(0x80110459)),
-
-        /// <summary>
-        /// The partition cannot be exported, because one or more components in the partition have the same file name
-        /// </summary>
-        COMADMIN_E_FILE_PARTITION_DUPLICATE_FILES = unchecked((int)(0x8011045A)),
-
-        /// <summary>
-        /// Applications that contain one or more imported components cannot be installed into a non-base partition
-        /// </summary>
-        COMADMIN_E_CAT_IMPORTED_COMPONENTS_NOT_ALLOWED = unchecked((int)(0x8011045B)),
-
-        /// <summary>
-        /// The application name is not unique and cannot be resolved to an application id
-        /// </summary>
-        COMADMIN_E_AMBIGUOUS_APPLICATION_NAME = unchecked((int)(0x8011045C)),
-
-        /// <summary>
-        /// The partition name is not unique and cannot be resolved to a partition id
-        /// </summary>
-        COMADMIN_E_AMBIGUOUS_PARTITION_NAME = unchecked((int)(0x8011045D)),
-
-        /// <summary>
-        /// The <c>COM</c>+ registry database has not been initialized
-        /// </summary>
-        COMADMIN_E_REGDB_NOTINITIALIZED = unchecked((int)(0x80110472)),
-
-        /// <summary>
-        /// The <c>COM</c>+ registry database is not open
-        /// </summary>
-        COMADMIN_E_REGDB_NOTOPEN = unchecked((int)(0x80110473)),
-
-        /// <summary>
-        /// The <c>COM</c>+ registry database detected a system error
-        /// </summary>
-        COMADMIN_E_REGDB_SYSTEMERR = unchecked((int)(0x80110474)),
-
-        /// <summary>
-        /// The <c>COM</c>+ registry database is already running
-        /// </summary>
-        COMADMIN_E_REGDB_ALREADYRUNNING = unchecked((int)(0x80110475)),
-
-        /// <summary>
-        /// This version of the <c>COM</c>+ registry database cannot be migrated
-        /// </summary>
-        COMADMIN_E_MIG_VERSIONNOTSUPPORTED = unchecked((int)(0x80110480)),
-
-        /// <summary>
-        /// The schema version to be migrated could not be found in the <c>COM</c>+ registry database
-        /// </summary>
-        COMADMIN_E_MIG_SCHEMANOTFOUND = unchecked((int)(0x80110481)),
-
-        /// <summary>
-        /// There was a type mismatch between binaries
-        /// </summary>
-        COMADMIN_E_CAT_BITNESSMISMATCH = unchecked((int)(0x80110482)),
-
-        /// <summary>
-        /// A binary of unknown or invalid type was provided
-        /// </summary>
-        COMADMIN_E_CAT_UNACCEPTABLEBITNESS = unchecked((int)(0x80110483)),
-
-        /// <summary>
-        /// There was a type mismatch between a binary and an application
-        /// </summary>
-        COMADMIN_E_CAT_WRONGAPPBITNESS = unchecked((int)(0x80110484)),
-
-        /// <summary>
-        /// The application cannot be paused or resumed
-        /// </summary>
-        COMADMIN_E_CAT_PAUSE_RESUME_NOT_SUPPORTED = unchecked((int)(0x80110485)),
-
-        /// <summary>
-        /// The <c>COM</c>+ Catalog Server threw an exception during execution
-        /// </summary>
-        COMADMIN_E_CAT_SERVERFAULT = unchecked((int)(0x80110486)),
 
         /// <summary>
         /// Moniker path could not be normalized
@@ -4130,8 +3779,9 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// The operation is denied.
         /// </summary>
-        /// <remarks>It can only be performed by a certificate manager that is allowed to manage certificates for
-        /// the current requester.</remarks>
+        /// <remarks>
+        /// It can only be performed by a certificate manager that is allowed to manage certificates for the current requester.
+        /// </remarks>
         CERTSRV_E_RESTRICTEDOFFICER = unchecked((int)(0x80094009)),
 
         /// <summary>
@@ -4535,6 +4185,59 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         TRUST_E_NOSIGNATURE = unchecked((int)(0x800B0100)),
 
         /// <summary>
+        /// Error <c>HRESULT</c> for a required certificate is not within its validity period when verifying against the current
+        /// system clock or the timestamp in the signed file.
+        /// </summary>
+        CERT_E_EXPIRED = unchecked((int)(0x800B0101)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for the validity periods of the certification chain do not nest correctly.
+        /// </summary>
+        CERT_E_VALIDITYPERIODNESTING = unchecked((int)(0x800B0102)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a certificate that can only be used as an end-entity is being used as a CA or visa versa.
+        /// </summary>
+        CERT_E_ROLE = unchecked((int)(0x800B0103)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a path length constraint in the certification chain has been violated.
+        /// </summary>
+        CERT_E_PATHLENCONST = unchecked((int)(0x800B0104)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a certificate contains an unknown extension that is marked 'critical'.
+        /// </summary>
+        CERT_E_CRITICAL = unchecked((int)(0x800B0105)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a certificate being used for a purpose other than the ones specified by its CA.
+        /// </summary>
+        CERT_E_PURPOSE = unchecked((int)(0x800B0106)),
+
+        /// <summary>
+        /// A parent of a given certificate in fact did not issue that child certificate.
+        /// </summary>
+        CERT_E_ISSUERCHAINING = unchecked((int)(0x800B0107)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a certificate is missing or has an empty value for an important field, such as a subject or
+        /// issuer name.
+        /// </summary>
+        CERT_E_MALFORMED = unchecked((int)(0x800B0108)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for a certificate chain processed, but terminated in a root certificate which is not trusted by the
+        /// trust provider.
+        /// </summary>
+        CERT_E_UNTRUSTEDROOT = unchecked((int)(0x800B0109)),
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for an internal certificate chaining error has occurred.
+        /// </summary>
+        CERT_E_CHAINING = unchecked((int)(0x800B010A)),
+
+        /// <summary>
         /// Generic trust failure.
         /// </summary>
         TRUST_E_FAIL = unchecked((int)(0x800B010B)),
@@ -4583,306 +4286,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// The certificate has an invalid name. The name is not included in the permitted list or is explicitly excluded.
         /// </summary>
         CERT_E_INVALID_NAME = unchecked((int)(0x800B0114)),
-
-        /// <summary>
-        /// An internal consistency check failed.
-        /// </summary>
-        SCARD_F_INTERNAL_ERROR = unchecked((int)(0x80100001)),
-
-        /// <summary>
-        /// The action was cancelled by an SCardCancel request.
-        /// </summary>
-        SCARD_E_CANCELLED = unchecked((int)(0x80100002)),
-
-        /// <summary>
-        /// The supplied handle was invalid.
-        /// </summary>
-        SCARD_E_INVALID_HANDLE = unchecked((int)(0x80100003)),
-
-        /// <summary>
-        /// One or more of the supplied parameters could not be properly interpreted.
-        /// </summary>
-        SCARD_E_INVALID_PARAMETER = unchecked((int)(0x80100004)),
-
-        /// <summary>
-        /// Registry startup information is missing or invalid.
-        /// </summary>
-        SCARD_E_INVALID_TARGET = unchecked((int)(0x80100005)),
-
-        /// <summary>
-        /// Not enough memory available to complete this command.
-        /// </summary>
-        SCARD_E_NO_MEMORY = unchecked((int)(0x80100006)),
-
-        /// <summary>
-        /// An internal consistency timer has expired.
-        /// </summary>
-        SCARD_F_WAITED_TOO_Int32 = unchecked((int)(0x80100007)),
-
-        /// <summary>
-        /// The data buffer to receive returned data is too small for the returned data.
-        /// </summary>
-        SCARD_E_INSUFFICIENT_BUFFER = unchecked((int)(0x80100008)),
-
-        /// <summary>
-        /// The specified reader name is not recognized.
-        /// </summary>
-        SCARD_E_UNKNOWN_READER = unchecked((int)(0x80100009)),
-
-        /// <summary>
-        /// The user-specified timeout value has expired.
-        /// </summary>
-        SCARD_E_TIMEOUT = unchecked((int)(0x8010000A)),
-
-        /// <summary>
-        /// The smart card cannot be accessed because of other connections outstanding.
-        /// </summary>
-        SCARD_E_SHARING_VIOLATION = unchecked((int)(0x8010000B)),
-
-        /// <summary>
-        /// The operation requires a Smart Card, but no Smart Card is currently in the device.
-        /// </summary>
-        SCARD_E_NO_SMARTCARD = unchecked((int)(0x8010000C)),
-
-        /// <summary>
-        /// The specified smart card name is not recognized.
-        /// </summary>
-        SCARD_E_UNKNOWN_CARD = unchecked((int)(0x8010000D)),
-
-        /// <summary>
-        /// The system could not dispose of the media in the requested manner.
-        /// </summary>
-        SCARD_E_CANT_DISPOSE = unchecked((int)(0x8010000E)),
-
-        /// <summary>
-        /// The requested protocols are incompatible with the protocol currently in use with the smart card.
-        /// </summary>
-        SCARD_E_PROTO_MISMATCH = unchecked((int)(0x8010000F)),
-
-        /// <summary>
-        /// The reader or smart card is not ready to accept commands.
-        /// </summary>
-        SCARD_E_NOT_READY = unchecked((int)(0x80100010)),
-
-        /// <summary>
-        /// One or more of the supplied parameters values could not be properly interpreted.
-        /// </summary>
-        SCARD_E_INVALID_VALUE = unchecked((int)(0x80100011)),
-
-        /// <summary>
-        /// The action was cancelled by the system, presumably to log off or shut down.
-        /// </summary>
-        SCARD_E_SYSTEM_CANCELLED = unchecked((int)(0x80100012)),
-
-        /// <summary>
-        /// An internal communications error has been detected.
-        /// </summary>
-        SCARD_F_COMM_ERROR = unchecked((int)(0x80100013)),
-
-        /// <summary>
-        /// An internal error has been detected, but the source is unknown.
-        /// </summary>
-        SCARD_F_UNKNOWN_ERROR = unchecked((int)(0x80100014)),
-
-        /// <summary>
-        /// An ATR obtained from the registry is not a valid ATR string.
-        /// </summary>
-        SCARD_E_INVALID_ATR = unchecked((int)(0x80100015)),
-
-        /// <summary>
-        /// An attempt was made to end a non-existent transaction.
-        /// </summary>
-        SCARD_E_NOT_TRANSACTED = unchecked((int)(0x80100016)),
-
-        /// <summary>
-        /// The specified reader is not currently available for use.
-        /// </summary>
-        SCARD_E_READER_UNAVAILABLE = unchecked((int)(0x80100017)),
-
-        /// <summary>
-        /// The operation has been aborted to allow the server application to exit.
-        /// </summary>
-        SCARD_P_SHUTDOWN = unchecked((int)(0x80100018)),
-
-        /// <summary>
-        /// The PCI Receive buffer was too small.
-        /// </summary>
-        SCARD_E_PCI_TOO_SMALL = unchecked((int)(0x80100019)),
-
-        /// <summary>
-        /// The reader driver does not meet minimal requirements for support.
-        /// </summary>
-        SCARD_E_READER_UNSUPPORTED = unchecked((int)(0x8010001A)),
-
-        /// <summary>
-        /// The reader driver did not produce a unique reader name.
-        /// </summary>
-        SCARD_E_DUPLICATE_READER = unchecked((int)(0x8010001B)),
-
-        /// <summary>
-        /// The smart card does not meet minimal requirements for support.
-        /// </summary>
-        SCARD_E_CARD_UNSUPPORTED = unchecked((int)(0x8010001C)),
-
-        /// <summary>
-        /// The Smart card resource manager is not running.
-        /// </summary>
-        SCARD_E_NO_SERVICE = unchecked((int)(0x8010001D)),
-
-        /// <summary>
-        /// The Smart card resource manager has shut down.
-        /// </summary>
-        SCARD_E_SERVICE_STOPPED = unchecked((int)(0x8010001E)),
-
-        /// <summary>
-        /// An unexpected card error has occurred.
-        /// </summary>
-        SCARD_E_UNEXPECTED = unchecked((int)(0x8010001F)),
-
-        /// <summary>
-        /// No Primary Provider can be found for the smart card.
-        /// </summary>
-        SCARD_E_ICC_INSTALLATION = unchecked((int)(0x80100020)),
-
-        /// <summary>
-        /// The requested order of object creation is not supported.
-        /// </summary>
-        SCARD_E_ICC_CREATEORDER = unchecked((int)(0x80100021)),
-
-        /// <summary>
-        /// This smart card does not support the requested feature.
-        /// </summary>
-        SCARD_E_UNSUPPORTED_FEATURE = unchecked((int)(0x80100022)),
-
-        /// <summary>
-        /// The identified directory does not exist in the smart card.
-        /// </summary>
-        SCARD_E_DIR_NOT_FOUND = unchecked((int)(0x80100023)),
-
-        /// <summary>
-        /// The identified file does not exist in the smart card.
-        /// </summary>
-        SCARD_E_FILE_NOT_FOUND = unchecked((int)(0x80100024)),
-
-        /// <summary>
-        /// The supplied path does not represent a smart card directory.
-        /// </summary>
-        SCARD_E_NO_DIR = unchecked((int)(0x80100025)),
-
-        /// <summary>
-        /// The supplied path does not represent a smart card file.
-        /// </summary>
-        SCARD_E_NO_FILE = unchecked((int)(0x80100026)),
-
-        /// <summary>
-        /// Access is denied to this file.
-        /// </summary>
-        SCARD_E_NO_ACCESS = unchecked((int)(0x80100027)),
-
-        /// <summary>
-        /// The smartcard does not have enough memory to store the information.
-        /// </summary>
-        SCARD_E_WRITE_TOO_MANY = unchecked((int)(0x80100028)),
-
-        /// <summary>
-        /// There was an error trying to set the smart card file object pointer.
-        /// </summary>
-        SCARD_E_BAD_SEEK = unchecked((int)(0x80100029)),
-
-        /// <summary>
-        /// The supplied PIN is incorrect.
-        /// </summary>
-        SCARD_E_INVALID_CHV = unchecked((int)(0x8010002A)),
-
-        /// <summary>
-        /// An unrecognized error code was returned from a layered component.
-        /// </summary>
-        SCARD_E_UNKNOWN_RES_MNG = unchecked((int)(0x8010002B)),
-
-        /// <summary>
-        /// The requested certificate does not exist.
-        /// </summary>
-        SCARD_E_NO_SUCH_CERTIFICATE = unchecked((int)(0x8010002C)),
-
-        /// <summary>
-        /// The requested certificate could not be obtained.
-        /// </summary>
-        SCARD_E_CERTIFICATE_UNAVAILABLE = unchecked((int)(0x8010002D)),
-
-        /// <summary>
-        /// Cannot find a smart card reader.
-        /// </summary>
-        SCARD_E_NO_READERS_AVAILABLE = unchecked((int)(0x8010002E)),
-
-        /// <summary>
-        /// A communications error with the smart card has been detected. Retry the operation.
-        /// </summary>
-        SCARD_E_COMM_DATA_LOST = unchecked((int)(0x8010002F)),
-
-        /// <summary>
-        /// The requested key container does not exist on the smart card.
-        /// </summary>
-        SCARD_E_NO_KEY_CONTAINER = unchecked((int)(0x80100030)),
-
-        /// <summary>
-        /// No information available.
-        /// </summary>
-        SCARD_E_SERVER_TOO_BUSY = unchecked((int)(0x80100031)),
-
-        /// <summary>
-        /// The reader cannot communicate with the smart card, due to ATR configuration conflicts.
-        /// </summary>
-        SCARD_W_UNSUPPORTED_CARD = unchecked((int)(0x80100065)),
-
-        /// <summary>
-        /// The smart card is not responding to a reset.
-        /// </summary>
-        SCARD_W_UNRESPONSIVE_CARD = unchecked((int)(0x80100066)),
-
-        /// <summary>
-        /// Power has been removed from the smart card, so that further communication is not possible.
-        /// </summary>
-        SCARD_W_UNPOWERED_CARD = unchecked((int)(0x80100067)),
-
-        /// <summary>
-        /// The smart card has been reset, so any shared state information is invalid.
-        /// </summary>
-        SCARD_W_RESET_CARD = unchecked((int)(0x80100068)),
-
-        /// <summary>
-        /// The smart card has been removed, so that further communication is not possible.
-        /// </summary>
-        SCARD_W_REMOVED_CARD = unchecked((int)(0x80100069)),
-
-        /// <summary>
-        /// Access was denied because of a security violation.
-        /// </summary>
-        SCARD_W_SECURITY_VIOLATION = unchecked((int)(0x8010006A)),
-
-        /// <summary>
-        /// The card cannot be accessed because the wrong PIN was presented.
-        /// </summary>
-        SCARD_W_WRONG_CHV = unchecked((int)(0x8010006B)),
-
-        /// <summary>
-        /// The card cannot be accessed because the maximum number of PIN entry attempts has been reached.
-        /// </summary>
-        SCARD_W_CHV_BLOCKED = unchecked((int)(0x8010006C)),
-
-        /// <summary>
-        /// The end of the smart card file has been reached.
-        /// </summary>
-        SCARD_W_EOF = unchecked((int)(0x8010006D)),
-
-        /// <summary>
-        /// The action was cancelled by the user.
-        /// </summary>
-        SCARD_W_CANCELLED_BY_USER = unchecked((int)(0x8010006E)),
-
-        /// <summary>
-        /// No PIN was presented to the smart card.
-        /// </summary>
-        SCARD_W_CARD_NOT_AUTHENTICATED = unchecked((int)(0x8010006F)),
 
         /// <summary>
         /// A non-empty line was encountered in the INF before the start of a section.
@@ -5216,6 +4619,697 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         SPAPI_E_ERROR_NOT_INSTALLED = unchecked((int)(0x800F1000)),
 
         /// <summary>
+        /// An internal consistency check failed.
+        /// </summary>
+        SCARD_F_INTERNAL_ERROR = unchecked((int)(0x80100001)),
+
+        /// <summary>
+        /// The action was cancelled by an SCardCancel request.
+        /// </summary>
+        SCARD_E_CANCELLED = unchecked((int)(0x80100002)),
+
+        /// <summary>
+        /// The supplied handle was invalid.
+        /// </summary>
+        SCARD_E_INVALID_HANDLE = unchecked((int)(0x80100003)),
+
+        /// <summary>
+        /// One or more of the supplied parameters could not be properly interpreted.
+        /// </summary>
+        SCARD_E_INVALID_PARAMETER = unchecked((int)(0x80100004)),
+
+        /// <summary>
+        /// Registry startup information is missing or invalid.
+        /// </summary>
+        SCARD_E_INVALID_TARGET = unchecked((int)(0x80100005)),
+
+        /// <summary>
+        /// Not enough memory available to complete this command.
+        /// </summary>
+        SCARD_E_NO_MEMORY = unchecked((int)(0x80100006)),
+
+        /// <summary>
+        /// An internal consistency timer has expired.
+        /// </summary>
+        SCARD_F_WAITED_TOO_Int32 = unchecked((int)(0x80100007)),
+
+        /// <summary>
+        /// The data buffer to receive returned data is too small for the returned data.
+        /// </summary>
+        SCARD_E_INSUFFICIENT_BUFFER = unchecked((int)(0x80100008)),
+
+        /// <summary>
+        /// The specified reader name is not recognized.
+        /// </summary>
+        SCARD_E_UNKNOWN_READER = unchecked((int)(0x80100009)),
+
+        /// <summary>
+        /// The user-specified timeout value has expired.
+        /// </summary>
+        SCARD_E_TIMEOUT = unchecked((int)(0x8010000A)),
+
+        /// <summary>
+        /// The smart card cannot be accessed because of other connections outstanding.
+        /// </summary>
+        SCARD_E_SHARING_VIOLATION = unchecked((int)(0x8010000B)),
+
+        /// <summary>
+        /// The operation requires a Smart Card, but no Smart Card is currently in the device.
+        /// </summary>
+        SCARD_E_NO_SMARTCARD = unchecked((int)(0x8010000C)),
+
+        /// <summary>
+        /// The specified smart card name is not recognized.
+        /// </summary>
+        SCARD_E_UNKNOWN_CARD = unchecked((int)(0x8010000D)),
+
+        /// <summary>
+        /// The system could not dispose of the media in the requested manner.
+        /// </summary>
+        SCARD_E_CANT_DISPOSE = unchecked((int)(0x8010000E)),
+
+        /// <summary>
+        /// The requested protocols are incompatible with the protocol currently in use with the smart card.
+        /// </summary>
+        SCARD_E_PROTO_MISMATCH = unchecked((int)(0x8010000F)),
+
+        /// <summary>
+        /// The reader or smart card is not ready to accept commands.
+        /// </summary>
+        SCARD_E_NOT_READY = unchecked((int)(0x80100010)),
+
+        /// <summary>
+        /// One or more of the supplied parameters values could not be properly interpreted.
+        /// </summary>
+        SCARD_E_INVALID_VALUE = unchecked((int)(0x80100011)),
+
+        /// <summary>
+        /// The action was cancelled by the system, presumably to log off or shut down.
+        /// </summary>
+        SCARD_E_SYSTEM_CANCELLED = unchecked((int)(0x80100012)),
+
+        /// <summary>
+        /// An internal communications error has been detected.
+        /// </summary>
+        SCARD_F_COMM_ERROR = unchecked((int)(0x80100013)),
+
+        /// <summary>
+        /// An internal error has been detected, but the source is unknown.
+        /// </summary>
+        SCARD_F_UNKNOWN_ERROR = unchecked((int)(0x80100014)),
+
+        /// <summary>
+        /// An ATR obtained from the registry is not a valid ATR string.
+        /// </summary>
+        SCARD_E_INVALID_ATR = unchecked((int)(0x80100015)),
+
+        /// <summary>
+        /// An attempt was made to end a non-existent transaction.
+        /// </summary>
+        SCARD_E_NOT_TRANSACTED = unchecked((int)(0x80100016)),
+
+        /// <summary>
+        /// The specified reader is not currently available for use.
+        /// </summary>
+        SCARD_E_READER_UNAVAILABLE = unchecked((int)(0x80100017)),
+
+        /// <summary>
+        /// The operation has been aborted to allow the server application to exit.
+        /// </summary>
+        SCARD_P_SHUTDOWN = unchecked((int)(0x80100018)),
+
+        /// <summary>
+        /// The PCI Receive buffer was too small.
+        /// </summary>
+        SCARD_E_PCI_TOO_SMALL = unchecked((int)(0x80100019)),
+
+        /// <summary>
+        /// The reader driver does not meet minimal requirements for support.
+        /// </summary>
+        SCARD_E_READER_UNSUPPORTED = unchecked((int)(0x8010001A)),
+
+        /// <summary>
+        /// The reader driver did not produce a unique reader name.
+        /// </summary>
+        SCARD_E_DUPLICATE_READER = unchecked((int)(0x8010001B)),
+
+        /// <summary>
+        /// The smart card does not meet minimal requirements for support.
+        /// </summary>
+        SCARD_E_CARD_UNSUPPORTED = unchecked((int)(0x8010001C)),
+
+        /// <summary>
+        /// The Smart card resource manager is not running.
+        /// </summary>
+        SCARD_E_NO_SERVICE = unchecked((int)(0x8010001D)),
+
+        /// <summary>
+        /// The Smart card resource manager has shut down.
+        /// </summary>
+        SCARD_E_SERVICE_STOPPED = unchecked((int)(0x8010001E)),
+
+        /// <summary>
+        /// An unexpected card error has occurred.
+        /// </summary>
+        SCARD_E_UNEXPECTED = unchecked((int)(0x8010001F)),
+
+        /// <summary>
+        /// No Primary Provider can be found for the smart card.
+        /// </summary>
+        SCARD_E_ICC_INSTALLATION = unchecked((int)(0x80100020)),
+
+        /// <summary>
+        /// The requested order of object creation is not supported.
+        /// </summary>
+        SCARD_E_ICC_CREATEORDER = unchecked((int)(0x80100021)),
+
+        /// <summary>
+        /// This smart card does not support the requested feature.
+        /// </summary>
+        SCARD_E_UNSUPPORTED_FEATURE = unchecked((int)(0x80100022)),
+
+        /// <summary>
+        /// The identified directory does not exist in the smart card.
+        /// </summary>
+        SCARD_E_DIR_NOT_FOUND = unchecked((int)(0x80100023)),
+
+        /// <summary>
+        /// The identified file does not exist in the smart card.
+        /// </summary>
+        SCARD_E_FILE_NOT_FOUND = unchecked((int)(0x80100024)),
+
+        /// <summary>
+        /// The supplied path does not represent a smart card directory.
+        /// </summary>
+        SCARD_E_NO_DIR = unchecked((int)(0x80100025)),
+
+        /// <summary>
+        /// The supplied path does not represent a smart card file.
+        /// </summary>
+        SCARD_E_NO_FILE = unchecked((int)(0x80100026)),
+
+        /// <summary>
+        /// Access is denied to this file.
+        /// </summary>
+        SCARD_E_NO_ACCESS = unchecked((int)(0x80100027)),
+
+        /// <summary>
+        /// The smartcard does not have enough memory to store the information.
+        /// </summary>
+        SCARD_E_WRITE_TOO_MANY = unchecked((int)(0x80100028)),
+
+        /// <summary>
+        /// There was an error trying to set the smart card file object pointer.
+        /// </summary>
+        SCARD_E_BAD_SEEK = unchecked((int)(0x80100029)),
+
+        /// <summary>
+        /// The supplied PIN is incorrect.
+        /// </summary>
+        SCARD_E_INVALID_CHV = unchecked((int)(0x8010002A)),
+
+        /// <summary>
+        /// An unrecognized error code was returned from a layered component.
+        /// </summary>
+        SCARD_E_UNKNOWN_RES_MNG = unchecked((int)(0x8010002B)),
+
+        /// <summary>
+        /// The requested certificate does not exist.
+        /// </summary>
+        SCARD_E_NO_SUCH_CERTIFICATE = unchecked((int)(0x8010002C)),
+
+        /// <summary>
+        /// The requested certificate could not be obtained.
+        /// </summary>
+        SCARD_E_CERTIFICATE_UNAVAILABLE = unchecked((int)(0x8010002D)),
+
+        /// <summary>
+        /// Cannot find a smart card reader.
+        /// </summary>
+        SCARD_E_NO_READERS_AVAILABLE = unchecked((int)(0x8010002E)),
+
+        /// <summary>
+        /// A communications error with the smart card has been detected. Retry the operation.
+        /// </summary>
+        SCARD_E_COMM_DATA_LOST = unchecked((int)(0x8010002F)),
+
+        /// <summary>
+        /// The requested key container does not exist on the smart card.
+        /// </summary>
+        SCARD_E_NO_KEY_CONTAINER = unchecked((int)(0x80100030)),
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        SCARD_E_SERVER_TOO_BUSY = unchecked((int)(0x80100031)),
+
+        /// <summary>
+        /// The reader cannot communicate with the smart card, due to ATR configuration conflicts.
+        /// </summary>
+        SCARD_W_UNSUPPORTED_CARD = unchecked((int)(0x80100065)),
+
+        /// <summary>
+        /// The smart card is not responding to a reset.
+        /// </summary>
+        SCARD_W_UNRESPONSIVE_CARD = unchecked((int)(0x80100066)),
+
+        /// <summary>
+        /// Power has been removed from the smart card, so that further communication is not possible.
+        /// </summary>
+        SCARD_W_UNPOWERED_CARD = unchecked((int)(0x80100067)),
+
+        /// <summary>
+        /// The smart card has been reset, so any shared state information is invalid.
+        /// </summary>
+        SCARD_W_RESET_CARD = unchecked((int)(0x80100068)),
+
+        /// <summary>
+        /// The smart card has been removed, so that further communication is not possible.
+        /// </summary>
+        SCARD_W_REMOVED_CARD = unchecked((int)(0x80100069)),
+
+        /// <summary>
+        /// Access was denied because of a security violation.
+        /// </summary>
+        SCARD_W_SECURITY_VIOLATION = unchecked((int)(0x8010006A)),
+
+        /// <summary>
+        /// The card cannot be accessed because the wrong PIN was presented.
+        /// </summary>
+        SCARD_W_WRONG_CHV = unchecked((int)(0x8010006B)),
+
+        /// <summary>
+        /// The card cannot be accessed because the maximum number of PIN entry attempts has been reached.
+        /// </summary>
+        SCARD_W_CHV_BLOCKED = unchecked((int)(0x8010006C)),
+
+        /// <summary>
+        /// The end of the smart card file has been reached.
+        /// </summary>
+        SCARD_W_EOF = unchecked((int)(0x8010006D)),
+
+        /// <summary>
+        /// The action was cancelled by the user.
+        /// </summary>
+        SCARD_W_CANCELLED_BY_USER = unchecked((int)(0x8010006E)),
+
+        /// <summary>
+        /// No PIN was presented to the smart card.
+        /// </summary>
+        SCARD_W_CARD_NOT_AUTHENTICATED = unchecked((int)(0x8010006F)),
+
+        /// <summary>
+        /// Errors occurred accessing one or more objects - the ErrorInfo collection may have more detail
+        /// </summary>
+        COMADMIN_E_OBJECTERRORS = unchecked((int)(0x80110401)),
+
+        /// <summary>
+        /// One or more of the object's properties are missing or invalid
+        /// </summary>
+        COMADMIN_E_OBJECTINVALID = unchecked((int)(0x80110402)),
+
+        /// <summary>
+        /// The object was not found in the catalog
+        /// </summary>
+        COMADMIN_E_KEYMISSING = unchecked((int)(0x80110403)),
+
+        /// <summary>
+        /// The object is already registered
+        /// </summary>
+        COMADMIN_E_ALREADYINSTALLED = unchecked((int)(0x80110404)),
+
+        /// <summary>
+        /// Error occurred writing to the application file
+        /// </summary>
+        COMADMIN_E_APP_FILE_WRITEFAIL = unchecked((int)(0x80110407)),
+
+        /// <summary>
+        /// Error occurred reading the application file
+        /// </summary>
+        COMADMIN_E_APP_FILE_READFAIL = unchecked((int)(0x80110408)),
+
+        /// <summary>
+        /// Invalid version number in application file
+        /// </summary>
+        COMADMIN_E_APP_FILE_VERSION = unchecked((int)(0x80110409)),
+
+        /// <summary>
+        /// The file path is invalid
+        /// </summary>
+        COMADMIN_E_BADPATH = unchecked((int)(0x8011040A)),
+
+        /// <summary>
+        /// The application is already installed
+        /// </summary>
+        COMADMIN_E_APPLICATIONEXISTS = unchecked((int)(0x8011040B)),
+
+        /// <summary>
+        /// The role already exists
+        /// </summary>
+        COMADMIN_E_ROLEEXISTS = unchecked((int)(0x8011040C)),
+
+        /// <summary>
+        /// An error occurred copying the file
+        /// </summary>
+        COMADMIN_E_CANTCOPYFILE = unchecked((int)(0x8011040D)),
+
+        /// <summary>
+        /// One or more users are not valid
+        /// </summary>
+        COMADMIN_E_NOUSER = unchecked((int)(0x8011040F)),
+
+        /// <summary>
+        /// One or more users in the application file are not valid
+        /// </summary>
+        COMADMIN_E_INVALIDUSERIDS = unchecked((int)(0x80110410)),
+
+        /// <summary>
+        /// The component's CLSID is missing or corrupt
+        /// </summary>
+        COMADMIN_E_NOREGISTRYCLSID = unchecked((int)(0x80110411)),
+
+        /// <summary>
+        /// The component's progID is missing or corrupt
+        /// </summary>
+        COMADMIN_E_BADREGISTRYPROGID = unchecked((int)(0x80110412)),
+
+        /// <summary>
+        /// Unable to set required authentication level for update request
+        /// </summary>
+        COMADMIN_E_AUTHENTICATIONLEVEL = unchecked((int)(0x80110413)),
+
+        /// <summary>
+        /// The identity or password set on the application is not valid
+        /// </summary>
+        COMADMIN_E_USERPASSWDNOTVALID = unchecked((int)(0x80110414)),
+
+        /// <summary>
+        /// Application file CLSIDs or IIDs do not match corresponding DLLs
+        /// </summary>
+        COMADMIN_E_CLSIDORIIDMISMATCH = unchecked((int)(0x80110418)),
+
+        /// <summary>
+        /// Interface information is either missing or changed
+        /// </summary>
+        COMADMIN_E_REMOTEINTERFACE = unchecked((int)(0x80110419)),
+
+        /// <summary>
+        /// DllRegisterServer failed on component install
+        /// </summary>
+        COMADMIN_E_DLLREGISTERSERVER = unchecked((int)(0x8011041A)),
+
+        /// <summary>
+        /// No server file share available
+        /// </summary>
+        COMADMIN_E_NOSERVERSHARE = unchecked((int)(0x8011041B)),
+
+        /// <summary>
+        /// DLL could not be loaded
+        /// </summary>
+        COMADMIN_E_DLLLOADFAILED = unchecked((int)(0x8011041D)),
+
+        /// <summary>
+        /// The registered TypeLib ID is not valid
+        /// </summary>
+        COMADMIN_E_BADREGISTRYLIBID = unchecked((int)(0x8011041E)),
+
+        /// <summary>
+        /// Application install directory not found
+        /// </summary>
+        COMADMIN_E_APPDIRNOTFOUND = unchecked((int)(0x8011041F)),
+
+        /// <summary>
+        /// Errors occurred while in the component registrar
+        /// </summary>
+        COMADMIN_E_REGISTRARFAILED = unchecked((int)(0x80110423)),
+
+        /// <summary>
+        /// The file does not exist
+        /// </summary>
+        COMADMIN_E_COMPFILE_DOESNOTEXIST = unchecked((int)(0x80110424)),
+
+        /// <summary>
+        /// The DLL could not be loaded
+        /// </summary>
+        COMADMIN_E_COMPFILE_LOADDLLFAIL = unchecked((int)(0x80110425)),
+
+        /// <summary>
+        /// GetClassObject failed in the DLL
+        /// </summary>
+        COMADMIN_E_COMPFILE_GETCLASSOBJ = unchecked((int)(0x80110426)),
+
+        /// <summary>
+        /// The DLL does not support the components listed in the TypeLib
+        /// </summary>
+        COMADMIN_E_COMPFILE_CLASSNOTAVAIL = unchecked((int)(0x80110427)),
+
+        /// <summary>
+        /// The TypeLib could not be loaded
+        /// </summary>
+        COMADMIN_E_COMPFILE_BADTLB = unchecked((int)(0x80110428)),
+
+        /// <summary>
+        /// The file does not contain components or component information
+        /// </summary>
+        COMADMIN_E_COMPFILE_NOTINSTALLABLE = unchecked((int)(0x80110429)),
+
+        /// <summary>
+        /// Changes to this object and its sub-objects have been disabled
+        /// </summary>
+        COMADMIN_E_NOTCHANGEABLE = unchecked((int)(0x8011042A)),
+
+        /// <summary>
+        /// The delete function has been disabled for this object
+        /// </summary>
+        COMADMIN_E_NOTDELETEABLE = unchecked((int)(0x8011042B)),
+
+        /// <summary>
+        /// The server catalog version is not supported
+        /// </summary>
+        COMADMIN_E_SESSION = unchecked((int)(0x8011042C)),
+
+        /// <summary>
+        /// The component move was disallowed, because the source or destination application is either a system application or
+        /// currently locked against changes
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_LOCKED = unchecked((int)(0x8011042D)),
+
+        /// <summary>
+        /// The component move failed because the destination application no longer exists
+        /// </summary>
+        COMADMIN_E_COMP_MOVE_BAD_DEST = unchecked((int)(0x8011042E)),
+
+        /// <summary>
+        /// The system was unable to register the TypeLib
+        /// </summary>
+        COMADMIN_E_REGISTERTLB = unchecked((int)(0x80110430)),
+
+        /// <summary>
+        /// This operation can not be performed on the system application
+        /// </summary>
+        COMADMIN_E_SYSTEMAPP = unchecked((int)(0x80110433)),
+
+        /// <summary>
+        /// The component registrar referenced in this file is not available
+        /// </summary>
+        COMADMIN_E_COMPFILE_NOREGISTRAR = unchecked((int)(0x80110434)),
+
+        /// <summary>
+        /// A component in the same DLL is already installed
+        /// </summary>
+        COMADMIN_E_COREQCOMPINSTALLED = unchecked((int)(0x80110435)),
+
+        /// <summary>
+        /// The service is not installed
+        /// </summary>
+        COMADMIN_E_SERVICENOTINSTALLED = unchecked((int)(0x80110436)),
+
+        /// <summary>
+        /// One or more property settings are either invalid or in conflict with each other
+        /// </summary>
+        COMADMIN_E_PROPERTYSAVEFAILED = unchecked((int)(0x80110437)),
+
+        /// <summary>
+        /// The object you are attempting to add or rename already exists
+        /// </summary>
+        COMADMIN_E_OBJECTEXISTS = unchecked((int)(0x80110438)),
+
+        /// <summary>
+        /// The component already exists
+        /// </summary>
+        COMADMIN_E_COMPONENTEXISTS = unchecked((int)(0x80110439)),
+
+        /// <summary>
+        /// The registration file is corrupt
+        /// </summary>
+        COMADMIN_E_REGFILE_CORRUPT = unchecked((int)(0x8011043B)),
+
+        /// <summary>
+        /// The property value is too large
+        /// </summary>
+        COMADMIN_E_PROPERTY_OVERFLOW = unchecked((int)(0x8011043C)),
+
+        /// <summary>
+        /// Object was not found in registry
+        /// </summary>
+        COMADMIN_E_NOTINREGISTRY = unchecked((int)(0x8011043E)),
+
+        /// <summary>
+        /// This object is not poolable
+        /// </summary>
+        COMADMIN_E_OBJECTNOTPOOLABLE = unchecked((int)(0x8011043F)),
+
+        /// <summary>
+        /// A CLSID with the same GUID as the new application ID is already installed on this machine
+        /// </summary>
+        COMADMIN_E_APPLID_MATCHES_CLSID = unchecked((int)(0x80110446)),
+
+        /// <summary>
+        /// A role assigned to a component, interface, or method did not exist in the application
+        /// </summary>
+        COMADMIN_E_ROLE_DOES_NOT_EXIST = unchecked((int)(0x80110447)),
+
+        /// <summary>
+        /// You must have components in an application in order to start the application
+        /// </summary>
+        COMADMIN_E_START_APP_NEEDS_COMPONENTS = unchecked((int)(0x80110448)),
+
+        /// <summary>
+        /// This operation is not enabled on this platform
+        /// </summary>
+        COMADMIN_E_REQUIRES_DIFFERENT_PLATFORM = unchecked((int)(0x80110449)),
+
+        /// <summary>
+        /// Application Proxy is not exportable
+        /// </summary>
+        COMADMIN_E_CAN_NOT_EXPORT_APP_PROXY = unchecked((int)(0x8011044A)),
+
+        /// <summary>
+        /// Failed to start application because it is either a library application or an application proxy
+        /// </summary>
+        COMADMIN_E_CAN_NOT_START_APP = unchecked((int)(0x8011044B)),
+
+        /// <summary>
+        /// System application is not exportable
+        /// </summary>
+        COMADMIN_E_CAN_NOT_EXPORT_SYS_APP = unchecked((int)(0x8011044C)),
+
+        /// <summary>
+        /// Can not subscribe to this component (the component may have been imported)
+        /// </summary>
+        COMADMIN_E_CANT_SUBSCRIBE_TO_COMPONENT = unchecked((int)(0x8011044D)),
+
+        /// <summary>
+        /// An event class cannot also be a subscriber component
+        /// </summary>
+        COMADMIN_E_EVENTCLASS_CANT_BE_SUBSCRIBER = unchecked((int)(0x8011044E)),
+
+        /// <summary>
+        /// Library applications and application proxies are incompatible
+        /// </summary>
+        COMADMIN_E_LIB_APP_PROXY_INCOMPATIBLE = unchecked((int)(0x8011044F)),
+
+        /// <summary>
+        /// This function is valid for the base partition only
+        /// </summary>
+        COMADMIN_E_BASE_PARTITION_ONLY = unchecked((int)(0x80110450)),
+
+        /// <summary>
+        /// You cannot start an application that has been disabled
+        /// </summary>
+        COMADMIN_E_START_APP_DISABLED = unchecked((int)(0x80110451)),
+
+        /// <summary>
+        /// The specified partition name is already in use on this computer
+        /// </summary>
+        COMADMIN_E_CAT_DUPLICATE_PARTITION_NAME = unchecked((int)(0x80110457)),
+
+        /// <summary>
+        /// The specified partition name is invalid. Check that the name contains at least one visible character
+        /// </summary>
+        COMADMIN_E_CAT_INVALID_PARTITION_NAME = unchecked((int)(0x80110458)),
+
+        /// <summary>
+        /// The partition cannot be deleted because it is the default partition for one or more users
+        /// </summary>
+        COMADMIN_E_CAT_PARTITION_IN_USE = unchecked((int)(0x80110459)),
+
+        /// <summary>
+        /// The partition cannot be exported, because one or more components in the partition have the same file name
+        /// </summary>
+        COMADMIN_E_FILE_PARTITION_DUPLICATE_FILES = unchecked((int)(0x8011045A)),
+
+        /// <summary>
+        /// Applications that contain one or more imported components cannot be installed into a non-base partition
+        /// </summary>
+        COMADMIN_E_CAT_IMPORTED_COMPONENTS_NOT_ALLOWED = unchecked((int)(0x8011045B)),
+
+        /// <summary>
+        /// The application name is not unique and cannot be resolved to an application id
+        /// </summary>
+        COMADMIN_E_AMBIGUOUS_APPLICATION_NAME = unchecked((int)(0x8011045C)),
+
+        /// <summary>
+        /// The partition name is not unique and cannot be resolved to a partition id
+        /// </summary>
+        COMADMIN_E_AMBIGUOUS_PARTITION_NAME = unchecked((int)(0x8011045D)),
+
+        /// <summary>
+        /// The <c>COM</c>+ registry database has not been initialized
+        /// </summary>
+        COMADMIN_E_REGDB_NOTINITIALIZED = unchecked((int)(0x80110472)),
+
+        /// <summary>
+        /// The <c>COM</c>+ registry database is not open
+        /// </summary>
+        COMADMIN_E_REGDB_NOTOPEN = unchecked((int)(0x80110473)),
+
+        /// <summary>
+        /// The <c>COM</c>+ registry database detected a system error
+        /// </summary>
+        COMADMIN_E_REGDB_SYSTEMERR = unchecked((int)(0x80110474)),
+
+        /// <summary>
+        /// The <c>COM</c>+ registry database is already running
+        /// </summary>
+        COMADMIN_E_REGDB_ALREADYRUNNING = unchecked((int)(0x80110475)),
+
+        /// <summary>
+        /// This version of the <c>COM</c>+ registry database cannot be migrated
+        /// </summary>
+        COMADMIN_E_MIG_VERSIONNOTSUPPORTED = unchecked((int)(0x80110480)),
+
+        /// <summary>
+        /// The schema version to be migrated could not be found in the <c>COM</c>+ registry database
+        /// </summary>
+        COMADMIN_E_MIG_SCHEMANOTFOUND = unchecked((int)(0x80110481)),
+
+        /// <summary>
+        /// There was a type mismatch between binaries
+        /// </summary>
+        COMADMIN_E_CAT_BITNESSMISMATCH = unchecked((int)(0x80110482)),
+
+        /// <summary>
+        /// A binary of unknown or invalid type was provided
+        /// </summary>
+        COMADMIN_E_CAT_UNACCEPTABLEBITNESS = unchecked((int)(0x80110483)),
+
+        /// <summary>
+        /// There was a type mismatch between a binary and an application
+        /// </summary>
+        COMADMIN_E_CAT_WRONGAPPBITNESS = unchecked((int)(0x80110484)),
+
+        /// <summary>
+        /// The application cannot be paused or resumed
+        /// </summary>
+        COMADMIN_E_CAT_PAUSE_RESUME_NOT_SUPPORTED = unchecked((int)(0x80110485)),
+
+        /// <summary>
+        /// The <c>COM</c>+ Catalog Server threw an exception during execution
+        /// </summary>
+        COMADMIN_E_CAT_SERVERFAULT = unchecked((int)(0x80110486)),
+
+        /// <summary>
         /// Only <c>COM</c>+ Applications marked "queued" can be invoked using the "queue" moniker
         /// </summary>
         COMQC_E_APPLICATION_NOT_QUEUED = unchecked((int)(0x80110600)),
@@ -5391,36 +5485,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         COMADMIN_E_PARTITIONS_DISABLED = unchecked((int)(0x80110824)),
 
         /// <summary>
-        /// The protected data needs to be re-protected.
-        /// </summary>
-        CRYPT_I_NEW_PROTECTION_REQUIRED = 0x00091012,
-
-        /// <summary>
-        /// Successful drop took place
-        /// </summary>
-        DRAGDROP_S_FIRST = DRAGDROP_S_DROP,
-
-        /// <summary>
-        /// Successful drop took place
-        /// </summary>
-        DRAGDROP_S_DROP = 0x00040100,
-
-        /// <summary>
-        /// Drag-drop operation canceled
-        /// </summary>
-        DRAGDROP_S_CANCEL = 0x00040101,
-
-        /// <summary>
-        /// Use the default cursor
-        /// </summary>
-        DRAGDROP_S_USEDEFAULTCURSORS = 0x00040102,
-
-        /// <summary>
-        /// No information available.
-        /// </summary>
-        DRAGDROP_S_LAST = 0x0004010F,
-
-        /// <summary>
         /// The specified event is currently not being audited.
         /// </summary>
         ERROR_AUDITING_DISABLED = unchecked((int)(0xC0090001)),
@@ -5439,31 +5503,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// The operation completed successfully.
         /// </summary>
         NTE_OP_OK = S_OK,
-
-        /// <summary>
-        /// Use the registry database to provide the requested information
-        /// </summary>
-        OLE_S_FIRST = OLE_S_USEREG,
-
-        /// <summary>
-        /// Use the registry database to provide the requested information
-        /// </summary>
-        OLE_S_USEREG = 0x00040000,
-
-        /// <summary>
-        /// Success, but static
-        /// </summary>
-        OLE_S_STATIC = 0x00040001,
-
-        /// <summary>
-        /// Macintosh clipboard format
-        /// </summary>
-        OLE_S_MAC_CLIPFORMAT = 0x00040002,
-
-        /// <summary>
-        /// No information available.
-        /// </summary>
-        OLE_S_LAST = 0x000400FF,
 
         /// <summary>
         /// The operation completed successfully.
@@ -5509,6 +5548,66 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// Consolidation of the storage file is inappropriate. (commit succeeded).
         /// </summary>
         STG_S_CANNOTCONSOLIDATE = 0x00030206,
+
+        /// <summary>
+        /// Use the registry database to provide the requested information
+        /// </summary>
+        OLE_S_FIRST = OLE_S_USEREG,
+
+        /// <summary>
+        /// Use the registry database to provide the requested information
+        /// </summary>
+        OLE_S_USEREG = 0x00040000,
+
+        /// <summary>
+        /// Success, but static
+        /// </summary>
+        OLE_S_STATIC = 0x00040001,
+
+        /// <summary>
+        /// Macintosh clipboard format
+        /// </summary>
+        OLE_S_MAC_CLIPFORMAT = 0x00040002,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        OLE_S_LAST = 0x000400FF,
+
+        /// <summary>
+        /// Successful drop took place
+        /// </summary>
+        DRAGDROP_S_FIRST = DRAGDROP_S_DROP,
+
+        /// <summary>
+        /// Successful drop took place
+        /// </summary>
+        DRAGDROP_S_DROP = 0x00040100,
+
+        /// <summary>
+        /// Drag-drop operation canceled
+        /// </summary>
+        DRAGDROP_S_CANCEL = 0x00040101,
+
+        /// <summary>
+        /// Use the default cursor
+        /// </summary>
+        DRAGDROP_S_USEDEFAULTCURSORS = 0x00040102,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        DRAGDROP_S_LAST = 0x0004010F,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLASSFACTORY_S_FIRST = 0x00040110,
+
+        /// <summary>
+        /// No information available.
+        /// </summary>
+        CLASSFACTORY_S_LAST = 0x0004011F,
 
         /// <summary>
         /// No information available.
@@ -5559,6 +5658,31 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// No information available.
         /// </summary>
         REGDB_S_LAST = 0x0004015F,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for first <c>CACHE_S</c> value.
+        /// </summary>
+        CACHE_S_FIRST = CACHE_S_FORMATETC_NOTSUPPORTED,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for FORMATETC not supported
+        /// </summary>
+        CACHE_S_FORMATETC_NOTSUPPORTED = 0x00040170,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for same cache
+        /// </summary>
+        CACHE_S_SAMECACHE = 0x00040171,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for some cache(s) not updated
+        /// </summary>
+        CACHE_S_SOMECACHES_NOTUPDATED = 0x00040172,
+
+        /// <summary>
+        /// Error <c>HRESULT</c> for no information available.
+        /// </summary>
+        CACHE_S_LAST = 0x0004017F,
 
         /// <summary>
         /// Invalid verb for OLE object
@@ -5755,46 +5879,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// </summary>
         SCHED_S_EVENT_TRIGGER = 0x00041308,
 
-        /// <summary>
-        /// The function completed successfully, but must be called again to complete the context
-        /// </summary>
-        SEC_I_CONTINUE_NEEDED = 0x00090312,
-
-        /// <summary>
-        /// The function completed successfully, but CompleteToken must be called
-        /// </summary>
-        SEC_I_COMPLETE_NEEDED = 0x00090313,
-
-        /// <summary>
-        /// The function completed successfully, but both CompleteToken and this function must be called to complete the context
-        /// </summary>
-        SEC_I_COMPLETE_AND_CONTINUE = 0x00090314,
-
-        /// <summary>
-        /// The logon was completed, but no network authority was available. The logon was made using locally known information
-        /// </summary>
-        SEC_I_LOCAL_LOGON = 0x00090315,
-
-        /// <summary>
-        /// The context has expired and can no longer be used.
-        /// </summary>
-        SEC_I_CONTEXT_EXPIRED = 0x00090317,
-
-        /// <summary>
-        /// The credentials supplied were not complete, and could not be verified. Additional information can be returned from the context.
-        /// </summary>
-        SEC_I_INCOMPLETE_CREDENTIALS = 0x00090320,
-
-        /// <summary>
-        /// The context data must be renegotiated with the peer.
-        /// </summary>
-        SEC_I_RENEGOTIATE = 0x00090321,
-
-        /// <summary>
-        /// There is no LSA mode context associated with this context.
-        /// </summary>
-        SEC_I_NO_LSA_CONTEXT = 0x00090323,
-
         VS_S_PROJECTFORWARDED = VSConstants.VS_S_PROJECTFORWARDED,
 
         VS_S_TBXMARKER = VSConstants.VS_S_TBXMARKER,
@@ -5888,12 +5972,55 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// No information available.
         /// </summary>
         CONTEXT_S_LAST = 0x0004E02F,
+
+        /// <summary>
+        /// The function completed successfully, but must be called again to complete the context
+        /// </summary>
+        SEC_I_CONTINUE_NEEDED = 0x00090312,
+
+        /// <summary>
+        /// The function completed successfully, but CompleteToken must be called
+        /// </summary>
+        SEC_I_COMPLETE_NEEDED = 0x00090313,
+
+        /// <summary>
+        /// The function completed successfully, but both CompleteToken and this function must be called to complete the context
+        /// </summary>
+        SEC_I_COMPLETE_AND_CONTINUE = 0x00090314,
+
+        /// <summary>
+        /// The logon was completed, but no network authority was available. The logon was made using locally known information
+        /// </summary>
+        SEC_I_LOCAL_LOGON = 0x00090315,
+
+        /// <summary>
+        /// The context has expired and can no longer be used.
+        /// </summary>
+        SEC_I_CONTEXT_EXPIRED = 0x00090317,
+
+        /// <summary>
+        /// The credentials supplied were not complete, and could not be verified. Additional information can be returned from the context.
+        /// </summary>
+        SEC_I_INCOMPLETE_CREDENTIALS = 0x00090320,
+
+        /// <summary>
+        /// The context data must be renegotiated with the peer.
+        /// </summary>
+        SEC_I_RENEGOTIATE = 0x00090321,
+
+        /// <summary>
+        /// There is no LSA mode context associated with this context.
+        /// </summary>
+        SEC_I_NO_LSA_CONTEXT = 0x00090323,
+
+        /// <summary>
+        /// The protected data needs to be re-protected.
+        /// </summary>
+        CRYPT_I_NEW_PROTECTION_REQUIRED = 0x00091012,
     }
 
     public static class HResultExtension
     {
-        #region Public Methods
-
         public static bool Failed(int hr)
         {
             return hr < ToHResultCode(HResult.S_OK) || IsError(hr);
@@ -5956,25 +6083,20 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             ArgumentOutOfRangeException.ThrowIfLessThan(facilityCode, FacilityCode.FACILITY_NULL.ToInt32(), nameof(facilityCode));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(facilityCode, FacilityCode.FACILITY_OPC.ToInt32(), nameof(facilityCode));
 
-            return (int)(WinErrorExtension.ToWinErrorCode(code) <= ToHResultCode(HResult.S_OK) ? WinErrorExtension.ToWinErrorCode(code) : WinErrorExtension.ToWinErrorCode(code) | (int)facilityCode << 16 | HResultMask.SEVERITY_MASK);
+            return (int)(code.ToWinErrorCode() <= ToHResultCode(HResult.S_OK) ? code.ToWinErrorCode() : code.ToWinErrorCode() | (int)facilityCode << 16 | HResultMask.SEVERITY_MASK);
         }
 
         public static int ToHResultCode(this int ntStatus)
         {
             return ntStatus | FacilityCodeMask.FACILITY_NT_BIT;
         }
-
-        #endregion Public Methods
     }
 
     public static class HResultMask
     {
-        #region Public Fields
-
+        public const int HRESULT_MASK = 0x0000_FFFF;
         public const int SEVERITY_BIT = 0x1;
         public const ulong SEVERITY_ERROR = 1;
-        public const int SEVERITY_MASK = unchecked((int)(0x80000000));
-
-        #endregion Public Fields
+        public const int SEVERITY_MASK = unchecked((int)(0x8000_0000));
     }
 }

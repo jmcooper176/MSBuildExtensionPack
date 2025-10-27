@@ -51,8 +51,6 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class Thread : BaseTask
     {
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -87,10 +85,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Number of iterations to wait for
         /// </summary>
@@ -100,7 +94,5 @@ namespace MSBuild.ExtensionPack
         /// Number of millseconds to sleep for
         /// </summary>
         public int Timeout { get; set; }
-
-        #endregion Public Properties
     }
 }

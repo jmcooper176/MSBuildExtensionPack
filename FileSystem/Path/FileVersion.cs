@@ -15,19 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Path
+namespace FileSystem.Path
 {
     using System;
     using System.IO;
-    using System.Management.Automation;
     using System.Runtime.CompilerServices;
     using System.Text;
 
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
     using MSBuild.ExtensionPack.FileSystem.Version;
 
     /// <summary>
@@ -69,8 +63,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
     /// <seealso cref="BaseTask"/>
     public class FileVersion : BaseTask
     {
-        #region Public Methods
-
         public static void ClearSemanticVersion(TaskLoggingHelper log, FileInfo versionFile, Encoding encoding)
         {
             WriteSemanticVersion(log, versionFile, new SemanticVersion(0, 0, 0), encoding);
@@ -230,10 +222,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
             }
         }
 
-        #endregion Public Methods
-
-        #region Protected Methods
-
         private string taskAction;
 
         [Required]
@@ -291,10 +279,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
                 };
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// The file to store the incrementing version in.
         /// </summary>
@@ -312,7 +296,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
         /// </summary>
         [Output]
         public string Value { get; set; }
-
-        #endregion Public Properties
     }
 }

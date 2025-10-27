@@ -21,8 +21,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
 
     public class MockBuildEngine : IBuildEngine
     {
-        #region Public Properties
-
         public int ColumnNumberOfTaskNode
         {
             get { return 0; }
@@ -42,10 +40,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         {
             get { return string.Empty; }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public bool BuildProjectFile(string projectFileName, string[] targetNames, System.Collections.IDictionary globalProperties, System.Collections.IDictionary targetOutputs)
         {
@@ -67,7 +61,5 @@ namespace MSBuild.ExtensionPack.Framework.Tests
         public void LogWarningEvent(BuildWarningEventArgs e)
         {
         }
-
-        #endregion Public Methods
     }
 }

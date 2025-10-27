@@ -35,17 +35,11 @@ namespace MSBuild.ExtensionPack.Base.Wmi
     /// </summary>
     public class Initialize
     {
-        #region Private Fields
-
         /// <summary>
         /// Back storage for <see cref="SecurePassword"/> because <see cref="ConnectionOptions.SecurePassword"/> can only be set; it
         /// has no get accessor.
         /// </summary>
         private SecureString securePassword;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void UpdateReadWriteProperty(ConnectionOptions? options)
         {
@@ -58,10 +52,6 @@ namespace MSBuild.ExtensionPack.Base.Wmi
             this.Locale = options.Locale;
             this.Username = options.Username;
         }
-
-        #endregion Private Methods
-
-        #region Protected Methods
 
         protected static string ConvertFromSecureString(SecureString? cipher)
         {
@@ -89,16 +79,8 @@ namespace MSBuild.ExtensionPack.Base.Wmi
             return result;
         }
 
-        #endregion Protected Methods
-
-        #region Public Fields
-
         public const string DEFAULT_PATH = "";
         public const int OPTIMAL_INITIAL_STRINGBUILDER = 16;
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <c>WMI</c><see cref="Initialize"/> class.
@@ -578,10 +560,6 @@ namespace MSBuild.ExtensionPack.Base.Wmi
             this.Scope = GetManagementScope(path);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating the <see cref="TimeSpan"/> timeout value for establish a connection.
         /// </summary>
@@ -704,10 +682,6 @@ namespace MSBuild.ExtensionPack.Base.Wmi
         /// </summary>
         /// <remarks>If <see langref="null"/>, the currently logged-on user will be used.</remarks>
         public virtual string? Username { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// </summary>
@@ -865,7 +839,5 @@ namespace MSBuild.ExtensionPack.Base.Wmi
                 return canExecuteRemotely;
             }
         }
-
-        #endregion Public Methods
     }
 }

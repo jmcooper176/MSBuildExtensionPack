@@ -15,17 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace VisualStudio
 {
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -61,13 +57,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// <seealso cref="BaseTask"/>
     public class VB6 : BaseTask
     {
-        #region Private Fields
-
         private const char Separator = ';';
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Build()
         {
@@ -233,10 +223,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -276,10 +262,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Only build if any referenced source file is newer then the build output
         /// </summary>
@@ -301,7 +283,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// Sets the VB6Path. Default is [Program Files]\Microsoft Visual Studio\VB98\VB6.exe
         /// </summary>
         public string VB6Path { get; set; }
-
-        #endregion Public Properties
     }
 }

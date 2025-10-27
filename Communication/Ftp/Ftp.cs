@@ -15,18 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Communication.Ftp
+namespace Communication.Ftp
 {
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Cause;
-    using MSBuild.ExtensionPack.Communication.FTP;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -87,17 +81,11 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
     /// <seealso cref="BaseTask"/>
     public class Ftp : BaseTask
     {
-        #region Private Fields
-
         private const string CreateDirectoryTaskAction = "CreateDirectory";
         private const string DeleteDirectoryTaskAction = "DeleteDirectory";
         private const string DeleteFilesTaskAction = "DeleteFiles";
         private const string DownloadFilesTaskAction = "DownloadFiles";
         private const string UploadFilesTaskAction = "UploadFiles";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Creates a new Ftp directory on the ftp server.
@@ -329,10 +317,6 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -372,10 +356,6 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// The list of files that needs to be transfered over FTP
         /// </summary>
@@ -406,7 +386,5 @@ namespace MSBuild.ExtensionPack.Communication.Ftp
         /// Sets the working directory on the local machine
         /// </summary>
         public string WorkingDirectory { get; set; }
-
-        #endregion Public Properties
     }
 }

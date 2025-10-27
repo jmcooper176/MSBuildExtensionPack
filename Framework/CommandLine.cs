@@ -99,8 +99,6 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="Task"/>
     public class CommandLine : Task
     {
-        #region Private Fields
-
         /// <summary>
         /// The standard error format. Included as an error pattern, unless the <see cref="IgnoreStandardErrorWarningFormat"/> is
         /// set to true.
@@ -112,10 +110,6 @@ namespace MSBuild.ExtensionPack
         /// set to true.
         /// </summary>
         private const string StandardWarningFormat = @"(?i:\bwarning\b)";
-
-        #endregion Private Fields
-
-        #region Private Properties
 
         /// <summary>
         /// Gets or sets the collected output from the command-line.
@@ -131,10 +125,6 @@ namespace MSBuild.ExtensionPack
         /// Gets or sets the warning expression list.
         /// </summary>
         private ICollection<string> WarningExpressionList { get; set; }
-
-        #endregion Private Properties
-
-        #region Private Methods
 
         /// <summary>
         /// Collects a line of output.
@@ -316,10 +306,6 @@ namespace MSBuild.ExtensionPack
             return this.ErrorExpressionList.Aggregate(result, (current, pattern) => current && this.PerformMatch(pattern, text, true));
         }
 
-        #endregion Private Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Gets or sets the command(s) to run. These can be system commands, such as attrib, or an executable, such as program.exe,
         /// runprogram.bat, or setup.msi. This parameter can contain multiple lines of commands (each command on a new-line).
@@ -423,10 +409,6 @@ namespace MSBuild.ExtensionPack
         /// <remarks>Exec Equivalent: WorkingDirectory</remarks>
         public string WorkingDirectory { get; set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <summary>
         /// Executes the build operation.
         /// </summary>
@@ -511,7 +493,5 @@ namespace MSBuild.ExtensionPack
 
             return this.PerformMatching(this.CollectedOutput) && (this.IgnoreExitCode || this.ExitCode == this.SuccessExitCode);
         }
-
-        #endregion Public Methods
     }
 }

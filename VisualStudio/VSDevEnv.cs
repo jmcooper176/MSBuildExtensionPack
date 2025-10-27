@@ -15,14 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace VisualStudio
 {
     using System;
     using System.Globalization;
     using System.IO;
 
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
     using Microsoft.Win32;
 
     /// <summary>
@@ -50,13 +48,7 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// <seealso cref="ToolTask"/>
     public class VSDevEnv : ToolTask
     {
-        #region Protected Properties
-
         protected override string ToolName => "devenv.exe";
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
         {
@@ -120,10 +112,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             this.Log.LogMessage(MessageImportance.Normal, singleLine);
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// The Configuration to Build.
         /// </summary>
@@ -155,7 +143,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// The version of Visual Studio to run, e.g. 8.0, 9.0, 10.0, 11.0, 12.0, 14.0, 15.0, 16.0, 17.0, 18.0. Default is 17.0
         /// </summary>
         public string Version { get; set; } = "17.0";
-
-        #endregion Public Properties
     }
 }

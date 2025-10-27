@@ -99,14 +99,8 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class Assembly : BaseAppDomainIsolatedTask
     {
-        #region Private Fields
-
         private System.Reflection.Assembly loadedAssembly;
         private List<ITaskItem> outputItems;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void GetInfo()
         {
@@ -245,10 +239,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -289,10 +279,6 @@ namespace MSBuild.ExtensionPack
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the arguments to use for invoking a method. The arguments must be specified with a <see cref="Type"/>, i.e. <Args Include="1"><Type>int</Type></Args>
@@ -335,7 +321,5 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         [Output]
         public string Result { get; set; }
-
-        #endregion Public Properties
     }
 }

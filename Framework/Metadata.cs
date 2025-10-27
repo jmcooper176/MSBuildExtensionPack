@@ -60,13 +60,7 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public class Metadata : BaseTask
     {
-        #region Private Fields
-
         private const string AddTaskAction = "Add";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static void AddToParameters(IDictionary<string, string> parametersBag, string name, string value)
         {
@@ -125,10 +119,6 @@ namespace MSBuild.ExtensionPack
             return paramaterBag;
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (string.Compare(this.TaskAction, AddTaskAction, StringComparison.OrdinalIgnoreCase) != 0)
@@ -179,10 +169,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the source Items.
         /// </summary>
@@ -200,7 +186,5 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         [Output]
         public IEnumerable<ITaskItem> ResultItems { get; protected set; }
-
-        #endregion Public Properties
     }
 }

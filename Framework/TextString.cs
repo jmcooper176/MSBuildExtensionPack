@@ -141,8 +141,6 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class TextString : BaseTask
     {
-        #region Private Fields
-
         private const string CompareTaskAction = "Compare";
         private const string EndsWithTaskAction = "EndsWith";
         private const string FormatTaskAction = "Format";
@@ -159,10 +157,6 @@ namespace MSBuild.ExtensionPack
         private const string ToUpperTaskAction = "ToUpper";
         private const string TrimTaskAction = "Trim";
         private StringComparison stringCom = StringComparison.OrdinalIgnoreCase;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Compares this instance.
@@ -260,10 +254,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// This is the main execute method that all tasks should implement
         /// </summary>
@@ -360,10 +350,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the Comparison. Supports 'GreaterThan', 'LessThan', 'GreaterThanOrEquals', 'LessThanOrEquals', 'Contains',
         /// 'StartsWith', 'EndsWith'
@@ -424,7 +410,5 @@ namespace MSBuild.ExtensionPack
 
         [Output]
         public ITaskItem[] Strings { get; set; }
-
-        #endregion Public Properties
     }
 }

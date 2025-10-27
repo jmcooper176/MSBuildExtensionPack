@@ -21,8 +21,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
 {
     internal class CommandLineBuilderEx : CommandLineBuilder
     {
-        #region Public Methods
-
         /// <summary>
         /// Appends a fixed argument. This means that it is appended even if it is empty (as ""). It is quoted if necessary.
         /// </summary>
@@ -39,7 +37,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 AppendTextWithQuoting(value);
             }
         }
-
-        #endregion Public Methods
     }
 }

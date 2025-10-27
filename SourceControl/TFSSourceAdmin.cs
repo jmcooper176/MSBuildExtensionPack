@@ -15,15 +15,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace SourceControl
 {
     using System;
     using System.Globalization;
     using System.IO;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -58,14 +54,8 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// </example>
     public class TfsSourceAdmin : BaseTask
     {
-        #region Private Fields
-
         private ShellWrapper shellWrapper;
         private string teamFoundationExe;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Branch()
         {
@@ -169,10 +159,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -197,10 +183,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Gets the ExitCode
@@ -232,7 +214,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// Sets the working directory.
         /// </summary>
         public string WorkingDirectory { get; set; }
-
-        #endregion Public Properties
     }
 }

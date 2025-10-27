@@ -6,13 +6,7 @@
 
     public class PatchObject : IMsiCom
     {
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -29,28 +23,16 @@
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         public Type? ComType { get; }
         public Guid IID { get; }
         public object? Instance { get; private set; }
         public string ProgId { get; }
-
-        #endregion Public Properties
-
-        #region Private Destructors
 
         ~PatchObject()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Public Methods
 
         public void Dispose()
         {
@@ -68,7 +50,5 @@
         {
             return Instance?.ToString() ?? string.Empty;
         }
-
-        #endregion Public Methods
     }
 }

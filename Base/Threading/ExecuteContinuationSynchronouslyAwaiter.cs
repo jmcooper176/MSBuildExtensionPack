@@ -28,16 +28,10 @@ namespace MSBuild.ExtensionPack.Base.Threading
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public readonly struct ExecuteContinuationSynchronouslyAwaiter<T> : INotifyCompletion
     {
-        #region Private Fields
-
         /// <summary>
         /// The task whose completion will execute the continuation.
         /// </summary>
         private readonly Task<T> antecedent;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecuteContinuationSynchronouslyAwaiter{T}"/> struct.
@@ -49,18 +43,10 @@ namespace MSBuild.ExtensionPack.Base.Threading
             this.antecedent = antecedent;
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating whether the antecedent <see cref="Task"/> has already completed.
         /// </summary>
         public bool IsCompleted => antecedent.IsCompleted;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Ends the wait for the completion of the asynchronous task.
@@ -95,7 +81,5 @@ namespace MSBuild.ExtensionPack.Base.Threading
                 TaskContinuationOptions.ExecuteSynchronously,
                 TaskScheduler.Default).ConfigureAwait(false);
         }
-
-        #endregion Public Methods
     }
 }

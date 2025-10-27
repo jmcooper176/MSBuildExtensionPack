@@ -28,18 +28,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     internal static partial class NativeMethod
     {
-        #region Internal Fields
-
         /// <summary>
         /// Constant indicating that the lifetime of the registration must not be tied to the lifetime of the thread issuing the
         /// <see cref="RegNotifyChangeKeyValue(SafeRegistryHandle, bool, RegistryChangeNotificationFilters, SafeWaitHandle, bool)"/> call.
         /// </summary>
         [SupportedOSPlatform("Windows10.0")]
         internal const RegistryChangeNotificationFilters REG_NOTIFY_THREAD_AGNOSTIC = (RegistryChangeNotificationFilters)0x10000000L;
-
-        #endregion Internal Fields
-
-        #region Internal Methods
 
         /// <summary>
         /// Register to receive notifications of changes to a registry key.
@@ -83,15 +77,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
         [LibraryImport("kernel32.dll", SetLastError = true)]
         internal static partial int WaitForMultipleObjects(uint handleCount, [In] IntPtr[] waitHandles, [MarshalAs(UnmanagedType.Bool)] bool waitAll, uint millisecondsTimeout);
 
-        #endregion Internal Methods
-
-        #region Internal Fields
-
         internal const int HWND_BROADCAST = 0xffff;
         internal const int SENDMESSAGE_TIMEOUT = 10000;
         internal const int SMTO_ABORTIFHUNG = 0x0002;
         internal const int WM_SETTINGCHANGE = 0x001A;
-
-        #endregion Internal Fields
     }
 }

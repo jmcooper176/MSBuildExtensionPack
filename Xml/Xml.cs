@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Xml
+namespace Xml
 {
     using System;
     using System.Globalization;
@@ -25,10 +25,6 @@ namespace MSBuild.ExtensionPack.Xml
     using System.Xml.Linq;
     using System.Xml.Schema;
     using System.Xml.Xsl;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -121,18 +117,12 @@ namespace MSBuild.ExtensionPack.Xml
     /// <seealso cref="BaseTask"/>
     public class XmlTask : BaseTask
     {
-        #region Private Fields
-
         private const string TransformTaskAction = "Transform";
         private const string ValidateTaskAction = "Validate";
 
         private ConformanceLevel conformanceLevel;
         private Encoding fileEncoding = Encoding.UTF8;
         private XDocument xmlDoc;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Transform()
         {
@@ -247,10 +237,6 @@ namespace MSBuild.ExtensionPack.Xml
             this.IsValid = !errorEncountered;
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -303,10 +289,6 @@ namespace MSBuild.ExtensionPack.Xml
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the ConformanceLevel. Supports Auto, Document and Fragment. Default is ConformanceLevel.Document
@@ -382,7 +364,5 @@ namespace MSBuild.ExtensionPack.Xml
         /// Sets the XslTransformFile
         /// </summary>
         public string XslTransformFile { get; set; }
-
-        #endregion Public Properties
     }
 }

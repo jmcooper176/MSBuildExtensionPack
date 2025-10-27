@@ -220,8 +220,6 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class DateAndTime : BaseTask
     {
-        #region Private Fields
-
         private const string AddDaysTaskAction = "AddDays";
         private const string AddHoursTaskAction = "AddHours";
         private const string AddMillisecondsTaskAction = "AddMilliseconds";
@@ -234,10 +232,6 @@ namespace MSBuild.ExtensionPack
         private const string CheckLaterTaskAction = "CheckLater";
         private const string GetElapsedTaskAction = "GetElapsed";
         private const string GetTaskAction = "Get";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static DateTime GetDefaultOrUserStartTime(DateTime startTime)
         {
@@ -398,10 +392,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -465,10 +455,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// The output boolean result.
         /// </summary>
@@ -506,7 +492,5 @@ namespace MSBuild.ExtensionPack
         /// Specifies the value to operate with
         /// </summary>
         public double Value { get; set; }
-
-        #endregion Public Properties
     }
 }

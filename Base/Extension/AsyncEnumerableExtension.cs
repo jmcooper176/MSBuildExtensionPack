@@ -21,13 +21,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
     public static class AsyncEnumerableExtension
     {
-        #region Public Methods
-
         public static TaskSchedulerAwaiter GetAwaiter<T>(this IAsyncEnumerable<T> enumerable)
         {
             return enumerable.GetAwaiter();
         }
-
-        #endregion Public Methods
     }
 }

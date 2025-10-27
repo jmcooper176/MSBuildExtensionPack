@@ -15,12 +15,9 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Tool
+namespace FileSystem.Tool
 {
     using System.IO;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// This task wraps RoboCopy. Successful non-zero exit codes from RoboCopy are set to zero to not break MSBuild. Use the
@@ -55,13 +52,7 @@ namespace MSBuild.ExtensionPack.FileSystem.Tool
     /// </example>
     public class RoboCopy : ToolTask
     {
-        #region Protected Properties
-
         protected override string ToolName => "RoboCopy.exe";
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
         {
@@ -176,10 +167,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Tool
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Destination Dir (drive:\path or \\server\share\path).
         /// </summary>
@@ -213,7 +200,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Tool
         /// </summary>
         [Required]
         public ITaskItem Source { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer.HostsFile
+namespace Computer.HostsFile
 {
     using System;
     using System.Collections.Generic;
@@ -23,13 +23,6 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     using System.IO;
     using System.Linq;
     using System.Net;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Interface;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -78,14 +71,8 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
     /// <seealso cref="BaseTask" />
     public sealed class HostsFile : BaseTask
     {
-        #region Private Fields
-
         private readonly IHostsFileReader hostsFileReader;
         private readonly IHostsFileWriter hostsFileWriter;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private bool SetHostEntry(ITaskItem hostEntry, IHostsFile hostsFile)
         {
@@ -116,10 +103,6 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
             hostsFile.SetHostEntry(hostName, ipAddress, comment);
             return true;
         }
-
-        #endregion Private Methods
-
-        #region Protected Methods
 
         protected override void InternalExecute()
         {
@@ -240,16 +223,8 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
             }
         }
 
-        #endregion Protected Methods
-
-        #region Internal Fields
-
         internal const string SetHostEntryTaskAction = "SetHostEntry";
         internal const string UpdateTaskAction = "Update";
-
-        #endregion Internal Fields
-
-        #region Internal Constructors
 
         internal HostsFile(IHostsFileReader hostsFileReader, IHostsFileWriter hostsFileWriter)
         {
@@ -257,17 +232,9 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
             this.hostsFileWriter = hostsFileWriter;
         }
 
-        #endregion Internal Constructors
-
-        #region Public Constructors
-
         public HostsFile() : this(HostsFileReader(), new HostsFileWriter())
         {
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         /// <summary>
         /// The comment after the hosts entry. Only used by the SetHostEntry task action.
@@ -301,7 +268,5 @@ namespace MSBuild.ExtensionPack.Computer.HostsFile
         /// used by the Update task action.
         /// </summary>
         public bool Truncate { get; set; }
-
-        #endregion Public Properties
     }
 }

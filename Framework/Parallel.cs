@@ -92,17 +92,11 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public class Parallel : BaseTask
     {
-        #region Private Fields
-
         private const string BuildTargetSetsInParallelTaskAction = "BuildTargetSetsInParallel";
         private const string BuildTargetsInParallelTaskAction = "BuildTargetsInParallel";
         private LoggerVerbosity multiLogResponseVerbosity = LoggerVerbosity.Minimal;
         private LoggerVerbosity multiLogVerbosity = LoggerVerbosity.Diagnostic;
         private string multiprocparameter = string.Empty;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void BuildTargetSetsInParallel()
         {
@@ -382,10 +376,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -423,10 +413,6 @@ namespace MSBuild.ExtensionPack
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Specifies additional properties to pass through to the new parallel instances of MSBuild.
@@ -507,7 +493,5 @@ namespace MSBuild.ExtensionPack
         /// Specifies the working directory. Default is <see langref="null"/> and MSBuild is resolved to the Path environment variable.
         /// </summary>
         public string WorkingDirectory { get; set; }
-
-        #endregion Public Properties
     }
 }

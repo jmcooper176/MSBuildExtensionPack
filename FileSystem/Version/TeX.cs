@@ -15,19 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Version
+namespace FileSystem.Version
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
-
     public class TeX : IVersionMethod, IComparable<TeX>, IEquatable<TeX>, IEqualityComparer<TeX>
     {
-        #region Public Properties
-
         /// <inheritdoc/>
         public string Caption { get; set; }
 
@@ -56,10 +51,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public Version Version { get; }
         public DateTime ZeroDay { get; set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         public object Clone() => throw new NotImplementedException();
 
         public int CompareTo(object? obj) => throw new NotImplementedException();
@@ -85,7 +76,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
 
         public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
-
-        #endregion Public Methods
     }
 }

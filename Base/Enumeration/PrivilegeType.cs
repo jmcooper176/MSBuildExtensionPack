@@ -17,71 +17,100 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     internal enum PrivilegeType
     {
         /// <summary>
         /// SeInteractiveLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeInteractiveLogonRight,
 
         /// <summary>
         /// SeNetworkLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeNetworkLogonRight,
 
         /// <summary>
         /// SeBatchLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeBatchLogonRight,
 
         /// <summary>
         /// SeServiceLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeServiceLogonRight,
 
         /// <summary>
         /// SeDenyInteractiveLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeDenyInteractiveLogonRight,
 
         /// <summary>
         /// SeDenyNetworkLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeDenyNetworkLogonRight,
 
         /// <summary>
         /// SeDenyBatchLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeDenyBatchLogonRight,
 
         /// <summary>
         /// SeDenyServiceLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeDenyServiceLogonRight,
 
         /// <summary>
         /// SeRemoteInteractiveLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeRemoteInteractiveLogonRight,
 
         /// <summary>
         /// SeDenyRemoteInteractiveLogonRight
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeDenyRemoteInteractiveLogonRight,
 
         /// <summary>
         /// SeIncreaseQuotaPrivilege
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeIncreaseQuotaPrivilege,
 
         /// <summary>
         /// SeAuditPrivilege
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeAuditPrivilege,
 
         /// <summary>
         /// SeAssignPrimaryTokenPrivilege
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         SeAssignPrimaryTokenPrivilege
     }
 }

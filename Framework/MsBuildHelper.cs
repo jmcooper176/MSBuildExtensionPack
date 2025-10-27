@@ -210,15 +210,9 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public class MSBuildHelper : BaseTask
     {
-        #region Private Fields
-
         private List<ITaskItem> inputItems1;
         private List<ITaskItem> inputItems2;
         private List<ITaskItem> outputItems;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Escape()
         {
@@ -594,10 +588,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -668,10 +658,6 @@ namespace MSBuild.ExtensionPack
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Gets the current directory
@@ -748,7 +734,5 @@ namespace MSBuild.ExtensionPack
         /// Sets the separator to use for splitting the ItemString when calling StringToItemCol. Also used in FilterItemsOnMetadata
         /// </summary>
         public string Separator { get; set; }
-
-        #endregion Public Properties
     }
 }

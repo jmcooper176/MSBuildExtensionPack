@@ -15,14 +15,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.AssemblyInfo
+namespace SdkProject
 {
-    using MSBuild.ExtensionPack.Base.Enumeration;
-
     public struct AssemblyVersionSettings
     {
-        #region Public Fields
-
         public string BuildNumber;
         public string BuildNumberFormat;
         public IncrementMethod BuildNumberType;
@@ -33,7 +29,5 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
         public bool RevisionReset;
         public IncrementMethod RevisionType;
         public string Version;
-
-        #endregion Public Fields
     }
 }

@@ -15,16 +15,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Communication
+namespace Communication
 {
     using System;
     using System.Globalization;
     using System.Net.Mail;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -61,14 +56,8 @@ namespace MSBuild.ExtensionPack.Communication
     /// <seealso cref="BaseToolTask"/>
     public class Email : BaseToolTask
     {
-        #region Private Fields
-
         private readonly string format = "HTML";
         private MailPriority priority = MailPriority.Normal;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Send()
         {
@@ -116,10 +105,6 @@ namespace MSBuild.ExtensionPack.Communication
             client.Send(msg);
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -136,10 +121,6 @@ namespace MSBuild.ExtensionPack.Communication
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// An Item Collection of full paths of files to attach to the email.
@@ -216,7 +197,5 @@ namespace MSBuild.ExtensionPack.Communication
         public bool UseDefaultCredentials { get; set; } = true;
 
         public string UserName { get; set; }
-
-        #endregion Public Properties
     }
 }

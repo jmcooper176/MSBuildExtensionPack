@@ -23,17 +23,15 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-using MSBuild.ExtensionPack.Base.Enumeration;
+using MSBuild.ExtensionPack.ErrorMessage.Code;
 
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.ErrorMessage.Utility
 {
     /// <summary>
     /// Implements extension methods for <see cref="Exception"/>.
     /// </summary>
     public static class ExceptionExtension
     {
-        #region Internal Methods
-
         /// <summary>
         /// Shows the default.
         /// </summary>
@@ -250,7 +248,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             buffer.AppendLine().AppendFormat(
                 provider ?? CultureInfo.InvariantCulture,
                 "Detail : HResult 0x{0:X8} : Cause {1}",
-                hr is not null ? (int)hr : HResultExtension.ToHResultCode(FacilityCode.FACILITY_WIN32, WinError.ERROR_INTERNAL_ERROR),
+                hr is not null ? (int)hr : HResultExtension.ToHResultCode((int)FacilityCode.FACILITY_WIN32, WinError.ERROR_INTERNAL_ERROR),
                 innerException is not null ? innerException.GetType().Name : "No inner exception");
         }
 
@@ -264,10 +262,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
             buffer.AppendLine().AppendLine("Stack Trace : ").Append(exception.StackTrace?.ReplaceLineEndings());
         }
 
-        #endregion Internal Methods
-
-        #region Public Fields
-
         /// <summary>
         /// </summary>
         public const int S_FALSE = 1;
@@ -275,10 +269,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <summary>
         /// </summary>
         public const int S_OK = 0;
-
-        #endregion Public Fields
-
-        #region Public Methods
 
         public static string FormatMessage(
             IFormatProvider? provider,
@@ -446,7 +436,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 { "Source", exception.Source },
                 { "Name", exception.GetType().Name },
                 { "Message", exception.Message },
-                { "HResult", exception.HResult != HResultExtension.ToHResultCode(FacilityCode.FACILITY_WIN32, WinError.ERROR_SUCCESS) ? exception.HResult : (exception.InnerException?.HResult ?? HResultExtension.ToHResultCode(FacilityCode.FACILITY_WIN32, WinError.ERROR_INTERNAL_ERROR)) },
+                { "HResult", exception.HResult != HResultExtension.ToHResultCode((int)FacilityCode.FACILITY_WIN32, WinError.ERROR_SUCCESS) ? exception.HResult : (exception.InnerException?.HResult ?? HResultExtension.ToHResultCode((int)FacilityCode.FACILITY_WIN32, WinError.ERROR_INTERNAL_ERROR)) },
                 { "Cause", exception.InnerException },
                 { "TargetSite", exception.TargetSite },
                 { "SourceFile", path },
@@ -973,8 +963,8 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static TException SetHResult<TException>(this TException exception, int hr) where TException : Exception
         {
-            ArgumentOutOfRangeException.ThrowIfLessThan(hr.ToWinErrorCode(), WinError.ERROR_SUCCESS.ToWinErrorCode(), nameof(hr));
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(hr.ToWinErrorCode(), WinError.ERROR_UNKNOWN_ERROR.ToWinErrorCode(), nameof(hr));
+            ArgumentOutOfRangeException.ThrowIfLessThan(WinErrorExtension.ToWinErrorCode(hr), WinError.ERROR_SUCCESS.ToWinErrorCode(), nameof(hr));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(WinErrorExtension.ToWinErrorCode(hr), WinError.ERROR_UNKNOWN_ERROR.ToWinErrorCode(), nameof(hr));
 
             exception.HResult = hr;
             return exception;
@@ -1002,7 +992,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
             value = data.Contains(key) ? data[key] : null;
             return value is null;
         }
-
-        #endregion Public Methods
     }
 }

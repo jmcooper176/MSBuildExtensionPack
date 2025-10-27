@@ -26,8 +26,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     public static class TaskExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Gets an awaitable that schedules the continuation with a preference to executing synchronously on the call stack that
         /// completed the <see cref="Task"/>, without regard to thread ID or any <see cref="SynchronizationContext"/> that may be
@@ -64,7 +62,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             return new ExecuteContinuationSynchronouslyAwaitable<T>(antecedent);
         }
-
-        #endregion Public Methods
     }
 }

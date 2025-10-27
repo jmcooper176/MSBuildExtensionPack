@@ -15,19 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
     using System.Globalization;
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -84,17 +78,11 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask"/>
     public class Network : BaseTask
     {
-        #region Private Fields
-
         private const string GetDnsHostNameTaskAction = "GetDnsHostName";
         private const string GetFreePortTaskAction = "GetFreePort";
         private const string GetInternalIPTaskAction = "GetInternalIP";
         private const string GetRemoteIPTaskAction = "GetRemoteIP";
         private const string PingTaskAction = "Ping";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void GetDnsHostName()
         {
@@ -195,10 +183,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -236,10 +220,6 @@ namespace MSBuild.ExtensionPack.Computer
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Gets the DnsHostName
@@ -279,7 +259,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// Sets the timeout in ms for a Ping. Default is 3000
         /// </summary>
         public int Timeout { get; set; } = 3000;
-
-        #endregion Public Properties
     }
 }

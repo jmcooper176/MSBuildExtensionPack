@@ -26,8 +26,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
     /// <typeparam name="TValue">Specifies the value <see cref="Type"/> for validation.</typeparam>
     public interface IPropertyValidator<TValue>
     {
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating the detailed error message to display to the console when <see cref="IsValid(TValue)"/>, <see
         /// cref="Validate(TValue)"/>, or <see cref="Validate(TValue, string)"/> fails.
@@ -121,10 +119,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
         /// </summary>
         bool ValidatorResult { get; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <summary>
         /// Applies formatting to an error message, based on the source of the validation failure.
         /// </summary>
@@ -199,7 +193,5 @@ namespace MSBuild.ExtensionPack.Base.Interface
         /// <exception cref="ValidationException">Thrown if validation fails.</exception>
         /// <remarks>Result of <see cref="IsValid(TValue)"/> is always stored in <see cref="ValidationResult"/>.</remarks>
         void Validate(TValue value, string name);
-
-        #endregion Public Methods
     }
 }

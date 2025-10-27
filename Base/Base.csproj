@@ -72,4 +72,8 @@
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ErrorMessage\ErrorMessage.csproj" />
+  </ItemGroup>
+
 </Project>

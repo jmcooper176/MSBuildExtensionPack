@@ -24,8 +24,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     internal static class Extensions
     {
-        #region Public Methods
-
         /// <summary>
         /// Converts given datetime in FILETIME struct format and convert it to .Net DateTime.
         /// </summary>
@@ -45,7 +43,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 return DateTime.FromFileTimeUtc(ft);
             }
         }
-
-        #endregion Public Methods
     }
 }

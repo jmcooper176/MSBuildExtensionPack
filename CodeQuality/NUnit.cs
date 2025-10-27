@@ -15,16 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.CodeQuality
+namespace CodeQuality
 {
     using System;
     using System.Globalization;
     using System.IO;
     using System.Security;
     using System.Xml;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// Executes Test Cases using NUnit (Tested using v2.6.2)
@@ -91,8 +88,6 @@ namespace MSBuild.ExtensionPack.CodeQuality
     /// <seealso cref="ToolTask"/>
     public class NUnit : ToolTask
     {
-        #region Private Methods
-
         private static int GetAttributeInt32Value(string name, XmlNode node)
         {
             if (node.Attributes?[name] is not null)
@@ -183,15 +178,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Properties
-
         protected override string ToolName => this.Use32Bit ? "nunit-console-x86.exe" : "nunit-console.exe";
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
         {
@@ -257,10 +244,6 @@ namespace MSBuild.ExtensionPack.CodeQuality
         {
             this.Log.LogMessage(MessageImportance.Normal, singleLine);
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Gets or sets the assemblies.
@@ -402,7 +385,5 @@ namespace MSBuild.ExtensionPack.CodeQuality
         /// The version of NUnit to run. Default is 2.6.2
         /// </summary>
         public string Version { get; set; } = "2.6.2";
-
-        #endregion Public Properties
     }
 }

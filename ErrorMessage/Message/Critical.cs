@@ -1,4 +1,4 @@
-﻿namespace MSBuild.ExtensionPack.Base.Logging
+﻿namespace MSBuild.ExtensionPack.ErrorMessage.Message
 {
     using System;
     using System.Diagnostics.Contracts;
@@ -7,12 +7,8 @@
 
     using Microsoft.Build.Utilities;
 
-    using MSBuild.ExtensionPack.Base.Interface;
-
     public static class Critical
     {
-        #region Public Methods
-
         /// <summary>
         /// Logs the <see cref="BaseTask"/> or <see cref="BaseToolTask"/> derivative task critical message.
         /// </summary>
@@ -90,7 +86,5 @@
                 log.LogCriticalMessage(subcategory, code, helpKeyword ?? "MSBuild", filePath, lineNumber, columnNumber, endLineNumber, endColumnNumber, message, arguments);
             }
         }
-
-        #endregion Public Methods
     }
 }

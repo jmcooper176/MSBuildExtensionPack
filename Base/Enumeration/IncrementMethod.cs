@@ -17,6 +17,10 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Specifies how certain version numbers are incremented by the task.
     /// </summary>
@@ -25,33 +29,45 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// Do not auto-increment the number.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         NoIncrement = 0,
 
         /// <summary>
         /// Add one to the current number.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         AutoIncrement = 1,
 
         /// <summary>
         /// Format the current date and time using a formatting string, and use that as the number.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         DateString = 2,
 
         /// <summary>
         /// Format the current date as the two digit year and the day of the year, and use that as the number, i.e. the revision
         /// number for 7/03/2009 is 09184
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Julian = 3,
 
         /// <summary>
         /// Format the current date as YYWWDW where YY is the year, WW is the week number and DW is the day of the week e.g. 2 Feb
         /// 2010 would be 10062. 15 March 2010 will be 10121 and 19 December 2010 10475.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         YearWeekDay = 4,
 
         /// <summary>
         /// Calculate the number of days elapsed since a given StartDate. Take note of the StartDate, PaddingCount and PaddingDigit parameters.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         ElapsedDays = 5
     }
 }

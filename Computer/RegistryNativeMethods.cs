@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System.Runtime.InteropServices;
     using System.Security;
@@ -26,20 +26,12 @@ namespace MSBuild.ExtensionPack.Computer
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
-        #region Internal Fields
-
         internal const int HWND_BROADCAST = 0xffff;
         internal const int SENDMESSAGE_TIMEOUT = 10000;
         internal const int SMTO_ABORTIFHUNG = 0x0002;
         internal const int WM_SETTINGCHANGE = 0x001A;
 
-        #endregion Internal Fields
-
-        #region Internal Methods
-
         [DllImportAttribute("USER32", CharSet = CharSet.Unicode)]
         internal static extern int SendMessageTimeout(int hWnd, int Msg, int wParam, string lParam, int fuFlags, int uTimeout, int lpdwResult);
-
-        #endregion Internal Methods
     }
 }

@@ -15,16 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace SourceControl
 {
     using System;
     using System.Globalization;
     using System.IO;
 
-    using Microsoft.Build.Framework;
     using Microsoft.Win32;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// Please be aware that this is a very light wrapper for ss.exe
@@ -72,14 +69,8 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// <seealso cref="BaseTask"/>
     public class SourceSafe : BaseTask
     {
-        #region Private Fields
-
         private string fileName = "ss.exe";
         private ShellWrapper shellWrapper;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void ExecuteVisualSourceSafe(string args)
         {
@@ -158,10 +149,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             return true;
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -192,10 +179,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             this.ExecuteVisualSourceSafe(args);
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the Arguments. Defaults to -I- (Ignores all and tells the command not to ask for input under any circumstances)
         /// unless SuppressI is set to true. See http://msdn.microsoft.com/en-us/library/hsxzf2az(VS.80).aspx for full options.
@@ -222,7 +205,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// Set to true to prevent -I- being added to your custom Arguments. Default is False
         /// </summary>
         public bool SuppressI { get; set; }
-
-        #endregion Public Properties
     }
 }

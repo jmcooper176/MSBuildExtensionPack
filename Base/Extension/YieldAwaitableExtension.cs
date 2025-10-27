@@ -24,8 +24,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     public static class YieldAwaitableExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Converts a <see cref="YieldAwaitable"/> to a <see cref="ConfiguredTaskYieldAwaitable"/>.
         /// </summary>
@@ -39,7 +37,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             return new ConfiguredTaskYieldAwaitable(continueOnCapturedContext);
         }
-
-        #endregion Public Methods
     }
 }

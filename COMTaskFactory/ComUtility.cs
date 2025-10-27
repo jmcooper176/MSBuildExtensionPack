@@ -11,8 +11,6 @@
 
     public static class ComUtility
     {
-        #region Public Methods
-
         /// <summary>
         /// Creates an array instance of element <paramref name="theType"/> with a zero lower bound.
         /// </summary>
@@ -1390,7 +1388,5 @@
         {
             return theType.InvokeMember(name, invokeAttr, binder, target, args, modifiers, culture ?? CultureInfo.CurrentCulture, namedParameters);
         }
-
-        #endregion Public Methods
     }
 }

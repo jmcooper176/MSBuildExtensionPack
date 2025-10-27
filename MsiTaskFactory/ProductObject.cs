@@ -7,23 +7,13 @@
 
     public class ProductObject : IMsiCom
     {
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Private Destructors
 
         ~ProductObject()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -41,10 +31,6 @@
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Constructors
-
         public ProductObject(Guid productCode, SecurityIdentifier? userSid, InstallContext installContext)
         {
             ComType = ComUtility.GetTypeFromProgId(ProgId);
@@ -53,10 +39,6 @@
             Context = installContext;
             Instance = (this.ComType?.CreateComInstance(ProductCode, userSid?.ToString(), (int)installContext));
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         public Type? ComType { get; private set; }
         public InstallContext Context { get; }
@@ -67,17 +49,11 @@
         public string ProgId => "WindowsInstaller.Installer.Product";
         public SecurityIdentifier? UserSid { get; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion Public Methods
     }
 }

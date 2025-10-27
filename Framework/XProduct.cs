@@ -85,8 +85,6 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="Task"/>
     public class XProduct : Task
     {
-        #region Private Methods
-
         private static void DoIdentity(ITaskItem item, string identityFormat, int number)
         {
             var replacements = item.ItemSpec.Split(';').Select((t, i) => new { Old = "{" + i + "}", New = t }).ToDictionary(x => x.Old, x => x.New);
@@ -122,10 +120,6 @@ namespace MSBuild.ExtensionPack
             var datas = dataProperties.Select(p => p.GetValue(this, null)).Cast<ITaskItem[]>().TakeWhile(x => x is not null).ToArray();
             return datas;
         }
-
-        #endregion Private Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Copies original Identity metadata to result item as well - suffixed by the group number, i.e. you can use <c>%(ResultList.Identity1)</c>.
@@ -199,10 +193,6 @@ namespace MSBuild.ExtensionPack
         [Output]
         public IEnumerable<ITaskItem> Result { get; set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         public override bool Execute()
         {
             var groups = this.CreateDataArrays().ToList();
@@ -222,7 +212,5 @@ namespace MSBuild.ExtensionPack
 
             return !this.Log.HasLoggedErrors;
         }
-
-        #endregion Public Methods
     }
 }

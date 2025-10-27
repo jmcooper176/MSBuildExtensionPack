@@ -21,16 +21,10 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-    using System.Management.Automation;
     using System.Text.RegularExpressions;
-
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
 
     public partial class Semantic : IVersionMethod, IComparable<Semantic>, IEquatable<Semantic>, IEqualityComparer<Semantic>
     {
-        #region Private Methods
-
         /// <summary>
         /// Defines the <see cref="Semantic"/> build metadata label regular expression.
         /// </summary>
@@ -59,10 +53,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         [GeneratedRegex(@"^(?:<major>0|[1-9]\d*)\.(?:<minor>0|[1-9]\d*)\.(?:<patch>0|[1-9]\d*)$", RegexOptions.Compiled)]
         private static partial Regex VersionNumberRegex();
 
-        #endregion Private Methods
-
-        #region Protected Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Semantic"/> class.
         /// </summary>
@@ -86,10 +76,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.ZeroDay = new(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        #endregion Protected Constructors
-
-        #region Public Fields
-
         /// <summary>
         /// The maximum major version number supported by <see cref="Semantic"/>.
         /// </summary>
@@ -104,10 +90,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// The maximum patch version number supported by <see cref="Semantic"/>.
         /// </summary>
         public const int MAX_PATCH = 2147483647;
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Semantic"/> class.
@@ -256,10 +238,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.Version = new(major % QuickFixEngineering.MAX_MAJOR, minor % QuickFixEngineering.MAX_MINOR, patch % QuickFixEngineering.MAX_BUILD);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <inheritdoc/>
         public string Caption { get; set; }
 
@@ -306,10 +284,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         /// <inheritdoc/>
         public DateTime ZeroDay { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public static explicit operator Semantic(SemanticVersion semanticVersion) => new(semanticVersion.Major, semanticVersion.Minor, semanticVersion.Patch, semanticVersion.PreReleaseLabel ?? string.Empty, semanticVersion.BuildLabel ?? string.Empty);
 
@@ -434,7 +408,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public Semantic WithoutPreReleaseLabel() => new(this.SemanticVersion.Major, this.SemanticVersion.Minor, this.SemanticVersion.Patch, string.Empty, this.SemanticVersion.BuildLabel ?? string.Empty);
 
         public Semantic WithPreReleaseLabel(string preReleaseLabel) => new(this.SemanticVersion.Major, this.SemanticVersion.Minor, this.SemanticVersion.Patch, preReleaseLabel, this.SemanticVersion.BuildLabel ?? string.Empty);
-
-        #endregion Public Methods
     }
 }

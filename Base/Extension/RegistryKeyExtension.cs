@@ -27,8 +27,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
 {
     internal static class RegistryKeyExtension
     {
-        #region Public Properties
-
         /// <summary>
         /// Returns the 32 bit HKLM\SOFTWARE registry key. May return <see langref="null"/> if it doesn't exist.
         /// </summary>
@@ -86,10 +84,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 }
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Returns a Task that completes when the specified registry key changes.
@@ -194,7 +188,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             return WaitForRegistryChangeAsync(registryKey.Handle, watchSubtree, change, cancellationToken);
         }
-
-        #endregion Public Methods
     }
 }

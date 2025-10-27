@@ -61,13 +61,7 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class Guid : BaseTask
     {
-        #region Private Fields
-
         private System.Guid internalGuid;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Gets this instance.
@@ -91,10 +85,6 @@ namespace MSBuild.ExtensionPack
                 this.internalGuid = new System.Guid(data);
             }
         }
-
-        #endregion Private Methods
-
-        #region Protected Methods
 
         /// <summary>
         /// Performs the action of this task.
@@ -122,10 +112,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// 32 digits separated by hyphens: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
         /// </summary>
@@ -137,7 +123,5 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         [Output]
         public string[] GuidString => new[] { this.internalGuid.ToString("N", CultureInfo.CurrentCulture) };
-
-        #endregion Public Properties
     }
 }

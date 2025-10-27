@@ -31,18 +31,12 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
     /// <seealso cref="IDisposable"/>
     public class PowerShellTask : Task, IGeneratedTask, IDisposable
     {
-        #region Private Fields
-
         private bool disposedValue;
 
         /// <summary>
         /// The context that the Windows PowerShell script will run under.
         /// </summary>
         private Pipeline pipeline;
-
-        #endregion Private Fields
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -63,10 +57,6 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
             }
         }
 
-        #endregion Protected Methods
-
-        #region Internal Constructors
-
         internal PowerShellTask(string script)
         {
             pipeline = RunspaceFactory.CreateRunspace().CreatePipeline();
@@ -74,10 +64,6 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
             pipeline.Runspace.Open();
             pipeline.Runspace.SessionStateProxy.SetVariable("log", Log);
         }
-
-        #endregion Internal Constructors
-
-        #region Public Methods
 
         public void Dispose()
         {
@@ -100,7 +86,5 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
         {
             pipeline.Runspace.SessionStateProxy.SetVariable(property.Name, value);
         }
-
-        #endregion Public Methods
     }
 }

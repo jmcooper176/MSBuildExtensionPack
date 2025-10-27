@@ -1,7 +1,6 @@
-﻿namespace PerlTaskFactory
+﻿namespace MSBuild.ExtensionPack.PerlTaskFactory
 {
     public class Class1
     {
-
     }
 }

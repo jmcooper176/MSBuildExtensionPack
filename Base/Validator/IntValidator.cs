@@ -31,8 +31,6 @@ namespace MSBuild.ExtensionPack.Base.Validator
     /// </summary>
     public class IntValidator : IPropertyValidator<int>
     {
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="IntValidator"/> class.
         /// </summary>
@@ -146,10 +144,6 @@ namespace MSBuild.ExtensionPack.Base.Validator
             ErrorMessage = errorMessage;
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <inheritdoc/>
         public string? DetailedMessage
         {
@@ -243,10 +237,6 @@ namespace MSBuild.ExtensionPack.Base.Validator
         /// <inheritdoc/>
         public bool ValidatorResult { get; private set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <inheritdoc/>
         public string? FormatErrorMessage(string name, [CallerFilePath] string? path = null, [CallerMemberName] string? member = null, [CallerLineNumber] int lineNumber = 0)
         {
@@ -318,7 +308,5 @@ namespace MSBuild.ExtensionPack.Base.Validator
                 Console.Error.WriteLine(FormatErrorMessage(name, value));
             }
         }
-
-        #endregion Public Methods
     }
 }

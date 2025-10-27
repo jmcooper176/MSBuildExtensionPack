@@ -15,19 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Version
+namespace FileSystem.Version
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
-
     public class Office : IVersionMethod, IComparable<Office>, IEquatable<Office>, IEqualityComparer<Office>
     {
-        #region Public Properties
-
         public string Caption { get; set; }
         public string ComputerName { get; set; }
         public IEqualityComparer<Office> DefaultComparer => throw new NotImplementedException();
@@ -43,10 +38,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public QuickFixEngineeringStatus Status { get; set; }
         public Version Version { get; }
         public DateTime ZeroDay { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public object Clone() => throw new NotImplementedException();
 
@@ -73,7 +64,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
 
         public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
-
-        #endregion Public Methods
     }
 }

@@ -15,18 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem
+namespace FileSystem
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Management;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Enumeration;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -79,18 +73,12 @@ namespace MSBuild.ExtensionPack.FileSystem
     /// <seealso cref="BaseTask" />
     public class Share : BaseTask
     {
-        #region Private Fields
-
         private const string CheckExistsTaskAction = "CheckExists";
         private const string CreateTaskAction = "Create";
         private const string DeleteTaskAction = "Delete";
         private const string ModifyPermissionsTaskAction = "ModifyPermissions";
         private const string SetPermissionsTaskAction = "SetPermissions";
         private int newPermissionCount;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static ManagementObject GetSecurityIdentifier(ManagementBaseObject account)
         {
@@ -529,10 +517,6 @@ namespace MSBuild.ExtensionPack.FileSystem
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -565,10 +549,6 @@ namespace MSBuild.ExtensionPack.FileSystem
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets a collection of users allowed to access the share. Use the Permission metadata tag to specify permissions. Default
@@ -620,7 +600,5 @@ namespace MSBuild.ExtensionPack.FileSystem
         /// Sets the share path
         /// </summary>
         public string SharePath { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -20,7 +20,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration.TaskAction
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
-    using MSBuild.ExtensionPack.Base.SystemAttribute;
+    using MSBuild.ExtensionPack.ErrorMessage.AttributeAccess;
 
     /// <summary>
     /// The <see cref="File"/> task action enumeration.
@@ -642,8 +642,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration.TaskAction
 
     public static class FileTaskActionExtensions
     {
-        #region Public Methods
-
         /// <summary>
         /// Extension method to recover the description string from the <see cref="DescriptionAttribute"/> on an <see
         /// cref="FileTaskAction"/> field.
@@ -797,7 +795,5 @@ namespace MSBuild.ExtensionPack.Base.Enumeration.TaskAction
         {
             return value.GetDisplayAttribute(inherit)?.ShortName;
         }
-
-        #endregion Public Methods
     }
 }

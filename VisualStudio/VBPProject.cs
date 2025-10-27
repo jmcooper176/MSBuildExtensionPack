@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace VisualStudio
 {
     using System;
     using System.Collections.Generic;
@@ -25,14 +25,8 @@ namespace MSBuild.ExtensionPack.VisualStudio
 
     public class VBPProject
     {
-        #region Private Fields
-
         private readonly List<string> lines = new List<string>();
         private string projectFile;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         public VBPProject()
         {
@@ -42,10 +36,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
         {
             ProjectFile = projectFileExt;
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         public FileInfo ArtifactFile
         {
@@ -88,10 +78,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
                 projectFile = value;
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public List<FileInfo> GetFiles()
         {
@@ -234,7 +220,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
 
             return false;
         }
-
-        #endregion Public Methods
     }
 }

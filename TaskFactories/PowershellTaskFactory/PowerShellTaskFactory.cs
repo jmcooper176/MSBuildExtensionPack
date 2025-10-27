@@ -85,8 +85,6 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
     /// <seealso cref="ITaskFactory"/>
     public class PowerShellTaskFactory : ITaskFactory
     {
-        #region Private Fields
-
         /// <summary>
         /// The in and out parameters of the generated tasks.
         /// </summary>
@@ -97,10 +95,6 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
         /// </summary>
         private string script;
 
-        #endregion Private Fields
-
-        #region Public Properties
-
         /// <summary>
         /// Get the Factory Name
         /// </summary>
@@ -110,10 +104,6 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
         /// The <see cref="Type"/> of Task
         /// </summary>
         public Type TaskType => typeof(PowerShellTask);
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Cleanup the Task
@@ -159,7 +149,5 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
 
             return true;
         }
-
-        #endregion Public Methods
     }
 }

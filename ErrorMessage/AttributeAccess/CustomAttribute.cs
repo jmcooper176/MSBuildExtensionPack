@@ -20,11 +20,9 @@ using System.Reflection;
 
 using Microsoft.AnalysisServices;
 
-using MSBuild.ExtensionPack.Base.Extension;
-
 using Assembly = System.Reflection.Assembly;
 
-namespace MSBuild.ExtensionPack.Base.SystemAttribute
+namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
 {
     /// <summary>
     /// Implements an enhanced <see cref="Attribute"/> class.
@@ -33,8 +31,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
     public class CustomAttribute : Attribute
     {
-        #region Private Fields
-
         /// <summary>
         /// The base number for the <see cref="DiagnosticId"/>.
         /// </summary>
@@ -50,10 +46,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// counter for each new <see cref="Message"/>.
         /// </summary>
         private static int counter = BASE_NUMBER;
-
-        #endregion Private Fields
-
-        #region Protected Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomAttribute"/> class.
@@ -80,19 +72,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             TypeId = this.GetType().GUID;
         }
 
-        #endregion Protected Constructors
-
-        #region Protected Properties
-
         /// <summary>
         /// Gets a value indicating whether this instance is default.
         /// </summary>
         /// <value><see langref="true"/> if this instance is default; otherwise, <see langref="false"/>.</value>
         protected virtual bool IsDefault { get; }
-
-        #endregion Protected Properties
-
-        #region Internal Methods
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -103,10 +87,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         {
             return HashCode.Combine(obj.GetHashCode(), TypeId);
         }
-
-        #endregion Internal Methods
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomAttribute"/> class.
@@ -136,10 +116,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             UrlFormat = urlFormat;
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets or sets the diagnostic identifier.
         /// </summary>
@@ -162,10 +138,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// </summary>
         /// <value>The URL format.</value>
         public virtual string? UrlFormat { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Gets the custom <see cref="Attribute"/>.
@@ -2059,7 +2031,5 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
                 return $"{this.GetType().Name} : {DiagnosticId} {UrlFormat} : {Message}";
             }
         }
-
-        #endregion Public Methods
     }
 }

@@ -30,8 +30,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
     [TestClass]
     public class TextStringTest
     {
-        #region Public Methods
-
         [TestMethod]
         public void TextStringSplitNoString1Test()
         {
@@ -111,7 +109,5 @@ namespace MSBuild.ExtensionPack.Framework.Tests
             Assert.AreEqual(0, expected.Except(target.Strings.Select(x => x.ItemSpec)).Count());
             Assert.AreEqual(expected[target.StartIndex], target.NewString);
         }
-
-        #endregion Public Methods
     }
 }

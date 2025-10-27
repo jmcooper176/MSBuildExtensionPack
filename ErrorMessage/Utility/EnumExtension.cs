@@ -19,15 +19,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.ErrorMessage.Utility
 {
     /// <summary>
     /// Implements extension methods for <see cref="Enum"/>.
     /// </summary>
     public static class EnumExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Formats <paramref name="value"/> using <paramref name="format"/> to a <see cref="string"/>.
         /// </summary>
@@ -373,7 +371,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             return ToUnderlyingType(typeof(TEnum), value);
         }
-
-        #endregion Public Methods
     }
 }

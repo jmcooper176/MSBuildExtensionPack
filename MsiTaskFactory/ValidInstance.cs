@@ -5,8 +5,6 @@
 
     public static class ValidInstance
     {
-        #region Public Methods
-
         public static bool AllNotNull(params object?[] objects)
         {
             return objects.All(o => o is not null);
@@ -130,7 +128,5 @@
                 return id.Skip(1).All(c => char.IsAsciiLetterUpper(c) || char.IsAsciiDigit(c) || c == '_' || c == '.');
             }
         }
-
-        #endregion Public Methods
     }
 }

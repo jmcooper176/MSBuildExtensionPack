@@ -15,24 +15,17 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.DirectoryServices;
-    using System.DirectoryServices.AccountManagement;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
 
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
     using MSBuild.ExtensionPack.Computer.Extended;
 
     /// <summary>
@@ -153,8 +146,6 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask"/>
     public class ActiveDirectory : BaseTask
     {
-        #region Private Fields
-
         private const string AddGroupTaskAction = "AddGroup";
         private const string AddGroupToGroupTaskAction = "AddGroupToGroup";
         private const string AddUserTaskAction = "AddUser";
@@ -178,10 +169,6 @@ namespace MSBuild.ExtensionPack.Computer
         private int passwordExpired;
         private PrivilegeType privilege;
         private string target;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static LSA_UNICODE_STRING CreateLsaString(string inputString)
         {
@@ -801,10 +788,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -902,10 +885,6 @@ namespace MSBuild.ExtensionPack.Computer
                 }
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Specifies the options that are used for binding to the server. Default is Negotiate
@@ -1032,7 +1011,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// The domain the user is in. If not set, defaults to Domain.
         /// </summary>
         public string UserDomain { get; set; }
-
-        #endregion Public Properties
     }
 }

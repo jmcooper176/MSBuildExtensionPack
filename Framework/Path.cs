@@ -104,8 +104,6 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class Path : BaseTask
     {
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -181,10 +179,6 @@ namespace MSBuild.ExtensionPack
             this.Log.LogError(string.Format(CultureInfo.CurrentCulture, format, args));
         }
 
-        #endregion Protected Methods
-
-        #region Public Fields
-
         public const string ChangeExtensionTaskAction = "ChangeExtension";
         public const string CombineTaskAction = "Combine";
         public const string GetDirectoryNameTaskAction = "GetDirectoryName";
@@ -197,10 +191,6 @@ namespace MSBuild.ExtensionPack
         public const string GetTempPathTaskAction = "GetTempPath";
         public const string HasExtensionTaskAction = "HasExtension";
         public const string IsPathRootedTaskAction = "IsPathRooted";
-
-        #endregion Public Fields
-
-        #region Public Properties
 
         /// <summary>
         /// The file extension to use for the ChangeExtension task
@@ -222,7 +212,5 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         [Output]
         public string Value { get; set; }
-
-        #endregion Public Properties
     }
 }

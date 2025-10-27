@@ -27,27 +27,18 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Text;
     using System.Text.RegularExpressions;
 
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
-
     /// <summary>
     /// Class implementing the Quick Fix Engineering (QFE) versioning scheme.
     /// </summary>
     /// <seealso cref="IVersionMethod"/>
     public partial class QuickFixEngineering : IVersionMethod, IComparable<QuickFixEngineering>, IEquatable<QuickFixEngineering>, IEqualityComparer<QuickFixEngineering>
     {
-        #region Private Methods
-
         /// <summary>
         /// Defines the <see cref="QuickFixEngineering"/> version regular expression.
         /// </summary>
         /// <returns>A <see cref="Regex"/> representing the <see cref="QuickFixEngineering"/> regular expression.</returns>
         [GeneratedRegex(@"^(?:<major>([0-9]\d{0,4})(?:<quads>(\.([0-9]\d{0,4})){0,3}))$", RegexOptions.Compiled)]
         private static partial Regex VersionNumberRegex();
-
-        #endregion Private Methods
-
-        #region Protected Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuickFixEngineering"/> class.
@@ -71,10 +62,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.ZeroDay = new(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        #endregion Protected Constructors
-
-        #region Public Fields
-
         /// <summary>
         /// The maximum build number value.
         /// </summary>
@@ -94,10 +81,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// The maximum revision number value.
         /// </summary>
         public const int MAX_REVISION = 65534;
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QuickFixEngineering"/> class.
@@ -215,10 +198,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.Version = new(major, minor, build, revision);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <inheritdoc/>
         public string Caption { get; set; }
 
@@ -266,10 +245,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         /// <inheritdoc/>
         public DateTime ZeroDay { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Generates a revision number based on the current UTC time, suitable for use as a short-lived identifier within a single day.
@@ -808,7 +783,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         /// <inheritdoc/>
         public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => ((IUtf8SpanFormattable)this.Version).TryFormat(utf8Destination, out bytesWritten, format, provider);
-
-        #endregion Public Methods
     }
 }

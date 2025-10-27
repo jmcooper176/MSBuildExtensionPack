@@ -33,8 +33,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </remarks>
     internal static class DownlevelRegistryWatcherSupport
     {
-        #region Private Fields
-
         /// <summary>
         /// The size of the stack allocated for a thread that expects to stay within just a few methods in depth.
         /// </summary>
@@ -62,10 +60,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// The thread that should stay alive and be dequeuing <see cref="PendingWork"/>.
         /// </summary>
         private static Thread? liveThread;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Decrements the count of interested parties in the live thread, and helps it to terminate if necessary.
@@ -147,25 +141,15 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        #endregion Private Methods
-
-        #region Private Classes
-
         /// <summary>
         /// Decrements the dedicated thread use counter by at most one upon disposal.
         /// </summary>
         private class ThreadHandleRelease : IDisposable
         {
-            #region Private Fields
-
             /// <summary>
             /// A value indicating whether this instance has already been disposed.
             /// </summary>
             private bool disposed;
-
-            #endregion Private Fields
-
-            #region Public Methods
 
             /// <summary>
             /// Release the keep alive count reserved by this instance.
@@ -181,13 +165,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
                     }
                 }
             }
-
-            #endregion Public Methods
         }
-
-        #endregion Private Classes
-
-        #region Internal Methods
 
         /// <summary>
         /// Executes some action on a long-lived thread.
@@ -260,7 +238,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 throw;
             }
         }
-
-        #endregion Internal Methods
     }
 }

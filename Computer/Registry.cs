@@ -15,17 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
     using System.Globalization;
     using System.Text;
 
-    using Microsoft.Build.Framework;
     using Microsoft.Win32;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -98,8 +94,6 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask"/>
     public class Registry : BaseTask
     {
-        #region Private Fields
-
         private const string CheckEmptyTaskAction = "CheckEmpty";
         private const string CheckValueExistsTaskAction = "CheckValueExists";
         private const string CreateKeyTaskAction = "CreateKey";
@@ -111,10 +105,6 @@ namespace MSBuild.ExtensionPack.Computer
         private RegistryHive hive;
         private RegistryKey registryKey;
         private RegistryView view = Microsoft.Win32.RegistryView.Default;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static string GetRegistryKeyValue(RegistryKey subkey, string value)
         {
@@ -355,10 +345,6 @@ namespace MSBuild.ExtensionPack.Computer
             this.registryKey.Close();
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -414,10 +400,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Gets the data.
         /// </summary>
@@ -470,7 +452,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// Sets the value. If Value is not provided, an attempt will be made to read the Default Value.
         /// </summary>
         public string Value { get; set; }
-
-        #endregion Public Properties
     }
 }

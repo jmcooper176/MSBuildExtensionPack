@@ -19,12 +19,8 @@ namespace MSBuild.ExtensionPack
 {
     public class NameAndType
     {
-        #region Public Properties
-
         public string Name { get; set; }
 
         public string Type { get; set; }
-
-        #endregion Public Properties
     }
 }

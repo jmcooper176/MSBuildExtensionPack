@@ -15,23 +15,13 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
     [SupportedOSPlatform("windows")]
     public class ClientObject : IMsiCom, IEquatable<ClientObject>, IEqualityComparer<ClientObject>
     {
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Protected Properties
 
         /// <summary>
         /// Gets a value representing the default <see cref="IEqualityComparer{T}"/> comparer.
         /// </summary>
         /// <value>The default <see cref="IEqualityComparer{T}"/> comparer.</value>
         protected virtual EqualityComparer<ClientObject> DefaultComparer { get; }
-
-        #endregion Protected Properties
-
-        #region Public Properties
 
         /// <inheritdoc/>
         public Guid ClsId { get; }
@@ -53,10 +43,6 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
 
         /// <inheritdoc/>
         public virtual object? RCW { get; private set; }
-
-        #endregion Public Properties
-
-        #region Protected Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientObject"/> class.
@@ -81,10 +67,6 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
             InterfaceTypes = [];
             DefaultComparer = EqualityComparer<ClientObject>.Create((l, r) => ReferenceEquals(l, r) || (l?.Equals(r) == true), i => GetHashCode(i));
         }
-
-        #endregion Protected Constructors
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientObject"/> class.
@@ -117,10 +99,6 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
             Instance = instance;
         }
 
-        #endregion Public Constructors
-
-        #region Private Destructors
-
         /// <summary>
         /// Finalizes an instance of the <see cref="ClientObject"/> class.
         /// </summary>
@@ -129,10 +107,6 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Protected Methods
 
         /// <summary>
         /// Releases unmanaged and (optionally) managed resources.
@@ -157,10 +131,6 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
                 disposedValue = true;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Methods
 
         /// <summary>
         /// Implements the operator != for <see cref="ClientObject"/>.
@@ -256,7 +226,5 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
 
         /// <inheritdoc/>
         public override string ToString() => $"ComType='{ComType?.FullName ?? "<< Null >>"}' | IID='{IID:B}' | ProgId='{ProgId}#{ClsId:D}'";
-
-        #endregion Public Methods
     }
 }

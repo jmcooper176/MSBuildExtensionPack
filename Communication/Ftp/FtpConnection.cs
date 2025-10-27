@@ -15,9 +15,27 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
+
+// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
 using MSBuild.ExtensionPack.Communication.Extended;
 
-namespace MSBuild.ExtensionPack.Communication.FTP
+namespace Communication.Ftp
 {
     using System;
     using System.Collections.Generic;
@@ -26,8 +44,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     using System.IO;
     using System.Runtime.InteropServices;
     using System.Text;
-
-    using MSBuild.ExtensionPack.Base.Cause;
 
     /// <summary>
     /// The <c>FtpConnection</c> class provides the ability to connect and perform operations on FTP servers.
@@ -40,18 +56,12 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     /// <seealso cref="IDisposable"/>
     public class FtpConnection(string host, int port, string userName, string password) : IDisposable
     {
-        #region Private Fields
-
         private readonly string ftpHost = host;
         private readonly string ftpPassword = password;
         private readonly int ftpPort = port;
         private readonly string ftpUserName = userName;
         private IntPtr connectionHandle;
         private IntPtr internetHandle;
-
-        #endregion Private Fields
-
-        #region Private Destructors
 
         /// <summary>
         /// Finalizes an instance of the FtpConnection class. Disposable types with unmanaged resources need to implement a finalizer.
@@ -60,10 +70,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         {
             Dispose(false);
         }
-
-        #endregion Private Destructors
-
-        #region Private Methods
 
         /// <summary>
         /// The private helper method to raise exception based on the error occured in native calls
@@ -110,10 +116,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
                 Error();
             }
         }
-
-        #endregion Private Methods
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -166,10 +168,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the FtpConnection class.
         /// </summary>
@@ -198,16 +196,8 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         {
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public string FtpHost { get; }
         public int Port { get; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Sets the directory on the local machine used to upload / download files.
@@ -651,7 +641,5 @@ namespace MSBuild.ExtensionPack.Communication.FTP
                 Error();
             }
         }
-
-        #endregion Public Methods
     }
 }

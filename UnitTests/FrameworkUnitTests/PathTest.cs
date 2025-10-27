@@ -22,8 +22,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
     [TestClass]
     public class PathTest
     {
-        #region Public Methods
-
         [TestMethod]
         public void Path_CantExecuteRemote()
         {
@@ -264,7 +262,5 @@ namespace MSBuild.ExtensionPack.Framework.Tests
             // assert
             Assert.AreEqual(target.Value, "True");
         }
-
-        #endregion Public Methods
     }
 }

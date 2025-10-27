@@ -37,8 +37,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
     /// </summary>
     public partial class TempDirectory : IDisposable, IAsyncDisposable, IEqualityComparer<TempDirectory>, IEqualityComparer<DirectoryInfo>, IEqualityComparer<string>
     {
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TempDirectory"/> class.
         /// </summary>
@@ -216,10 +214,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
             }
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating the full name string for <see cref="TemporaryDirectory"/>.
         /// </summary>
@@ -239,10 +233,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
         /// Gets a value indicating the <see cref="TempDirectory"/> directory path.
         /// </summary>
         public DirectoryInfo TemporaryDirectory { get; }
-
-        #endregion Public Properties
-
-        #region Protected Properties
 
         /// <summary>
         /// Gets a value indicating the <see cref="FileAccess"/> mode for the created file.
@@ -293,10 +283,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
         /// </summary>
         [SupportedOSPlatform("Windows")]
         public virtual FileSystemRights WindowsFileSystemRights => FileSystemRights.Delete | FileSystemRights.AppendData | FileSystemRights.WriteData | FileSystemRights.Read;
-
-        #endregion Protected Properties
-
-        #region Public Methods
 
         public static bool Equals(DirectoryInfo? x, FileInfo? y)
         {
@@ -477,10 +463,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
             TempDirectory.SetCurrentDirectory(current ?? TempDirectory.GetCurrentDirectory());
         }
 
-        #endregion Public Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Protected method disposing of <see cref="DirectoryInfo"/> if <paramref name="disposing"/> is <see langref="true"/>.
         /// </summary>
@@ -640,10 +622,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
             disposedValue = true;
         }
 
-        #endregion Protected Methods
-
-        #region Private Fields
-
         /// <summary>
         /// Contains a stack of <see cref="DirectoryInfo"/> for pushing and popping the current directory.
         /// </summary>
@@ -660,7 +638,5 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
         /// <returns>Returns the <see cref="Regex"/> regular expression.</returns>
         [GeneratedRegex(@"^[A-Za-z0-9\-_].+(?:X){18}$", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
         private static partial Regex BaseNameTemplateRegex();
-
-        #endregion Private Fields
     }
 }

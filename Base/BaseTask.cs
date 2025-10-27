@@ -34,8 +34,6 @@ namespace MSBuild.ExtensionPack.Base
     /// </summary>
     public abstract class BaseTask : Task, IBaseTask
     {
-        #region Protected Methods
-
         /// <summary>
         /// Executes this instance.
         /// </summary>
@@ -94,10 +92,6 @@ namespace MSBuild.ExtensionPack.Base
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating whether set <see cref="TaskLoggingHelper.HasLoggedErrors"/> if the task has been deprecated;
         /// otherwise, a warning will be logged.
@@ -143,10 +137,6 @@ namespace MSBuild.ExtensionPack.Base
         [Required]
         public virtual string TaskAction { get; set; } = "None";
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <inheritdoc/>
         public override bool Execute()
         {
@@ -164,7 +154,5 @@ namespace MSBuild.ExtensionPack.Base
         {
             return string.IsNullOrWhiteSpace(taskAction) || taskAction.Equals("None", StringComparison.OrdinalIgnoreCase);
         }
-
-        #endregion Public Methods
     }
 }

@@ -7,8 +7,6 @@
     [SupportedOSPlatform("windows")]
     internal partial class NativeMethod
     {
-        #region Internal Methods
-
         [LibraryImport("msi.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial UInt32 MsiAdvertiseProductExW([MarshalAs(UnmanagedType.LPWStr)] string packagePath, [MarshalAs(UnmanagedType.LPWStr)] string scriptFilePath, [MarshalAs(UnmanagedType.LPWStr)] string transforms, LangId language, UInt32 platform, UInt32 options);
 
@@ -71,7 +69,5 @@
 
         [LibraryImport("msi.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial UInt32 MsiDatabaseOpenView(IntPtr handleDatabase, [MarshalAs(UnmanagedType.LPWStr)] string sql, out IntPtr handleView);
-
-        #endregion Internal Methods
     }
 }

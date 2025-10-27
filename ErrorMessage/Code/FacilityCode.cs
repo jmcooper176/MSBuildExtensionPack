@@ -15,13 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Base.Enumeration
+namespace MSBuild.ExtensionPack.ErrorMessage.Code
 {
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
-    using MSBuild.ExtensionPack.Base.Extension;
-    using MSBuild.ExtensionPack.Base.SystemAttribute;
+    using MSBuild.ExtensionPack.ErrorMessage.AttributeAccess;
+    using MSBuild.ExtensionPack.ErrorMessage.Utility;
 
     /// <summary>
     /// Enumeration of the facility codes for HRESULT values.
@@ -31,268 +31,370 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// The default facility code.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_NULL = 0,
 
         /// <summary>
         /// The source of the error code is an RPC subsystem.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_RPC = 1,
 
         /// <summary>
         /// The source of the error code is the COM subsystem.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_DISPATCH = 2,
 
         /// <summary>
         /// The source of the error code is OLE storage.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_STORAGE = 3,
 
         /// <summary>
         /// The source of the error code is COM/OLE interface management.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_ITF = 4,
 
         /// <summary>
         /// This region is reserved to map undecorated error codes into HRESULTs.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WIN32 = 7,
 
         /// <summary>
         /// The source of the error code is the Windows subsystem.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WINDOWS = 8,
 
         /// <summary>
         /// The source of the error code is the Security API layer.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SECURITY = 9,
 
         /// <summary>
         /// The source of the error code is the Security API layer.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SSPI = FACILITY_SECURITY,
 
         /// <summary>
         /// The source of the error code is the control mechanism.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_CONTROL = 10,
 
         /// <summary>
         /// The source of the error code is a certificate client or server.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_CERT = 11,
 
         /// <summary>
         /// The source of the error code is <c>Wininet</c> related.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_INTERNET = 12,
 
         /// <summary>
         /// The source of the error code is the Windows Media Server.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_MEDIASERVER = 13,
 
         /// <summary>
         /// The source of the error code is the Microsoft Message Queue (MSMQ).
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_MSMQ = 14,
 
         /// <summary>
         /// The source of the error code is the Setup API.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SETUPAPI = 15,
 
         /// <summary>
         /// The source of the error code is the Smart-card subsystem.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SCARD = 16,
 
         /// <summary>
         /// The source of the error code is the COM+.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_COMPLUS = 17,
 
         /// <summary>
         /// The source of the error code is the Microsoft agent.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_AAF = 18,
 
         /// <summary>
         /// The source of the error code is the .NET Common Language Runtime (CLR) and related systems.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_URT = 19,
 
         /// <summary>
         /// The source of the error code is the audit collection service.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_ACS = 20,
 
         /// <summary>
         /// The source of the error code is Direct Play.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_DPLAY = 21,
 
         /// <summary>
         /// The source of the error code is the ubiquitous memory introspection (UMI) service.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_UMI = 22,
 
         /// <summary>
         /// The source of the error code is side-by-side (SxS) servicing.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SXS = 23,
 
         /// <summary>
         /// The source of the error code is specific to Windows CE.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WINDOWS_CE = 24,
 
         /// <summary>
         /// The source of the error code is HTTP support.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_HTTP = 25,
 
         /// <summary>
         /// The source of the error code is common logging support.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_USERMODE_COMMONLOG = 26,
 
         /// <summary>
         /// The source of the error code is user mode filter manager.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_USERMODE_FILTER_MANAGER = 31,
 
         /// <summary>
         /// The source of the error code is the background copy service (also known as BITS).
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_BACKGROUNDCOPY = 32,
 
         /// <summary>
         /// The source of the error code is configuration services.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_CONFIGURATION = 33,
 
         /// <summary>
         /// The source of the error code is state management services.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_STATE_MANAGEMENT = 34,
 
         /// <summary>
         /// The source of the error code is the Microsoft Identity Integration Server (MIIS) also known as Metadirectory Services.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_METADIRECTORY = 35,
 
         /// <summary>
         /// The source of the error code is a Windows Update.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WINDOWSUPDATE = 36,
 
         /// <summary>
         /// The source of the error code is Active Directory or Entra.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_DIRECTORYSERVICE = 37,
 
         /// <summary>
         /// The source of the error code is graphics drivers.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_GRAPHICS = 38,
 
         /// <summary>
         /// The source of the error code is the user Shell.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SHELL = 39,
 
         /// <summary>
         /// The source of the error code is the Trusted Platform Module services.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_TPM_SERVICES = 40,
 
         /// <summary>
         /// The source of the error code is the Trusted Platform Module applications.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_TPM_SOFTWARE = 41,
 
         /// <summary>
         /// The source of the error code is Performance Logs and Alerts.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_PLA = 48,
 
         /// <summary>
         /// The source of the error code is Full volume encryption.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_FVE = 49,
 
         /// <summary>
         /// The source of the error code is the Firewall Platform.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_FWP = 50,
 
         /// <summary>
         /// The source of the error code is Windows Resource Manager.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WINRM = 51,
 
         /// <summary>
         /// The source of the error code is the Network Driver Interface Specification (NDIS).
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_NDIS = 52,
 
         /// <summary>
         /// The source of the error code is the user mode Hypervisor components.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_USERMODE_HYPERVISOR = 53,
 
         /// <summary>
         /// The source of the error code is the Configuration Management Infrastructure (CMI) provider.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_CMI = 54,
 
         /// <summary>
         /// The source of the error code is the user mode virtualization system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_USERMODE_VIRTUALIZATION = 55,
 
         /// <summary>
         /// The source of the error code is the user mode volume manager.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_USERMODE_VOLMGR = 56,
 
         /// <summary>
         /// The source of the error code is the Boot Configuration Database (BCD).
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_BCD = 57,
 
         /// <summary>
         /// The source of the error code is the user mode virtual hard disk (VHD) support.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_USERMODE_VHD = 58,
 
         /// <summary>
         /// The source of the error code is System Diagnostics.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_SDIAG = 60,
 
         /// <summary>
         /// The source of the error code is Web Services.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WEBSERVICES = 61,
 
         /// <summary>
         /// The source of the error code is a Windows Defender component.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_WINDOWS_DEFENDER = 80,
 
         /// <summary>
         /// The source of the error code is the open connectivity (OPC) service.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         FACILITY_OPC = 81,
     }
 
     public static class WindowsFacilityCodeExtension
     {
-        #region Public Methods
-
         public static bool Equals(int left, FacilityCode right) => left == right.ToInt32();
 
         public static bool Equals(FacilityCode left, int right) => Equals(right, left);
@@ -566,14 +668,10 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         {
             return facilityCode.ToHResult(code);
         }
-
-        #endregion Public Methods
     }
 
     public class FacilityCodeMask
     {
-        #region Public Fields
-
         /// <summary>
         /// Mask to remove the facility code and facility Windows NT Bit from an HRESULT value.
         /// </summary>
@@ -582,8 +680,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// Mask to isolate the Windows NT Bit from an HRESULT value.
         /// </summary>
-        public const int FACILITY_NT_BIT = 0x10_00_00_00;
-
-        #endregion Public Fields
+        public const int FACILITY_NT_BIT = 0x1000_0000;
     }
 }

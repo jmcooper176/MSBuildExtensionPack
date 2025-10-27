@@ -27,16 +27,10 @@ namespace MSBuild.ExtensionPack.Base.Threading
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public readonly struct ConfiguredTaskYieldAwaitable(bool continueOnCapturedContext)
     {
-        #region Private Fields
-
         /// <summary>
         /// A value indicating whether the continuation should run on the captured <see cref="SynchronizationContext"/>, if any.
         /// </summary>
         private readonly bool continueOnCapturedContext = continueOnCapturedContext;
-
-        #endregion Private Fields
-
-        #region Public Methods
 
         /// <summary>
         /// Gets the <see cref="ConfiguredTaskYieldAwaiter"/>.
@@ -44,7 +38,5 @@ namespace MSBuild.ExtensionPack.Base.Threading
         /// <returns>The <see cref="ConfiguredTaskYieldAwaiter"/>.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public ConfiguredTaskYieldAwaiter GetAwaiter() => new(continueOnCapturedContext);
-
-        #endregion Public Methods
     }
 }

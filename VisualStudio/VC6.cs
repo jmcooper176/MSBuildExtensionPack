@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace VisualStudio
 {
     using System;
     using System.Diagnostics;
@@ -23,10 +23,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
     using System.IO;
     using System.Linq;
     using System.Text;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -67,8 +63,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// <seealso cref="BaseTask"/>
     public class VC6 : BaseTask
     {
-        #region Private Fields
-
         private const string BuildTaskAction = "Build";
         private const string CleanTaskAction = "Clean";
         private const string ConfigurationMetadataName = "Configuration";
@@ -77,10 +71,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
         private const string ProjectsMetadataName = "Projects";
         private const string RebuildTaskAction = "Rebuild";
         private const char Separator = ';';
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Build()
         {
@@ -206,10 +196,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             return allBuildsSucceeded;
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -251,10 +237,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the MSDEV path. Default is [Program Files]\Microsoft Visual Studio\Common\MSDev98\Bin\MSDEV.EXE
         /// </summary>
@@ -275,7 +257,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// Set to true to stop processing when a project in the Projects collection fails to compile. Default is false.
         /// </summary>
         public bool StopOnError { get; set; }
-
-        #endregion Public Properties
     }
 }

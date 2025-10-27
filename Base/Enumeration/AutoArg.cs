@@ -17,6 +17,9 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// AutoArg enumeration
     /// </summary>
@@ -25,31 +28,43 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// AcceptMerge
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         AcceptMerge,
 
         /// <summary>
         /// AcceptTheirs
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         AcceptTheirs,
 
         /// <summary>
         /// AcceptYours
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         AcceptYours,
 
         /// <summary>
         /// OverwriteLocal
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         OverwriteLocal,
 
         /// <summary>
         /// DeleteConflict
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         DeleteConflict,
 
         /// <summary>
         /// AcceptYoursRenameTheirs
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         AcceptYoursRenameTheirs
     }
 }

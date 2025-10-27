@@ -15,18 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Web
+namespace Web
 {
     using System;
     using System.Globalization;
     using System.IO;
     using System.Net;
     using System.Text;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     using Thread = System.Threading.Thread;
 
@@ -72,14 +67,8 @@ namespace MSBuild.ExtensionPack.Web
     /// <seealso cref="BaseTask"/>
     public class HttpWebRequest : BaseTask
     {
-        #region Private Fields
-
         private const string GetResponseTaskAction = "GetResponse";
         private const string PostTaskAction = "Post";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private System.Net.HttpWebRequest CreatePostRequest()
         {
@@ -207,10 +196,6 @@ namespace MSBuild.ExtensionPack.Web
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// When overridden in a derived class, executes the task.
         /// </summary>
@@ -232,10 +217,6 @@ namespace MSBuild.ExtensionPack.Web
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// The content <see cref="Type"/> of the request. By default, it is "application/x-www-form-urlencoded" (used for classic
@@ -288,7 +269,5 @@ namespace MSBuild.ExtensionPack.Web
         /// The number of milliseconds between retry attempts. Default is 0.
         /// </summary>
         public bool UseIntegratedAuthentication { get; set; }
-
-        #endregion Public Properties
     }
 }

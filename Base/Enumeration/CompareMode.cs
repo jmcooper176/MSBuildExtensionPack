@@ -17,6 +17,10 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Enumeration of the <see cref="System.Reflection.Assembly"/> comparison modes.
     /// </summary>
@@ -25,16 +29,22 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// None. No comparison mode.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         None,
 
         /// <summary>
         /// Comparison via <see cref="System.Reflection.Assembly"/> strong name.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         StrongName,
 
         /// <summary>
         /// Comparison via <see cref="System.Reflection.Assembly"/> similar to <see cref="StrongName"/> but excluding the <see cref="System.Reflection.AssemblyName.Version"/>.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         StrongNameIgnoringVersion
     }
 }

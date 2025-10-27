@@ -30,8 +30,6 @@ namespace MSBuild.ExtensionPack.Base.Threading
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public readonly struct TaskSchedulerAwaiter(TaskScheduler scheduler, bool alwaysYield = false) : ICriticalNotifyCompletion
     {
-        #region Private Fields
-
         /// <summary>
         /// A value indicating whether <see cref="IsCompleted"/> should always return false.
         /// </summary>
@@ -41,10 +39,6 @@ namespace MSBuild.ExtensionPack.Base.Threading
         /// The scheduler for continuations.
         /// </summary>
         private readonly TaskScheduler scheduler = scheduler;
-
-        #endregion Private Fields
-
-        #region Public Properties
 
         /// <summary>
         /// Gets a value indicating whether no yield is necessary.
@@ -68,10 +62,6 @@ namespace MSBuild.ExtensionPack.Base.Threading
                     || scheduler == TaskScheduler.Current && TaskScheduler.Current != TaskScheduler.Default;
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Does nothing.
@@ -113,7 +103,5 @@ namespace MSBuild.ExtensionPack.Base.Threading
                 _ = Task.Factory.StartNew(continuation, CancellationToken.None, TaskCreationOptions.None, scheduler);
             }
         }
-
-        #endregion Public Methods
     }
 }

@@ -21,13 +21,7 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-    using System.Management.Automation;
     using System.Text.RegularExpressions;
-
-    using Microsoft.VisualStudio.PlatformUI;
-
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
 
     /// <summary>
     /// Implements versioning methods using the Perl versioning scheme.
@@ -35,18 +29,12 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     /// <seealso cref="IVersionMethod"/>
     public partial class Perl : IVersionMethod, IComparable<Perl>, IEquatable<Perl>, IEqualityComparer<Perl>
     {
-        #region Private Methods
-
         /// <summary>
         /// Defines the <see cref="Perl"/> version regular expression.
         /// </summary>
         /// <returns>A <see cref="Regex"/> representing the <see cref="Perl"/> regular expression.</returns>
         [GeneratedRegex(@"^((?:<major>0|[1-9]\d{0,4})\.(?:<fractional>0|[1-9]\d*))$", RegexOptions.Compiled)]
         private static partial Regex VersionNumberRegex();
-
-        #endregion Private Methods
-
-        #region Protected Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Perl"/> class.
@@ -71,10 +59,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.ZeroDay = new(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        #endregion Protected Constructors
-
-        #region Public Fields
-
         /// <summary>
         /// The maximum major version number for <see cref="Perl"/>.
         /// </summary>
@@ -89,10 +73,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// The maximum revision version number for <see cref="Perl"/>.
         /// </summary>
         public const int MAX_REVISION = 999;
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Perl"/> class.
@@ -182,10 +162,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         {
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <inheritdoc/>
         public string Caption { get; set; }
 
@@ -236,10 +212,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         /// <inheritdoc/>
         public DateTime ZeroDay { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Gets the fractional part of a double.
@@ -384,7 +356,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         /// <inheritdoc/>
         public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
-
-        #endregion Public Methods
     }
 }

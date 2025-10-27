@@ -18,19 +18,13 @@
 
 // Ignore Spelling: Ruleset Xsl Gac Fx
 
-namespace MSBuild.ExtensionPack.CodeQuality
+namespace CodeQuality
 {
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
-    using MSBuild.ExtensionPack.Base.Wmi;
 
     /// <summary>
     /// The FxCop task provides a basic wrapper over FxCopCmd.exe. See http://msdn.microsoft.com/en-gb/library/bb429449(VS.80).aspx
@@ -88,13 +82,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
     /// <seealso cref="BaseTask"/>
     public class FxCop : BaseTask
     {
-        #region Private Fields
-
         private CompareMode assemblyCompareMode = CompareMode.StrongName;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Analyze()
         {
@@ -292,10 +280,6 @@ namespace MSBuild.ExtensionPack.CodeQuality
             this.AnalysisFailed = System.IO.File.Exists(this.OutputFile);
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             Initialize state = new(this.Log);
@@ -342,19 +326,11 @@ namespace MSBuild.ExtensionPack.CodeQuality
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Constructors
-
         public FxCop()
         {
             this.LogToConsole = true;
             this.ShowSummary = true;
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         /// <summary>
         /// Gets AnalysisFailed. True if FxCop logged Code Analysis errors to the Output file.
@@ -530,7 +506,5 @@ namespace MSBuild.ExtensionPack.CodeQuality
         /// Set to true to output verbose information during analysis (/verbose option)
         /// </summary>
         public bool Verbose { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Path
+namespace FileSystem.Path
 {
     using System;
     using System.Collections.Generic;
@@ -24,12 +24,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-
-    using Microsoft.Build.Evaluation;
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -122,8 +116,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
     /// <seealso cref="BaseTask" />
     public class Detokenise : BaseTask
     {
-        #region Private Fields
-
         private const string AnalyseTaskAction = "Analyse";
         private const string DetokeniseTaskAction = "Detokenise";
         private const string ReportTaskAction = "Report";
@@ -146,10 +138,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
         private bool tokenMatched;
 
         private SortedDictionary<string, string> unusedTokens;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static Encoding GetTextEncoding(string enc)
         {
@@ -498,10 +486,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
             this.tokenDictionary.Add(extractedProperty, this.activeFile + ";");
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -598,10 +582,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
                 }
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the replacement values provided via the command line. The format is token1=value1#~#token2=value2 etc.
@@ -701,7 +681,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
         /// </summary>
         [Output]
         public IEnumerable<ITaskItem> UnusedTokens { get; set; }
-
-        #endregion Public Properties
     }
 }

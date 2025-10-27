@@ -11,8 +11,6 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
     /// <seealso cref="System.IDisposable"/>
     public interface IMsiCom : ICloneable, IDisposable
     {
-        #region Public Properties
-
         /// <summary> Gets a value indicating the <c>COM</c> object c>Class Identifier</c>. </summary> <value> The <see
         /// cref="Guid"/> representing the COM object <c>Class Identifier</c>. </value>
         Guid ClsId { get; }
@@ -127,7 +125,5 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
         /// </summary>
         /// <returns></returns>
         object? ToInstance();
-
-        #endregion Public Properties
     }
 }

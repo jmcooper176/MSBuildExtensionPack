@@ -23,13 +23,8 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Globalization;
     using System.Text.RegularExpressions;
 
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
-
     public partial class Apple : IVersionMethod, IComparable<Apple>, IEquatable<Apple>, IEqualityComparer<Apple>
     {
-        #region Private Methods
-
         /// <summary>
         /// Defines the <see cref="Apple"/> build number regular expression.
         /// </summary>
@@ -43,10 +38,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// <returns>A <see cref="Regex"/> representing the <see cref="Semantic"/> version number part regular expression.</returns>
         [GeneratedRegex(@"^(?:<major>0|[1-9]\d*)\.(?:<minor>0|[1-9]\d*)\.(?:<patch>0|[1-9]\d*)(\s+(?:<buildnumber>0|[1-9]\d*[A-Z]{1}0|[1-9]\d*))?$", RegexOptions.Compiled)]
         private static partial Regex VersionNumberRegex();
-
-        #endregion Private Methods
-
-        #region Protected Constructors
 
         protected Apple()
         {
@@ -69,10 +60,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.ZeroDay = new(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        #endregion Protected Constructors
-
-        #region Public Fields
-
         /// <summary>
         /// The maximum major version number supported by <see cref="Apple"/>.
         /// </summary>
@@ -87,10 +74,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// The maximum patch version number supported by <see cref="Apple"/>.
         /// </summary>
         public const int MAX_PATCH = 65534;
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         public Apple(int major)
             : this()
@@ -176,10 +159,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             this.BuildNumber = IncrementBuildNumber(this.BuildNumber, AppleBuildNumberPart.All);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public string BuildNumber { get; set; }
 
         public string Caption { get; set; }
@@ -213,10 +192,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public Version Version { get; }
 
         public DateTime ZeroDay { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public static string CreateBuildNumber(int buildMajor, string releaseChar, int revision)
         {
@@ -382,7 +357,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
 
         public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
-
-        #endregion Public Methods
     }
 }

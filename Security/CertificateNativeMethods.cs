@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Security
+namespace Security
 {
     using System;
     using System.Runtime.CompilerServices;
@@ -27,8 +27,6 @@ namespace MSBuild.ExtensionPack.Security
     [CompilerGeneratedAttribute]
     internal static class NativeMethods
     {
-        #region Internal Methods
-
         [DllImport("crypt32", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern bool CryptAcquireCertificatePrivateKey(IntPtr pCert, uint dwFlags, IntPtr pvReserved, ref IntPtr phCryptProv, ref int pdwKeySpec, ref bool pfCallerFreeProv);
 
@@ -37,7 +35,5 @@ namespace MSBuild.ExtensionPack.Security
 
         [DllImport("advapi32", SetLastError = true)]
         internal static extern bool CryptReleaseContext(IntPtr hProv, uint dwFlags);
-
-        #endregion Internal Methods
     }
 }

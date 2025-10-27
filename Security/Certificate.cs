@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Security
+namespace Security
 {
     using System;
     using System.Globalization;
@@ -26,12 +26,6 @@ namespace MSBuild.ExtensionPack.Security
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Security.Principal;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Framework;
 
     internal enum CryptGetProvParamType
     {
@@ -258,8 +252,6 @@ namespace MSBuild.ExtensionPack.Security
     /// <seealso cref="BaseTask" />
     public class Certificate : BaseTask
     {
-        #region Private Fields
-
         private const string AccessRightsFullControl = "FullControl";
         private const string AccessRightsRead = "Read";
         private const string AccessRightsReadAndExecute = "ReadAndExecute";
@@ -271,10 +263,6 @@ namespace MSBuild.ExtensionPack.Security
         private const string RemoveTaskAction = "Remove";
         private const string SetUserRightsTaskAction = "SetUserRights";
         private StoreName storeName = System.Security.Cryptography.X509Certificates.StoreName.My;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// The method search for the given Key Name in the Application Data folders and return the folder location where the key
@@ -727,10 +715,6 @@ namespace MSBuild.ExtensionPack.Security
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -772,10 +756,6 @@ namespace MSBuild.ExtensionPack.Security
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// The access rights that need to be given.
@@ -865,7 +845,5 @@ namespace MSBuild.ExtensionPack.Security
         /// </summary>
         [Output]
         public string Thumbprint { get; set; }
-
-        #endregion Public Properties
     }
 }

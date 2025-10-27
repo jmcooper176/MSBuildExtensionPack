@@ -26,21 +26,11 @@ namespace MSBuild.ExtensionPack.Base.Cause
     [Serializable]
     public class FtpException : Exception
     {
-        #region Private Fields
-
         private readonly int ftpError;
-
-        #endregion Private Fields
-
-        #region Protected Constructors
 
         protected FtpException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
-
-        #endregion Protected Constructors
-
-        #region Public Constructors
 
         public FtpException()
         {
@@ -60,15 +50,7 @@ namespace MSBuild.ExtensionPack.Base.Cause
         {
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public int ErrorCode { get; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// No specific impelementation is needed of the GetObjectData to serialize this object because all attributes are redefined.
@@ -79,7 +61,5 @@ namespace MSBuild.ExtensionPack.Base.Cause
         {
             base.GetObjectData(info, context);
         }
-
-        #endregion Public Methods
     }
 }

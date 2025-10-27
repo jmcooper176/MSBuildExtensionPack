@@ -25,8 +25,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
     /// </summary>
     public interface IBaseTask
     {
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating whether both <see cref="ObsoleteAttribute"/> has deprecated the task and <see
         /// cref="ObsoleteAttribute.IsError"/> is set to <see langref="true"/>; otherwise, if <see cref="ObsoleteAttribute"/>
@@ -54,10 +52,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
         /// Gets or sets a value indicating the task action string.
         /// </summary>
         string TaskAction { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Executes a task for sub-task <see cref="TaskAction"/>.
@@ -99,7 +93,5 @@ namespace MSBuild.ExtensionPack.Base.Interface
         /// </returns>
         /// <remarks>Must be implemented in any derived <see cref="BaseTask"/> or <see cref="BaseToolTask"/>.</remarks>
         bool ValidateTaskAction([AllowNull] string taskAction);
-
-        #endregion Public Methods
     }
 }

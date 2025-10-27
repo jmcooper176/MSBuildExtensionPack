@@ -33,8 +33,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// <param name="useNewLineSeparator">      </param>
     public class CommandLineListBuilder(bool quoteHyphensOnCommandLine, bool useNewLineSeparator)
     {
-        #region Private Fields
-
         /// <summary>
         /// Constant used to build a <see cref="Regex"/> for detecting strings containing characters that do not require quoting
         /// when escaping of hyphens is supposed to take place.
@@ -65,10 +63,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// </summary>
         private const string DEFINITELY_NEED_QUOTES_QUOTE_HYPHEN_REGEX = @"[|><\s,;\-""]+";
 
-        #endregion Private Fields
-
-        #region Private Properties
-
         /// <summary>
         /// Gets a <see cref="Regex"/> value indicating a parameter or file name that can safely be unquoted.
         /// </summary>
@@ -79,18 +73,10 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// </summary>
         private Regex DefinitelyNeedQuotes => new(this.QuoteHyphens ? DEFINITELY_NEED_QUOTES_NO_QUOTE_HYPHEN_REGEX : DEFINITELY_NEED_QUOTES_QUOTE_HYPHEN_REGEX, RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        #endregion Private Properties
-
-        #region Protected Properties
-
         /// <summary>
         /// Gets a value indicating the command line <see cref="IList{T}"/>.
         /// </summary>
         protected IList<string> CommandList { get; } = [];
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         /// <summary>
         /// Appends <paramref name="textToAppend"/> to <paramref name="buffer"/> if <paramref name="textToAppend"/> is not <see
@@ -339,10 +325,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
             }
         }
 
-        #endregion Protected Methods
-
-        #region Internal Properties
-
         /// <summary>
         /// Gets a value indicating the line buffer to use for assembling individual <see cref="CommandList"/> string elements.
         /// </summary>
@@ -358,10 +340,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <see cref="CommandList"/> elements.
         /// </summary>
         internal bool UseNewLine { get; } = useNewLineSeparator;
-
-        #endregion Internal Properties
-
-        #region Internal Methods
 
         /// <summary>
         /// </summary>
@@ -710,18 +688,10 @@ namespace MSBuild.ExtensionPack.Base.Extension
             path.UnixFileMode = fileMode;
         }
 
-        #endregion Internal Methods
-
-        #region Public Fields
-
         /// <summary>
         /// Constant field representing the space character.
         /// </summary>
         public const char SPACE = ' ';
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandLineListBuilder"/> class.
@@ -771,18 +741,10 @@ namespace MSBuild.ExtensionPack.Base.Extension
             CommandList = [.. CommandLineParser.SplitCommandLine(commandLine)];
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating the length of <see cref="CommandList"/> in elements.
         /// </summary>
         public int Length => CommandList.Count;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// </summary>
@@ -1125,7 +1087,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 buffer.Clear();
             }
         }
-
-        #endregion Public Methods
     }
 }

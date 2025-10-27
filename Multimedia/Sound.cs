@@ -15,14 +15,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Multimedia
+namespace Multimedia
 {
     using System.Globalization;
     using System.IO;
-    using System.Media;
     using System.Threading;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -58,8 +55,6 @@ namespace MSBuild.ExtensionPack.Multimedia
     /// </example>
     public class Sound : BaseTask
     {
-        #region Private Methods
-
         private void Play()
         {
             if (!string.IsNullOrEmpty(this.SoundFile) && !File.Exists(this.SoundFile))
@@ -122,10 +117,6 @@ namespace MSBuild.ExtensionPack.Multimedia
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -148,10 +139,6 @@ namespace MSBuild.ExtensionPack.Multimedia
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the interval between beebs. Default is 10ms. Value must be between 10 and 5000
         /// </summary>
@@ -171,7 +158,5 @@ namespace MSBuild.ExtensionPack.Multimedia
         /// Sets the SystemSound to play. Supports: Asterisk, Beep, Exclamation, Hand, Question. Does not support Repeat or Interval.
         /// </summary>
         public string SystemSound { get; set; }
-
-        #endregion Public Properties
     }
 }

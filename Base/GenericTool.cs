@@ -62,14 +62,8 @@ namespace MSBuild.ExtensionPack.Base
     /// <seealso cref="BaseToolTask"/>
     public class GenericTool : BaseToolTask
     {
-        #region Protected Properties
-
         /// <inheritdoc/>
         protected override string ToolName => this.Executable.ItemSpec;
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         /// <inheritdoc/>
         protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
@@ -133,10 +127,6 @@ namespace MSBuild.ExtensionPack.Base
             this.LogPrivate.LogTaskMessage(() => !SuppressTaskMessages && this.LogToConsole, MessageImportance.Normal, singleLine);
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// The list of Error Exit Codes
         /// </summary>
@@ -176,7 +166,5 @@ namespace MSBuild.ExtensionPack.Base
         /// </summary>
         [Required]
         public IEnumerable<ITaskItem> WarningExitCodes { get; set; }
-
-        #endregion Public Properties
     }
 }

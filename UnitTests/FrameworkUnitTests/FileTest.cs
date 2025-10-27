@@ -30,14 +30,8 @@ namespace MSBuild.ExtensionPack.Framework.Tests
     [TestClass]
     public class FileTest
     {
-        #region Private Fields
-
         private bool result;
         private File task;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private object? methodResult;
 
@@ -213,18 +207,10 @@ namespace MSBuild.ExtensionPack.Framework.Tests
             this.WhenMethodCalled(() => this.task.Execute(), nameof(this.task.Execute));
         }
 
-        #endregion Private Methods
-
-        #region Public Properties
-
         public string CurrentUser
         {
             get { return WindowsIdentity.GetCurrent().Name; }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         [TestMethod]
         public void AddingSecurity_GivenNoPathNoFilesPermissions_TaskFailed()
@@ -389,7 +375,5 @@ namespace MSBuild.ExtensionPack.Framework.Tests
 
             // this.task.Log = new TaskLoggingHelper(new MockBuildEngine(), "Full");
         }
-
-        #endregion Public Methods
     }
 }

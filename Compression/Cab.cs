@@ -15,21 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Compression
+namespace Compression
 {
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Management;
     using System.Text;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -73,8 +66,6 @@ namespace MSBuild.ExtensionPack.Compression
     /// <seealso cref="BaseToolTask"/>
     public class Cab : BaseToolTask
     {
-        #region Private Methods
-
         /// <summary>
         /// Adds the file.
         /// </summary>
@@ -314,10 +305,6 @@ namespace MSBuild.ExtensionPack.Compression
             return true;
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -348,10 +335,6 @@ namespace MSBuild.ExtensionPack.Compression
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the path to CabArc.Exe
@@ -413,7 +396,5 @@ namespace MSBuild.ExtensionPack.Compression
         /// Sets the prefixes to strip. Delimit with ';'
         /// </summary>
         public string StripPrefixes { get; set; }
-
-        #endregion Public Properties
     }
 }

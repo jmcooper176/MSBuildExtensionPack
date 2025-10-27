@@ -1025,8 +1025,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
     /// </summary>
     public static class ImpliedRangeExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Extension method to determine whether the <see cref="DisplayAttribute.AutoGenerateField"/> is set for the <see
         /// cref="DisplayAttribute"/> on an <see cref="ImpliedRange"/> field.
@@ -1208,7 +1206,5 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         {
             return value.GetDisplayAttribute(inherit)?.ShortName;
         }
-
-        #endregion Public Methods
     }
 }

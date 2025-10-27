@@ -26,8 +26,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
     /// </summary>
     public static class ForEachExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Extension method that, for each element of <typeparamref name="T"/> in <paramref name="array"/>, perform <paramref
         /// name="task"/> asynchronously..
@@ -84,7 +82,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
                 }
             }
         }
-
-        #endregion Public Methods
     }
 }

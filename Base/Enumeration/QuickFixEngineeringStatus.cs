@@ -17,6 +17,9 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Enumeration of the <c>CIM_ManagedSystemElement</c> 'Status' property values."/&gt;
     /// </summary>
@@ -25,62 +28,86 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// Operational status hot fix or service pack 'OK'.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Ok = 0,
 
         /// <summary>
         /// Non-operational status hot fix or service pack 'Error'.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Error,
 
         /// <summary>
         /// Operational status hot fix or service pack 'Degraded'.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Degraded,
 
         /// <summary>
         /// Unknown status of hot fix or service pack.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Unknown,
 
         /// <summary>
         /// Operational status hot fix or service pack 'OK' but 'Predicted Failure' usually of an underlying device.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         PredictFailure,
 
         /// <summary>
         /// Non-operational status hot fix or service pack 'Starting'.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Starting,
 
         /// <summary>
         /// Non-operational status hot fix or service pack 'Stopping'.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Stopping,
 
         /// <summary>
         /// Non-operational status hot fix or service pack 'Service' usually of an underlying device, reloading of a user permission
         /// list, or other administrative work.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Service,
 
         /// <summary>
         /// Stressed status of hot fix or service pack.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Stressed,
 
         /// <summary>
         /// Non-recoverable error status of hot fix or service pack.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         NonRecoverable,
 
         /// <summary>
         /// No contact status of hot fix or service pack.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         NoContact,
 
         /// <summary>
         /// Lost communication status of hot fix or service pack.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         LostCommunication,
     }
 }

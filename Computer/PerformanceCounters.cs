@@ -15,17 +15,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
-    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -86,17 +80,11 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask" />
     public class PerformanceCounters : BaseTask
     {
-        #region Private Fields
-
         private const string AddTaskAction = "Add";
         private const string CheckCategoryExistsTaskAction = "CheckCategoryExists";
         private const string CheckCounterExistsTaskAction = "CheckCounterExists";
         private const string GetValueTaskAction = "GetValue";
         private const string RemoveTaskAction = "Remove";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static bool IsCounterAlreadyIncluded(ref CounterCreationDataCollection colCounterCreationData, string counterName)
         {
@@ -216,10 +204,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -253,10 +237,6 @@ namespace MSBuild.ExtensionPack.Computer
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the description of the custom category.
@@ -300,7 +280,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// </summary>
         [Output]
         public string Value { get; set; }
-
-        #endregion Public Properties
     }
 }

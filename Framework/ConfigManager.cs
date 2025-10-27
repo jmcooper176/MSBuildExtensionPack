@@ -82,8 +82,6 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public sealed class ConfigManager : BaseTask
     {
-        #region Private Fields
-
         private const string ProtectConfigSectionAction = "ProtectConfigSection";
         private const string RemoveAppSettingTaskAction = "RemoveAppSetting";
         private const string RemoveConnectionStringTaskAction = "RemoveConnectionString";
@@ -94,19 +92,11 @@ namespace MSBuild.ExtensionPack
         private DotNetConfigurationFile configurationFileType = DotNetConfigurationFile.MachineConfig;
         private ConfigurationSaveMode saveMode = ConfigurationSaveMode.Minimal;
 
-        #endregion Private Fields
-
-        #region Private Properties
-
         private KeyValueConfigurationCollection AppSettings => this.Config.AppSettings.Settings;
 
         private Configuration Config { get; set; }
 
         private ConnectionStringSettingsCollection ConnectionStrings => this.Config.ConnectionStrings.ConnectionStrings;
-
-        #endregion Private Properties
-
-        #region Private Methods
 
         private void RemoveAppSetting(bool save)
         {
@@ -160,10 +150,6 @@ namespace MSBuild.ExtensionPack
             this.ConnectionStrings.Add(new ConnectionStringSettings(this.SettingName, this.SettingValue));
             this.Save();
         }
-
-        #endregion Private Methods
-
-        #region Protected Methods
 
         protected override void InternalExecute()
         {
@@ -220,10 +206,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Which .NET framework configuration file to update. Supports WebConfig and MachineConfig. Default is MachineConfig
         /// </summary>
@@ -273,7 +255,5 @@ namespace MSBuild.ExtensionPack
         /// Sets the Site to work on. Leave blank to target the .net framework web.config
         /// </summary>
         public string Site { get; set; }
-
-        #endregion Public Properties
     }
 }

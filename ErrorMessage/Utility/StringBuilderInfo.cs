@@ -20,9 +20,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
-using MSBuild.ExtensionPack.Base.Extension;
-
-namespace MSBuild.ExtensionPack.Base.Enumeration
+namespace MSBuild.ExtensionPack.ErrorMessage.Utility
 {
     /// <summary>
     /// Implements iteration for <see cref="StringBuilder"/> similar to <see cref="StringInfo"/>.
@@ -36,16 +34,10 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
     /// <seealso cref="IDisposable"/>
     public class StringBuilderInfo : IEnumerable<char>, IEnumerator<char>, IEnumerator, ICloneable, IEquatable<StringBuilder>, IEqualityComparer<StringBuilder>, IDisposable
     {
-        #region Private Fields
-
         /// <summary>
         /// If <see langref="true"/>, this instance has been disposed; otherwise, <see langref="false"/>.
         /// </summary>
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Protected Methods
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -75,10 +67,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
             Index = -1;
         }
 
-        #endregion Protected Methods
-
-        #region Internal Properties
-
         /// <summary>
         /// Gets the builder.
         /// </summary>
@@ -96,10 +84,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// </summary>
         /// <value>The range.</value>
         internal Range Range { get; }
-
-        #endregion Internal Properties
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringBuilderInfo"/> class.
@@ -131,10 +115,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         {
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
@@ -144,10 +124,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
         object IEnumerator.Current => Current;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
@@ -292,7 +268,5 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         {
             Reset();
         }
-
-        #endregion Public Methods
     }
 }

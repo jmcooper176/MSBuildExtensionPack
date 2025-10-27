@@ -6,8 +6,6 @@
 
     public class ViewObject : IMsiCom
     {
-        #region Protected Constructors
-
         protected ViewObject(string? name, OpenDatabaseMode mode)
             : this(new DatabaseObject(name, mode))
         {
@@ -24,17 +22,9 @@
             Installer = new InstallerObject();
         }
 
-        #endregion Protected Constructors
-
-        #region Protected Properties
-
         protected DatabaseObject? Database { get; private set; }
 
         protected InstallerObject? Installer { get; private set; }
-
-        #endregion Protected Properties
-
-        #region Public Constructors
 
         public ViewObject(DatabaseObject database, string sql)
             : this(database)
@@ -43,15 +33,7 @@
             ComType = Instance?.GetType();
         }
 
-        #endregion Public Constructors
-
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Private Destructors
 
         // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         ~ViewObject()
@@ -59,10 +41,6 @@
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -83,10 +61,6 @@
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Indexers
-
         public RecordObject? this[ColumnInfoResult infoResult]
         {
             get
@@ -95,19 +69,11 @@
             }
         }
 
-        #endregion Public Indexers
-
-        #region Public Properties
-
         public Type? ComType { get; private set; }
         public Guid IID => new("000C109C-0000-0000-C000-000000000046");
         public object? Instance { get; private set; }
         public RecordObject? LastError { get; private set; }
         public string ProgId => string.Empty;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public void Close()
         {
@@ -189,7 +155,5 @@
                 }
             }
         }
-
-        #endregion Public Methods
     }
 }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.NuGet
+namespace NuGet
 {
     using System;
     using System.Collections.Generic;
@@ -26,10 +26,6 @@ namespace MSBuild.ExtensionPack.NuGet
     using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Xml.Linq;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -77,13 +73,7 @@ namespace MSBuild.ExtensionPack.NuGet
     /// <seealso cref="BaseTask"/>
     public class Packager : BaseTask
     {
-        #region Private Fields
-
         private const string PackTaskAction = "pack";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Generates the dependency Xml element for NuGet specification
@@ -295,10 +285,6 @@ namespace MSBuild.ExtensionPack.NuGet
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -316,10 +302,6 @@ namespace MSBuild.ExtensionPack.NuGet
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the Packager class.
         /// </summary>
@@ -327,10 +309,6 @@ namespace MSBuild.ExtensionPack.NuGet
         {
             this.RequiresExplicitLicensing = false;
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         /// <summary>
         /// Gets or sets a comma-separated list of authors of the package code.
@@ -522,7 +500,5 @@ namespace MSBuild.ExtensionPack.NuGet
         /// </summary>
         [Required]
         public string Version { get; set; }
-
-        #endregion Public Properties
     }
 }

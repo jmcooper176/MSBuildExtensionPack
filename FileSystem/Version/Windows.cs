@@ -15,19 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Version
+namespace FileSystem.Version
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
-    using MSBuild.ExtensionPack.Base.Enumeration;
-    using MSBuild.ExtensionPack.Base.Interface;
-
     public class Windows : IVersionMethod, IComparable<Windows>, IEquatable<Windows>, IEqualityComparer<Windows>
     {
-        #region Public Properties
-
         /// <inheritdoc/>
         public string Caption { get; set; }
 
@@ -72,10 +67,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// <inheritdoc/>
         public DateTime ZeroDay { get; set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <inheritdoc/>
         public object Clone() => throw new NotImplementedException();
 
@@ -114,7 +105,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         /// <inheritdoc/>
         public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
-
-        #endregion Public Methods
     }
 }

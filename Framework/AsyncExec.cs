@@ -54,8 +54,6 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class AsyncExec : Task
     {
-        #region Private Methods
-
         /// <summary>
         /// Creates a batch program file containing the command.
         /// </summary>
@@ -105,10 +103,6 @@ namespace MSBuild.ExtensionPack
             return !string.IsNullOrEmpty(result);
         }
 
-        #endregion Private Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Gets or sets the command(s) to run. These can be system commands, such as attrib, or an executable, such as program.exe,
         /// runprogram.bat, or setup.msi. This parameter can contain multiple lines of commands (each command on a new-line).
@@ -116,10 +110,6 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         [Required]
         public string Command { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Executes the build operation.
@@ -151,7 +141,5 @@ namespace MSBuild.ExtensionPack
 
             return true;
         }
-
-        #endregion Public Methods
     }
 }

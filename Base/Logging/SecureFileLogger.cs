@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Base.Logging.Logging
+namespace MSBuild.ExtensionPack.Base.Logging
 {
     using System;
     using System.Collections;
@@ -53,8 +53,6 @@ namespace MSBuild.ExtensionPack.Base.Logging.Logging
     /// </summary>
     public class SecureFileLogger : Logger
     {
-        #region Private Fields
-
         private const char SecureChar = '#';
         private static readonly char[] FileLoggerParameterDelimiters = [';'];
         private static readonly char[] FileLoggerParameterValueSplitCharacter = ['='];
@@ -68,10 +66,6 @@ namespace MSBuild.ExtensionPack.Base.Logging.Logging
         private string ruleFileName;
         private DateTime startTime;
         private int warnings;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static bool NotExpectedException(Exception e)
         {
@@ -293,10 +287,6 @@ namespace MSBuild.ExtensionPack.Base.Logging.Logging
             this.fileWriter.WriteLine(line);
         }
 
-        #endregion Private Methods
-
-        #region Public Methods
-
         /// <summary>
         /// Initialize Override
         /// </summary>
@@ -340,7 +330,5 @@ namespace MSBuild.ExtensionPack.Base.Logging.Logging
         {
             this.fileWriter?.Close();
         }
-
-        #endregion Public Methods
     }
 }

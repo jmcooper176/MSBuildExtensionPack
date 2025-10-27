@@ -26,16 +26,10 @@ namespace MSBuild.ExtensionPack.Base.Threading
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public readonly struct ExecuteContinuationSynchronouslyAwaitable<T>
     {
-        #region Private Fields
-
         /// <summary>
         /// The task whose completion will execute the continuation.
         /// </summary>
         private readonly Task<T> antecedent;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecuteContinuationSynchronouslyAwaitable{T}"/> struct.
@@ -47,17 +41,11 @@ namespace MSBuild.ExtensionPack.Base.Threading
             this.antecedent = antecedent;
         }
 
-        #endregion Public Constructors
-
-        #region Public Methods
-
         /// <summary>
         /// Gets the <see cref="ExecuteContinuationSynchronouslyAwaiter{T}"/>.
         /// </summary>
         /// <returns>The <see cref="ExecuteContinuationSynchronouslyAwaiter{T}"/></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public ExecuteContinuationSynchronouslyAwaiter<T> GetAwaiter() => new(antecedent);
-
-        #endregion Public Methods
     }
 }

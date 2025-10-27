@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.ErrorMessage.Message
 {
     using System;
     using System.Collections.Generic;
@@ -25,10 +25,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
     using System.Runtime.CompilerServices;
     using System.Text;
 
-    public static class AssertExtension
-    {
-        #region Public Methods
+    using MSBuild.ExtensionPack.ErrorMessage.Utility;
 
+    using Debug = Message.Debug;
+
+    public static class Assert
+    {
         /// <summary>
         /// Tests whether <paramref name="left"/> is equal to <paramref name="right"/> and calls <see cref="Debug.Fail(string?)"/>
         /// if they are NOT equal.
@@ -54,7 +56,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(!left.Equals(right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!left.Equals(right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(left.Equals(right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(left.Equals(right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -157,7 +159,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [AllowNull] params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(comparer.Equals(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(comparer.Equals(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -182,7 +184,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(comparer.Equals(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(comparer.Equals(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -212,7 +214,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(equals.Invoke(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(equals.Invoke(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -237,7 +239,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(equals.Invoke(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(equals.Invoke(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -266,7 +268,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -290,7 +292,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -318,7 +320,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [AllowNull] params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(!left.Equals(right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!left.Equals(right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -341,7 +343,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(!left.Equals(right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!left.Equals(right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -423,7 +425,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(!comparer.Equals(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!comparer.Equals(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -448,7 +450,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(!comparer.Equals(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!comparer.Equals(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -478,7 +480,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [AllowNull] params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(notEqual.Invoke(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(notEqual.Invoke(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -503,7 +505,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(notEqual.Invoke(left, right), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(notEqual.Invoke(left, right), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -532,7 +534,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [AllowNull] params object?[] arguments)
         {
             string message = string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments);
-            Assert(!string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
         }
 
         /// <summary>
@@ -556,182 +558,12 @@ namespace MSBuild.ExtensionPack.Base.Extension
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            Assert(!string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
+            System.Diagnostics.Debug.Assert(!string.Equals(left, right, comparison ?? StringComparison.Ordinal), message, filePath, lineNumber, memberName);
         }
 
-        /// <summary>
-        /// Tests whether <paramref name="condition"/> is true and calls <see cref="Debug.Fail(string?, string?)"/> if the condition
-        /// is false.
-        /// </summary>
-        /// <param name="condition">            </param>
-        /// <param name="message">              </param>
-        /// <param name="detailedMessageFormat"></param>
-        /// <param name="filePath">             </param>
-        /// <param name="lineNumber">           </param>
-        /// <param name="memberName">           </param>
-        /// <param name="arguments">            </param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] bool condition,
-            string? message = null,
-            string? detailedMessageFormat = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null,
-            [AllowNull] params object?[] arguments)
+        public static ICollection<TElement>? DefaultIfEmpty<TElement>(ICollection<TElement> instance)
         {
-            if (!condition)
-            {
-                string msg = message ?? $"[{DateTime.UtcNow:s}] {filePath}({lineNumber}) : {memberName} : Condition {nameof(condition)} evaluated to false.  Failing.";
-                string detailedMessage = detailedMessageFormat ?? string.Format(CultureInfo.CurrentCulture, detailedMessageFormat!, arguments);
-                Debug.Fail(msg, detailedMessage);
-            }
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="condition"/> is true and calls <see cref="Debug.Fail(string?, string?)"/> if the condition
-        /// is false.
-        /// </summary>
-        /// <param name="predicate">            </param>
-        /// <param name="message">              </param>
-        /// <param name="detailedMessageFormat"></param>
-        /// <param name="filePath">             </param>
-        /// <param name="lineNumber">           </param>
-        /// <param name="memberName">           </param>
-        /// <param name="arguments">            </param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] Func<bool> predicate,
-            string? message = null,
-            string? detailedMessageFormat = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null,
-            [AllowNull] params object?[]? arguments)
-        {
-            Assert(predicate.Invoke(), message, detailedMessageFormat, filePath, lineNumber, memberName, arguments);
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="condition"/> is true and calls <see cref="Debug.Fail(string?)"/> if the condition is false.
-        /// </summary>
-        /// <param name="condition">      </param>
-        /// <param name="message">        </param>
-        /// <param name="detailedMessage"></param>
-        /// <param name="filePath">       </param>
-        /// <param name="lineNumber">     </param>
-        /// <param name="memberName">     </param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] bool condition,
-            string? message = null,
-            string? detailedMessage = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null)
-        {
-            Assert(condition, message, detailedMessage, filePath, lineNumber, memberName, null);
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="predicate"/> evaluates to true and calls <see cref="Debug.Fail(string?, string?)"/> if the
-        /// <paramref name="predicate"/> evaluates to false.
-        /// </summary>
-        /// <param name="predicate">      </param>
-        /// <param name="message">        </param>
-        /// <param name="detailedMessage"></param>
-        /// <param name="filePath">       </param>
-        /// <param name="lineNumber">     </param>
-        /// <param name="memberName">     </param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] Func<bool> predicate,
-            string? message = null,
-            string? detailedMessage = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null)
-        {
-            Assert(predicate, message, detailedMessage, filePath, lineNumber, memberName, null);
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="condition"/> is true and calls <see cref="Debug.Fail(string?)"/> if the condition is false.
-        /// </summary>
-        /// <param name="condition"> </param>
-        /// <param name="message">   </param>
-        /// <param name="filePath">  </param>
-        /// <param name="lineNumber"></param>
-        /// <param name="memberName"></param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] bool condition,
-            string? message = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null)
-        {
-            Assert(condition, message, null, filePath, lineNumber, memberName, null);
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="predicate"/> evaluates to true and calls <see cref="Debug.Fail(string?)"/> if the
-        /// <paramref name="predicate"/> evaluates to false.
-        /// </summary>
-        /// <param name="predicate"> </param>
-        /// <param name="message">   </param>
-        /// <param name="filePath">  </param>
-        /// <param name="lineNumber"></param>
-        /// <param name="memberName"></param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] Func<bool> predicate,
-            string? message = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null)
-        {
-            Assert(predicate, message, null, filePath, lineNumber, memberName, null);
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="condition"/> is true and calls <see cref="Debug.Fail(string?)"/> if the condition is false.
-        /// </summary>
-        /// <param name="condition"> </param>
-        /// <param name="filePath">  </param>
-        /// <param name="lineNumber"></param>
-        /// <param name="memberName"></param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] bool condition,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null)
-        {
-            Assert(condition, null, null, filePath, lineNumber, memberName, null);
-        }
-
-        /// <summary>
-        /// Tests whether <paramref name="predicate"/> evaluates to true and calls <see cref="Debug.Fail(string?)"/> if the
-        /// <paramref name="predicate"/> evaluates to false.
-        /// </summary>
-        /// <param name="predicate"> </param>
-        /// <param name="filePath">  </param>
-        /// <param name="lineNumber"></param>
-        /// <param name="memberName"></param>
-        [Conditional("DEBUG")]
-        public static void Assert(
-            [DoesNotReturnIf(false)] Func<bool> predicate,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0,
-            [CallerMemberName] string? memberName = null)
-        {
-            Assert(predicate, null, null, filePath, lineNumber, memberName, null);
-        }
-
-        public static ICollection<TElement> DefaultIfEmpty<TElement>(ICollection<TElement> instance)
-        {
-            return IsNotEmpty(instance) ? instance : default(T);
+            return IsNotEmpty(instance) ? instance : default;
         }
 
         public static ICollection<TElement> EmptyIfNull<TCollection, TElement>(TCollection instance) where TCollection : class, ICollection<TElement>, new()
@@ -1113,7 +945,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         public static bool IsNullOrSingleton<TElement>(ISet<TElement>? set, Func<TElement, bool> predicate)
         {
-            return IsNullOrEmpty(set) || (set!.Count(predicate) == 1;
+            return IsNullOrEmpty(set) || (set!.Count(predicate) == 1);
         }
 
         /// <summary>
@@ -1127,7 +959,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
             return IsNullOrAll(builder, char.IsWhiteSpace);
         }
-
-        #endregion Public Methods
     }
 }

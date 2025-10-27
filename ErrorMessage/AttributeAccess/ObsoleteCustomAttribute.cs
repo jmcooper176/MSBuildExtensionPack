@@ -18,17 +18,15 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace MSBuild.ExtensionPack.Base.SystemAttribute
+namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
 {
     /// <summary>
     /// Implements an enhanced <see cref="ObsoleteAttribute"/><see cref="Attribute"/>.
     /// </summary>
-    /// <seealso cref="MSBuild.ExtensionPack.Base.SystemAttribute.CustomAttribute"/>
+    /// <seealso cref="CustomAttribute"/>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
     public class ObsoleteCustomAttribute : CustomAttribute
     {
-        #region Private Fields
-
         /// <summary>
         /// The base number
         /// </summary>
@@ -43,10 +41,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// The counter
         /// </summary>
         private static int counter = BASE_NUMBER;
-
-        #endregion Private Fields
-
-        #region Protected Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
@@ -70,19 +64,11 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             TypeId = this.GetType().GUID;
         }
 
-        #endregion Protected Constructors
-
-        #region Protected Properties
-
         /// <summary>
         /// Gets a value indicating whether this instance is default.
         /// </summary>
         /// <value><see langref="true"/> if this instance is default; otherwise, <see langref="false"/>.</value>
         protected override bool IsDefault { get; }
-
-        #endregion Protected Properties
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObsoleteCustomAttribute"/> class.
@@ -149,10 +135,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
             UrlFormat = urlFormat;
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating whether this instance is error.
         /// </summary>
@@ -169,10 +151,6 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
         /// When implemented in a derived class, gets a unique identifier for this <see cref="Attribute"/>.
         /// </summary>
         public override object TypeId { get; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Tries the get custom <see cref="Attribute"/>.
@@ -295,7 +273,5 @@ namespace MSBuild.ExtensionPack.Base.SystemAttribute
                 return $"{this.GetType().Name} : In Error => {IsError} {DiagnosticId} {UrlFormat} : {Message}";
             }
         }
-
-        #endregion Public Methods
     }
 }

@@ -15,18 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Management
+namespace Management
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Management;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -111,14 +105,8 @@ namespace MSBuild.ExtensionPack.Management
     /// <seealso cref="BaseTask"/>
     public class Wmi : BaseTask
     {
-        #region Private Fields
-
         private List<ITaskItem> info;
         private List<ITaskItem> properties;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void ExecuteWmi()
         {
@@ -227,10 +215,6 @@ namespace MSBuild.ExtensionPack.Management
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -251,10 +235,6 @@ namespace MSBuild.ExtensionPack.Management
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the WMI class.
@@ -307,7 +287,5 @@ namespace MSBuild.ExtensionPack.Management
         /// </summary>
         [Output]
         public string ReturnValue { get; set; }
-
-        #endregion Public Properties
     }
 }

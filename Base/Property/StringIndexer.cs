@@ -21,13 +21,7 @@ namespace MSBuild.ExtensionPack.Base.Property
 {
     public abstract class StringIndexer : IList<string?>
     {
-        #region Private Fields
-
         private readonly List<string?> storage;
-
-        #endregion Private Fields
-
-        #region Protected Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringIndexer"/> class.
@@ -47,10 +41,6 @@ namespace MSBuild.ExtensionPack.Base.Property
         {
             storage = [.. collection];
         }
-
-        #endregion Protected Constructors
-
-        #region Public Indexers
 
         /// <summary>
         /// Implements the <see cref="IList{T}"/> indexer.
@@ -95,17 +85,9 @@ namespace MSBuild.ExtensionPack.Base.Property
         /// <returns>Returns a string for the getter and void for the setter.</returns>
         public abstract string? this[string index] { get; set; }
 
-        #endregion Public Indexers
-
-        #region Public Properties
-
         public int Count => storage.Count;
 
         public bool IsReadOnly => false;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public void Add(string? item)
         {
@@ -160,7 +142,5 @@ namespace MSBuild.ExtensionPack.Base.Property
         {
             return GetEnumerator();
         }
-
-        #endregion Public Methods
     }
 }

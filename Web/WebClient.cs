@@ -15,14 +15,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Web
+namespace Web
 {
     using System.Globalization;
     using System.IO;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -56,14 +52,8 @@ namespace MSBuild.ExtensionPack.Web
     /// </example>
     public class WebClient : BaseTask
     {
-        #region Private Fields
-
         private const string DownloadFileTaskAction = "DownloadFile";
         private const string OpenReadTaskAction = "OpenRead";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void DownloadFile()
         {
@@ -102,10 +92,6 @@ namespace MSBuild.ExtensionPack.Web
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// When overridden in a derived class, executes the task.
         /// </summary>
@@ -126,10 +112,6 @@ namespace MSBuild.ExtensionPack.Web
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets whether to bypass the proxy for local addresses. Default is false.
@@ -162,7 +144,5 @@ namespace MSBuild.ExtensionPack.Web
         /// </summary>
         [Required]
         public string Url { get; set; }
-
-        #endregion Public Properties
     }
 }

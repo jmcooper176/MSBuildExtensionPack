@@ -15,14 +15,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Science
+namespace Science
 {
     using System;
     using System.Globalization;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -149,8 +145,6 @@ namespace MSBuild.ExtensionPack.Science
     /// <seealso cref="BaseTask"/>
     public class Arithmetic : BaseTask
     {
-        #region Private Fields
-
         private const string AddTaskAction = "Add";
         private const string AndTaskAction = "And";
         private const string CompareTaskAction = "Compare";
@@ -164,10 +158,6 @@ namespace MSBuild.ExtensionPack.Science
         private const string SubtractTaskAction = "Subtract";
         private float[] numbers;
         private float total;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static float DecimalToSglDbl(decimal argument)
         {
@@ -310,10 +300,6 @@ namespace MSBuild.ExtensionPack.Science
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected static float[] ToFloatArray(string[] numberArray)
         {
             float[] floatArray = new float[numberArray.Length];
@@ -389,10 +375,6 @@ namespace MSBuild.ExtensionPack.Science
             this.Result = this.total;
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the Comparison. Supports 'GreaterThan', 'LessThan', 'GreaterThanOrEquals', 'LessThanOrEquals'
         /// </summary>
@@ -432,7 +414,5 @@ namespace MSBuild.ExtensionPack.Science
         /// </summary>
         [Output]
         public float Result { get; set; }
-
-        #endregion Public Properties
     }
 }

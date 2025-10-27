@@ -30,16 +30,10 @@ namespace MSBuild.ExtensionPack.Base.Threading
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public readonly struct ConfiguredTaskYieldAwaiter(bool continueOnCapturedContext) : ICriticalNotifyCompletion
     {
-        #region Private Fields
-
         /// <summary>
         /// A value indicating whether the continuation should run on the captured <see cref="SynchronizationContext"/>, if any.
         /// </summary>
         private readonly bool continueOnCapturedContext = continueOnCapturedContext;
-
-        #endregion Private Fields
-
-        #region Public Properties
 
         /// <summary>
         /// Gets a value indicating whether the caller should yield.
@@ -47,10 +41,6 @@ namespace MSBuild.ExtensionPack.Base.Threading
         /// <value>Always false.</value>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public bool IsCompleted => false;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Does nothing.
@@ -101,7 +91,5 @@ namespace MSBuild.ExtensionPack.Base.Threading
                 ThreadPool.UnsafeQueueUserWorkItem(state => ToTaskActionPair(state), null);
             }
         }
-
-        #endregion Public Methods
     }
 }

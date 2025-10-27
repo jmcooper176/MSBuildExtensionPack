@@ -18,8 +18,6 @@
 namespace MSBuild.ExtensionPack.Computer.Extended
 {
     using System;
-    using System.DirectoryServices.AccountManagement;
-    using System.Windows.Forms;
 
     /// <summary>
     /// Gets a user's AD validated password
@@ -27,16 +25,10 @@ namespace MSBuild.ExtensionPack.Computer.Extended
     /// <seealso cref="Form"/>
     public partial class GetPasswordForm : Form
     {
-        #region Private Fields
-
         private readonly ContextOptions contextOptions;
         private readonly ContextType contextType;
         private readonly string domain;
         private readonly string user;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void ButtonCancel_Click(object sender, System.EventArgs e)
         {
@@ -116,10 +108,6 @@ namespace MSBuild.ExtensionPack.Computer.Extended
             }
         }
 
-        #endregion Private Methods
-
-        #region Public Constructors
-
         public GetPasswordForm(string user, string domain, ContextType type, ContextOptions options)
         {
             this.InitializeComponent();
@@ -136,16 +124,10 @@ namespace MSBuild.ExtensionPack.Computer.Extended
             this.contextOptions = options;
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public Exception Exception { get; set; }
 
         public string Password { get; set; }
 
         public bool UserCanceled { get; set; }
-
-        #endregion Public Properties
     }
 }

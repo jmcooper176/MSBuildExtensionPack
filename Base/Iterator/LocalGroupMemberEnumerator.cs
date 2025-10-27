@@ -24,13 +24,7 @@ namespace MSBuild.ExtensionPack.Base.Iterator
     [SupportedOSPlatform("Windows")]
     public class LocalGroupMemberEnumerator : IDisposable, IEnumerator<Principal>
     {
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -46,25 +40,13 @@ namespace MSBuild.ExtensionPack.Base.Iterator
             }
         }
 
-        #endregion Protected Methods
-
-        #region Internal Fields
-
         internal int index;
-
-        #endregion Internal Fields
-
-        #region Internal Properties
 
         internal PrincipalContext Context { get; }
 
         internal GroupPrincipal Group { get; }
 
         internal IEnumerable<Principal> Members => Group.GetMembers();
-
-        #endregion Internal Properties
-
-        #region Public Constructors
 
         public LocalGroupMemberEnumerator(string groupName)
         {
@@ -74,10 +56,6 @@ namespace MSBuild.ExtensionPack.Base.Iterator
             index = 0;
             Current = Members.ElementAt(index);
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         public Principal Current { get; private set; }
 
@@ -95,10 +73,6 @@ namespace MSBuild.ExtensionPack.Base.Iterator
                 return Current;
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public void Dispose()
         {
@@ -120,7 +94,5 @@ namespace MSBuild.ExtensionPack.Base.Iterator
             index = 0;
             Current = Members.ElementAt(index);
         }
-
-        #endregion Public Methods
     }
 }

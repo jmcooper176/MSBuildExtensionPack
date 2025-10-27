@@ -24,8 +24,6 @@ namespace MSBuild.ExtensionPack
     /// </summary>
     public class MethodDefinition
     {
-        #region Private Fields
-
         /// <summary>
         /// The actual compiled method.
         /// </summary>
@@ -46,10 +44,6 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         private readonly IEnumerable<string> outputs;
 
-        #endregion Private Fields
-
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodDefinition"/> class, creating a new method definition.
         /// </summary>
@@ -65,10 +59,6 @@ namespace MSBuild.ExtensionPack
             this.outputs = outputs.ToArray();
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Returns the actual compiled method.
         /// </summary>
@@ -78,10 +68,6 @@ namespace MSBuild.ExtensionPack
         /// Returns the total number of parameters required to invoke the method (including default, explicit, and return values).
         /// </summary>
         public int NumberOfParameters => this.numberOfDefaultParameters + this.inputs.Length + this.outputs.Length;
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Returns the argument index for the given default parameter, or -1 if it is not defined.
@@ -163,7 +149,5 @@ namespace MSBuild.ExtensionPack
 
             return -1;
         }
-
-        #endregion Public Methods
     }
 }

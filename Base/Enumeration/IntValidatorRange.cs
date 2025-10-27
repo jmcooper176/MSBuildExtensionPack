@@ -17,6 +17,9 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Enumeration of pre-defined <see cref="int"/> value ranges.
     /// </summary>
@@ -25,56 +28,78 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// All values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         All,
 
         /// <summary>
         /// Only positive and non-zero values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Positive,
 
         /// <summary>
         /// Only <see cref="Positive"/> and zero values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         NonNegative,
 
         /// <summary>
         /// Only negative values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Negative,
 
         /// <summary>
         /// Only non-zero <see cref="int"/> values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         NonZero,
 
         /// <summary>
         /// Only zero <see cref="int"/> values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Zero,
 
         /// <summary>
         /// Only values of <see cref="int"/> between a minimum and maximum range are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Inclusive,
 
         /// <summary>
         /// Only values of <see cref="int"/> between, but not equal to, a minimum and maximum range are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Exclusive,
 
         /// <summary>
         /// Only values of <see cref="int"/> between a minimum and a maximum, but not equal to, range are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         HalfInclusive,
 
         /// <summary>
         /// Only values of <see cref="int"/> between a minimum, but not equal to, value and a maximum value range are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         HalfExclusive,
 
         /// <summary>
         /// All values of <see cref="int"/> are valid.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         None,
     }
 }

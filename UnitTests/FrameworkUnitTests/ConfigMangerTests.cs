@@ -25,15 +25,9 @@ namespace MSBuild.ExtensionPack.Framework.Tests
     [TestClass]
     public sealed class DotNetFrameworkTest
     {
-        #region Private Fields
-
         private Configuration _config;
         private bool _result;
         private DotNetFramework _task;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void GivenAppSettingDoesNotExist(string appSettingName)
         {
@@ -173,10 +167,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
             _task.SettingValue = value;
             WhenExecutingTask();
         }
-
-        #endregion Private Methods
-
-        #region Public Methods
 
         [TestInitialize]
         public void SetUp()
@@ -358,7 +348,5 @@ namespace MSBuild.ExtensionPack.Framework.Tests
             ThenTaskSucceeded();
             ThenAppSettingIs(settingName, "mynewvalue");
         }
-
-        #endregion Public Methods
     }
 }

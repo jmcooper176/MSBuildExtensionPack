@@ -1,4 +1,4 @@
-﻿namespace MSBuild.ExtensionPack.Base.Logging
+﻿namespace MSBuild.ExtensionPack.ErrorMessage.Message
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -7,13 +7,10 @@
     using System.Text;
 
     using Microsoft.Build.Framework;
-
     using Microsoft.Build.Utilities;
 
-    public static class TaskMessage
+    public static class Misc
     {
-        #region Public Methods
-
         /// <summary>
         /// Logs the project finished.
         /// </summary>
@@ -424,7 +421,5 @@
 
             log.LogCommandLine(importance, commandLine);
         }
-
-        #endregion Public Methods
     }
 }

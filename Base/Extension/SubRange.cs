@@ -90,8 +90,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         IMinMaxValue<SubRange>,
         ISignedNumber<SubRange>
     {
-        #region Protected Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SubRange"/> class.
         /// </summary>
@@ -123,10 +121,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
             Value = value;
             Range = new(minValue, maxExclusiveValue);
         }
-
-        #endregion Protected Constructors
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubRange"/> class.
@@ -164,10 +158,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         {
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <inheritdoc/>
         public static SubRange AdditiveIdentity => Zero;
 
@@ -195,10 +185,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
         public static SubRange Zero => (SubRange)0;
 
         public int Value { get; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <inheritdoc/>
         public static SubRange Abs(SubRange value) => value == Zero ? Zero : value < Zero ? value * NegativeOne : value;
@@ -738,7 +724,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
         /// <inheritdoc/>
         public static SubRange operator |(SubRange left, SubRange right) => (SubRange)((int)left | (int)right);
-
-        #endregion Public Methods
     }
 }

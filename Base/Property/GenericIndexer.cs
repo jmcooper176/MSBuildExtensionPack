@@ -24,8 +24,6 @@ namespace MSBuild.ExtensionPack.Base.Property
     /// <typeparam name="TValue">Specifies the value <see cref="Type"/> returned or updated by the indexer.</typeparam>
     public abstract class GenericIndexer<T, TValue> where T : IList<TValue?>, new()
     {
-        #region Public Indexers
-
         /// <summary>
         /// Indexer to support update the public properties of arbitrary objects.
         /// </summary>
@@ -49,18 +47,10 @@ namespace MSBuild.ExtensionPack.Base.Property
             }
         }
 
-        #endregion Public Indexers
-
-        #region Public Properties
-
         /// <summary>
         /// Gets or sets a value indicating the instance to be indexed with implements <see cref="IList{T}"/>.
         /// </summary>
         public virtual T Instance { get; set; } = new();
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Encapsulates getting a value of <typeparamref name="TValue"/> for <see cref="Instance"/>.
@@ -104,7 +94,5 @@ namespace MSBuild.ExtensionPack.Base.Property
             Range range = new(0, Instance.Count - 1);
             return index.Value >= range.Start.Value && index.Value <= range.End.Value;
         }
-
-        #endregion Public Methods
     }
 }

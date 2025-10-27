@@ -31,8 +31,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
     /// <seealso cref="IUtf8SpanFormattable"/>
     public interface IVersionMethod : ICloneable, IComparable, IFormattable, ISpanFormattable, IUtf8SpanFormattable
     {
-        #region Public Properties
-
         /// <summary>
         /// Gets or sets a value indicating the caption for this instance.
         /// </summary>
@@ -105,10 +103,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
         /// </summary>
         DateTime ZeroDay { get; set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <summary>
         /// Returns a string that represents this instance, formatted to include the specified number of version fields.
         /// </summary>
@@ -116,7 +110,5 @@ namespace MSBuild.ExtensionPack.Base.Interface
         /// <returns>A <see cref="string"/> that represents this instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Throws when <paramref name="fieldCount"/> is out of range.</exception>
         string ToString(int fieldCount);
-
-        #endregion Public Methods
     }
 }

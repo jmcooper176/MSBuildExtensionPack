@@ -17,18 +17,13 @@
 // SPDX-License-Identifier: MIT
 #pragma warning disable 618
 
-namespace MSBuild.ExtensionPack.Compression
+namespace Compression
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.IO.Compression;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -104,17 +99,11 @@ namespace MSBuild.ExtensionPack.Compression
     /// <seealso cref="BaseTask"/>
     public class Zip : BaseTask
     {
-        #region Private Fields
-
         private const string AddFilesTaskAction = "AddFiles";
         private const string CreateTaskAction = "Create";
         private const string ExtractTaskAction = "Extract";
         private bool preserveAttributes = true;
         private Zip64Option useZip64WhenSaving = Zip64Option.Default;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void AddFiles()
         {
@@ -309,10 +298,6 @@ namespace MSBuild.ExtensionPack.Compression
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// This is the main InternalExecute method that all tasks should implement
         /// </summary>
@@ -342,10 +327,6 @@ namespace MSBuild.ExtensionPack.Compression
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the files to Compress
@@ -414,7 +395,5 @@ namespace MSBuild.ExtensionPack.Compression
         /// </summary>
         [Required]
         public ITaskItem ZipFileName { get; set; }
-
-        #endregion Public Properties
     }
 }

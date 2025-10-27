@@ -15,20 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Management;
-    using System.ServiceProcess;
 
-    using Microsoft.Build.Framework;
     using Microsoft.Win32;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// Severity of the error if the Create method fails to start. The value indicates the action taken by the startup program if
@@ -402,8 +396,6 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask"/>
     public class WindowsService : BaseTask
     {
-        #region Private Fields
-
         private const string CheckExistsTaskAction = "CheckExists";
         private const string DeleteTaskAction = "Delete";
         private const string DisableTaskAction = "Disable";
@@ -420,10 +412,6 @@ namespace MSBuild.ExtensionPack.Computer
         private const string StopTaskAction = "Stop";
         private const string UninstallTaskAction = "Uninstall";
         private const string UpdateIdentityTaskAction = "UpdateIdentity";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static string GetServiceStartupType(string startupType)
         {
@@ -1098,10 +1086,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -1178,10 +1162,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the command line arguments to be passed to the service.
         /// </summary>
@@ -1257,7 +1237,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// Sets the user.
         /// </summary>
         public string User { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -27,14 +27,8 @@ namespace MSBuild.ExtensionPack.Communication.Extended
     /// </summary>
     public static partial class NativeMethods
     {
-        #region Private Fields
-
         private const uint FormatMessageFromSystem = 4096;
         private const uint FormatMessageIgnoreInserts = 512;
-
-        #endregion Private Fields
-
-        #region Internal Methods
 
         [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial uint FormatMessage(uint dwFlags, IntPtr lpSource, uint dwMessageId, uint dwLanguageId, [MarshalAsAttribute(UnmanagedType.LPTStr)] StringBuilder lpBuffer, uint nSize, IntPtr arguments);
@@ -70,10 +64,6 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             }
         }
 
-        #endregion Internal Methods
-
-        #region Public Fields
-
         public const int ErrorInternetExtendedError = (InternetErrorBase + 3);
         public const int ErrorNoMoreFiles = 18;
         public const int FileAttributeDirectory = 16;
@@ -99,10 +89,6 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         public const int InternetServiceFtp = 1;
         public const int MaxPath = 260;
         public const int NoError = 0;
-
-        #endregion Public Fields
-
-        #region Public Methods
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpCommand(
@@ -232,10 +218,6 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             [In] int dwFlags,
             [In][Out] int dwContext);
 
-        #endregion Public Methods
-
-        #region Public Structs
-
         [StructLayout(LayoutKind.Sequential)]
         public struct FILETIME
         {
@@ -276,7 +258,5 @@ namespace MSBuild.ExtensionPack.Communication.Extended
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
             public char[] alternateFileName;
         }
-
-        #endregion Public Structs
     }
 }

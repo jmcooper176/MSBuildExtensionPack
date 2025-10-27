@@ -15,16 +15,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Xml
+namespace Xml
 {
     using System;
     using System.Globalization;
     using System.Xml;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -176,8 +171,6 @@ namespace MSBuild.ExtensionPack.Xml
     /// <seealso cref="BaseTask"/>
     public class XmlFile : BaseTask
     {
-        #region Private Fields
-
         private const string AddAttributeTaskAction = "AddAttribute";
         private const string AddElementTaskAction = "AddElement";
         private const string ReadAttributeTaskAction = "ReadAttribute";
@@ -191,10 +184,6 @@ namespace MSBuild.ExtensionPack.Xml
         private XmlNodeList elements;
         private XmlNamespaceManager namespaceManager;
         private XmlDocument xmlFileDoc;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void AddAttribute()
         {
@@ -636,10 +625,6 @@ namespace MSBuild.ExtensionPack.Xml
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -735,10 +720,6 @@ namespace MSBuild.ExtensionPack.Xml
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the element. For AddElement, if the element exists, it's InnerText / InnerXml will be updated
         /// </summary>
@@ -818,7 +799,5 @@ namespace MSBuild.ExtensionPack.Xml
         /// Specifies the XPath to be used
         /// </summary>
         public string XPath { get; set; }
-
-        #endregion Public Properties
     }
 }

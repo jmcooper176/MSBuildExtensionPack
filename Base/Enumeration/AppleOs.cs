@@ -17,6 +17,9 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// Enumeration of all Apple operating systems, the Safari web browser, and the <c>XCode</c><c>macOS</c> IDE.
     /// </summary>
@@ -25,46 +28,64 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// <summary>
         /// An unknown Apple operating system or product.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Unknown = 0,
 
         /// <summary>
         /// The <c>macOS</c> Apple operating system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         MacOS,
 
         /// <summary>
         /// The <c>iOS</c> Apple operating system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         IOs,
 
         /// <summary>
         /// The <c>iPadOS</c> Apple operating system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         IPadOs,
 
         /// <summary>
         /// The <c>watchOS</c> Apple operating system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         WatchOs,
 
         /// <summary>
         /// The <c>tvOS</c> Apple operating system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         TvOs,
 
         /// <summary>
         /// The <c>visionOS</c> Apple operating system.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         VisionOs,
 
         /// <summary>
         /// The Safari Apple web browser.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         Safari,
 
         /// <summary>
         /// The <c>XCode</c> Apple integrated development environment (IDE) for <c>macOS</c>.
         /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
         XCode,
     }
 }

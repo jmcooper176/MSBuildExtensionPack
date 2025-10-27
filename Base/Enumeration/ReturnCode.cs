@@ -17,56 +17,81 @@
 // SPDX-License-Identifier: MIT
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {
-    public enum ReturnCode : uint
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
+    using MSBuild.ExtensionPack.ErrorMessage.Code;
+
+    public enum ReturnCode : int
     {
         /// <summary>
         /// Success
         /// </summary>
-        Success = 0,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        Success = WinError.ERROR_SUCCESS,
 
         /// <summary>
         /// AccessDenied
         /// </summary>
-        AccessDenied = 2,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        AccessDenied = WinError.ERROR_ACCESS_DENIED,
 
         /// <summary>
         /// UnknownFailure
         /// </summary>
-        UnknownFailure = 8,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        UnknownFailure = WinError.ERROR_UNKNOWN_ERROR,
 
         /// <summary>
         /// InvalidName
         /// </summary>
-        InvalidName = 9,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        InvalidName = WinError.ERROR_INVALID_NAME,
 
         /// <summary>
         /// InvalidLevel
         /// </summary>
-        InvalidLevel = 10,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        InvalidLevel = WinError.ERROR_INVALID_LEVEL,
 
         /// <summary>
         /// InvalidParameter
         /// </summary>
-        InvalidParameter = 21,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        InvalidParameter = WinError.ERROR_INVALID_PARAMETER,
 
         /// <summary>
         /// ShareAlreadyExists
         /// </summary>
-        ShareAlreadyExists = 22,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        ShareAlreadyExists = WinError.ERROR_SHARING_VIOLATION,
 
         /// <summary>
         /// RedirectedPath
         /// </summary>
-        RedirectedPath = 23,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        RedirectedPath = WinError.ERROR_PATH_NOT_FOUND,
 
         /// <summary>
         /// UnknownDeviceOrDirectory
         /// </summary>
-        UnknownDeviceOrDirectory = 24,
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        UnknownDeviceOrDirectory = WinError.ERROR_DEVICE_NOT_CONNECTED,
 
         /// <summary>
         /// NetNameNotFound
         /// </summary>
-        NetNameNotFound = 25
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        NetNameNotFound = WinError.ERROR_BAD_NET_NAME,
     }
 }

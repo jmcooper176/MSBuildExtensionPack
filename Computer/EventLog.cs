@@ -15,17 +15,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
-    using System.Diagnostics;
     using System.Globalization;
     using System.IO;
-    using System.Management;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Logging;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -81,18 +74,12 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask"/>
     public class EventLog : BaseTask
     {
-        #region Private Fields
-
         private const string BackupTaskAction = "Backup";
         private const string CheckExistsTaskAction = "CheckExists";
         private const string ClearTaskAction = "Clear";
         private const string CreateTaskAction = "Create";
         private const string DeleteTaskAction = "Delete";
         private const string ModifyTaskAction = "Modify";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Backup()
         {
@@ -254,10 +241,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -294,10 +277,6 @@ namespace MSBuild.ExtensionPack.Computer
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the Backup Path
@@ -347,7 +326,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// 'Never Overwrite'
         /// </summary>
         public int Retention { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -25,8 +25,6 @@ namespace MSBuild.ExtensionPack.Base.Iterator
     /// </summary>
     public static class ArrayAsyncEnumerable
     {
-        #region Public Methods
-
         /// <summary>
         /// Static method implementing the <see cref="Array"/> of <typeparamref name="T"/> enumeration with <see cref="IAsyncEnumerable{T}"/>.
         /// </summary>
@@ -78,7 +76,5 @@ namespace MSBuild.ExtensionPack.Base.Iterator
                 await TaskScheduler.Default.SwitchTo(false);
             }
         }
-
-        #endregion Public Methods
     }
 }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Path
+namespace FileSystem.Path
 {
     using System;
     using System.Collections.Generic;
@@ -26,11 +26,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.RegularExpressions;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -180,8 +175,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
     /// <seealso cref="BaseTask" />
     public class File : BaseTask
     {
-        #region Private Fields
-
         private const string AddAttributesTaskAction = "AddAttributes";
         private const string AddSecurityTaskAction = "AddSecurity";
         private const string ConcatenateTaskAction = "Concatenate";
@@ -207,10 +200,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
         private List<ITaskItem> includedFiles;
         private Regex parseRegex;
         private RegexOptions regexOptions = RegexOptions.Compiled;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Sets the attributes.
@@ -1016,10 +1005,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -1093,10 +1078,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Set the AccessType. Can be Allow or Deny. Default is Allow.
@@ -1345,7 +1326,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Path
         /// </remarks>
         /// </summary>
         public IList<ITaskItem>? Users { get; set; }
-
-        #endregion Public Properties
     }
 }

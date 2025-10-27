@@ -21,14 +21,10 @@ namespace MSBuild.ExtensionPack.Base.Interface
 
     internal sealed class HostsFileWriter : IHostsFileWriter
     {
-        #region Public Methods
-
         public void Write(string path, IHostsFile hostsFile)
         {
             using StreamWriter sw = new(path);
             hostsFile.Save(sw);
         }
-
-        #endregion Public Methods
     }
 }

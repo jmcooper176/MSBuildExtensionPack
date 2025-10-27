@@ -15,21 +15,15 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Directory
+namespace FileSystem.Directory
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Management;
     using System.Security.AccessControl;
     using System.Text.RegularExpressions;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -111,8 +105,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
     /// <seealso cref="BaseTask" />
     public class Folder : BaseTask
     {
-        #region Private Fields
-
         private const string AddSecurityTaskAction = "AddSecurity";
         private const string DeleteAllTaskAction = "DeleteAll";
         private const string GetTaskAction = "Get";
@@ -121,10 +113,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
         private const string RemoveSecurityTaskAction = "RemoveSecurity";
         private AccessControlType accessType = AccessControlType.Allow;
         private List<string> foldersFound;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void DeleteAll()
         {
@@ -560,10 +548,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
             dirInfo.SetAccessControl(currentSecurity);
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -613,10 +597,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Set the AccessType. Can be Allow or Deny. Default is Allow.
@@ -679,7 +659,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
         /// <para/></UsersCol>
         /// </summary>
         public IEnumerable<ITaskItem> Users { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -26,8 +26,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
     [TestClass]
     public class AssemblyInfoTests
     {
-        #region Public Methods
-
         [TestMethod]
         public void Can_update_attribute()
         {
@@ -93,7 +91,5 @@ namespace MSBuild.ExtensionPack.Framework.Tests
                 System.IO.File.Delete(tempFile);
             }
         }
-
-        #endregion Public Methods
     }
 }

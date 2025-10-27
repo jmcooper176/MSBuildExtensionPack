@@ -15,17 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace SourceControl
 {
     using System;
     using System.Globalization;
     using System.IO;
     using System.Text;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -127,8 +122,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// <seealso cref="BaseTask" />
     public class TfsSource : BaseTask
     {
-        #region Private Fields
-
         private const string AddLabelTaskAction = "AddLabel";
         private const string AddTaskAction = "Add";
         private const string CheckinTaskAction = "Checkin";
@@ -147,10 +140,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
         private string returnOutput;
         private ShellWrapper shellWrapper;
         private string teamFoundationExe;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void Add()
         {
@@ -546,10 +535,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             this.ExecuteCommand("undo", string.Empty, "/noprompt /recursive");
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -622,10 +607,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Forces all files to be retrieved, not just those that are out-of-date.
@@ -771,7 +752,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// Sets the working directory. If the directory is mapped in a workspace, then there is no need to specify the Server.
         /// </summary>
         public string WorkingDirectory { get; set; }
-
-        #endregion Public Properties
     }
 }

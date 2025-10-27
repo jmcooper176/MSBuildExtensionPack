@@ -6,16 +6,10 @@
 
     public class SessionObject : IMsiCom
     {
-        #region Protected Constructors
-
         protected SessionObject()
         {
             Installer = new();
         }
-
-        #endregion Protected Constructors
-
-        #region Public Constructors
 
         public SessionObject(string packagePath, int options)
             : this()
@@ -33,15 +27,7 @@
             Database = ComType is not null ? (DatabaseObject?)ComUtility.InvokeComPropertyGet(ComType, "Database", Instance, null) : null;
         }
 
-        #endregion Public Constructors
-
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Private Destructors
 
         // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         ~SessionObject()
@@ -49,10 +35,6 @@
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -70,10 +52,6 @@
                 disposedValue = true;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         public Type? ComType { get; private set; }
         public DatabaseObject? Database { get; private set; }
@@ -142,10 +120,6 @@
                 }
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         public void Dispose()
         {
@@ -294,7 +268,5 @@
                 }
             }
         }
-
-        #endregion Public Methods
     }
 }

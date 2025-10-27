@@ -52,13 +52,7 @@ namespace MSBuild.ExtensionPack
     /// </example>
     public class SmartExec : BaseAppDomainIsolatedTask
     {
-        #region Private Fields
-
         private Process process;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Creates a batch program file containing the command.
@@ -153,15 +147,7 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Delegates
-
         protected delegate void DataReceivedHandler();
-
-        #endregion Protected Delegates
-
-        #region Protected Methods
 
         protected override void InternalExecute()
         {
@@ -216,10 +202,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Gets or sets the command(s) to run. These can be system commands, such as attrib, or an executable, such as program.exe,
         /// runprogram.bat, or setup.msi. This parameter can contain multiple lines of commands (each command on a new-line).
@@ -241,7 +223,5 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         /// <remarks>No Exec Equivalent</remarks>
         public int SuccessExitCode { get; set; }
-
-        #endregion Public Properties
     }
 }

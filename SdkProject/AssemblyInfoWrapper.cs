@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.AssemblyInfo
+namespace SdkProject
 {
     using System;
     using System.Collections.Generic;
@@ -25,8 +25,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
 
     internal class AssemblyInfoWrapper
     {
-        #region Private Fields
-
         private readonly Regex attributeBooleanValuePattern = new Regex(@"\((?<attributeValue>([tT]rue|[fF]alse))\)", RegexOptions.Compiled);
         private readonly Dictionary<string, int> attributeIndex = new Dictionary<string, int>();
         private readonly Regex attributeNamePattern = new Regex(@"[aA]ssembly?\s*:?\s*(?<attributeName>\w+)\s*\(", RegexOptions.Compiled);
@@ -36,10 +34,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
         private readonly List<string> rawFileLines = new List<string>();
         private readonly Regex singleLineCSharpCommentPattern = new Regex(@"(?m:^(\s*//.*)$)", RegexOptions.Compiled);
         private readonly Regex singleLineVbCommentPattern = new Regex(@"^(\s*'|')", RegexOptions.Compiled);
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// The ^\* is so the regex works with J# files that use /** to indicate the actual attribute lines. This does mean that
         /// lines like /** in C# will get treated as valid lines, but that's a real borderline case.
@@ -101,10 +95,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
             }
         }
 
-        #endregion Public Constructors
-
-        #region Public Indexers
-
         public string this[string attribute]
         {
             get
@@ -157,10 +147,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
             }
         }
 
-        #endregion Public Indexers
-
-        #region Public Methods
-
         public void Write(TextWriter streamWriter)
         {
             foreach (string line in rawFileLines)
@@ -168,7 +154,5 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
                 streamWriter.WriteLine(line);
             }
         }
-
-        #endregion Public Methods
     }
 }

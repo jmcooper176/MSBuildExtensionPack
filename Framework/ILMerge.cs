@@ -53,13 +53,7 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="ToolTask"/>
     public class ILMerge : ToolTask
     {
-        #region Protected Properties
-
         protected override string ToolName => "ILMerge.exe";
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
         {
@@ -197,10 +191,6 @@ namespace MSBuild.ExtensionPack
         {
             this.Log.LogMessage(MessageImportance.Normal, singleLine);
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// AllowDuplicateResources
@@ -536,7 +526,5 @@ namespace MSBuild.ExtensionPack
         /// Default: false
         /// </summary>
         public bool XmlDocs { get; set; }
-
-        #endregion Public Properties
     }
 }

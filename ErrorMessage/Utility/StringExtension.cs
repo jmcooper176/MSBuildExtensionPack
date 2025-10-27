@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Base.Extension
+namespace MSBuild.ExtensionPack.ErrorMessage.Utility
 {
     using System;
     using System.Globalization;
@@ -23,8 +23,6 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
     public static class StringExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Appends the specified append value.
         /// </summary>
@@ -567,7 +565,5 @@ namespace MSBuild.ExtensionPack.Base.Extension
 
             return originalValue.Replace(oldValue, newValue, startIndex, count);
         }
-
-        #endregion Public Methods
     }
 }

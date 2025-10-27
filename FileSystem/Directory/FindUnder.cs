@@ -15,18 +15,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.FileSystem.Directory
+namespace FileSystem.Directory
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -86,16 +81,10 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
     /// <seealso cref="BaseTask"/>
     public class FindUnder : BaseTask
     {
-        #region Private Fields
-
         private const string FindDirectoriesTaskAction = "FindDirectories";
         private const string FindFilesAndDirectoriesTaskAction = "FindFilesAndDirectories";
         private const string FindFilesTaskAction = "FindFiles";
         private List<ITaskItem> items = new List<ITaskItem>();
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void FindMatchingDirectories(DirectoryInfo dir)
         {
@@ -168,10 +157,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
             this.items = files.Select(fileInfo => new TaskItem(fileInfo.FullName)).Cast<ITaskItem>().ToList();
         }
 
-        #endregion Private Methods
-
-        #region Protected Properties
-
         /// <summary>
         /// Gets or sets a value indicating if directories should be included in the result. <br/> The default value for this is
         /// <see langref="false"/>. Both <c>FindFiles</c> and <c>FindDirectories</c> cannot be <see langref="false"/>, atleast one
@@ -187,10 +172,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
         /// </summary>
         /// <value><see langref="true"/> if file should be included in the find result; otherwise, <see langref="false"/>.</value>
         protected bool FindFiles { get; set; }
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         protected override void InternalExecute()
         {
@@ -246,10 +227,6 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
             this.FoundItems = this.items.ToArray();
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// The list of items (files and or directories) which were found.
         /// </summary>
@@ -283,7 +260,5 @@ namespace MSBuild.ExtensionPack.FileSystem.Directory
         /// and/or the System.IO.FileInfo.GetFiles method. See that documentation for usage guidlines.
         /// </summary>
         public string SearchPattern { get; set; } = "*";
-
-        #endregion Public Properties
     }
 }

@@ -25,8 +25,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
 
     internal sealed class HostsFileEntries : IHostsFile
     {
-        #region Private Fields
-
         private const string Separator = "   ";
 
         private static readonly string[] Pads = new[]
@@ -53,10 +51,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
         private readonly Regex hostsEntryRegex = new Regex(@"^((\d{1,3}\.){3}\d{1,3})\s+(?<HostName>[^\s#]+)(?<Tail>.*)$");
         private readonly List<string> hostsFileLines;
 
-        #endregion Private Fields
-
-        #region Private Methods
-
         private static string PadIPAddress(string ipAddress)
         {
             int ipLength = ipAddress?.Length ?? 0;
@@ -64,14 +58,8 @@ namespace MSBuild.ExtensionPack.Base.Interface
             return ipAddress + Pads[numSpaces];
         }
 
-        #endregion Private Methods
-
-        #region Private Classes
-
         private sealed class HostsEntry
         {
-            #region Public Constructors
-
             public HostsEntry(int lineNumber, string hostName, string tail)
             {
                 LineNumber = lineNumber;
@@ -79,22 +67,12 @@ namespace MSBuild.ExtensionPack.Base.Interface
                 Tail = tail;
             }
 
-            #endregion Public Constructors
-
-            #region Public Properties
-
             public string HostName { get; }
 
             public int LineNumber { get; }
 
             public string Tail { get; }
-
-            #endregion Public Properties
         }
-
-        #endregion Private Classes
-
-        #region Internal Constructors
 
         internal HostsFileEntries(string[] hostEntries) : this(hostEntries, false)
         {
@@ -148,10 +126,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
             }
         }
 
-        #endregion Internal Constructors
-
-        #region Public Methods
-
         public void Save(TextWriter sw)
         {
             if (sw is not null)
@@ -184,20 +158,14 @@ namespace MSBuild.ExtensionPack.Base.Interface
                 hosts[hostsKey] = new HostsEntry(hostsFileLines.Count - 1, hostName, tail);
             }
         }
-
-        #endregion Public Methods
     }
 
     public interface IHostsFile
     {
-        #region Public Methods
-
         void Save(TextWriter sw);
 
         void SetHostEntry(string hostName, string ipAddress);
 
         void SetHostEntry(string hostName, string ipAddress, string comment);
-
-        #endregion Public Methods
     }
 }

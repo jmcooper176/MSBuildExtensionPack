@@ -27,8 +27,6 @@ namespace MSBuild.ExtensionPack
     /// </remarks>
     public class Closure
     {
-        #region Private Fields
-
         /// <summary>
         /// The arguments (and return values) for this closure.
         /// </summary>
@@ -39,10 +37,6 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         private readonly MethodDefinition methodDefinition;
 
-        #endregion Private Fields
-
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Closure"/> class. Creates a new closure, allocating space for the parameters.
         /// </summary>
@@ -52,10 +46,6 @@ namespace MSBuild.ExtensionPack
             this.methodDefinition = methodDefinition;
             this.arguments = new object[methodDefinition.NumberOfParameters];
         }
-
-        #endregion Public Constructors
-
-        #region Public Methods
 
         /// <summary>
         /// Gets an input parameter's CLI <see cref="Type"/>.
@@ -174,7 +164,5 @@ namespace MSBuild.ExtensionPack
 
             return this.arguments[i];
         }
-
-        #endregion Public Methods
     }
 }

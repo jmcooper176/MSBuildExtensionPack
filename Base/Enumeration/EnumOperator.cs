@@ -6,8 +6,6 @@
 
     public static class EnumOperator
     {
-        #region Public Methods
-
         public static TScalar BitwiseAnd<TScalar>(this Enum left, TScalar right, IFormatProvider? provider)
             where TScalar : struct, IConvertible, INumber<TScalar>, IBitwiseOperators<TScalar, TScalar, TScalar>
         {
@@ -161,7 +159,5 @@
         {
             return ToScalar<ulong>(value, provider ?? CultureInfo.CurrentCulture);
         }
-
-        #endregion Public Methods
     }
 }

@@ -24,8 +24,6 @@ namespace MSBuild.ExtensionPack.Base
 {
     internal static class AssemblyResource
     {
-        #region Internal Properties
-
         /// <summary>
         /// Gets the assembly's primary resources i.e. the resources exclusively owned by this assembly.
         /// </summary>
@@ -39,10 +37,6 @@ namespace MSBuild.ExtensionPack.Base
         /// <remarks>This property is thread-safe.</remarks>
         /// <value>ResourceManager for shared resources.</value>
         internal static ResourceManager SharedResources { get; } = new ResourceManager("Microsoft.Build.Utilities.Core.Strings.shared", typeof(AssemblyResource).GetType().Assembly);
-
-        #endregion Internal Properties
-
-        #region Internal Methods
 
         /// <summary>
         /// Loads the specified resource string and optionally formats it using the given arguments. The current thread's culture is
@@ -95,7 +89,5 @@ namespace MSBuild.ExtensionPack.Base
 
             return resource;
         }
-
-        #endregion Internal Methods
     }
 }

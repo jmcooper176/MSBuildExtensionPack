@@ -27,8 +27,6 @@ namespace MSBuild.ExtensionPack
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
-        #region Internal Interfaces
-
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("e707dcde-d1cd-11d2-bab9-00c04f8eceae")]
@@ -50,13 +48,7 @@ namespace MSBuild.ExtensionPack
             int InstallAssembly(int flags, [MarshalAs(UnmanagedType.LPWStr)] string manifestFilePath, IntPtr reserved);
         }
 
-        #endregion Internal Interfaces
-
-        #region Internal Methods
-
         [DllImport("fusion.dll")]
         internal static extern int CreateAssemblyCache(out IAssemblyCache assemblyCache, int reserved);
-
-        #endregion Internal Methods
     }
 }

@@ -1,12 +1,12 @@
-﻿namespace MSBuild.ExtensionPack.Base.Logging
+﻿namespace MSBuild.ExtensionPack.ErrorMessage.Message
 {
     using System;
     using System.Diagnostics;
 
+    using Environment = Utility.Environment;
+
     public static class Cause
     {
-        #region Public Methods
-
         public static bool GetLogExceptionDetail(bool defaultValue = false)
         {
             return Environment.TestEnvironmentValue("LogExceptionDetail", EnvironmentVariableTarget.Machine) ?? defaultValue;
@@ -49,7 +49,5 @@
         {
             return Environment.TestEnvironmentValue("SuppressTaskMessages", EnvironmentVariableTarget.Machine) ?? defaultValue;
         }
-
-        #endregion Public Methods
     }
 }

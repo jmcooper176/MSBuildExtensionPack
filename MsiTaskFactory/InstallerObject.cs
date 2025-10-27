@@ -6,15 +6,9 @@
 
     public class InstallerObject : IMsiCom
     {
-        #region Public Fields
-
         private bool disposedValue;
         public Guid IID => new(" 000C1090-0000-0000-C000-000000000046");
         public string ProgId => "WindowsInstaller.Installer";
-
-        #endregion Public Fields
-
-        #region Public Constructors
 
         public InstallerObject()
         {
@@ -22,27 +16,15 @@
             Instance = ComUtility.CreateComInstance(ProgId);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public Type? ComType { get; private set; }
         public object? Instance { get; private set; }
         public RecordObject? LastError { get; private set; }
-
-        #endregion Public Properties
-
-        #region Private Destructors
 
         ~InstallerObject()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -60,10 +42,6 @@
                 disposedValue = true;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Methods
 
         public RecordObject? CreateRecord(int count)
         {
@@ -118,8 +96,6 @@
         {
             return ComType is not null && Instance is not null ? (SessionObject?)ComUtility.InvokeComMethod(ComType, "OpenProduct", Instance, [productCode.ToString()], null) : null;
         }
-
-        #endregion Public Methods
 
         public static object? ToInstance(InstallerObject? thick) => thick?.Instance;
 

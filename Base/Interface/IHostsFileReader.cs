@@ -21,8 +21,6 @@ namespace MSBuild.ExtensionPack.Base.Interface
 
     internal sealed class HostsFileReader : IHostsFileReader
     {
-        #region Private Methods
-
         private IHostsFile Read(string path, bool truncate)
         {
             if (File.Exists(path))
@@ -32,16 +30,10 @@ namespace MSBuild.ExtensionPack.Base.Interface
 
             return new Computer.HostsFile.HostsFile.HostsFileEntries(Array.Empty<string>());
         }
-
-        #endregion Private Methods
     }
 
     public interface IHostsFileReader
     {
-        #region Public Methods
-
         IHostsFile Read(string path, bool truncate);
-
-        #endregion Public Methods
     }
 }

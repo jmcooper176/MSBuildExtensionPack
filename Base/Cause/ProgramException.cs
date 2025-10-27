@@ -29,8 +29,6 @@ namespace MSBuild.ExtensionPack.Base.Cause
     /// <seealso cref="Exception"/>
     public class ProgramException : Exception
     {
-        #region Public Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgramException"/> class.
         /// </summary>
@@ -160,10 +158,6 @@ namespace MSBuild.ExtensionPack.Base.Cause
         {
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
         /// Gets a value indicating the application name or path.
         /// </summary>
@@ -179,10 +173,6 @@ namespace MSBuild.ExtensionPack.Base.Cause
         public string RecommendedAction { get; }
         public DateTime Thrown { get; }
         public TimeSpan Timeout { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Calls the with timeout asynchronous.
@@ -244,7 +234,5 @@ namespace MSBuild.ExtensionPack.Base.Cause
                 return false;
             }
         }
-
-        #endregion Public Methods
     }
 }

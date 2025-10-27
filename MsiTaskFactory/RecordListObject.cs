@@ -8,13 +8,7 @@
 
     public class RecordListObject : IMsiCom, ICollection<RecordObject>
     {
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -32,10 +26,6 @@
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         public Type? ComType { get; private set; }
         public int Count { get; }
         public Guid IID => new("000C1096-0000-0000-C000-000000000046");
@@ -43,20 +33,12 @@
         public bool IsReadOnly { get; }
         public string ProgId => string.Empty;
 
-        #endregion Public Properties
-
-        #region Private Destructors
-
         // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         ~RecordListObject()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Public Methods
 
         public void Add(RecordObject item) => throw new NotImplementedException();
 
@@ -78,7 +60,5 @@
         public bool Remove(RecordObject item) => throw new NotImplementedException();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        #endregion Public Methods
     }
 }

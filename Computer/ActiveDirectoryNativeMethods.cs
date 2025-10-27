@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
     using System.Runtime.InteropServices;
@@ -47,13 +47,7 @@ namespace MSBuild.ExtensionPack.Computer
     [SuppressUnmanagedCodeSecurity]
     internal static class ActiveDirectoryNativeMethods
     {
-        #region Internal Fields
-
         internal const int POLICY_CREATE_SECRET = 20;
-
-        #endregion Internal Fields
-
-        #region Internal Methods
 
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern int LookupAccountName([In, MarshalAs(UnmanagedType.LPTStr)] string systemName, [In, MarshalAs(UnmanagedType.LPTStr)] string accountName, IntPtr Sid, ref int cbSid, StringBuilder domainName, ref int cbDomainName, ref int use);
@@ -66,7 +60,5 @@ namespace MSBuild.ExtensionPack.Computer
 
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
         internal static extern uint LsaOpenPolicy(ref LSA_UNICODE_STRING SystemName, ref LSA_OBJECT_ATTRIBUTES ObjectAttributes, int DesiredAccess, out IntPtr PolicyHandle);
-
-        #endregion Internal Methods
     }
 }

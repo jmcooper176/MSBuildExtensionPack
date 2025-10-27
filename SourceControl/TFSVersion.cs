@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.VisualStudio
+namespace SourceControl
 {
     using System;
     using System.Globalization;
@@ -23,11 +23,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-
-    using Microsoft.Build.Framework;
-
-    using MSBuild.ExtensionPack.Base;
-    using MSBuild.ExtensionPack.Base.Extension;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -83,8 +78,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
     /// <seealso cref="BaseTask"/>
     public class TfsVersion : BaseTask
     {
-        #region Private Fields
-
         private const string AppendAssemblyFileVersionFormat = "\n[assembly: System.Reflection.AssemblyFileVersion(\"{0}\")]";
         private const string AppendAssemblyVersionFormat = "\n[assembly: System.Reflection.AssemblyVersion(\"{0}\")]";
         private const string VBAppendAssemblyFileVersionFormat = "\n<assembly: System.Reflection.AssemblyFileVersion(\"{0}\")>";
@@ -92,10 +85,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
         private Encoding fileEncoding = Encoding.UTF8;
         private Regex regexAssemblyVersion;
         private Regex regexExpression;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void GetVersion()
         {
@@ -359,10 +348,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -385,10 +370,6 @@ namespace MSBuild.ExtensionPack.VisualStudio
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the AssemblyVersion. Defaults to Version if not set.
@@ -510,7 +491,5 @@ namespace MSBuild.ExtensionPack.VisualStudio
         /// Specify the format of the build number. A format for each part must be specified or left blank, e.g. "00.000.00.000", "..0000.0"
         /// </summary>
         public string VersionTemplateFormat { get; set; }
-
-        #endregion Public Properties
     }
 }

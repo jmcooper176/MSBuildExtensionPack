@@ -68,8 +68,6 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
     /// </summary>
     public static class AppleBuildNumberPartExtension
     {
-        #region Public Methods
-
         /// <summary>
         /// Extension method to determine whether the <see cref="DisplayAttribute.AutoGenerateField"/> is set for the <see
         /// cref="DisplayAttribute"/> on an <see cref="AppleBuildNumberPart"/> field.
@@ -254,7 +252,5 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         {
             return value.GetDisplayAttribute(inherit)?.ShortName;
         }
-
-        #endregion Public Methods
     }
 }

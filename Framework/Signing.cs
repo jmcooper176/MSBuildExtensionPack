@@ -60,13 +60,7 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public class Signing : BaseTask
     {
-        #region Private Fields
-
         private const string ToolName = "sn.exe";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void RemoveAllSkipVerification()
         {
@@ -172,10 +166,6 @@ namespace MSBuild.ExtensionPack
             this.Run(commandLine.ToString());
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())
@@ -203,10 +193,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Protected Methods
-
-        #region Public Properties
-
         /// <summary>
         /// Sets the Item Collection of Assemblies to sign
         /// </summary>
@@ -226,7 +212,5 @@ namespace MSBuild.ExtensionPack
         /// Sets the folder path to sn.exe
         /// </summary>
         public ITaskItem ToolPath { get; set; }
-
-        #endregion Public Properties
     }
 }

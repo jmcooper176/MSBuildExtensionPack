@@ -63,8 +63,6 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public class Gac : BaseTask
     {
-        #region Private Methods
-
         private void AddAssembly()
         {
             if (System.IO.File.Exists(this.AssemblyPath.GetMetadata("FullPath")) == false)
@@ -247,10 +245,6 @@ namespace MSBuild.ExtensionPack
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -275,10 +269,6 @@ namespace MSBuild.ExtensionPack
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the name of the assembly.
@@ -306,7 +296,5 @@ namespace MSBuild.ExtensionPack
         /// environment variable
         /// </summary>
         public string RemoteAssemblyPath { get; set; }
-
-        #endregion Public Properties
     }
 }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.AssemblyInfo
+namespace SdkProject
 {
     using System;
     using System.Globalization;
@@ -23,13 +23,7 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
 
     internal class Version
     {
-        #region Private Fields
-
         private string versionString;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static string ValidateAssemblyVersionPart(string part)
         {
@@ -70,10 +64,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
             versionString = version; // Very important that this is a little v, not big v, otherwise you get infinite recursion!
         }
 
-        #endregion Private Methods
-
-        #region Public Constructors
-
         public Version()
         {
             MajorVersion = "1";
@@ -98,10 +88,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
             }
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public string BuildNumber { get; set; }
 
         public string MajorVersion { get; set; }
@@ -116,15 +102,9 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
             set => ParseVersion(value);
         }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}.{3}", MajorVersion, MinorVersion, BuildNumber, Revision);
         }
-
-        #endregion Public Methods
     }
 }

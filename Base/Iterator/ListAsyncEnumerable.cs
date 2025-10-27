@@ -28,8 +28,6 @@ namespace MSBuild.ExtensionPack.Base.Iterator
     /// </summary>
     public static class ListAsyncEnumerable
     {
-        #region Public Methods
-
         /// <summary>
         /// Static method implementing <see cref="IAsyncEnumerable{T}"/> for <see cref="IEnumerable{T}"/>..
         /// </summary>
@@ -55,7 +53,5 @@ namespace MSBuild.ExtensionPack.Base.Iterator
                 await TaskScheduler.Default.SwitchTo(false);
             }
         }
-
-        #endregion Public Methods
     }
 }

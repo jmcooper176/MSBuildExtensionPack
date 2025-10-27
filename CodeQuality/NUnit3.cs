@@ -15,15 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.CodeQuality
+namespace CodeQuality
 {
     using System;
     using System.Globalization;
     using System.IO;
     using System.Xml;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// Executes Test Cases using NUnit (Tested using v3.0.1)
@@ -90,8 +87,6 @@ namespace MSBuild.ExtensionPack.CodeQuality
     /// <seealso cref="ToolTask"/>
     public class NUnit3 : ToolTask
     {
-        #region Private Methods
-
         private static int GetAttributeInt32Value(string name, XmlNode node)
         {
             if (node.Attributes?[name] is not null)
@@ -144,15 +139,7 @@ namespace MSBuild.ExtensionPack.CodeQuality
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Properties
-
         protected override string ToolName => "nunit3-console.exe";
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         protected override int ExecuteTool(string pathToTool, string responseFileCommands, string commandLineCommands)
         {
@@ -242,10 +229,6 @@ namespace MSBuild.ExtensionPack.CodeQuality
         {
             this.Log.LogMessage(MessageImportance.Normal, singleLine);
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Specify the maximum number of test assembly agents to run at one time. If not specified, there is no limit.
@@ -395,7 +378,5 @@ namespace MSBuild.ExtensionPack.CodeQuality
         /// whichever is greater.
         /// </summary>
         public int WorkerThreads { get; set; }
-
-        #endregion Public Properties
     }
 }

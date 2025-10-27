@@ -636,8 +636,6 @@ namespace MSBuild.ExtensionPack
     /// <seealso cref="BaseTask"/>
     public sealed class DynamicExecute : BaseTask
     {
-        #region Private Fields
-
         private const string CallTaskAction = "Call";
         private const string CreateTaskAction = "Create";
         private const string DefineTaskAction = "Define";
@@ -656,10 +654,6 @@ namespace MSBuild.ExtensionPack
         /// The shared collection of method definitions. Once defined, a method is never undefined.
         /// </summary>
         private static readonly Dictionary<string, MethodDefinition> Methods = new Dictionary<string, MethodDefinition>();
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         /// <summary>
         /// Converts an MSBuild input value into a method input value.
@@ -1206,10 +1200,6 @@ namespace MSBuild.ExtensionPack
             return this.NoDefaultParameters ? 0 : 1;
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine(false))
@@ -1322,10 +1312,6 @@ namespace MSBuild.ExtensionPack
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// The identifier of the closure instance.
@@ -1541,7 +1527,5 @@ namespace MSBuild.ExtensionPack
         /// </remarks>
         /// <seealso cref="NoDefaultUsingNamespaces"/>
         public IEnumerable<ITaskItem> UsingNamespaces { get; set; }
-
-        #endregion Public Properties
     }
 }

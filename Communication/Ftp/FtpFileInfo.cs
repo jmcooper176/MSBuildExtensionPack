@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Communication.FTP
+namespace Communication.Ftp
 {
     using System;
     using System.IO;
@@ -28,8 +28,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
     [Serializable]
     public sealed class FtpFileInfo : FileSystemInfo
     {
-        #region Private Fields
-
         private readonly string fileName;
         private readonly FtpConnection ftpConnection;
 
@@ -37,17 +35,9 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         private DateTime? lastAccessTime;
         private DateTime? lastWriteTime;
 
-        #endregion Private Fields
-
-        #region Private Constructors
-
         private FtpFileInfo(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
-
-        #endregion Private Constructors
-
-        #region Public Constructors
 
         public FtpFileInfo(FtpConnection ftp, string filePath)
         {
@@ -58,10 +48,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
             ftpConnection = ftp;
             fileName = Path.GetFileName(filePath);
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         public new FileAttributes Attributes { get; internal set; }
 
@@ -92,10 +78,6 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         public new DateTime? LastWriteTimeUtc => lastWriteTime?.ToUniversalTime();
         public override string Name { get; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         public override void Delete()
         {
             FtpConnection.DeleteDirectory(FullName);
@@ -110,7 +92,5 @@ namespace MSBuild.ExtensionPack.Communication.FTP
         {
             base.GetObjectData(info, context);
         }
-
-        #endregion Public Methods
     }
 }

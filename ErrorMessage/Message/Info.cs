@@ -1,6 +1,6 @@
 ﻿// Ignore Spelling: unformatted
 
-namespace MSBuild.ExtensionPack.Base.Logging
+namespace MSBuild.ExtensionPack.ErrorMessage.Message
 {
     using System.Resources;
     using System.Runtime.CompilerServices;
@@ -8,15 +8,11 @@ namespace MSBuild.ExtensionPack.Base.Logging
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
 
-    using MSBuild.ExtensionPack.Base.Interface;
-
     /// <summary>
     /// Implements extension methods for <see cref="TaskLoggingHelper"/> that process <see cref="ResourceManager"/> strings.
     /// </summary>
-    public static class Message
+    public static class Info
     {
-        #region Public Methods
-
         /// <summary>
         /// Extracts the message code from <paramref name="message"/> returning the message code and outputting the stripped message
         /// to <paramref name="messageWithoutCodePrefix"/>.
@@ -204,7 +200,7 @@ namespace MSBuild.ExtensionPack.Base.Logging
         /// </param>
         public static void LogTaskMessage(this TaskLoggingHelper log, string messageResourceName, params object?[] arguments)
         {
-            TaskMessage.LogTaskMessage(log, MessageImportance.Normal, messageResourceName, arguments);
+            Misc.LogTaskMessage(log, messageResourceName, arguments);
         }
 
         /// <summary>
@@ -351,7 +347,5 @@ namespace MSBuild.ExtensionPack.Base.Logging
         {
             log.TaskResources = taskResource;
         }
-
-        #endregion Public Methods
     }
 }

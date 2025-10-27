@@ -30,8 +30,6 @@ namespace MSBuild.ExtensionPack.Base.Shared
         /// </summary>
         internal static class ResourceUtilities
         {
-            #region Private Methods
-
             /// <summary>
             /// Retrieves the MSBuild F1-help keyword for the given resource string. Help keywords are used to index help topics in
             /// host IDEs.
@@ -68,10 +66,6 @@ namespace MSBuild.ExtensionPack.Base.Shared
                     }
                 }
             }
-
-            #endregion Private Methods
-
-            #region Internal Methods
 
             /// <summary>
             /// Extracts the message code (if any) prefixed to the given string. <![CDATA[ MSBuild codes match
@@ -401,8 +395,6 @@ namespace MSBuild.ExtensionPack.Base.Shared
                     throw;
                 }
             }
-
-            #endregion Internal Methods
         }
     }
 }

@@ -15,13 +15,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.Computer
+namespace Computer
 {
     using System;
     using System.Globalization;
     using System.IO;
-
-    using MSBuild.ExtensionPack.Base;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -51,13 +49,7 @@ namespace MSBuild.ExtensionPack.Computer
     /// <seealso cref="BaseTask"/>
     public class WshShell : BaseTask
     {
-        #region Private Fields
-
         private const string CreateShortcutTaskAction = "CreateShortcut";
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private void CreateShortcut()
         {
@@ -127,10 +119,6 @@ namespace MSBuild.ExtensionPack.Computer
             }
         }
 
-        #endregion Private Methods
-
-        #region Protected Methods
-
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
@@ -147,10 +135,6 @@ namespace MSBuild.ExtensionPack.Computer
                     return;
             }
         }
-
-        #endregion Protected Methods
-
-        #region Public Properties
 
         /// <summary>
         /// Sets the Arguments for the shortcut
@@ -198,7 +182,5 @@ namespace MSBuild.ExtensionPack.Computer
         /// Sets the WorkingDirectory
         /// </summary>
         public string WorkingDirectory { get; set; }
-
-        #endregion Public Properties
     }
 }

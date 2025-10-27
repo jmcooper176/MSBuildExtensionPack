@@ -41,13 +41,7 @@ namespace MSBuild.ExtensionPack.Base
     /// <seealso cref="System.IDisposable"/>
     public abstract class BaseToolTask : ToolTask, IBaseTask, IDisposable
     {
-        #region Private Fields
-
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Protected Constructors
 
         protected BaseToolTask()
             : this(AssemblyResource.PrimaryResources, AssemblyResource.SharedResources, "MSBuild.")
@@ -82,10 +76,6 @@ namespace MSBuild.ExtensionPack.Base
             }
         }
 
-        #endregion Protected Constructors
-
-        #region Protected Properties
-
         protected new static TimeSpan TaskProcessTerminationTimeout => TimeSpan.FromSeconds(5.0);
 
         protected IDictionary<string, string?> EnvironmentDictionary { get; set; } = new Dictionary<string, string?>();
@@ -117,10 +107,6 @@ namespace MSBuild.ExtensionPack.Base
 
         /// <inheritdoc/>
         protected override string ToolName => Path.GetFileName(ToolPath ?? ToolExe);
-
-        #endregion Protected Properties
-
-        #region Protected Methods
 
         /// <inheritdoc/>
         protected override string AdjustCommandsForOperatingSystem(string input)
@@ -480,10 +466,6 @@ namespace MSBuild.ExtensionPack.Base
             && base.ValidateParameters();
         }
 
-        #endregion Protected Methods
-
-        #region Internal Properties
-
         internal string CommandLineCommands { get; set; }
         internal bool EventsDisposed { get; set; }
         internal FileInfo? ResponseFile { get; private set; }
@@ -494,10 +476,6 @@ namespace MSBuild.ExtensionPack.Base
         internal bool TerminatedTool { get; set; }
         internal Process? ToolTaskProcess { get; set; } = new();
         internal Timer? ToolTimer { get; set; }
-
-        #endregion Internal Properties
-
-        #region Public Properties
 
         public new IEnumerable<string> EnvironmentVariables { get; set; } = [];
 
@@ -541,10 +519,6 @@ namespace MSBuild.ExtensionPack.Base
             get => base.ToolExe ?? Path.GetFullPath(ToolName);
             set => base.ToolExe = value;
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <inheritdoc/>
         public override void Cancel()
@@ -798,7 +772,5 @@ namespace MSBuild.ExtensionPack.Base
                 }
             }
         }
-
-        #endregion Public Methods
     }
 }

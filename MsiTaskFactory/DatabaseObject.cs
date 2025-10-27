@@ -8,8 +8,6 @@
     /// <seealso cref="MSBuild.ExtensionPack.MsiTaskFactory.IMsiCom"/>
     public class DatabaseObject : IMsiCom
     {
-        #region Protected Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseObject"/> class.
         /// </summary>
@@ -23,18 +21,10 @@
             ArgumentNullException.ThrowIfNull(Installer, nameof(Installer));
         }
 
-        #endregion Protected Constructors
-
-        #region Private Fields
-
         /// <summary>
         /// If <see langref="true"/>, this instance has called <see cref="Dispose(bool)"/>; otherwise, <see langref="false"/>.
         /// </summary>
         private bool disposedValue;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseObject"/> class.
@@ -66,10 +56,6 @@
             Instance = Installer?.Instance.IsInstanceOfCom(Installer.ComType) == true && ValidInstance.IsValidPath(newName) ? Installer?.OpenDatabase(name, newName) : null;
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         public Type? ComType { get; private set; }
         public FileInfo? FilePath { get; }
         public Guid IID => new("000C109D-0000-0000-C000-000000000046");
@@ -99,25 +85,13 @@
             }
         }
 
-        #endregion Public Properties
-
-        #region Protected Properties
-
         protected InstallerObject? Installer { get; }
-
-        #endregion Protected Properties
-
-        #region Private Destructors
 
         ~DatabaseObject()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
         }
-
-        #endregion Private Destructors
-
-        #region Protected Methods
 
         protected virtual void Dispose(bool disposing)
         {
@@ -253,7 +227,5 @@
                 return null;
             }
         }
-
-        #endregion Protected Methods
     }
 }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack.AssemblyInfo
+namespace SdkProject
 {
     using System;
     using System.Collections.Generic;
@@ -24,13 +24,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
     using System.Reflection;
     using System.Security;
     using System.Text;
-
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-
-    using MSBuild.ExtensionPack;
-
-    using MSBuild.ExtensionPack.Base.Enumeration;
 
     /// <summary>
     /// The AssemblyInfo task provides a way to manipulate the content of AssemblyInfo files at build time. It works with C#, VB,
@@ -145,17 +138,11 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
     /// <seealso cref="Task"/>
     public class AssemblyInfo : Task
     {
-        #region Private Fields
-
         private AssemblyVersionSettings assemblyFileVersionSettings;
         private AssemblyVersionSettings assemblyVersionSettings;
         private Encoding fileEncoding = Encoding.UTF8;
         private string? maxAssemblyFileVersion;
         private string? maxAssemblyVersion;
-
-        #endregion Private Fields
-
-        #region Private Methods
 
         private static Encoding? GetTextEncoding(string enc)
         {
@@ -601,10 +588,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
 
             return true;
         }
-
-        #endregion Private Methods
-
-        #region Public Properties
 
         /// <summary>
         /// The build number of the assembly.
@@ -1488,10 +1471,6 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
         /// </summary>
         public bool UseUtc { get; set; }
 
-        #endregion Public Properties
-
-        #region Public Methods
-
         /// <summary>
         /// Executes the AssemblyInfo task.
         /// </summary>
@@ -1524,7 +1503,7 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
                     return false;
                 }
 
-                AssemblyInfo.AssemblyInfoWrapper assemblyInfo = new AssemblyInfo.AssemblyInfoWrapper(item.ItemSpec);
+                var assemblyInfo = new AssemblyInfo.AssemblyInfoWrapper(item.ItemSpec);
 
                 // Validate that stub file entries exist for any of the properties we've been asked to set.
                 if (!ValidateFileEntries(assemblyInfo, item.ItemSpec))
@@ -1639,7 +1618,5 @@ namespace MSBuild.ExtensionPack.AssemblyInfo
 
             return true;
         }
-
-        #endregion Public Methods
     }
 }
