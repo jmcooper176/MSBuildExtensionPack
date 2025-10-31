@@ -68,6 +68,13 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
         /// </summary>
         [Description("")]
         [Display(Name = "", ShortName = "")]
-        ElapsedDays = 5
+        ElapsedDays = 5,
+
+        /// <summary>
+        /// Represents the absence of a value or an unspecified option.
+        /// </summary>
+        [Description("")]
+        [Display(Name = "", ShortName = "")]
+        None = 6,
     }
 }

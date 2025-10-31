@@ -22,8 +22,12 @@ namespace FileSystem.Directory
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Management;
     using System.Security.AccessControl;
     using System.Text.RegularExpressions;
+
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -151,12 +155,12 @@ namespace FileSystem.Directory
                 }
                 catch (Exception ex)
                 {
-                    this.LogTaskWarning(ex.Message);
+                    this.Log.LogTaskWarning(ex.Message);
                     bool deleted = false;
                     int count = 1;
                     while (!deleted && count <= this.RetryCount)
                     {
-                        this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                        this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                         System.Threading.Thread.Sleep(5000);
                         count++;
                         try
@@ -171,7 +175,7 @@ namespace FileSystem.Directory
                         }
                         catch
                         {
-                            this.LogTaskWarning(ex.Message);
+                            this.Log.LogTaskWarning(ex.Message);
                         }
                     }
 
@@ -191,12 +195,12 @@ namespace FileSystem.Directory
                 }
                 catch (Exception ex)
                 {
-                    this.LogTaskWarning(ex.Message);
+                    this.Log.LogTaskWarning(ex.Message);
                     bool deleted = false;
                     int count = 1;
                     while (!deleted && count <= this.RetryCount)
                     {
-                        this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                        this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                         System.Threading.Thread.Sleep(5000);
                         count++;
                         try
@@ -206,7 +210,7 @@ namespace FileSystem.Directory
                         }
                         catch
                         {
-                            this.LogTaskWarning(ex.Message);
+                            this.Log.LogTaskWarning(ex.Message);
                         }
                     }
 
@@ -222,17 +226,17 @@ namespace FileSystem.Directory
         {
             if (string.IsNullOrEmpty(this.Path.GetMetadata("FullPath")))
             {
-                this.Log.LogError("Path must be specified.");
+                this.Log.LogTaskError("Path must be specified.");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting Folders from: {0}", this.Path));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting Folders from: {0}", this.Path));
             DirectoryInfo dirInfo = new DirectoryInfo(this.Path.GetMetadata("FullPath"));
             this.foldersFound = new List<string>();
             this.ProcessGetAll(dirInfo);
             this.Folders = new ITaskItem[this.foldersFound.Count];
             int i = 0;
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Folders Found: {0}", this.foldersFound.Count));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Folders Found: {0}", this.foldersFound.Count));
             foreach (string s in this.foldersFound)
             {
                 ITaskItem newItem = new TaskItem(s);
@@ -245,11 +249,11 @@ namespace FileSystem.Directory
         {
             if (string.IsNullOrEmpty(this.TargetPath.GetMetadata("FullPath")))
             {
-                this.Log.LogError("TargetPath must be specified.");
+                this.Log.LogTaskError("TargetPath must be specified.");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Moving Folder: {0} to: {1}", this.Path, this.TargetPath));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Moving Folder: {0} to: {1}", this.Path, this.TargetPath));
 
             // If the TargetPath has multiple folders, then we need to create the parent
             DirectoryInfo f = new DirectoryInfo(this.TargetPath.GetMetadata("FullPath"));
@@ -272,7 +276,7 @@ namespace FileSystem.Directory
                 Match m = reg.Match(child.Name);
                 if (m.Success)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Removing: {0}", child.FullName));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Removing: {0}", child.FullName));
                     this.DelTree(child);
                     try
                     {
@@ -280,12 +284,12 @@ namespace FileSystem.Directory
                     }
                     catch (Exception ex)
                     {
-                        this.LogTaskWarning(ex.Message);
+                        this.Log.LogTaskWarning(ex.Message);
                         bool deleted = false;
                         int count = 1;
                         while (!deleted && count <= this.RetryCount)
                         {
-                            this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                            this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                             System.Threading.Thread.Sleep(5000);
                             count++;
                             try
@@ -295,7 +299,7 @@ namespace FileSystem.Directory
                             }
                             catch
                             {
-                                this.LogTaskWarning(ex.Message);
+                                this.Log.LogTaskWarning(ex.Message);
                             }
                         }
 
@@ -329,7 +333,7 @@ namespace FileSystem.Directory
                     Match m = reg.Match(child.Name);
                     if (m.Success)
                     {
-                        this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Getting: {0}", child.FullName));
+                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Getting: {0}", child.FullName));
                         this.foldersFound.Add(child.FullName);
                     }
                 }
@@ -343,7 +347,7 @@ namespace FileSystem.Directory
 
         private void RemoveContent(DirectoryInfo dir)
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Content from Folder: {0}", dir.FullName));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Content from Folder: {0}", dir.FullName));
             FileSystemInfo[] infos = dir.GetFileSystemInfos("*");
             foreach (FileSystemInfo i in infos)
             {
@@ -367,13 +371,13 @@ namespace FileSystem.Directory
                                 {
                                     if (Convert.ToInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.CurrentCulture) != 0)
                                     {
-                                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Directory deletion error: ReturnValue: {0}", outParams.Properties["ReturnValue"].Value));
+                                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Directory deletion error: ReturnValue: {0}", outParams.Properties["ReturnValue"].Value));
                                         return;
                                     }
                                 }
                                 else
                                 {
-                                    this.Log.LogError("The ManagementObject call to invoke Delete returned null.");
+                                    this.Log.LogTaskError("The ManagementObject call to invoke Delete returned null.");
                                     return;
                                 }
                             }
@@ -388,12 +392,12 @@ namespace FileSystem.Directory
                             }
                             catch (Exception ex)
                             {
-                                this.LogTaskWarning(ex.Message);
+                                this.Log.LogTaskWarning(ex.Message);
                                 bool deleted = false;
                                 int count = 1;
                                 while (!deleted && count <= this.RetryCount)
                                 {
-                                    this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                                    this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                                     System.Threading.Thread.Sleep(5000);
                                     count++;
                                     try
@@ -407,7 +411,7 @@ namespace FileSystem.Directory
                                     }
                                     catch
                                     {
-                                        this.LogTaskWarning(ex.Message);
+                                        this.Log.LogTaskWarning(ex.Message);
                                     }
                                 }
 
@@ -426,12 +430,12 @@ namespace FileSystem.Directory
                         }
                         catch (Exception ex)
                         {
-                            this.LogTaskWarning(ex.Message);
+                            this.Log.LogTaskWarning(ex.Message);
                             bool deleted = false;
                             int count = 1;
                             while (!deleted && count <= this.RetryCount)
                             {
-                                this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                                this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                                 System.Threading.Thread.Sleep(5000);
                                 count++;
                                 try
@@ -445,7 +449,7 @@ namespace FileSystem.Directory
                                 }
                                 catch
                                 {
-                                    this.LogTaskWarning(ex.Message);
+                                    this.Log.LogTaskWarning(ex.Message);
                                 }
                             }
 
@@ -479,12 +483,12 @@ namespace FileSystem.Directory
                     }
                     catch (Exception ex)
                     {
-                        this.LogTaskWarning(ex.Message);
+                        this.Log.LogTaskWarning(ex.Message);
                         bool deleted = false;
                         int count = 1;
                         while (!deleted && count <= this.RetryCount)
                         {
-                            this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                            this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Delete failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                             System.Threading.Thread.Sleep(5000);
                             count++;
                             try
@@ -498,7 +502,7 @@ namespace FileSystem.Directory
                             }
                             catch
                             {
-                                this.LogTaskWarning(ex.Message);
+                                this.Log.LogTaskWarning(ex.Message);
                             }
                         }
 
@@ -526,12 +530,12 @@ namespace FileSystem.Directory
 
                     if (action == "Add")
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Adding security for user: {0} on {1}", userName, this.Path));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Adding security for user: {0} on {1}", userName, this.Path));
                         currentSecurity.AddAccessRule(new FileSystemAccessRule(userName, userRights, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, this.accessType));
                     }
                     else
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing security for user: {0} on {1}", userName, this.Path));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing security for user: {0} on {1}", userName, this.Path));
                         if (permissions.Length == 0)
                         {
                             currentSecurity.RemoveAccessRuleAll(new FileSystemAccessRule(userName, userRights, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, this.accessType));
@@ -562,7 +566,7 @@ namespace FileSystem.Directory
             DirectoryInfo dir = new DirectoryInfo(this.Path.GetMetadata("FullPath"));
             if (!dir.Exists)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", this.Path));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", this.Path));
                 return;
             }
 
@@ -593,7 +597,7 @@ namespace FileSystem.Directory
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

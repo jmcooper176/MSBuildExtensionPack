@@ -613,18 +613,18 @@ namespace Security
                 var matches = store.Certificates.Find(X509FindType.FindByThumbprint, this.Thumbprint, false);
                 if (matches.Count > 1)
                 {
-                    this.Log.LogError("More than one certificate with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
+                    this.Log.LogTaskError("More than one certificate with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
                     return;
                 }
 
                 if (matches.Count == 0)
                 {
-                    this.Log.LogError("No certificates with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
+                    this.Log.LogTaskError("No certificates with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
                     return;
                 }
 
                 cert = matches[0];
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Certificate: {0}", cert.Thumbprint));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Certificate: {0}", cert.Thumbprint));
                 store.Remove(cert);
             }
             else if (!string.IsNullOrEmpty(this.SubjectDName))
@@ -632,18 +632,18 @@ namespace Security
                 var matches = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, this.SubjectDName, false);
                 if (matches.Count > 1)
                 {
-                    this.Log.LogError("More than one certificate with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
+                    this.Log.LogTaskError("More than one certificate with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
                     return;
                 }
 
                 if (matches.Count == 0)
                 {
-                    this.Log.LogError("No certificates with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
+                    this.Log.LogTaskError("No certificates with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
                     return;
                 }
 
                 cert = matches[0];
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Certificate: {0}", cert.SubjectName));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Certificate: {0}", cert.SubjectName));
                 store.Remove(cert);
             }
 
@@ -673,7 +673,7 @@ namespace Security
 
                 if (certificate is null)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Error in setting user rights on certificate. Could not find the certificate in the certificate store"));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Error in setting user rights on certificate. Could not find the certificate in the certificate store"));
                 }
                 else
                 {

@@ -21,7 +21,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
-    using MSBuild.ExtensionPack.Base.SystemAttribute;
+    using MSBuild.ExtensionPack.ErrorMessage.AttributeAccess;
 
     [Flags]
     public enum AppleBuildNumberPart : int

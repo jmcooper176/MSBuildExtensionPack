@@ -25,6 +25,14 @@ namespace FileSystem.Path
     using System.Text;
     using System.Text.RegularExpressions;
 
+    using EnvDTE;
+
+    using Microsoft.Build.Evaluation;
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -173,7 +181,7 @@ namespace FileSystem.Path
 
             if (this.DisplayFiles)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Detokenising File: {0}", file));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Detokenising File: {0}", file));
             }
 
             Encoding finalEncoding;
@@ -181,7 +189,7 @@ namespace FileSystem.Path
             // See if the file exists
             if (checkExists && System.IO.File.Exists(file) == false)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", file));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", file));
                 throw new ArgumentException("Review error log");
             }
 
@@ -208,7 +216,7 @@ namespace FileSystem.Path
                 // If readonly attribute is set, reset it.
                 if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Making file writable");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Making file writable");
                     System.IO.File.SetAttributes(file, fileAttributes ^ FileAttributes.ReadOnly);
                     changedAttribute = true;
                 }
@@ -218,7 +226,7 @@ namespace FileSystem.Path
                 {
                     if (this.DisplayFiles)
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Re-writing file content: {0}", file));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Re-writing file content: {0}", file));
                     }
 
                     streamWriter.Write(newFile);
@@ -227,7 +235,7 @@ namespace FileSystem.Path
 
                 if (changedAttribute)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Making file readonly");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                     System.IO.File.SetAttributes(file, FileAttributes.ReadOnly);
                 }
             }
@@ -237,7 +245,7 @@ namespace FileSystem.Path
         {
             try
             {
-                this.LogTaskMessage("Detokenise Task Execution Started [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
+                this.Log.LogTaskMessage("Detokenise Task Execution Started [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
 
                 // if the ReplacementValues collection and the CommandLineValues are
                 // <see langref="null"/>
@@ -261,7 +269,7 @@ namespace FileSystem.Path
                 {
                     // Read the project file to get the tokens
                     string projectFile = this.ProjectFile is null ? this.BuildEngine.ProjectFileOfTaskNode : this.ProjectFile.ItemSpec;
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Loading Project: {0}", projectFile));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Loading Project: {0}", projectFile));
                     this.project = ProjectCollection.GlobalProjectCollection.GetLoadedProjects(projectFile).FirstOrDefault();
                     if (this.project is null)
                     {
@@ -278,7 +286,7 @@ namespace FileSystem.Path
                     }
                     catch (ArgumentException)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Error, {0} is not a supported encoding name.", this.TextEncoding));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error, {0} is not a supported encoding name.", this.TextEncoding));
                         return;
                     }
                 }
@@ -300,7 +308,7 @@ namespace FileSystem.Path
             }
             finally
             {
-                this.LogTaskMessage("Detokenise Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
+                this.Log.LogTaskMessage("Detokenise Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
             }
         }
 
@@ -335,7 +343,7 @@ namespace FileSystem.Path
 
                     if (!this.report && !this.SearchAllStores && !this.IgnoreUnknownTokens)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Property not found: {0}", extractedProperty));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Property not found: {0}", extractedProperty));
                         throw new ArgumentException("Review error log");
                     }
                 }
@@ -360,7 +368,7 @@ namespace FileSystem.Path
                     {
                         if (!this.report && !this.SearchAllStores && !this.IgnoreUnknownTokens)
                         {
-                            this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Property not found: {0}", extractedProperty));
+                            this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Property not found: {0}", extractedProperty));
                             throw new ArgumentException("Review error log");
                         }
                     }
@@ -372,7 +380,7 @@ namespace FileSystem.Path
             {
                 if (!this.report && !this.IgnoreUnknownTokens)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Property not found: {0}", extractedProperty));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Property not found: {0}", extractedProperty));
                     throw new ArgumentException("Review error log");
                 }
 
@@ -396,11 +404,11 @@ namespace FileSystem.Path
         {
             if (this.TargetFiles is null)
             {
-                this.Log.LogError("The collection passed to TargetFiles is empty");
+                this.Log.LogTaskError("The collection passed to TargetFiles is empty");
                 throw new ArgumentException("Review error log");
             }
 
-            this.LogTaskMessage(this.analyseOnly ? string.Format(CultureInfo.CurrentCulture, "Analysing Collection: {0} files", this.TargetFiles.Count()) : string.Format(CultureInfo.CurrentCulture, "Detokenising Collection: {0} files", this.TargetFiles.Count()));
+            this.Log.LogTaskMessage(this.analyseOnly ? string.Format(CultureInfo.CurrentCulture, "Analysing Collection: {0} files", this.TargetFiles.Count()) : string.Format(CultureInfo.CurrentCulture, "Detokenising Collection: {0} files", this.TargetFiles.Count()));
             foreach (ITaskItem file in this.TargetFiles)
             {
                 this.tokenMatched = false;
@@ -433,7 +441,7 @@ namespace FileSystem.Path
 
         private void ProcessPath()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Detokenising Path: {0}", this.TargetPath));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Detokenising Path: {0}", this.TargetPath));
             string originalPath = this.TargetPath;
             string rootPath = originalPath.Replace("*", string.Empty, StringComparison.InvariantCulture);
 
@@ -444,7 +452,7 @@ namespace FileSystem.Path
                 DirectoryInfo dir = new DirectoryInfo(rootPath);
                 if (!dir.Exists)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", rootPath));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", rootPath));
                     throw new ArgumentException("Review error log");
                 }
 
@@ -457,7 +465,7 @@ namespace FileSystem.Path
                 DirectoryInfo dir = new DirectoryInfo(originalPath);
                 if (!dir.Exists)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", rootPath));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", rootPath));
                     throw new ArgumentException("Review error log");
                 }
 
@@ -511,7 +519,7 @@ namespace FileSystem.Path
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
 

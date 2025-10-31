@@ -21,6 +21,12 @@ namespace Management
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Management;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -120,14 +126,14 @@ namespace Management
                 {
                     // Obtain in-parameters for the method
                     ManagementBaseObject inParams = classInstance.GetMethodParameters(this.Method);
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Method: {0}", this.Method));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Method: {0}", this.Method));
 
                     if (this.MethodParameters is not null)
                     {
                         // Add the input parameters.
                         foreach (string[] data in this.MethodParameters.Select(param => param.ItemSpec.Split(new[] { "#~#" }, StringSplitOptions.RemoveEmptyEntries)))
                         {
-                            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Param: {0}. Value: {1}", data[0], data[1]));
+                            this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Param: {0}. Value: {1}", data[0], data[1]));
                             inParams[data[0]] = data[1];
                         }
                     }
@@ -146,14 +152,14 @@ namespace Management
                 {
                     // Obtain in-parameters for the method
                     ManagementBaseObject inParams = mgmtClass.GetMethodParameters(this.Method);
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Method: {0}", this.Method));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Method: {0}", this.Method));
 
                     if (this.MethodParameters is not null)
                     {
                         // Add the input parameters.
                         foreach (string[] data in this.MethodParameters.Select(param => param.ItemSpec.Split(new[] { "#~#" }, StringSplitOptions.RemoveEmptyEntries)))
                         {
-                            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Param: {0}. Value: {1}", data[0], data[1]));
+                            this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Param: {0}. Value: {1}", data[0], data[1]));
                             inParams[data[0]] = data[1];
                         }
                     }
@@ -175,7 +181,7 @@ namespace Management
         {
             this.info = new List<ITaskItem>();
             this.GetManagementScope(this.Namespace);
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing WMI query: SELECT * FROM {0}", this.Class));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing WMI query: SELECT * FROM {0}", this.Class));
             ObjectQuery query = new ObjectQuery("SELECT * FROM " + this.Class);
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query))
             {
@@ -187,7 +193,7 @@ namespace Management
                     {
                         try
                         {
-                            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Extracting Property: {0}", prop.ItemSpec));
+                            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Extracting Property: {0}", prop.ItemSpec));
                             string value = string.Empty;
 
                             // sometimes the properties might be arrays.....
@@ -206,7 +212,7 @@ namespace Management
                         }
                         catch
                         {
-                            this.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "Property Not Found: {0}", prop.ItemSpec));
+                            this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "Property Not Found: {0}", prop.ItemSpec));
                         }
                     }
 
@@ -218,7 +224,7 @@ namespace Management
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
-        protected override void InternalExecute()
+        protected void InternalExecute()
         {
             switch (this.TaskAction)
             {
@@ -231,7 +237,7 @@ namespace Management
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

@@ -21,6 +21,11 @@ namespace Xml
     using System.Globalization;
     using System.Xml;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para><i>AddAttribute</i> ( <b>Required:</b> File, Element or XPath, Key, Value <b>Optional:</b> Prefix, Namespaces, RetryCount)</para>
@@ -189,11 +194,11 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Set Attribute: {0}={1}", this.Key, this.Value));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Set Attribute: {0}={1}", this.Key, this.Value));
                 XmlNode elementNode = this.xmlFileDoc.SelectSingleNode(this.Element, this.namespaceManager);
                 if (elementNode is null)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Element not found: {0}", this.Element));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Element not found: {0}", this.Element));
                     return;
                 }
 
@@ -204,7 +209,7 @@ namespace Xml
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Set Attribute: {0}={1}", this.Key, this.Value));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Set Attribute: {0}={1}", this.Key, this.Value));
                 if (this.elements is not null && this.elements.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
@@ -222,11 +227,11 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Add Element: {0}", this.Element));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Add Element: {0}", this.Element));
                 XmlNode parentNode = this.xmlFileDoc.SelectSingleNode(this.ParentElement, this.namespaceManager);
                 if (parentNode is null)
                 {
-                    this.Log.LogError("ParentElement not found: " + this.ParentElement);
+                    this.Log.LogTaskError("ParentElement not found: " + this.ParentElement);
                     return;
                 }
 
@@ -285,7 +290,7 @@ namespace Xml
 
                         if (!string.IsNullOrEmpty(this.Key))
                         {
-                            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Add Attribute: {0} to: {1}", this.Key, this.Element));
+                            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Add Attribute: {0} to: {1}", this.Key, this.Element));
 
                             XmlAttribute attNode = this.xmlFileDoc.CreateAttribute(this.Key);
                             attNode.Value = this.Value;
@@ -312,7 +317,7 @@ namespace Xml
                 string prefixNamespace = this.namespaceManager.LookupNamespace(this.Prefix);
                 if (string.IsNullOrEmpty(prefixNamespace))
                 {
-                    this.Log.LogError("Prefix not defined in Namespaces in parameters: " + this.Prefix);
+                    this.Log.LogTaskError("Prefix not defined in Namespaces in parameters: " + this.Prefix);
                     return null;
                 }
 
@@ -334,7 +339,7 @@ namespace Xml
                 string prefixNamespace = this.namespaceManager.LookupNamespace(this.Prefix);
                 if (string.IsNullOrEmpty(prefixNamespace))
                 {
-                    this.Log.LogError("Prefix not defined in Namespaces in parameters: " + this.Prefix);
+                    this.Log.LogTaskError("Prefix not defined in Namespaces in parameters: " + this.Prefix);
                     return null;
                 }
 
@@ -412,7 +417,7 @@ namespace Xml
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Read Elements: {0}", this.XPath));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Read Elements: {0}", this.XPath));
             XmlNodeList nodelist = this.xmlFileDoc.SelectNodes(this.XPath, this.namespaceManager);
             if (nodelist is not null)
             {
@@ -451,7 +456,7 @@ namespace Xml
                 XmlNode elementNode = this.xmlFileDoc.SelectSingleNode(this.Element, this.namespaceManager);
                 if (elementNode is null)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Element not found: {0}", this.Element));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Element not found: {0}", this.Element));
                     return;
                 }
 
@@ -464,7 +469,7 @@ namespace Xml
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Attribute: {0}", this.Key));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Attribute: {0}", this.Key));
                 if (this.elements is not null && this.elements.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
@@ -484,11 +489,11 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Element: {0}", this.Element));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Element: {0}", this.Element));
                 XmlNode parentNode = this.xmlFileDoc.SelectSingleNode(this.ParentElement, this.namespaceManager);
                 if (parentNode is null)
                 {
-                    this.Log.LogError("ParentElement not found: " + this.ParentElement);
+                    this.Log.LogTaskError("ParentElement not found: " + this.ParentElement);
                     return;
                 }
 
@@ -501,7 +506,7 @@ namespace Xml
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Element: {0}", this.XPath));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Element: {0}", this.XPath));
                 if (this.elements is not null && this.elements.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
@@ -527,12 +532,12 @@ namespace Xml
             }
             catch (Exception ex)
             {
-                this.LogTaskWarning(ex.Message);
+                this.Log.LogTaskWarning(ex.Message);
                 bool saved = false;
                 int count = 1;
                 while (!saved && count <= this.RetryCount)
                 {
-                    this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Save failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                    this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Save failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                     System.Threading.Thread.Sleep(5000);
                     count++;
                     try
@@ -557,13 +562,13 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.Log.LogError("XPath is Required");
+                this.Log.LogTaskError("XPath is Required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Key))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Attribute: {0}. Value: {1}", this.XPath, this.Value));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Attribute: {0}. Value: {1}", this.XPath, this.Value));
                 XmlNode node = this.xmlFileDoc.SelectSingleNode(this.XPath, this.namespaceManager);
                 if (node is not null && node.NodeType == XmlNodeType.Attribute)
                 {
@@ -572,7 +577,7 @@ namespace Xml
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Attribute: {0} @ {1}. Value: {2}", this.Key, this.XPath, this.Value));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Attribute: {0} @ {1}. Value: {2}", this.Key, this.XPath, this.Value));
                 if (this.elements is not null && this.elements.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
@@ -593,13 +598,13 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.Log.LogError("XPath is Required");
+                this.Log.LogTaskError("XPath is Required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.InnerXml))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Element: {0}. InnerText: {1}", this.XPath, this.InnerText));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Element: {0}. InnerText: {1}", this.XPath, this.InnerText));
                 if (this.elements is not null && this.elements.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
@@ -613,7 +618,7 @@ namespace Xml
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Element: {0}. InnerXml: {1}", this.XPath, this.InnerXml));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Element: {0}. InnerXml: {1}", this.XPath, this.InnerXml));
             if (this.elements is not null && this.elements.Count > 0)
             {
                 foreach (XmlNode element in this.elements)
@@ -632,7 +637,7 @@ namespace Xml
         {
             if (!System.IO.File.Exists(this.File.ItemSpec))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", this.File.ItemSpec));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", this.File.ItemSpec));
                 return;
             }
 
@@ -643,12 +648,12 @@ namespace Xml
             }
             catch (Exception ex)
             {
-                this.LogTaskWarning(ex.Message);
+                this.Log.LogTaskWarning(ex.Message);
                 bool loaded = false;
                 int count = 1;
                 while (!loaded && count <= this.RetryCount)
                 {
-                    this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Load failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
+                    this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.InvariantCulture, "Load failed, trying again in 5 seconds. Attempt {0} of {1}", count, this.RetryCount));
                     System.Threading.Thread.Sleep(5000);
                     count++;
                     try
@@ -658,7 +663,7 @@ namespace Xml
                     }
                     catch
                     {
-                        this.LogTaskWarning(ex.Message);
+                        this.Log.LogTaskWarning(ex.Message);
                     }
                 }
 
@@ -674,7 +679,7 @@ namespace Xml
                 this.elements = this.xmlFileDoc.SelectNodes(this.XPath, this.namespaceManager);
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "XmlFile: {0}", this.File.ItemSpec));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "XmlFile: {0}", this.File.ItemSpec));
             switch (this.TaskAction)
             {
                 case AddElementTaskAction:
@@ -715,7 +720,7 @@ namespace Xml
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

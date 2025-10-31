@@ -21,6 +21,8 @@ namespace FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public class Python : IVersionMethod, IComparable<Python>, IEquatable<Python>, IEqualityComparer<Python>
     {
         public string Caption { get; set; }

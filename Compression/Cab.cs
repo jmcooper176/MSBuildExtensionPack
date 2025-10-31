@@ -22,7 +22,14 @@ namespace Compression
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Management;
     using System.Text;
+
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>

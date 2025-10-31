@@ -30,10 +30,9 @@ namespace MSBuild.ExtensionPack.Framework.Tests
     [TestClass]
     public class FileTest
     {
+        private object? methodResult;
         private bool result;
         private File task;
-
-        private object? methodResult;
 
         private string ConvertFromFileSystemRights(FileSystemRights[] rights)
         {

@@ -18,7 +18,13 @@
 namespace Science
 {
     using System;
+    using System.Data;
     using System.Globalization;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -169,7 +175,7 @@ namespace Science
             this.total = this.numbers[0];
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} + {1}", this.total, this.numbers[i]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} + {1}", this.total, this.numbers[i]));
                 this.total += this.numbers[i];
             }
         }
@@ -179,7 +185,7 @@ namespace Science
             int totalI = Convert.ToInt32(this.numbers[0]);
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} & {1}", totalI, this.numbers[i]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} & {1}", totalI, this.numbers[i]));
                 totalI &= Convert.ToInt32(this.numbers[i]);
             }
 
@@ -188,7 +194,7 @@ namespace Science
 
         private void Compare()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Comparing: {0} [{1}] {2}", this.P1, this.Comparison.ToUpperInvariant(), this.P2));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Comparing: {0} [{1}] {2}", this.P1, this.Comparison.ToUpperInvariant(), this.P2));
 
             switch (this.Comparison.ToUpperInvariant())
             {
@@ -209,7 +215,7 @@ namespace Science
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid Comparison passed: {0}. Valid Comparisons are 'GreaterThan', 'LessThan', 'GreaterThanOrEquals', 'LessThanOrEquals'", this.Comparison.ToUpperInvariant()));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid Comparison passed: {0}. Valid Comparisons are 'GreaterThan', 'LessThan', 'GreaterThanOrEquals', 'LessThanOrEquals'", this.Comparison.ToUpperInvariant()));
                     return;
             }
         }
@@ -219,14 +225,14 @@ namespace Science
             this.total = this.numbers[0];
             for (int x = 1; x < this.numbers.Length; x++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} / {1}", this.total, this.numbers[x]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} / {1}", this.total, this.numbers[x]));
                 this.total /= this.numbers[x];
             }
         }
 
         private void Evaluate()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Evaluating Expression: {0}", this.Expression));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Evaluating Expression: {0}", this.Expression));
             using (DataTable dt = new DataTable())
             {
                 dt.Locale = CultureInfo.CurrentCulture;
@@ -239,7 +245,7 @@ namespace Science
             int totalI = Convert.ToInt32(this.numbers[0]);
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} << {1}", totalI, this.numbers[i]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} << {1}", totalI, this.numbers[i]));
                 totalI <<= Convert.ToInt32(this.numbers[i]);
             }
 
@@ -251,7 +257,7 @@ namespace Science
             this.total = this.numbers[0];
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} % {1}", this.total, this.numbers[i]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} % {1}", this.total, this.numbers[i]));
                 this.total %= this.numbers[i];
             }
         }
@@ -261,7 +267,7 @@ namespace Science
             this.total = this.numbers[0];
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} * {1}", this.total, this.numbers[i]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} * {1}", this.total, this.numbers[i]));
                 this.total *= this.numbers[i];
             }
         }
@@ -271,7 +277,7 @@ namespace Science
             int totalI = Convert.ToInt32(this.numbers[0]);
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} | {1}", totalI, this.numbers[i]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} | {1}", totalI, this.numbers[i]));
                 totalI |= Convert.ToInt32(this.numbers[i]);
             }
 
@@ -283,7 +289,7 @@ namespace Science
             int totalI = Convert.ToInt32(this.numbers[0]);
             for (int i = 1; i < this.numbers.Length; i++)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Operation: {0} >> {1}", totalI, this.numbers[i]));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Operation: {0} >> {1}", totalI, this.numbers[i]));
                 totalI >>= Convert.ToInt32(this.numbers[i]);
             }
 
@@ -295,7 +301,7 @@ namespace Science
             this.total = this.numbers[0];
             for (int x = 1; x < this.numbers.Length; x++)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} - {1}", this.total, this.numbers[x]));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Operation: {0} - {1}", this.total, this.numbers[x]));
                 this.total -= this.numbers[x];
             }
         }
@@ -320,7 +326,7 @@ namespace Science
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "{0} numbers", this.TaskAction));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "{0} numbers", this.TaskAction));
             switch (this.TaskAction)
             {
                 case AddTaskAction:
@@ -368,7 +374,7 @@ namespace Science
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
 
@@ -396,7 +402,7 @@ namespace Science
         /// </summary>
         public IEnumerable<string> Numbers
         {
-            set => this.numbers = ToFloatArray(value);
+            set => this.numbers = ToFloatArray(value.ToArray());
         }
 
         /// <summary>

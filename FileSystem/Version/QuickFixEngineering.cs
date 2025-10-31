@@ -27,6 +27,8 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Text;
     using System.Text.RegularExpressions;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     /// <summary>
     /// Class implementing the Quick Fix Engineering (QFE) versioning scheme.
     /// </summary>

@@ -38,6 +38,182 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
     public partial class TempDirectory : IDisposable, IAsyncDisposable, IEqualityComparer<TempDirectory>, IEqualityComparer<DirectoryInfo>, IEqualityComparer<string>
     {
         /// <summary>
+        /// Contains a stack of <see cref="DirectoryInfo"/> for pushing and popping the current directory.
+        /// </summary>
+        private readonly Stack<DirectoryInfo> CurrentDirectoryStack;
+
+        /// <summary>
+        /// Semaphore signaling whether <see cref="Dispose(bool)"/> has already been called.
+        /// </summary>
+        private bool disposedValue;
+
+        /// <summary>
+        /// File base name regular expression to ensure template is in correct form.
+        /// </summary>
+        /// <returns>Returns the <see cref="Regex"/> regular expression.</returns>
+        [GeneratedRegex(@"^[A-Za-z0-9\-_].+(?:X){18}$", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        private static partial Regex BaseNameTemplateRegex();
+
+        /// <summary>
+        /// Protected method disposing of <see cref="DirectoryInfo"/> if <paramref name="disposing"/> is <see langref="true"/>.
+        /// </summary>
+        /// <param name="disposing">
+        /// If <see langref="true"/>, both managed and unmanaged resources will be disposed; otherwise only unmanaged resources will
+        /// be disposing.
+        /// </param>
+        /// <exception cref="ObjectDisposedException">
+        /// Throws if <see cref="TemporaryDirectory"/> has already been deleted before <see cref="Dispose(bool)"/> has been called.
+        /// </exception>
+        /// <exception cref="IOException">Throws if one or more files is open.</exception>
+        /// <exception cref="SecurityException">
+        /// Throws if the caller of <see cref="Dispose(bool)"/> lacks the permissions to delete <see cref="TemporaryDirectory"/>.
+        /// </exception>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    if (PeekLocation() is not null)
+                    {
+                        PopLocation();
+                    }
+
+                    try
+                    {
+                        ParentDirectory?.Delete(recursive: true);
+                    }
+                    catch (UnauthorizedAccessException uaex)
+                    {
+                        Console.Error.WriteLine(uaex.ToString());
+
+                        int count = 0;
+
+                        if (ParentDirectory is not null)
+                        {
+                            foreach (var fi in ParentDirectory.EnumerateFiles("*", new EnumerationOptions() { AttributesToSkip = FileAttributes.ReadOnly, RecurseSubdirectories = true }))
+                            {
+                                if (!fi.Attributes.HasFlag(FileAttributes.ReadOnly))
+                                {
+                                    fi.Delete();
+                                }
+                                else
+                                {
+                                    count++;
+                                    Console.Error.WriteLine($"File {fi.FullName} is read-only");
+                                }
+                            }
+
+                            Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted files");
+
+                            count = 0;
+
+                            foreach (var di in this.ParentDirectory.EnumerateDirectories("*", SearchOption.AllDirectories))
+                            {
+                                if (!di.EnumerateFiles().Any())
+                                {
+                                    di.Delete();
+                                }
+                                else
+                                {
+                                    count++;
+                                    Console.Error.WriteLine($"Directory {di.FullName} contains one or more read-only files");
+                                }
+                            }
+
+                            Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted sub-directories");
+                        }
+                    }
+                    catch (Exception ex) when (ex is DirectoryNotFoundException || ex is IOException || ex is SecurityException)
+                    {
+                        Console.Error.WriteLine(ex.ToString());
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Protected asynchronous method disposing of <see cref="DirectoryInfo"/> if <paramref name="disposing"/> is <see langref="true"/>.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">
+        /// Throws if <see cref="TemporaryDirectory"/> has already been deleted before <see cref="DisposeAsyncCore"/> has been called.
+        /// </exception>
+        /// <exception cref="IOException">Throws if one or more files is open.</exception>
+        /// <exception cref="SecurityException">
+        /// Throws if the caller of <see cref="DisposeAsyncCore"/> lacks the permissions to delete <see cref="TemporaryDirectory"/>.
+        /// </exception>
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            if (!disposedValue)
+            {
+                PopLocation();
+
+                try
+                {
+                    ParentDirectory?.Delete(recursive: true);
+                }
+                catch (UnauthorizedAccessException uaex)
+                {
+                    await Console.Error.WriteLineAsync(uaex.ToString()).ConfigureAwait(false);
+
+                    int count = 0;
+
+                    if (ParentDirectory is not null)
+                    {
+                        await foreach (var fi in ListAsyncEnumerable.GetAsyncEnumerable(ParentDirectory.EnumerateFiles("*", new EnumerationOptions() { AttributesToSkip = FileAttributes.ReadOnly, RecurseSubdirectories = true })).ConfigureAwait(false))
+                        {
+                            if (!fi.Attributes.HasFlag(FileAttributes.ReadOnly))
+                            {
+                                fi.Delete();
+                            }
+                            else
+                            {
+                                count++;
+                                await Console.Error.WriteLineAsync($"File {fi.FullName} is read-only").ConfigureAwait(false);
+                            }
+                        }
+
+                        Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted files");
+
+                        count = 0;
+
+                        await foreach (var di in ListAsyncEnumerable.GetAsyncEnumerable(this.ParentDirectory.EnumerateDirectories("*", SearchOption.AllDirectories)).ConfigureAwait(false))
+                        {
+                            if (!IsNullOrEmpty(di.EnumerateFiles()))
+                            {
+                                di.Delete();
+                            }
+                            else
+                            {
+                                count++;
+                                await Console.Error.WriteLineAsync($"Directory {di.FullName} contains one or more read-only files").ConfigureAwait(false);
+                            }
+                        }
+
+                        Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted sub-directories");
+                    }
+                }
+                catch (DirectoryNotFoundException dnfex)
+                {
+                    await Console.Error.WriteLineAsync($"Directory {DirectoryName} no longer exists").ConfigureAwait(false);
+                    throw new ObjectDisposedException(this.TemporaryDirectory.GetType().Name, dnfex);
+                }
+                catch (IOException ioex)
+                {
+                    await Console.Error.WriteLineAsync($"Directory {DirectoryName} is the application directory for {Path.GetDirectoryName(Assembly.GetAssembly(typeof(TempDirectory))?.Location) ?? Directory.GetCurrentDirectory()}").ConfigureAwait(false);
+                }
+                catch (SecurityException sex)
+                {
+                    await Console.Error.WriteLineAsync($"Caller {Environment.UserName} does not have the permissions to delete {DirectoryName}").ConfigureAwait(false);
+                }
+            }
+
+            disposedValue = true;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TempDirectory"/> class.
         /// </summary>
         /// <param name="directoryName">Specifies the parent directory string to use.</param>
@@ -94,6 +270,76 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
             : this(Path.GetTempPath() ?? Environment.GetEnvironmentVariable("TEMP") ?? Environment.GetEnvironmentVariable("TMP") ?? Environment.GetEnvironmentVariable("TMPDIR"), leaf)
         {
         }
+
+        /// <summary>
+        /// Gets a value indicating the <see cref="FileAccess"/> mode for the created file.
+        /// </summary>
+        public virtual FileAccess AccessMode => FileAccess.ReadWrite;
+
+        /// <summary>
+        /// Gets or sets a value indicating the <c>Windows</c> buffer size for the created file. The default is <c>4096</c> bytes.
+        /// </summary>
+        [SupportedOSPlatform("Windows")]
+        public virtual int BufferSize { get; set; } = 4096;
+
+        /// <summary>
+        /// Gets a value indicating the full name string for <see cref="TemporaryDirectory"/>.
+        /// </summary>
+        public string DirectoryName => TemporaryDirectory.FullName;
+
+        /// <summary>
+        /// Gets a value indicating the <see cref="FileAttributes"/> attributes to use for the created file.
+        /// </summary>
+        public virtual FileAttributes FileAttributes => FileAttributes.Normal | FileAttributes.Temporary | FileAttributes.NotContentIndexed;
+
+        /// <summary>
+        /// Gets a value indicating the <c>Unix</c> file mode bitmap for the created file.
+        /// </summary>
+        /// <remarks>0600</remarks>
+        public virtual UnixFileMode Mode => UnixFileMode.UserRead | UnixFileMode.UserWrite;
+
+        /// <summary>
+        /// Gets a value indicating the <see cref="FileMode"/> for the created file.
+        /// </summary>
+        public virtual FileMode OpenMode => FileMode.CreateNew;
+
+        /// <summary>
+        /// Gets a value indicating the <c>Windows</c><see cref="FileOptions"/> to use for the created file.
+        /// </summary>
+        [SupportedOSPlatform("Windows")]
+        public virtual FileOptions Options => FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Asynchronous;
+
+        /// <summary>
+        /// Gets a value indicate the parent <see cref="DirectoryInfo"/> of the leaf.
+        /// </summary>
+        public DirectoryInfo? ParentDirectory { get; }
+
+        /// <summary>
+        /// Gets a value indicating the string absolute path name of the <see cref="ParentDirectory"/>.
+        /// </summary>
+        public string? ParentName => ParentDirectory?.FullName;
+
+        /// <summary>
+        /// Gets a value indicating the <see cref="FileShare"/> mode to use for the secure created file.
+        /// </summary>
+        public virtual FileShare ShareMode => FileShare.None;
+
+        /// <summary>
+        /// Gets a value indicating the <see cref="TempDirectory"/> directory path.
+        /// </summary>
+        public DirectoryInfo TemporaryDirectory { get; }
+
+        /// <summary>
+        /// Gets a value indicating the <c>Windows</c><see cref="AccessControlSections"/> to use for the created file.
+        /// </summary>
+        [SupportedOSPlatform("Windows")]
+        public virtual AccessControlSections WindowsAccessControl => AccessControlSections.Owner;
+
+        /// <summary>
+        /// Gets a value indicating the <c>Windows</c><see cref="FileSystemRights"/> to use for the created file.
+        /// </summary>
+        [SupportedOSPlatform("Windows")]
+        public virtual FileSystemRights WindowsFileSystemRights => FileSystemRights.Delete | FileSystemRights.AppendData | FileSystemRights.WriteData | FileSystemRights.Read;
 
         [SupportedOSPlatform("Windows")]
         public static void AddAdministratorsFullControlAce(DirectorySecurity directorySecurity)
@@ -213,76 +459,6 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
                 yield return entry.Name;
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating the full name string for <see cref="TemporaryDirectory"/>.
-        /// </summary>
-        public string DirectoryName => TemporaryDirectory.FullName;
-
-        /// <summary>
-        /// Gets a value indicate the parent <see cref="DirectoryInfo"/> of the leaf.
-        /// </summary>
-        public DirectoryInfo? ParentDirectory { get; }
-
-        /// <summary>
-        /// Gets a value indicating the string absolute path name of the <see cref="ParentDirectory"/>.
-        /// </summary>
-        public string? ParentName => ParentDirectory?.FullName;
-
-        /// <summary>
-        /// Gets a value indicating the <see cref="TempDirectory"/> directory path.
-        /// </summary>
-        public DirectoryInfo TemporaryDirectory { get; }
-
-        /// <summary>
-        /// Gets a value indicating the <see cref="FileAccess"/> mode for the created file.
-        /// </summary>
-        public virtual FileAccess AccessMode => FileAccess.ReadWrite;
-
-        /// <summary>
-        /// Gets or sets a value indicating the <c>Windows</c> buffer size for the created file. The default is <c>4096</c> bytes.
-        /// </summary>
-        [SupportedOSPlatform("Windows")]
-        public virtual int BufferSize { get; set; } = 4096;
-
-        /// <summary>
-        /// Gets a value indicating the <see cref="FileAttributes"/> attributes to use for the created file.
-        /// </summary>
-        public virtual FileAttributes FileAttributes => FileAttributes.Normal | FileAttributes.Temporary | FileAttributes.NotContentIndexed;
-
-        /// <summary>
-        /// Gets a value indicating the <c>Unix</c> file mode bitmap for the created file.
-        /// </summary>
-        /// <remarks>0600</remarks>
-        public virtual UnixFileMode Mode => UnixFileMode.UserRead | UnixFileMode.UserWrite;
-
-        /// <summary>
-        /// Gets a value indicating the <see cref="FileMode"/> for the created file.
-        /// </summary>
-        public virtual FileMode OpenMode => FileMode.CreateNew;
-
-        /// <summary>
-        /// Gets a value indicating the <c>Windows</c><see cref="FileOptions"/> to use for the created file.
-        /// </summary>
-        [SupportedOSPlatform("Windows")]
-        public virtual FileOptions Options => FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Asynchronous;
-
-        /// <summary>
-        /// Gets a value indicating the <see cref="FileShare"/> mode to use for the secure created file.
-        /// </summary>
-        public virtual FileShare ShareMode => FileShare.None;
-
-        /// <summary>
-        /// Gets a value indicating the <c>Windows</c><see cref="AccessControlSections"/> to use for the created file.
-        /// </summary>
-        [SupportedOSPlatform("Windows")]
-        public virtual AccessControlSections WindowsAccessControl => AccessControlSections.Owner;
-
-        /// <summary>
-        /// Gets a value indicating the <c>Windows</c><see cref="FileSystemRights"/> to use for the created file.
-        /// </summary>
-        [SupportedOSPlatform("Windows")]
-        public virtual FileSystemRights WindowsFileSystemRights => FileSystemRights.Delete | FileSystemRights.AppendData | FileSystemRights.WriteData | FileSystemRights.Read;
 
         public static bool Equals(DirectoryInfo? x, FileInfo? y)
         {
@@ -462,181 +638,5 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
             CurrentDirectoryStack.Push(TempDirectory.GetCurrentDirectory());
             TempDirectory.SetCurrentDirectory(current ?? TempDirectory.GetCurrentDirectory());
         }
-
-        /// <summary>
-        /// Protected method disposing of <see cref="DirectoryInfo"/> if <paramref name="disposing"/> is <see langref="true"/>.
-        /// </summary>
-        /// <param name="disposing">
-        /// If <see langref="true"/>, both managed and unmanaged resources will be disposed; otherwise only unmanaged resources will
-        /// be disposing.
-        /// </param>
-        /// <exception cref="ObjectDisposedException">
-        /// Throws if <see cref="TemporaryDirectory"/> has already been deleted before <see cref="Dispose(bool)"/> has been called.
-        /// </exception>
-        /// <exception cref="IOException">Throws if one or more files is open.</exception>
-        /// <exception cref="SecurityException">
-        /// Throws if the caller of <see cref="Dispose(bool)"/> lacks the permissions to delete <see cref="TemporaryDirectory"/>.
-        /// </exception>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    if (PeekLocation() is not null)
-                    {
-                        PopLocation();
-                    }
-
-                    try
-                    {
-                        ParentDirectory?.Delete(recursive: true);
-                    }
-                    catch (UnauthorizedAccessException uaex)
-                    {
-                        Console.Error.WriteLine(uaex.ToString());
-
-                        int count = 0;
-
-                        if (ParentDirectory is not null)
-                        {
-                            foreach (var fi in ParentDirectory.EnumerateFiles("*", new EnumerationOptions() { AttributesToSkip = FileAttributes.ReadOnly, RecurseSubdirectories = true }))
-                            {
-                                if (!fi.Attributes.HasFlag(FileAttributes.ReadOnly))
-                                {
-                                    fi.Delete();
-                                }
-                                else
-                                {
-                                    count++;
-                                    Console.Error.WriteLine($"File {fi.FullName} is read-only");
-                                }
-                            }
-
-                            Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted files");
-
-                            count = 0;
-
-                            foreach (var di in this.ParentDirectory.EnumerateDirectories("*", SearchOption.AllDirectories))
-                            {
-                                if (!di.EnumerateFiles().Any())
-                                {
-                                    di.Delete();
-                                }
-                                else
-                                {
-                                    count++;
-                                    Console.Error.WriteLine($"Directory {di.FullName} contains one or more read-only files");
-                                }
-                            }
-
-                            Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted sub-directories");
-                        }
-                    }
-                    catch (Exception ex) when (ex is DirectoryNotFoundException || ex is IOException || ex is SecurityException)
-                    {
-                        Console.Error.WriteLine(ex.ToString());
-                    }
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        /// <summary>
-        /// Protected asynchronous method disposing of <see cref="DirectoryInfo"/> if <paramref name="disposing"/> is <see langref="true"/>.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">
-        /// Throws if <see cref="TemporaryDirectory"/> has already been deleted before <see cref="DisposeAsyncCore"/> has been called.
-        /// </exception>
-        /// <exception cref="IOException">Throws if one or more files is open.</exception>
-        /// <exception cref="SecurityException">
-        /// Throws if the caller of <see cref="DisposeAsyncCore"/> lacks the permissions to delete <see cref="TemporaryDirectory"/>.
-        /// </exception>
-        protected virtual async ValueTask DisposeAsyncCore()
-        {
-            if (!disposedValue)
-            {
-                PopLocation();
-
-                try
-                {
-                    ParentDirectory?.Delete(recursive: true);
-                }
-                catch (UnauthorizedAccessException uaex)
-                {
-                    await Console.Error.WriteLineAsync(uaex.ToString()).ConfigureAwait(false);
-
-                    int count = 0;
-
-                    if (ParentDirectory is not null)
-                    {
-                        await foreach (var fi in ListAsyncEnumerable.GetAsyncEnumerable(ParentDirectory.EnumerateFiles("*", new EnumerationOptions() { AttributesToSkip = FileAttributes.ReadOnly, RecurseSubdirectories = true })).ConfigureAwait(false))
-                        {
-                            if (!fi.Attributes.HasFlag(FileAttributes.ReadOnly))
-                            {
-                                fi.Delete();
-                            }
-                            else
-                            {
-                                count++;
-                                await Console.Error.WriteLineAsync($"File {fi.FullName} is read-only").ConfigureAwait(false);
-                            }
-                        }
-
-                        Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted files");
-
-                        count = 0;
-
-                        await foreach (var di in ListAsyncEnumerable.GetAsyncEnumerable(this.ParentDirectory.EnumerateDirectories("*", SearchOption.AllDirectories)).ConfigureAwait(false))
-                        {
-                            if (!IsNullOrEmpty(di.EnumerateFiles()))
-                            {
-                                di.Delete();
-                            }
-                            else
-                            {
-                                count++;
-                                await Console.Error.WriteLineAsync($"Directory {di.FullName} contains one or more read-only files").ConfigureAwait(false);
-                            }
-                        }
-
-                        Debug.WriteLineIf(count > 0, $"Directory {ParentName} still has {count} undeleted sub-directories");
-                    }
-                }
-                catch (DirectoryNotFoundException dnfex)
-                {
-                    await Console.Error.WriteLineAsync($"Directory {DirectoryName} no longer exists").ConfigureAwait(false);
-                    throw new ObjectDisposedException(this.TemporaryDirectory.GetType().Name, dnfex);
-                }
-                catch (IOException ioex)
-                {
-                    await Console.Error.WriteLineAsync($"Directory {DirectoryName} is the application directory for {Path.GetDirectoryName(Assembly.GetAssembly(typeof(TempDirectory))?.Location) ?? Directory.GetCurrentDirectory()}").ConfigureAwait(false);
-                }
-                catch (SecurityException sex)
-                {
-                    await Console.Error.WriteLineAsync($"Caller {Environment.UserName} does not have the permissions to delete {DirectoryName}").ConfigureAwait(false);
-                }
-            }
-
-            disposedValue = true;
-        }
-
-        /// <summary>
-        /// Contains a stack of <see cref="DirectoryInfo"/> for pushing and popping the current directory.
-        /// </summary>
-        private readonly Stack<DirectoryInfo> CurrentDirectoryStack;
-
-        /// <summary>
-        /// Semaphore signaling whether <see cref="Dispose(bool)"/> has already been called.
-        /// </summary>
-        private bool disposedValue;
-
-        /// <summary>
-        /// File base name regular expression to ensure template is in correct form.
-        /// </summary>
-        /// <returns>Returns the <see cref="Regex"/> regular expression.</returns>
-        [GeneratedRegex(@"^[A-Za-z0-9\-_].+(?:X){18}$", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
-        private static partial Regex BaseNameTemplateRegex();
     }
 }

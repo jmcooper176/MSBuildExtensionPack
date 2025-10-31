@@ -6,26 +6,16 @@
 
     public class RecordObject : IMsiCom
     {
-        public const int MAX_COUNT = 65535;
+        private bool disposedValue;
 
-        public RecordObject(int count)
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        ~RecordObject()
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, MAX_COUNT, nameof(count));
-
-            Installer = new InstallerObject();
-            Instance = Installer.CreateRecord(count);
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
         }
 
         protected InstallerObject? Installer { get; }
-
-        public Type? ComType { get; private set; }
-        public Guid IID => new("000C1093-0000-0000-C000-000000000046");
-        public object? Instance { get; private set; }
-        public RecordObject? LastError { get; private set; }
-        public string ProgId => string.Empty;
-
-        private bool disposedValue;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -42,12 +32,22 @@
             }
         }
 
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        ~RecordObject()
+        public const int MAX_COUNT = 65535;
+
+        public RecordObject(int count)
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
+            ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, MAX_COUNT, nameof(count));
+
+            Installer = new InstallerObject();
+            Instance = Installer.CreateRecord(count);
         }
+
+        public Type? ComType { get; private set; }
+        public Guid IID => new("000C1093-0000-0000-C000-000000000046");
+        public object? Instance { get; private set; }
+        public RecordObject? LastError { get; private set; }
+        public string ProgId => string.Empty;
 
         public void Dispose()
         {

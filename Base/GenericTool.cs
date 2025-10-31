@@ -24,8 +24,6 @@ namespace MSBuild.ExtensionPack.Base
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
 
-    using MSBuild.ExtensionPack.Base.Logging;
-
     /// <summary>
     /// This task can be used to wrap any executable
     /// </summary>

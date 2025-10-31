@@ -22,6 +22,9 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
 
     using MSBuild.ExtensionPack.ErrorMessage.Code;
 
+    /// <summary>
+    /// <see cref="BaseToolTask"/> tool return codes.
+    /// </summary>
     public enum ReturnCode : int
     {
         /// <summary>

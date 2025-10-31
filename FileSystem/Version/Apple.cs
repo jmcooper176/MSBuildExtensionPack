@@ -23,6 +23,8 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Globalization;
     using System.Text.RegularExpressions;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public partial class Apple : IVersionMethod, IComparable<Apple>, IEquatable<Apple>, IEqualityComparer<Apple>
     {
         /// <summary>

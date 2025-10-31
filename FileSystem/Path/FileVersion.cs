@@ -22,6 +22,11 @@ namespace FileSystem.Path
     using System.Runtime.CompilerServices;
     using System.Text;
 
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
     using MSBuild.ExtensionPack.FileSystem.Version;
 
     /// <summary>
@@ -63,6 +68,40 @@ namespace FileSystem.Path
     /// <seealso cref="BaseTask"/>
     public class FileVersion : BaseTask
     {
+        private string taskAction;
+
+        /// <summary>
+        /// The file to store the incrementing version in.
+        /// </summary>
+        [Required]
+        public ITaskItem File { get; set; }
+
+        /// <summary>
+        /// Value to increment by. Default is '0.0.0.1' which has the effect of incrementing the Revision part of the version number
+        /// by 1.
+        /// </summary>
+        public string Increment { get; set; } = "0.0.0.1";
+
+        [Required]
+        public override string TaskAction
+        {
+            get
+            {
+                return taskAction;
+            }
+
+            set
+            {
+                taskAction = ValidateTaskAction(value) ? value : taskAction;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the value read from the file, or used to reset the value in the file. Default is '0.0.0.0'.
+        /// </summary>
+        [Output]
+        public string Value { get; set; }
+
         public static void ClearSemanticVersion(TaskLoggingHelper log, FileInfo versionFile, Encoding encoding)
         {
             WriteSemanticVersion(log, versionFile, new SemanticVersion(0, 0, 0), encoding);
@@ -222,22 +261,6 @@ namespace FileSystem.Path
             }
         }
 
-        private string taskAction;
-
-        [Required]
-        public override string TaskAction
-        {
-            get
-            {
-                return taskAction;
-            }
-
-            set
-            {
-                taskAction = ValidateTaskAction(value) ? value : taskAction;
-            }
-        }
-
         public override void TaskActionRouter([CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = 0)
         {
             FileInfo versionFile = new(this.File.ItemSpec);
@@ -278,23 +301,5 @@ namespace FileSystem.Path
                     _ => false,
                 };
         }
-
-        /// <summary>
-        /// The file to store the incrementing version in.
-        /// </summary>
-        [Required]
-        public ITaskItem File { get; set; }
-
-        /// <summary>
-        /// Value to increment by. Default is '0.0.0.1' which has the effect of incrementing the Revision part of the version number
-        /// by 1.
-        /// </summary>
-        public string Increment { get; set; } = "0.0.0.1";
-
-        /// <summary>
-        /// Gets or sets a value indicating the value read from the file, or used to reset the value in the file. Default is '0.0.0.0'.
-        /// </summary>
-        [Output]
-        public string Value { get; set; }
     }
 }

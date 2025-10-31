@@ -23,6 +23,12 @@ namespace FileSystem.Directory
     using System.IO;
     using System.Linq;
 
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -193,21 +199,21 @@ namespace FileSystem.Directory
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
 
             if (!this.FindFiles && !this.FindDirectories)
             {
-                this.Log.LogError("Either FindFiles or FindDirectories must be true");
+                this.Log.LogTaskError("Either FindFiles or FindDirectories must be true");
                 return;
             }
 
             string fullPath = this.Path.GetMetadata("Fullpath");
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Searching under path [{0}]", fullPath), null);
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Searching under path [{0}]", fullPath), null);
             if (string.IsNullOrEmpty(fullPath) || !Directory.Exists(fullPath))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Path specified {0} doesn't exist", fullPath));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Path specified {0} doesn't exist", fullPath));
                 return;
             }
 

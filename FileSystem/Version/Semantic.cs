@@ -23,6 +23,8 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Globalization;
     using System.Text.RegularExpressions;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public partial class Semantic : IVersionMethod, IComparable<Semantic>, IEquatable<Semantic>, IEqualityComparer<Semantic>
     {
         /// <summary>

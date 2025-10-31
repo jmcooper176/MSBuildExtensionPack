@@ -31,13 +31,20 @@ namespace MSBuild.ExtensionPack.Communication.Extended
         private const uint FormatMessageIgnoreInserts = 512;
 
         [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-        internal static partial uint FormatMessage(uint dwFlags, IntPtr lpSource, uint dwMessageId, uint dwLanguageId, [MarshalAsAttribute(UnmanagedType.LPTStr)] StringBuilder lpBuffer, uint nSize, IntPtr arguments);
+        internal static partial uint FormatMessage(
+            uint dwFlags,
+            IntPtr lpSource,
+            uint dwMessageId,
+            uint dwLanguageId,
+            [MarshalAs(UnmanagedType.LPTStr)] StringBuilder lpBuffer,
+            uint nSize,
+            IntPtr arguments);
 
         [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial int FreeLibrary(IntPtr hModule);
 
         [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-        internal static partial IntPtr LoadLibrary([In][MarshalAsAttribute(UnmanagedType.LPTStr)] string lpLibFileName);
+        internal static partial IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string lpLibFileName);
 
         internal static string TranslateInternetError(uint errorCode)
         {
@@ -92,102 +99,102 @@ namespace MSBuild.ExtensionPack.Communication.Extended
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpCommand(
-            [In] IntPtr hConnect,
-            [In] bool fExpectResponse,
-            [In] int dwFlags,
-            [In] string command,
-            [In] IntPtr dwContext,
+            IntPtr hConnect,
+            [MarshalAs(UnmanagedType.Bool)] bool fExpectResponse,
+            int dwFlags,
+            string command,
+            IntPtr dwContext,
             [In][Out] ref IntPtr ftpCmd);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpCreateDirectory(
-            [In] IntPtr hConnect,
-            [In] string directory);
+            IntPtr hConnect,
+            string directory);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpDeleteFile(
-            [In] IntPtr hConnect,
-            [In] string fileName);
+            IntPtr hConnect,
+            string fileName);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial IntPtr FtpFindFirstFile(
-            [In] IntPtr hConnect,
-            [In] string searchFile,
+            IntPtr hConnect,
+            string searchFile,
             [In][Out] ref NativeMethods.WIN32_FIND_DATA findFileData,
-            [In] int dwFlags,
-            [In] IntPtr dwContext);
+            int dwFlags,
+            IntPtr dwContext);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpGetCurrentDirectory(
-            [In] IntPtr hConnect,
+            IntPtr hConnect,
             [In][Out] StringBuilder currentDirectory,
             [In][Out] ref int dwCurrentDirectory);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpGetFile(
-            [In] IntPtr hConnect,
-            [In] string remoteFile,
-            [In] string newFile,
-            [In] bool failIfExists,
-            [In] int dwFlagsAndAttributes,
-            [In] int dwFlags,
-            [In] IntPtr dwContext);
+            IntPtr hConnect,
+            string remoteFile,
+            string newFile,
+            [MarshalAs(UnmanagedType.Bool)] bool failIfExists,
+            int dwFlagsAndAttributes,
+            int dwFlags,
+            IntPtr dwContext);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpGetFileSize(
-            [In] IntPtr hConnect,
+            IntPtr hConnect,
             [In][Out] ref int dwFileSizeHigh);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpOpenFile(
-            [In] IntPtr hConnect,
-            [In] string fileName,
-            [In] int dwAccess,
-            [In] int dwFlags,
-            [In] IntPtr dwContext);
+            IntPtr hConnect,
+            string fileName,
+            int dwAccess,
+            int dwFlags,
+            IntPtr dwContext);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpPutFile(
-            [In] IntPtr hConnect,
-            [In] string localFile,
-            [In] string newRemoteFile,
-            [In] int dwFlags,
-            [In] IntPtr dwContext);
+            IntPtr hConnect,
+            string localFile,
+            string newRemoteFile,
+            int dwFlags,
+            IntPtr dwContext);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpRemoveDirectory(
-            [In] IntPtr hConnect,
-            [In] string directory);
+            IntPtr hConnect,
+            string directory);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpRenameFile(
-            [In] IntPtr hConnect,
-            [In] string existingName,
-            [In] string newName);
+            IntPtr hConnect,
+            string existingName,
+            string newName);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int FtpSetCurrentDirectory(
-            [In] IntPtr hConnect,
-            [In] string directory);
+            IntPtr hConnect,
+            string directory);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int InternetCloseHandle(
-            [In] IntPtr hInternet);
+            IntPtr hInternet);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial IntPtr InternetConnect(
-            [In] IntPtr hInternet,
-            [In] string serverName,
-            [In] int serverPort,
-            [In] string userName,
-            [In] string password,
-            [In] int dwService,
-            [In] int dwFlags,
-            [In] IntPtr dwContext);
+            IntPtr hInternet,
+            string serverName,
+            int serverPort,
+            string userName,
+            string password,
+            int dwService,
+            int dwFlags,
+            IntPtr dwContext);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int InternetFindNextFile(
-            [In] IntPtr hInternet,
+            IntPtr hInternet,
             [In][Out] ref NativeMethods.WIN32_FIND_DATA findData);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
@@ -198,24 +205,24 @@ namespace MSBuild.ExtensionPack.Communication.Extended
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial IntPtr InternetOpen(
-            [In] string agent,
-            [In] int dwAccessType,
-            [In] string proxyName,
-            [In] string proxyBypass,
-            [In] int dwFlags);
+            string agent,
+            int dwAccessType,
+            string proxyName,
+            string proxyBypass,
+            int dwFlags);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int InternetReadFile(
-            [In] IntPtr hConnect,
+            IntPtr hConnect,
             [MarshalAs(UnmanagedType.LPTStr)][In][Out] StringBuilder buffer,
-            [In] int buffCount,
+            int buffCount,
             [In][Out] ref int bytesRead);
 
         [LibraryImport("wininet.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         public static partial int InternetReadFileEx(
-            [In] IntPtr hFile,
+            IntPtr hFile,
             [In][Out] ref NativeMethods.INTERNET_BUFFERS lpBuffersOut,
-            [In] int dwFlags,
+            int dwFlags,
             [In][Out] int dwContext);
 
         [StructLayout(LayoutKind.Sequential)]

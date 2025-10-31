@@ -22,6 +22,11 @@ namespace CodeQuality
     using System.IO;
     using System.Xml;
 
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+
     /// <summary>
     /// Executes Test Cases using NUnit (Tested using v3.0.1)
     /// </summary>
@@ -84,8 +89,8 @@ namespace CodeQuality
     ///]]>
     /// </code>
     /// </example>
-    /// <seealso cref="ToolTask"/>
-    public class NUnit3 : ToolTask
+    /// <seealso cref="BaseToolTask"/>
+    public class NUnit3 : BaseToolTask
     {
         private static int GetAttributeInt32Value(string name, XmlNode node)
         {
@@ -157,7 +162,7 @@ namespace CodeQuality
         {
             CommandLineBuilder builder = new();
             builder.AppendSwitch("--noheader");
-            builder.AppendFileNamesIfNotNull(this.Assemblies, " ");
+            builder.AppendFileNamesIfNotNull(this.Assemblies.ToArray(), " ");
             if (this.Use32Bit)
             {
                 builder.AppendSwitch("--x86");

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <AssemblyName>MSBuild.ExtensionPack.Base</AssemblyName>
     <AssemblyOriginatorKeyFile>D:\GitHub\MSBuildExtensionPack\Common\RamTunedMegaCode.public.snk</AssemblyOriginatorKeyFile>

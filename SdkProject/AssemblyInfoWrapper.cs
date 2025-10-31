@@ -15,83 +15,140 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace SdkProject
+namespace MSBuild.ExtensionPack.SdkProject
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Text.RegularExpressions;
 
-    internal class AssemblyInfoWrapper
+    internal partial class AssemblyInfoWrapper
     {
-        private readonly Regex attributeBooleanValuePattern = new Regex(@"\((?<attributeValue>([tT]rue|[fF]alse))\)", RegexOptions.Compiled);
-        private readonly Dictionary<string, int> attributeIndex = new Dictionary<string, int>();
-        private readonly Regex attributeNamePattern = new Regex(@"[aA]ssembly?\s*:?\s*(?<attributeName>\w+)\s*\(", RegexOptions.Compiled);
-        private readonly Regex attributeStringValuePattern = new Regex(@"""(?<attributeValue>.*?)""", RegexOptions.Compiled);
-        private readonly Regex multilineCSharpCommentEndPattern = new Regex(@".*?\*/", RegexOptions.Compiled);
-        private readonly Regex multilineCSharpCommentStartPattern = new Regex(@"\s*/\*^\*", RegexOptions.Compiled);
-        private readonly List<string> rawFileLines = new List<string>();
-        private readonly Regex singleLineCSharpCommentPattern = new Regex(@"(?m:^(\s*//.*)$)", RegexOptions.Compiled);
-        private readonly Regex singleLineVbCommentPattern = new Regex(@"^(\s*'|')", RegexOptions.Compiled);
+        /// <summary>
+        /// The attribute dictionary
+        /// </summary>
+        private readonly Dictionary<string, int> attributeDictionary = [];
 
+        /// <summary>
+        /// Assembly attribute name regular expression.
+        /// </summary>
+        /// <returns>A <see cref="Regex"/> that will match the assembly attribute name.</returns>
+        [GeneratedRegex(@"Assembly?\s*:?\s*(?<attributeName>\w+)\s*\(", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
+        private static partial Regex AssemblyAttributeNameRegex();
+
+        /// <summary>
+        /// Attribute the boolean value regular expression.
+        /// </summary>
+        /// <returns>A <see cref="Regex"/> that will match the attribute <see cref="bool"/> value.</returns>
+        [GeneratedRegex(@"\((?<attributeValue>(true|false))\)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
+        private static partial Regex AttributeBooleanValueRegex();
+
+        [GeneratedRegex(@"""(?<attributeValue>.*?)""", RegexOptions.CultureInvariant)]
+        private static partial Regex AttributeStringValueRegex();
+
+        private static string FormatAttributeValue(string attributeValue, string attributeFormat)
+        {
+            string value = attributeValue.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && attributeValue.EndsWith("\"", StringComparison.OrdinalIgnoreCase)
+                ? attributeValue.Trim('"')
+                : attributeValue;
+            return string.Format(CultureInfo.InvariantCulture, attributeFormat, value);
+        }
+
+        private static string GetGroupValue(MatchCollection matches, string groupName)
+        {
+            return matches.Select(m => m.Groups).Where(g => g[groupName].Success).Select(g => g[groupName].Value).FirstOrDefault() ?? string.Empty;
+        }
+
+        [GeneratedRegex(@".*?\*/", RegexOptions.CultureInvariant)]
+        private static partial Regex MultilineCSharpCommentEndRegex();
+
+        [GeneratedRegex(@"\s*/\*^\*", RegexOptions.CultureInvariant)]
+        private static partial Regex MultilineCSharpCommentStartRegex();
+
+        private static string ParentheticalAttributeValue(string attributeValue)
+        {
+            return FormatAttributeValue(attributeValue, "({0})");
+        }
+
+        private static string QuoteAttributeValue(string attributeValue)
+        {
+            return FormatAttributeValue(attributeValue, "\"{0}\"");
+        }
+
+        [GeneratedRegex(@"(?m:^(\s*//.*)$)", RegexOptions.CultureInvariant)]
+        private static partial Regex SingleLineCSharpCommentLineRegex();
+
+        [GeneratedRegex(@"^(\s*'|')", RegexOptions.CultureInvariant)]
+        private static partial Regex SingleLineVisualBasicCommentLineRegex();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssemblyInfoWrapper"/> class.
+        /// </summary>
+        /// <param name="fileName">Specifies the file name path to the project file to process.</param>
+        /// <remarks>
         /// The ^\* is so the regex works with J# files that use /** to indicate the actual attribute lines. This does mean that
         /// lines like /** in C# will get treated as valid lines, but that's a real borderline case.
+        /// </remarks>
         public AssemblyInfoWrapper(string fileName)
         {
-            using (StreamReader reader = File.OpenText(fileName))
+            FileLines = [];
+            FileName = new FileInfo(fileName);
+
+            if (!FileName.Exists)
             {
-                int lineNumber = 0;
-                string input;
-                bool skipLine = false;
+                throw new FileNotFoundException("The specified AssemblyInfo file could not be found", FileName.FullName);
+            }
 
-                while ((input = reader.ReadLine()) is not null)
+            using StreamReader reader = FileName.OpenText();
+            int lineNumber = 0;
+            string? input;
+            bool skipLine = false;
+
+            while ((input = reader.ReadLine()) is not null)
+            {
+                FileLines.Add(input);
+
+                // Skip single comment lines
+                if (SingleLineCSharpCommentLineRegex().IsMatch(input) || SingleLineVisualBasicCommentLineRegex().IsMatch(input))
                 {
-                    rawFileLines.Add(input);
-
-                    // Skip single comment lines
-                    if (singleLineCSharpCommentPattern.IsMatch(input) || singleLineVbCommentPattern.IsMatch(input))
-                    {
-                        lineNumber++;
-                        continue;
-                    }
-
-                    // Skip multi-line C# comments
-                    if (multilineCSharpCommentStartPattern.IsMatch(input))
-                    {
-                        lineNumber++;
-                        skipLine = true;
-                        continue;
-                    }
-
-                    // Stop skipping when we're at the end of a C# multiline comment
-                    if (multilineCSharpCommentEndPattern.IsMatch(input) && skipLine)
-                    {
-                        lineNumber++;
-                        skipLine = false;
-                        continue;
-                    }
-
-                    // If we're in the middle of a multiline comment, keep going
-                    if (skipLine)
-                    {
-                        lineNumber++;
-                        continue;
-                    }
-
-                    // Check to see if the current line is an attribute on the assembly info. If so we need to keep the line number
-                    // in our dictionary so we can go back later and get it when this class is accessed through its indexer.
-                    var matches = attributeNamePattern.Matches(input);
-                    if (matches.Count > 0)
-                    {
-                        if (attributeIndex.ContainsKey(matches[0].Groups["attributeName"].Value) == false)
-                        {
-                            attributeIndex.Add(matches[0].Groups["attributeName"].Value, lineNumber);
-                        }
-                    }
-
                     lineNumber++;
+                    continue;
                 }
+
+                // Skip multi-line C# comments
+                if (MultilineCSharpCommentStartRegex().IsMatch(input))
+                {
+                    lineNumber++;
+                    skipLine = true;
+                    continue;
+                }
+
+                // Stop skipping when we're at the end of a C# multi-line comment
+                if (MultilineCSharpCommentEndRegex().IsMatch(input) && skipLine)
+                {
+                    lineNumber++;
+                    skipLine = false;
+                    continue;
+                }
+
+                // If we're in the middle of a multi-line comment, keep going
+                if (skipLine)
+                {
+                    lineNumber++;
+                    continue;
+                }
+
+                // Check to see if the current line is an attribute on the assembly info. If so we need to keep the line number in
+                // our dictionary so we can go back later and get it when this class is accessed through its indexer.
+                if (AssemblyAttributeNameRegex().IsMatch(input))
+                {
+                    _ = attributeDictionary.TryAdd(GetGroupValue(AssemblyAttributeNameRegex().Matches(input), "attributeName"), lineNumber);
+                }
+
+                // no attributes on this line so go to next
+                lineNumber++;
             }
         }
 
@@ -99,60 +156,63 @@ namespace SdkProject
         {
             get
             {
-                if (!attributeIndex.ContainsKey(attribute))
+                if (!attributeDictionary.TryGetValue(attribute, out int valueGet))
                 {
-                    return null;
+                    return string.Empty;
                 }
 
                 // Try to match string properties first
-                MatchCollection matches = attributeStringValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
-                if (matches.Count > 0)
+                if (AttributeStringValueRegex().IsMatch(FileLines[valueGet]))
                 {
-                    return matches[0].Groups["attributeValue"].Value;
+                    MatchCollection matches = AttributeStringValueRegex().Matches(FileLines[valueGet]);
+                    return GetGroupValue(matches, "attributeValue");
                 }
 
                 // If that fails, try to match a boolean value
-                matches = attributeBooleanValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
-                if (matches.Count > 0)
+                if (AttributeBooleanValueRegex().IsMatch(FileLines[valueGet]))
                 {
-                    return matches[0].Groups["attributeValue"].Value;
+                    MatchCollection matches = AttributeBooleanValueRegex().Matches(FileLines[valueGet]);
+                    return GetGroupValue(matches, "attributeValue");
                 }
 
-                return null;
+                return string.Empty;
             }
 
             set
             {
                 // The set case requires fancy footwork. In this case we actually replace the attribute value in the string using a
                 // regex to the value that was passed in.
-                if (!attributeIndex.ContainsKey(attribute))
+                if (!attributeDictionary.TryGetValue(attribute, out int valueSet))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(attribute), string.Format(CultureInfo.CurrentCulture, "{0} is not an attribute in the specified AssemblyInfo.cs file", attribute));
+                    throw new ArgumentOutOfRangeException(nameof(attribute), attribute, $"Attribute '{attribute}' is not an attribute in the specified AssemblyInfo.cs file '{FileName.FullName}'");
                 }
 
                 // Try setting it as a string property first
-                MatchCollection matches = attributeStringValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
-                if (matches.Count > 0)
+                if (AttributeStringValueRegex().IsMatch(FileLines[valueSet]))
                 {
-                    rawFileLines[attributeIndex[attribute]] = attributeStringValuePattern.Replace(rawFileLines[attributeIndex[attribute]], "\"" + value + "\"");
-                    return;
+                    MatchCollection matches = AttributeStringValueRegex().Matches(FileLines[valueSet]);
+                    FileLines[valueSet] = AttributeStringValueRegex().Replace(FileLines[valueSet], QuoteAttributeValue(value));
                 }
-
-                // If that fails try setting it as a boolean property
-                matches = attributeBooleanValuePattern.Matches(rawFileLines[attributeIndex[attribute]]);
-                if (matches.Count > 0)
+                else if (AttributeBooleanValueRegex().IsMatch(FileLines[valueSet]))
                 {
-                    rawFileLines[attributeIndex[attribute]] = attributeBooleanValuePattern.Replace(rawFileLines[attributeIndex[attribute]], "(" + value + ")");
+                    MatchCollection matches = AttributeBooleanValueRegex().Matches(FileLines[valueSet]);
+                    FileLines[valueSet] = AttributeBooleanValueRegex().Replace(FileLines[valueSet], ParentheticalAttributeValue(value));
                 }
             }
         }
 
-        public void Write(TextWriter streamWriter)
+        public IList<string> FileLines { get; }
+
+        public FileInfo FileName { get; }
+
+        public static void Write<TLine>(TextWriter streamWriter, IEnumerable<TLine> input) where TLine : class, IEnumerable, ICloneable, IComparable, IConvertible
         {
-            foreach (string line in rawFileLines)
-            {
-                streamWriter.WriteLine(line);
-            }
+            input.ToList().ForEach(streamWriter.WriteLine);
+        }
+
+        public static void Write<TElement>(TextWriter streamWriter, IList<TElement> input) where TElement : struct, IComparable, IConvertible, IFormattable
+        {
+            input.ToList().ForEach(e => streamWriter.WriteLine(e));
         }
     }
 }

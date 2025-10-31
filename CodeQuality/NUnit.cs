@@ -23,6 +23,11 @@ namespace CodeQuality
     using System.Security;
     using System.Xml;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// Executes Test Cases using NUnit (Tested using v2.6.2)
     /// </summary>
@@ -85,8 +90,8 @@ namespace CodeQuality
     ///]]>
     /// </code>
     /// </example>
-    /// <seealso cref="ToolTask"/>
-    public class NUnit : ToolTask
+    /// <seealso cref="BaseToolTask"/>
+    public class NUnit : BaseToolTask
     {
         private static int GetAttributeInt32Value(string name, XmlNode node)
         {
@@ -242,7 +247,7 @@ namespace CodeQuality
 
         protected override void LogEventsFromTextOutput(string singleLine, MessageImportance messageImportance)
         {
-            this.Log.LogMessage(MessageImportance.Normal, singleLine);
+            this.Log.LogTaskMessage(MessageImportance.Normal, singleLine);
         }
 
         /// <summary>

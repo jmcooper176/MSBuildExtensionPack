@@ -20,7 +20,7 @@ namespace MSBuild.ExtensionPack.Base.Enumeration
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
-    internal enum PrivilegeType
+    public enum PrivilegeType
     {
         /// <summary>
         /// SeInteractiveLogonRight

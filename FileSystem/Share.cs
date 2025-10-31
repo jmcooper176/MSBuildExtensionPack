@@ -21,6 +21,13 @@ namespace FileSystem
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Management;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Enumeration;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -317,15 +324,15 @@ namespace FileSystem
                         break;
 
                     case ReturnCode.AccessDenied:
-                        this.Log.LogError("Access Denied");
+                        this.Log.LogTaskError("Access Denied");
                         break;
 
                     case ReturnCode.UnknownFailure:
-                        this.Log.LogError("Unknown Failure");
+                        this.Log.LogTaskError("Unknown Failure");
                         break;
 
                     case ReturnCode.InvalidName:
-                        this.Log.LogError("Invalid Name");
+                        this.Log.LogTaskError("Invalid Name");
                         break;
 
                     case ReturnCode.InvalidLevel:
@@ -333,23 +340,23 @@ namespace FileSystem
                         break;
 
                     case ReturnCode.InvalidParameter:
-                        this.Log.LogError("Invalid Parameter");
+                        this.Log.LogTaskError("Invalid Parameter");
                         break;
 
                     case ReturnCode.RedirectedPath:
-                        this.Log.LogError("Redirected Path");
+                        this.Log.LogTaskError("Redirected Path");
                         break;
 
                     case ReturnCode.UnknownDeviceOrDirectory:
-                        this.Log.LogError("Unknown Device or Directory");
+                        this.Log.LogTaskError("Unknown Device or Directory");
                         break;
 
                     case ReturnCode.NetNameNotFound:
-                        this.Log.LogError("Net name not found");
+                        this.Log.LogTaskError("Net name not found");
                         break;
 
                     case ReturnCode.ShareAlreadyExists:
-                        this.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "The share already exists: {0}", this.ShareName));
+                        this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "The share already exists: {0}", this.ShareName));
                         break;
                 }
             }
@@ -369,7 +376,7 @@ namespace FileSystem
                 }
                 catch
                 {
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
                     return;
                 }
 
@@ -378,7 +385,7 @@ namespace FileSystem
                 ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outputParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
                 if (returnCode != ReturnCode.Success)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Failed to delete the share. ReturnCode: {0}.", returnCode));
+                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Failed to delete the share. ReturnCode: {0}.", returnCode));
                 }
             }
         }
@@ -418,7 +425,7 @@ namespace FileSystem
 
         private void ModifyPermissions()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Modify permissions on share: {0} on: {1}", this.ShareName, this.MachineName));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Modify permissions on share: {0} on: {1}", this.ShareName, this.MachineName));
             this.GetManagementScope(@"\root\cimv2");
             ManagementObject shareObject;
             ObjectQuery query = new ObjectQuery("Select * from Win32_LogicalShareSecuritySetting where Name = '" + this.ShareName + "'");
@@ -431,7 +438,7 @@ namespace FileSystem
                 }
                 else
                 {
-                    this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
+                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
                     return;
                 }
             }
@@ -439,7 +446,7 @@ namespace FileSystem
             ManagementBaseObject securityDescriptorObject = shareObject.InvokeMethod("GetSecurityDescriptor", null, null);
             if (securityDescriptorObject is null)
             {
-                this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor from: {0}.", this.ShareName));
+                this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor from: {0}.", this.ShareName));
                 return;
             }
 
@@ -487,7 +494,7 @@ namespace FileSystem
 
         private void SetPermissions()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Set Permissions for share: {0} on: {1}", this.ShareName, this.MachineName));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Set Permissions for share: {0} on: {1}", this.ShareName, this.MachineName));
             this.GetManagementScope(@"\root\cimv2");
             ManagementPath fullSharePath = new ManagementPath("Win32_Share.Name='" + this.ShareName + "'");
             using (ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null))
@@ -499,7 +506,7 @@ namespace FileSystem
                 }
                 catch
                 {
-                    this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
+                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
                     return;
                 }
 
@@ -512,7 +519,7 @@ namespace FileSystem
                 ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outputParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
                 if (returnCode != ReturnCode.Success)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Failed to set the share permissions. ReturnCode: {0}.", returnCode));
+                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Failed to set the share permissions. ReturnCode: {0}.", returnCode));
                 }
             }
         }
@@ -545,7 +552,7 @@ namespace FileSystem
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

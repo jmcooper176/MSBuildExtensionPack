@@ -24,6 +24,11 @@ namespace SourceControl
     using System.Text;
     using System.Text.RegularExpressions;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -90,17 +95,17 @@ namespace SourceControl
         {
             if (string.IsNullOrEmpty(this.TfsBuildNumber))
             {
-                this.Log.LogError("TfsBuildNumber is required");
+                this.Log.LogTaskError("TfsBuildNumber is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.VersionFormat))
             {
-                this.Log.LogError("VersionFormat is required");
+                this.Log.LogTaskError("VersionFormat is required");
                 return;
             }
 
-            this.LogTaskMessage("Getting Version");
+            this.Log.LogTaskMessage("Getting Version");
             if (this.VersionFormat == "Synced")
             {
                 Regex r = new Regex(this.BuildNumberRegex, RegexOptions.Compiled);
@@ -111,7 +116,7 @@ namespace SourceControl
             {
                 if (string.IsNullOrEmpty(this.BuildName))
                 {
-                    this.Log.LogError("BuildName is required");
+                    this.Log.LogTaskError("BuildName is required");
                     return;
                 }
 
@@ -169,7 +174,7 @@ namespace SourceControl
                         break;
 
                     default:
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid VersionFormat provided: {0}. Valid Formats are Elapsed, DateTime", this.VersionFormat));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid VersionFormat provided: {0}. Valid Formats are Elapsed, DateTime", this.VersionFormat));
                         return;
                 }
             }
@@ -250,13 +255,13 @@ namespace SourceControl
 
             if (string.IsNullOrEmpty(this.Version))
             {
-                this.Log.LogError("Version is required");
+                this.Log.LogTaskError("Version is required");
                 return;
             }
 
             if (this.Files is null)
             {
-                this.Log.LogError("No Files specified. Pass an Item Collection of files to the Files property.");
+                this.Log.LogTaskError("No Files specified. Pass an Item Collection of files to the Files property.");
                 return;
             }
 
@@ -274,7 +279,7 @@ namespace SourceControl
 
             foreach (ITaskItem file in this.Files)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Versioning {0} at {1}", file.ItemSpec, this.Version));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Versioning {0} at {1}", file.ItemSpec, this.Version));
                 bool changedAttribute = false;
 
                 // First make sure the file is writable.
@@ -283,7 +288,7 @@ namespace SourceControl
                 // If readonly attribute is set, reset it.
                 if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Making file writable");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Making file writable");
                     File.SetAttributes(file.ItemSpec, fileAttributes ^ FileAttributes.ReadOnly);
                     changedAttribute = true;
                 }
@@ -342,7 +347,7 @@ namespace SourceControl
 
                 if (changedAttribute)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Making file readonly");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                     File.SetAttributes(file.ItemSpec, FileAttributes.ReadOnly);
                 }
             }
@@ -366,7 +371,7 @@ namespace SourceControl
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

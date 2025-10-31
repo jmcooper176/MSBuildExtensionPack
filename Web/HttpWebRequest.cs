@@ -23,6 +23,9 @@ namespace Web
     using System.Net;
     using System.Text;
 
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     using Thread = System.Threading.Thread;
 
     /// <summary>
@@ -176,10 +179,10 @@ namespace Web
 
                     if (tries < this.Retries)
                     {
-                        this.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "{0}.  Attempt {1} of {2}.  Waiting {3} milliseconds before trying again.", failureMessage, tries, this.Retries, this.RetryInterval));
+                        this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "{0}.  Attempt {1} of {2}.  Waiting {3} milliseconds before trying again.", failureMessage, tries, this.Retries, this.RetryInterval));
                         if (responseBody.Length > 0)
                         {
-                            this.LogTaskMessage(responseBody.ToString());
+                            this.Log.LogTaskMessage(responseBody.ToString());
                         }
 
                         Thread.Sleep(this.RetryInterval);
@@ -189,7 +192,7 @@ namespace Web
                         this.Log.LogError(failureMessage);
                         if (responseBody.Length > 0)
                         {
-                            this.Log.LogError(responseBody.ToString());
+                            this.Log.LogTaskError(responseBody.ToString());
                         }
                     }
                 }
@@ -212,7 +215,7 @@ namespace Web
                     break;
 
                 default:
-                    this.Log.LogError(
+                    this.Log.LogTaskError(
                         string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }

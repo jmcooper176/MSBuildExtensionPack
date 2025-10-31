@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace SdkProject
+namespace MSBuild.ExtensionPack.SdkProject
 {
     using System;
     using System.Collections.Generic;
@@ -24,6 +24,12 @@ namespace SdkProject
     using System.Reflection;
     using System.Security;
     using System.Text;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Enumeration;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// The AssemblyInfo task provides a way to manipulate the content of AssemblyInfo files at build time. It works with C#, VB,
@@ -135,8 +141,8 @@ namespace SdkProject
     ///]]>
     /// </code>
     /// </example>
-    /// <seealso cref="Task"/>
-    public class AssemblyInfo : Task
+    /// <seealso cref="BaseTask"/>
+    public class AssemblyInfo : BaseTask
     {
         private AssemblyVersionSettings assemblyFileVersionSettings;
         private AssemblyVersionSettings assemblyVersionSettings;
@@ -146,50 +152,21 @@ namespace SdkProject
 
         private static Encoding? GetTextEncoding(string enc)
         {
-            switch (enc)
+            return enc switch
             {
-                case "DEFAULT":
-                    return Encoding.Default;
-
-                case "ASCII":
-                    return Encoding.ASCII;
-
-                case "Unicode":
-                    return Encoding.Unicode;
-
-                case "UTF8":
-                    return Encoding.UTF8;
-
-                case "UTF32":
-                    return Encoding.UTF32;
-
-                case "BigEndianUnicode":
-                    return Encoding.BigEndianUnicode;
-
-                default:
-                    if (!string.IsNullOrEmpty(enc))
-                    {
-                        return Encoding.GetEncoding(enc);
-                    }
-
-                    return null;
-            }
+                "DEFAULT" => Encoding.Default,
+                "ASCII" => Encoding.ASCII,
+                "Unicode" => Encoding.Unicode,
+                "UTF8" => Encoding.UTF8,
+                "UTF32" => Encoding.UTF32,
+                "BigEndianUnicode" => Encoding.BigEndianUnicode,
+                _ => string.IsNullOrEmpty(enc) ? null : Encoding.GetEncoding(enc),
+            };
         }
 
-        private static void UpdateMaxVersion(ref string maxVersion, string newVersion)
+        private static string UpdateMaxVersion(AssemblyVersion maxVersion, string newVersion)
         {
-            if (newVersion is null)
-            {
-                return;
-            }
-
-            System.Version max = new(maxVersion);
-            System.Version candidate = new(newVersion);
-
-            if (candidate > max)
-            {
-                maxVersion = newVersion;
-            }
+            return string.IsNullOrEmpty(newVersion) ? "1.0.0.0" : newVersion > maxVersion ? maxVersion.ToString() : newVersion;
         }
 
         private FileInfo? GetTemporaryFileInfo()
@@ -202,32 +179,32 @@ namespace SdkProject
             }
             catch (ArgumentNullException anex)
             {
-                Log.LogError("Unable to create temporary file: {0}", anex.Message);
+                Log.LogTaskError("Unable to create temporary file: {0}", anex.Message);
                 return null;
             }
             catch (SecurityException sex)
             {
-                Log.LogError("Unable to create temporary file: {0}", sex.Message);
+                Log.LogTaskError("Unable to create temporary file: {0}", sex.Message);
                 return null;
             }
             catch (ArgumentException aex)
             {
-                Log.LogError("Unable to create temporary file: {0}", aex.Message);
+                Log.LogTaskError("Unable to create temporary file: {0}", aex.Message);
                 return null;
             }
             catch (PathTooLongException ptlex)
             {
-                Log.LogError("Unable to create temporary file: {0}", ptlex.Message);
+                Log.LogTaskError("Unable to create temporary file: {0}", ptlex.Message);
                 return null;
             }
             catch (NotSupportedException nsex)
             {
-                Log.LogError("Unable to create temporary file: {0}", nsex.Message);
+                Log.LogTaskError("Unable to create temporary file: {0}", nsex.Message);
                 return null;
             }
             catch (IOException ioex)
             {
-                Log.LogError("Unable to create temporary file: {0}", ioex.Message);
+                Log.LogTaskError("Unable to create temporary file: {0}", ioex.Message);
                 return null;
             }
 
@@ -249,7 +226,7 @@ namespace SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyBuildNumberType))
                 {
-                    Log.LogError("The value specified for AssemblyBuildNumberType is invalid. It must be one of: {0}", enumNames);
+                    Log.LogTaskError("The value specified for AssemblyBuildNumberType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -266,7 +243,7 @@ namespace SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyRevisionType))
                 {
-                    Log.LogError("The value specified for AssemblyRevisionType is invalid. It must be one of: {0}", enumNames);
+                    Log.LogTaskError("The value specified for AssemblyRevisionType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -283,7 +260,7 @@ namespace SdkProject
             {
                 if (!bool.TryParse(AssemblyRevisionReset, out assemblyVersionSettings.RevisionReset))
                 {
-                    Log.LogError("The value specified for AssemblyRevisionReset is invalid. It must be a string representation of a boolean value");
+                    Log.LogTaskError("The value specified for AssemblyRevisionReset is invalid. It must be a string representation of a boolean value");
 
                     return false;
                 }
@@ -298,7 +275,7 @@ namespace SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyFileBuildNumberType))
                 {
-                    Log.LogError("The value specified for AssemblyFileBuildNumberType is invalid. It must be one of: {0}", enumNames);
+                    Log.LogTaskError("The value specified for AssemblyFileBuildNumberType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -313,9 +290,9 @@ namespace SdkProject
             }
             else
             {
-                if (!bool.TryParse(AssemblyFileRevisionReset, out assemblyFileVersionSettings.RevisionReset))
+                if (!bool.TryParse(AssemblyFileRevisionReset, out assemblyFileVersionSettings))
                 {
-                    Log.LogError("The value specified for AssemblyFileRevisionReset is invalid. It must be a string representation of a boolean value");
+                    Log.LogTaskError("The value specified for AssemblyFileRevisionReset is invalid. It must be a string representation of a boolean value");
 
                     return false;
                 }
@@ -330,7 +307,7 @@ namespace SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyFileRevisionType))
                 {
-                    Log.LogError("The value specified for AssemblyFileRevisionType is invalid. It must be one of: {0}", enumNames);
+                    Log.LogTaskError("The value specified for AssemblyFileRevisionType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -341,24 +318,24 @@ namespace SdkProject
             return true;
         }
 
-        private void UpdateAssemblyVersion(Version versionToUpdate, AssemblyVersionSettings requestedVersion)
+        private void UpdateAssemblyVersion(AssemblyVersion versionToUpdate, AssemblyVersionSettings requestedVersion)
         {
             // The string version of the assembly goes first, so the others can override it.
             if (requestedVersion.Version is not null)
             {
-                Log.LogMessage(MessageImportance.Low, "\tUpdating assembly version to {0}", requestedVersion.Version);
-                versionToUpdate.VersionString = requestedVersion.Version;
+                Log.LogTaskMessage(MessageImportance.Low, "\tUpdating assembly version to {0}", requestedVersion.Version);
+                versionToUpdate.VersionString = requestedVersion.Version.ToString();
             }
 
             if (requestedVersion.MajorVersion is not null)
             {
-                Log.LogMessage(MessageImportance.Low, "\tUpdating major version to {0}", requestedVersion.MajorVersion);
+                Log.LogTaskMessage(MessageImportance.Low, "\tUpdating major version to {0}", requestedVersion.MajorVersion);
                 versionToUpdate.MajorVersion = requestedVersion.MajorVersion;
             }
 
             if (requestedVersion.MinorVersion is not null)
             {
-                Log.LogMessage(MessageImportance.Low, "\tUpdating minor version to {0}", requestedVersion.MinorVersion);
+                Log.LogTaskMessage(MessageImportance.Low, "\tUpdating minor version to {0}", requestedVersion.MinorVersion);
                 versionToUpdate.MinorVersion = requestedVersion.MinorVersion;
             }
 
@@ -387,7 +364,7 @@ namespace SdkProject
             }
 
             versionToUpdate.Revision = UpdateVersionProperty(versionToUpdate.Revision, requestedVersion.RevisionType, requestedVersion.Revision, requestedVersion.RevisionFormat, "\tUpdating revision number to {0}");
-            Log.LogMessage(MessageImportance.Low, "\tFinal assembly version is {0}", versionToUpdate.ToString());
+            Log.LogTaskMessage(MessageImportance.Low, "\tFinal assembly version is {0}", versionToUpdate.ToString());
         }
 
         private void UpdateProperty(AssemblyInfo.AssemblyInfoWrapper assemblyInfo, string propertyName)
@@ -401,14 +378,14 @@ namespace SdkProject
                 if (value is not null)
                 {
                     assemblyInfo[propertyName] = value;
-                    Log.LogMessage(MessageImportance.Low, "\tUpdating {0} to \"{1}\"", propertyName, value);
+                    Log.LogTaskMessage(MessageImportance.Low, "\tUpdating {0} to \"{1}\"", propertyName, value);
                 }
             }
         }
 
         private string UpdateVersionProperty(string versionNumber, IncrementMethod method, string value, string format, string logMessage)
         {
-            Log.LogMessage(MessageImportance.Low, "\tUpdate method is {0}", method.ToString());
+            Log.LogTaskMessage(MessageImportance.Low, "\tUpdate method is {0}", method.ToString());
             if (string.IsNullOrEmpty(format))
             {
                 format = "0";
@@ -422,24 +399,24 @@ namespace SdkProject
                         return versionNumber;
                     }
 
-                    Log.LogMessage(MessageImportance.Low, logMessage, value);
+                    Log.LogTaskMessage(MessageImportance.Low, logMessage, value);
                     return value;
 
                 case IncrementMethod.AutoIncrement:
                     int newVersionNumber = int.Parse(versionNumber, CultureInfo.InvariantCulture);
                     newVersionNumber++;
-                    Log.LogMessage(MessageImportance.Low, logMessage, newVersionNumber.ToString(format, CultureInfo.InvariantCulture));
+                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber.ToString(format, CultureInfo.InvariantCulture));
                     return newVersionNumber.ToString(format, CultureInfo.InvariantCulture);
 
                 case IncrementMethod.DateString:
                     string newVersionNumber1 = UseUtc ? DateTime.UtcNow.ToString(format, CultureInfo.InvariantCulture) : DateTime.Now.ToString(format, CultureInfo.InvariantCulture);
-                    Log.LogMessage(MessageImportance.Low, logMessage, newVersionNumber1);
+                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber1);
                     return newVersionNumber1;
 
                 case IncrementMethod.Julian:
                     string newVersionNumber2 = UseUtc ? DateTime.UtcNow.ToString("yy", CultureInfo.InvariantCulture) : DateTime.Now.ToString("yy", CultureInfo.InvariantCulture);
                     newVersionNumber2 += DateTime.Now.DayOfYear.ToString("000", CultureInfo.InvariantCulture);
-                    Log.LogMessage(MessageImportance.Low, logMessage, newVersionNumber2);
+                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber2);
                     return newVersionNumber2;
 
                 case IncrementMethod.YearWeekDay:
@@ -447,7 +424,7 @@ namespace SdkProject
                     string newVersionNumber3 = now.ToString("yy", CultureInfo.InvariantCulture);
                     newVersionNumber3 += CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(now, CalendarWeekRule.FirstDay, Enum.Parse<DayOfWeek>(FirstDayOfWeek)).ToString("D2", CultureInfo.InvariantCulture);
                     newVersionNumber3 += ((int)now.DayOfWeek).ToString(CultureInfo.InvariantCulture);
-                    Log.LogMessage(MessageImportance.Low, logMessage, newVersionNumber3);
+                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber3);
                     return newVersionNumber3;
 
                 case IncrementMethod.ElapsedDays:
@@ -472,7 +449,7 @@ namespace SdkProject
                  AssemblyMinorVersion is not null) &&
                 assemblyInfo["AssemblyVersion"] is null)
             {
-                Log.LogError("Unable to update the AssemblyVersion for {0}: No stub entry for AssemblyVersion was found in the AssemblyInfo file.", fileName);
+                Log.LogTaskError("Unable to update the AssemblyVersion for {0}: No stub entry for AssemblyVersion was found in the AssemblyInfo file.", fileName);
                 return false;
             }
 
@@ -482,7 +459,7 @@ namespace SdkProject
                  AssemblyFileMinorVersion is not null) &&
                 assemblyInfo["AssemblyFileVersion"] is null)
             {
-                Log.LogError("Unable to update the AssemblyFileVersion for {0}: No stub entry for AssemblyFileVersion was found in the AssemblyInfo file.", fileName);
+                Log.LogTaskError("Unable to update the AssemblyFileVersion for {0}: No stub entry for AssemblyFileVersion was found in the AssemblyInfo file.", fileName);
                 return false;
             }
 
@@ -796,7 +773,7 @@ namespace SdkProject
         /// </example>
         /// <seealso cref="AssemblyFileBuildNumberType"/>
         /// <seealso cref="AssemblyFileBuildNumberFormat"/>
-        public string AssemblyFileBuildNumber
+        public int AssemblyFileBuildNumber
         {
             get => assemblyFileVersionSettings.BuildNumber;
             set => assemblyFileVersionSettings.BuildNumber = value;
@@ -866,7 +843,7 @@ namespace SdkProject
         ///&lt;AssemblyFileMajorVersion&gt;8&lt;/AssemblyFileMajorVersion&gt;
         /// </code>
         /// </example>
-        public string AssemblyFileMajorVersion
+        public int AssemblyFileMajorVersion
         {
             get => assemblyFileVersionSettings.MajorVersion;
             set => assemblyFileVersionSettings.MajorVersion = value;
@@ -889,7 +866,7 @@ namespace SdkProject
         ///&lt;AssemblyFileMinorVersion&gt;0&lt;/AssemblyFileMinorVersion&gt;
         /// </code>
         /// </example>
-        public string AssemblyFileMinorVersion
+        public int AssemblyFileMinorVersion
         {
             get => assemblyFileVersionSettings.MinorVersion;
             set => assemblyFileVersionSettings.MinorVersion = value;
@@ -918,7 +895,7 @@ namespace SdkProject
         /// </example>
         /// <seealso cref="AssemblyRevisionType"/>
         /// <seealso cref="AssemblyRevisionFormat"/>
-        public string AssemblyFileRevision
+        public int AssemblyFileRevision
         {
             get => assemblyFileVersionSettings.Revision;
             set => assemblyFileVersionSettings.Revision = value;
@@ -1021,7 +998,7 @@ namespace SdkProject
         /// </code>
         /// </example>
         /// <seealso cref="MaxAssemblyFileVersion"/>
-        public string AssemblyFileVersion
+        public System.Version AssemblyFileVersion
         {
             get => assemblyFileVersionSettings.Version;
             set => assemblyFileVersionSettings.Version = value;
@@ -1143,7 +1120,7 @@ namespace SdkProject
         ///&lt;AssemblyMajorVersion&gt;8&lt;/AssemblyMajorVersion&gt;
         /// </code>
         /// </example>
-        public string AssemblyMajorVersion
+        public int AssemblyMajorVersion
         {
             get => assemblyVersionSettings.MajorVersion;
             set => assemblyVersionSettings.MajorVersion = value;
@@ -1166,7 +1143,7 @@ namespace SdkProject
         ///&lt;AssemblyMinorVersion&gt;0&lt;/AssemblyMinorVersion&gt;
         /// </code>
         /// </example>
-        public string AssemblyMinorVersion
+        public int AssemblyMinorVersion
         {
             get => assemblyVersionSettings.MinorVersion;
             set => assemblyVersionSettings.MinorVersion = value;
@@ -1213,7 +1190,7 @@ namespace SdkProject
         /// </example>
         /// <seealso cref="AssemblyRevisionType"/>
         /// <seealso cref="AssemblyRevisionFormat"/>
-        public string AssemblyRevision
+        public int AssemblyRevision
         {
             get => assemblyVersionSettings.Revision;
             set => assemblyVersionSettings.Revision = value;
@@ -1350,7 +1327,7 @@ namespace SdkProject
         /// </code>
         /// </example>
         /// <seealso cref="MaxAssemblyVersion"/>
-        public string AssemblyVersion
+        public System.Version AssemblyVersion
         {
             get => assemblyVersionSettings.Version;
             set => assemblyVersionSettings.Version = value;
@@ -1376,9 +1353,9 @@ namespace SdkProject
         public string? ComVisible { get; set; }
 
         /// <summary>
-        /// Set the first day of the week for IncrementMethod.YearWeekDay. Defaults to Monday
+        /// Set the first day of the week for IncrementMethod.YearWeekDay. Defaults to Sunday for <see cref="CultureInfo.InvariantCulture"/>.
         /// </summary>
-        public string FirstDayOfWeek { get; set; } = "Monday";
+        public string FirstDayOfWeek { get; set; } = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek.ToString();
 
         /// <summary>
         /// The GUID for the assembly.
@@ -1392,7 +1369,7 @@ namespace SdkProject
         ///&lt;AssemblyGuid&gt;56269a04-c55a-4c5a-92ba-dfdb569bc708&lt;/AssemblyGuid&gt;
         /// </code>
         /// </example>
-        public string? Guid { get; set; }
+        public Guid? Guid { get; set; }
 
         /// <summary>
         /// Returns the largest assembly file version set by the task.
@@ -1409,11 +1386,7 @@ namespace SdkProject
         /// </para>
         /// </remarks>
         [Output]
-        public string? MaxAssemblyFileVersion
-        {
-            get => maxAssemblyFileVersion;
-            set => maxAssemblyFileVersion = value;
-        }
+        public System.Version? MaxAssemblyFileVersion { get; set; }
 
         /// <summary>
         /// Returns the largest assembly version set by the task.
@@ -1430,11 +1403,10 @@ namespace SdkProject
         /// </para>
         /// </remarks>
         [Output]
-        public string? MaxAssemblyVersion
-        {
-            get => maxAssemblyVersion;
-            set => maxAssemblyVersion = value;
-        }
+        public System.Version? MaxAssemblyVersion { get; set; }
+
+        [Output]
+        public System.Management.Automation.SemanticVersion? MaxAssemblyInformationalVersion { get; set; }
 
         /// <summary>
         /// Sets the number of padding digits to use, e.g. 4
@@ -1492,14 +1464,14 @@ namespace SdkProject
             }
 
             // Set the max versions before running through the loop
-            MaxAssemblyVersion = "0.0.0.0";
-            MaxAssemblyFileVersion = "0.0.0.0";
+            MaxAssemblyVersion = new("0.0.0.0");
+            MaxAssemblyFileVersion = new("0.0.0.0");
 
             foreach (ITaskItem item in AssemblyInfoFiles)
             {
                 if (!File.Exists(item.ItemSpec))
                 {
-                    Log.LogError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", item.ItemSpec));
+                    Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", item.ItemSpec));
                     return false;
                 }
 
@@ -1511,17 +1483,17 @@ namespace SdkProject
                     return false;
                 }
 
-                Log.LogMessage(MessageImportance.Low, "Updating assembly info for {0}", item.ItemSpec);
+                Log.LogTaskMessage(MessageImportance.Low, "Updating assembly info for {0}", item.ItemSpec);
                 if (!SkipVersioning)
                 {
-                    Version versionToUpdate;
+                    AssemblyVersion versionToUpdate;
                     try
                     {
                         versionToUpdate = new Version(assemblyInfo["AssemblyVersion"], isAssemblyVersion: true);
                     }
                     catch (Exception ex)
                     {
-                        Log.LogError(string.Format(CultureInfo.CurrentCulture, "Unable to read current AssemblyVersion from file {0}: {1}", item.ItemSpec, ex.Message));
+                        Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to read current AssemblyVersion from file {0}: {1}", item.ItemSpec, ex.Message));
                         return false;
                     }
 
@@ -1535,17 +1507,17 @@ namespace SdkProject
                         }
                     }
 
-                    UpdateMaxVersion(ref maxAssemblyVersion, assemblyInfo["AssemblyVersion"]);
+                    UpdateMaxVersion(MaxAssemblyVersion, assemblyInfo["AssemblyVersion"]);
                     try
                     {
                         versionToUpdate = new Version(assemblyInfo["AssemblyFileVersion"]);
                         UpdateAssemblyVersion(versionToUpdate, assemblyFileVersionSettings);
                         assemblyInfo["AssemblyFileVersion"] = versionToUpdate.ToString();
-                        UpdateMaxVersion(ref maxAssemblyFileVersion, assemblyInfo["AssemblyFileVersion"]);
+                        UpdateMaxVersion(MaxAssemblyFileVersion, assemblyInfo["AssemblyFileVersion"]);
                     }
                     catch (ArgumentException)
                     {
-                        Log.LogWarning(string.Format(CultureInfo.CurrentCulture, "File {0} contains a verbatim AssemblyFileVersion - skipping", item.ItemSpec));
+                        Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "File {0} contains a verbatim AssemblyFileVersion - skipping", item.ItemSpec));
                     }
                 }
 
@@ -1579,7 +1551,7 @@ namespace SdkProject
                         }
                         catch (ArgumentException)
                         {
-                            Log.LogError(string.Format(CultureInfo.CurrentCulture, "Error, {0} is not a supported encoding name.", TextEncoding));
+                            Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error, {0} is not a supported encoding name.", TextEncoding));
                             return false;
                         }
                     }
@@ -1597,7 +1569,7 @@ namespace SdkProject
                     // If readonly attribute is set, reset it.
                     if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                     {
-                        Log.LogMessage(MessageImportance.Low, "Making file writable");
+                        Log.LogTaskMessage(MessageImportance.Low, "Making file writable");
                         File.SetAttributes(item.ItemSpec, fileAttributes ^ FileAttributes.ReadOnly);
                         changedAttribute = true;
                     }
@@ -1606,7 +1578,7 @@ namespace SdkProject
 
                     if (changedAttribute)
                     {
-                        Log.LogMessage(MessageImportance.Low, "Making file readonly");
+                        Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                         File.SetAttributes(item.ItemSpec, FileAttributes.ReadOnly);
                     }
                 }

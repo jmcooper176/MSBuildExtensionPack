@@ -18,31 +18,13 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
         private bool disposedValue;
 
         /// <summary>
-        /// Gets a value representing the default <see cref="IEqualityComparer{T}"/> comparer.
+        /// Finalizes an instance of the <see cref="ClientObject"/> class.
         /// </summary>
-        /// <value>The default <see cref="IEqualityComparer{T}"/> comparer.</value>
-        protected virtual EqualityComparer<ClientObject> DefaultComparer { get; }
-
-        /// <inheritdoc/>
-        public Guid ClsId { get; }
-
-        /// <inheritdoc/>
-        public Type? ComType { get; private set; }
-
-        /// <inheritdoc/>
-        public Guid IID { get; }
-
-        /// <inheritdoc/>
-        public dynamic? Instance { get; private set; }
-
-        /// <inheritdoc/>
-        public IEnumerable<Type> InterfaceTypes { get; }
-
-        /// <inheritdoc/>
-        public string ProgId { get; }
-
-        /// <inheritdoc/>
-        public virtual object? RCW { get; private set; }
+        ~ClientObject()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientObject"/> class.
@@ -66,6 +48,36 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
             IID = iid != Guid.Empty ? iid : GetInterfaceIdentifier();
             InterfaceTypes = [];
             DefaultComparer = EqualityComparer<ClientObject>.Create((l, r) => ReferenceEquals(l, r) || (l?.Equals(r) == true), i => GetHashCode(i));
+        }
+
+        /// <summary>
+        /// Gets a value representing the default <see cref="IEqualityComparer{T}"/> comparer.
+        /// </summary>
+        /// <value>The default <see cref="IEqualityComparer{T}"/> comparer.</value>
+        protected virtual EqualityComparer<ClientObject> DefaultComparer { get; }
+
+        /// <summary>
+        /// Releases unmanaged and (optionally) managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        /// <see langref="true"/> to release both managed and unmanaged resources; otherwise, <see langref="false"/> to release only
+        /// unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    InterfaceTypes.ToList().Clear();
+                    ReleaseAll();
+                }
+
+                ComType = null;
+                Instance = null;
+                RCW = null;
+                disposedValue = true;
+            }
         }
 
         /// <summary>
@@ -99,38 +111,26 @@ namespace MSBuild.ExtensionPack.MsiTaskFactory
             Instance = instance;
         }
 
-        /// <summary>
-        /// Finalizes an instance of the <see cref="ClientObject"/> class.
-        /// </summary>
-        ~ClientObject()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-        }
+        /// <inheritdoc/>
+        public Guid ClsId { get; }
 
-        /// <summary>
-        /// Releases unmanaged and (optionally) managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        /// <see langref="true"/> to release both managed and unmanaged resources; otherwise, <see langref="false"/> to release only
-        /// unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    InterfaceTypes.ToList().Clear();
-                    ReleaseAll();
-                }
+        /// <inheritdoc/>
+        public Type? ComType { get; private set; }
 
-                ComType = null;
-                Instance = null;
-                RCW = null;
-                disposedValue = true;
-            }
-        }
+        /// <inheritdoc/>
+        public Guid IID { get; }
+
+        /// <inheritdoc/>
+        public dynamic? Instance { get; private set; }
+
+        /// <inheritdoc/>
+        public IEnumerable<Type> InterfaceTypes { get; }
+
+        /// <inheritdoc/>
+        public string ProgId { get; }
+
+        /// <inheritdoc/>
+        public virtual object? RCW { get; private set; }
 
         /// <summary>
         /// Implements the operator != for <see cref="ClientObject"/>.

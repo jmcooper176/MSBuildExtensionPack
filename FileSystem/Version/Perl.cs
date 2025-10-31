@@ -23,6 +23,8 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
     using System.Globalization;
     using System.Text.RegularExpressions;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     /// <summary>
     /// Implements versioning methods using the Perl versioning scheme.
     /// </summary>

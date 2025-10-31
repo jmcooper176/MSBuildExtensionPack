@@ -15,19 +15,85 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace SdkProject
+namespace MSBuild.ExtensionPack.SdkProject
 {
-    public struct AssemblyVersionSettings
+    using MSBuild.ExtensionPack.Base.Enumeration;
+
+    public class AssemblyVersionSettings
     {
-        public string BuildNumber;
-        public string BuildNumberFormat;
-        public IncrementMethod BuildNumberType;
-        public string MajorVersion;
-        public string MinorVersion;
-        public string Revision;
-        public string RevisionFormat;
-        public bool RevisionReset;
-        public IncrementMethod RevisionType;
-        public string Version;
+        public AssemblyVersionSettings()
+        {
+            Version = new System.Version(0, 0, 0, 0);
+            MajorVersion = 0;
+            MinorVersion = 0;
+            BuildNumber = 0;
+            Revision = 0;
+            BuildNumberType = IncrementMethod.NoIncrement;
+            RevisionType = IncrementMethod.NoIncrement;
+            BuildNumberFormat = "{0}";
+            RevisionFormat = "{0}";
+            RevisionReset = false;
+        }
+
+        public int BuildNumber
+        {
+            get
+            {
+                return Version.Build < 0 ? 0 : Version.Build;
+            }
+
+            set
+            {
+                Version = new Version(MajorVersion, MinorVersion, value < 0 ? 0 : value, Revision);
+            }
+        }
+
+        public string BuildNumberFormat { get; set; }
+        public IncrementMethod BuildNumberType { get; set; }
+
+        public int MajorVersion
+        {
+            get
+            {
+                return Version.Major < 0 ? 0 : Version.Major;
+            }
+
+            set
+            {
+                Version = new System.Version(value < 0 ? 0 : value, MinorVersion, BuildNumber, Revision);
+            }
+        }
+
+        public int MinorVersion
+        {
+            get
+            {
+                return Version.Minor < 0 ? 0 : Version.Minor;
+            }
+
+            set
+            {
+                Version = new System.Version(MajorVersion, value < 0 ? 0 : value, BuildNumber, Revision);
+            }
+        }
+
+        public int Revision
+        {
+            get
+            {
+                return Version.Revision < 0 ? 0 : Version.Revision;
+            }
+
+            set
+            {
+                Version = new System.Version(MajorVersion, MinorVersion, BuildNumber, value < 0 ? 0 : value);
+            }
+        }
+
+        public string RevisionFormat { get; set; }
+        public bool RevisionReset { get; set; }
+        public IncrementMethod RevisionType { get; set; }
+
+        public Version Version { get; set; }
     }
 }

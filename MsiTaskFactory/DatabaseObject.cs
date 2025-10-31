@@ -9,6 +9,17 @@
     public class DatabaseObject : IMsiCom
     {
         /// <summary>
+        /// If <see langref="true"/>, this instance has called <see cref="Dispose(bool)"/>; otherwise, <see langref="false"/>.
+        /// </summary>
+        private bool disposedValue;
+
+        ~DatabaseObject()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseObject"/> class.
         /// </summary>
         /// <exception cref="ArgumentNullException">
@@ -21,10 +32,24 @@
             ArgumentNullException.ThrowIfNull(Installer, nameof(Installer));
         }
 
-        /// <summary>
-        /// If <see langref="true"/>, this instance has called <see cref="Dispose(bool)"/>; otherwise, <see langref="false"/>.
-        /// </summary>
-        private bool disposedValue;
+        protected InstallerObject? Installer { get; }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Installer?.Dispose();
+                    LastError?.Dispose();
+                }
+
+                ComUtility.Release(Instance);
+                ComType = null;
+                Instance = null;
+                disposedValue = true;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseObject"/> class.
@@ -82,31 +107,6 @@
                 {
                     return null;
                 }
-            }
-        }
-
-        protected InstallerObject? Installer { get; }
-
-        ~DatabaseObject()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    Installer?.Dispose();
-                    LastError?.Dispose();
-                }
-
-                ComUtility.Release(Instance);
-                ComType = null;
-                Instance = null;
-                disposedValue = true;
             }
         }
 

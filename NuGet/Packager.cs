@@ -27,6 +27,10 @@ namespace NuGet
     using System.Text.RegularExpressions;
     using System.Xml.Linq;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>

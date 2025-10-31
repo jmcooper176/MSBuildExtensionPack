@@ -21,6 +21,8 @@ namespace FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public class Calendar : IVersionMethod, IComparable<Calendar>, IEquatable<Calendar>, IEqualityComparer<Calendar>
     {
         public string Caption { get; set; }

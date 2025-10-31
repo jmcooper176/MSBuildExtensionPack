@@ -26,8 +26,6 @@ namespace MSBuild.ExtensionPack.Base
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base.Interface;
-    using MSBuild.ExtensionPack.Base.Logging;
-    using MSBuild.ExtensionPack.Base.SystemAttribute;
 
     /// <summary>
     /// Provides a common task for all the MSBuildExtensionPack Tasks
@@ -52,44 +50,6 @@ namespace MSBuild.ExtensionPack.Base
 
             TaskActionRouter(taskFilePath.FullName, lineNumber);
             return !this.Log.HasLoggedErrors;
-        }
-
-        /// <inheritdoc/>
-        public virtual void TaskActionRouter([CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = 0)
-        {
-            string errorCode = $"{nameof(BaseTask)}ERR0001";
-            string messageCode = $"{nameof(BaseTask)}MSG0001";
-            string warningCode = $"{nameof(BaseTask)}WRN0001";
-            string helpKeyWord = $"{this.HelpKeywordPrefix}{nameof(BaseTask)}HLP0001";
-
-            this.Log.LogTaskMessage(
-                    () => !SuppressTaskMessages,
-                    MessageImportance.Low,
-                    TaskAction,
-                    messageCode,
-                    helpKeyWord,
-                    "{0}({1}) : Execute : Task {2} with Task Action {3}.",
-                    filePath,
-                    lineNumber,
-                    this.GetType().Name,
-                    TaskAction);
-
-            try
-            {
-                switch (TaskAction.ToUpperInvariant())
-                {
-                    case "NONE":
-                        this.Log.LogTaskWarning(TaskAction, warningCode, helpKeyWord, "Nothing to do.", filePath, lineNumber);
-                        break;
-
-                    default:
-                        throw new InvalidOperationException($"Property TaskAction value '{TaskAction}' is invalid.");
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Log.LogTaskError(ex, LogExceptionStackTrace, LogExceptionDetail, filePath);
-            }
         }
 
         /// <summary>
@@ -141,6 +101,44 @@ namespace MSBuild.ExtensionPack.Base
         public override bool Execute()
         {
             return this.Execute(null, 0);
+        }
+
+        /// <inheritdoc/>
+        public virtual void TaskActionRouter([CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = 0)
+        {
+            string errorCode = $"{nameof(BaseTask)}ERR0001";
+            string messageCode = $"{nameof(BaseTask)}MSG0001";
+            string warningCode = $"{nameof(BaseTask)}WRN0001";
+            string helpKeyWord = $"{this.HelpKeywordPrefix}{nameof(BaseTask)}HLP0001";
+
+            this.Log.LogTaskMessage(
+                    () => !SuppressTaskMessages,
+                    MessageImportance.Low,
+                    TaskAction,
+                    messageCode,
+                    helpKeyWord,
+                    "{0}({1}) : Execute : Task {2} with Task Action {3}.",
+                    filePath,
+                    lineNumber,
+                    this.GetType().Name,
+                    TaskAction);
+
+            try
+            {
+                switch (TaskAction.ToUpperInvariant())
+                {
+                    case "NONE":
+                        this.Log.LogTaskWarning(TaskAction, warningCode, helpKeyWord, "Nothing to do.", filePath, lineNumber);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Property TaskAction value '{TaskAction}' is invalid.");
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Log.LogTaskError(ex, LogExceptionStackTrace, LogExceptionDetail, filePath);
+            }
         }
 
         /// <inheritdoc/>

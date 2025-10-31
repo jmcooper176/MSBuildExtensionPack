@@ -27,6 +27,11 @@ namespace FileSystem.Path
     using System.Text;
     using System.Text.RegularExpressions;
 
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para><i>AddAttributes</i> ( <b>Required:</b> Files)</para>
@@ -265,7 +270,7 @@ namespace FileSystem.Path
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking files contain content matching: {0}", this.RegexPattern));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking files contain content matching: {0}", this.RegexPattern));
 
             foreach (ITaskItem f in this.Files)
             {
@@ -283,28 +288,28 @@ namespace FileSystem.Path
                 Match m = this.parseRegex.Match(entireFile);
                 if (m.Success)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Found in: {0}", f.ItemSpec));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Found in: {0}", f.ItemSpec));
                     this.Result = true;
                     return;
                 }
 
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Not found in: {0}", f.ItemSpec));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Not found in: {0}", f.ItemSpec));
             }
         }
 
         private void Concatenate()
         {
-            this.LogTaskMessage("Concatenating Files");
+            this.Log.LogTaskMessage("Concatenating Files");
 
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             if (this.TargetPath is null)
             {
-                this.Log.LogError("TargetPath is required");
+                this.Log.LogTaskError("TargetPath is required");
                 return;
             }
 
@@ -314,7 +319,7 @@ namespace FileSystem.Path
                 {
                     foreach (ITaskItem file in this.Files)
                     {
-                        this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Reading File: {0}", file.ItemSpec));
+                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Reading File: {0}", file.ItemSpec));
                         using (Stream input = System.IO.File.OpenRead(file.ItemSpec))
                         {
                             input.CopyTo(output);
@@ -328,11 +333,11 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
-            this.LogTaskMessage("Counting Lines");
+            this.Log.LogTaskMessage("Counting Lines");
             DateTime start = DateTime.Now;
             this.excludedFiles = new List<ITaskItem>();
             this.includedFiles = new List<ITaskItem>();
@@ -399,13 +404,13 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             foreach (ITaskItem file in this.Files)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating File: {0}", file.ItemSpec));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating File: {0}", file.ItemSpec));
                 System.IO.File.WriteAllBytes(file.ItemSpec, !string.IsNullOrEmpty(file.GetMetadata("size")) ? new byte[Convert.ToInt32(file.GetMetadata("size"), CultureInfo.CurrentCulture)] : new byte[this.Size]);
             }
         }
@@ -414,17 +419,17 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.RegexPattern))
             {
-                this.Log.LogError("RegexPattern is required.");
+                this.Log.LogTaskError("RegexPattern is required.");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Filter file collection by content: {0}", this.RegexPattern));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Filter file collection by content: {0}", this.RegexPattern));
 
             this.includedFiles = new List<ITaskItem>();
             this.excludedFiles = new List<ITaskItem>();
@@ -444,12 +449,12 @@ namespace FileSystem.Path
                 Match m = this.parseRegex.Match(entireFile);
                 if (m.Success)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Included: {0}", f.ItemSpec));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Included: {0}", f.ItemSpec));
                     this.includedFiles.Add(f);
                 }
                 else
                 {
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Excluded: {0}", f.ItemSpec));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Excluded: {0}", f.ItemSpec));
                     this.excludedFiles.Add(f);
                 }
             }
@@ -462,11 +467,11 @@ namespace FileSystem.Path
         {
             if (!System.IO.File.Exists(this.Path.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid File passed: {0}", this.Path));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid File passed: {0}", this.Path));
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting Checksum for file: {0}", this.Path));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting Checksum for file: {0}", this.Path));
             using FileStream fs = System.IO.File.OpenRead(this.Path.GetMetadata("FullPath"));
             using MD5 csp = MD5.Create();
             byte[] hash = csp.ComputeHash(fs);
@@ -477,11 +482,11 @@ namespace FileSystem.Path
         {
             if (!System.IO.File.Exists(this.Path.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid File passed: {0}", this.Path));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid File passed: {0}", this.Path));
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Moving File: {0} to: {1}", this.Path, this.TargetPath));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Moving File: {0} to: {1}", this.Path, this.TargetPath));
 
             // If the TargetPath has multiple folders, then we need to create the parent
             DirectoryInfo f = new DirectoryInfo(this.TargetPath.GetMetadata("FullPath"));
@@ -500,10 +505,10 @@ namespace FileSystem.Path
 
         private void ParseAndReplaceFile(string parseFile, bool checkExists)
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Processing File: {0}", parseFile));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Processing File: {0}", parseFile));
             if (checkExists && System.IO.File.Exists(parseFile) == false)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
                 return;
             }
 
@@ -531,7 +536,7 @@ namespace FileSystem.Path
                 // If readonly attribute is set, reset it.
                 if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Making File Writeable: {0}", parseFile));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Making File Writeable: {0}", parseFile));
                     System.IO.File.SetAttributes(parseFile, fileAttributes ^ FileAttributes.ReadOnly);
                     changedAttribute = true;
                 }
@@ -545,7 +550,7 @@ namespace FileSystem.Path
                     }
                     catch (ArgumentException)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
                         return;
                     }
                 }
@@ -558,7 +563,7 @@ namespace FileSystem.Path
 
                 if (changedAttribute)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Making file readonly");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                     System.IO.File.SetAttributes(parseFile, FileAttributes.ReadOnly);
                 }
             }
@@ -568,7 +573,7 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("No file collection has been passed");
+                this.Log.LogTaskError("No file collection has been passed");
                 return;
             }
 
@@ -614,11 +619,11 @@ namespace FileSystem.Path
             // Validation
             if (Directory.Exists(this.Path.ItemSpec) == false)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Path not found: {0}", this.Path.ItemSpec));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Path not found: {0}", this.Path.ItemSpec));
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Processing Path: {0} with RegEx: {1}, ReplacementText: {2}", this.Path, this.RegexPattern, this.Replacement));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Processing Path: {0} with RegEx: {1}, ReplacementText: {2}", this.Path, this.RegexPattern, this.Replacement));
 
             // Check if we need to do a recursive search
             if (recursive)
@@ -628,7 +633,7 @@ namespace FileSystem.Path
 
                 if (!dir.Exists)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", this.Path.ItemSpec));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", this.Path.ItemSpec));
                     return;
                 }
 
@@ -642,7 +647,7 @@ namespace FileSystem.Path
 
                 if (!dir.Exists)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", this.Path.ItemSpec));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The directory does not exist: {0}", this.Path.ItemSpec));
                     return;
                 }
 
@@ -657,10 +662,10 @@ namespace FileSystem.Path
 
         private void RemoveLines(string parseFile, bool checkExists)
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Lines from File: {0}", parseFile));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Lines from File: {0}", parseFile));
             if (checkExists && System.IO.File.Exists(parseFile) == false)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
                 return;
             }
 
@@ -670,7 +675,7 @@ namespace FileSystem.Path
             // If readonly attribute is set, reset it.
             if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Making File Writeable: {0}", parseFile));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Making File Writeable: {0}", parseFile));
                 System.IO.File.SetAttributes(parseFile, fileAttributes ^ FileAttributes.ReadOnly);
                 changedAttribute = true;
             }
@@ -701,7 +706,7 @@ namespace FileSystem.Path
                     else
                     {
                         linesRemoved = true;
-                        this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Removing line {0}", this.parseRegex));
+                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Removing line {0}", this.parseRegex));
                     }
                 }
             }
@@ -728,7 +733,7 @@ namespace FileSystem.Path
                     else
                     {
                         linesRemoved = true;
-                        this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Removing line {0}", this.parseRegex));
+                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Removing line {0}", this.parseRegex));
                     }
                 }
             }
@@ -740,7 +745,7 @@ namespace FileSystem.Path
 
             if (changedAttribute)
             {
-                this.LogTaskMessage(MessageImportance.Low, "Making file readonly");
+                this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                 System.IO.File.SetAttributes(parseFile, FileAttributes.ReadOnly);
             }
         }
@@ -749,13 +754,13 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             if (this.Lines is null)
             {
-                this.Log.LogError("Lines is required");
+                this.Log.LogTaskError("Lines is required");
                 return;
             }
 
@@ -767,7 +772,7 @@ namespace FileSystem.Path
                 }
                 catch (ArgumentException)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
                     return;
                 }
             }
@@ -788,14 +793,14 @@ namespace FileSystem.Path
                 }
                 catch (ArgumentException)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
                     return;
                 }
             }
 
             if (string.IsNullOrEmpty(this.RegexPattern))
             {
-                this.Log.LogError("RegexPattern is required.");
+                this.Log.LogTaskError("RegexPattern is required.");
                 return;
             }
 
@@ -819,14 +824,14 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             switch (this.TaskAction)
             {
                 case SetAttributesTaskAction:
-                    this.LogTaskMessage("Setting file attributes");
+                    this.Log.LogTaskMessage("Setting file attributes");
                     foreach (ITaskItem f in this.Files)
                     {
                         FileInfo afile = new FileInfo(f.ItemSpec) { Attributes = SetAttributes(f.GetMetadata("Attributes").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) };
@@ -835,7 +840,7 @@ namespace FileSystem.Path
                     break;
 
                 case AddAttributesTaskAction:
-                    this.LogTaskMessage("Adding file attributes");
+                    this.Log.LogTaskMessage("Adding file attributes");
                     foreach (ITaskItem f in this.Files)
                     {
                         FileInfo file = new FileInfo(f.ItemSpec);
@@ -845,7 +850,7 @@ namespace FileSystem.Path
                     break;
 
                 case RemoveAttributesTaskAction:
-                    this.LogTaskMessage("Removing file attributes");
+                    this.Log.LogTaskMessage("Removing file attributes");
                     foreach (ITaskItem f in this.Files)
                     {
                         FileInfo file = new FileInfo(f.ItemSpec);
@@ -862,13 +867,13 @@ namespace FileSystem.Path
 
             if (files is null || files.Length == 0)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Please supply a value for either the Path or Files property."));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Please supply a value for either the Path or Files property."));
                 return;
             }
 
             if (this.Users is null || this.Users.Length == 0)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Please supply a value for the Users property."));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Please supply a value for the Users property."));
                 return;
             }
 
@@ -878,7 +883,7 @@ namespace FileSystem.Path
 
                 if (System.IO.File.Exists(fileInfo.FullName) == false)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", fileInfo.FullName));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", fileInfo.FullName));
                     return;
                 }
 
@@ -894,12 +899,12 @@ namespace FileSystem.Path
                     var accessRule = new FileSystemAccessRule(userName, userRights, InheritanceFlags.None, PropagationFlags.None, this.accessType);
                     if (this.TaskAction == AddSecurityTaskAction)
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Adding security for user: {0} on {1}", userName, fileInfo.FullName));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Adding security for user: {0} on {1}", userName, fileInfo.FullName));
                         currentSecurity.AddAccessRule(accessRule);
                     }
                     else
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing security for user: {0} on {1}", userName, fileInfo.FullName));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing security for user: {0} on {1}", userName, fileInfo.FullName));
                         if (permissions.Length == 0)
                         {
                             currentSecurity.RemoveAccessRuleAll(accessRule);
@@ -918,10 +923,10 @@ namespace FileSystem.Path
 
         private void WriteLines(string parseFile, bool checkExists)
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Writing Lines to File: {0}", parseFile));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Writing Lines to File: {0}", parseFile));
             if (checkExists && System.IO.File.Exists(parseFile) == false)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
                 return;
             }
 
@@ -944,7 +949,7 @@ namespace FileSystem.Path
 
                 if (!match)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Writing line {0}", line.ItemSpec));
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Writing line {0}", line.ItemSpec));
                     newlines.Add(line.ItemSpec);
                     linesAdded = true;
                 }
@@ -958,7 +963,7 @@ namespace FileSystem.Path
                 // If readonly attribute is set, reset it.
                 if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Making File Writeable: {0}", parseFile));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Making File Writeable: {0}", parseFile));
                     System.IO.File.SetAttributes(parseFile, fileAttributes ^ FileAttributes.ReadOnly);
                     changedAttribute = true;
                 }
@@ -966,7 +971,7 @@ namespace FileSystem.Path
                 System.IO.File.WriteAllLines(parseFile, newlines.ToArray(), this.fileEncoding);
                 if (changedAttribute)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Making file readonly");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                     System.IO.File.SetAttributes(parseFile, FileAttributes.ReadOnly);
                 }
             }
@@ -976,13 +981,13 @@ namespace FileSystem.Path
         {
             if (this.Files is null)
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             if (this.Lines is null)
             {
-                this.Log.LogError("Lines is required");
+                this.Log.LogTaskError("Lines is required");
                 return;
             }
 
@@ -994,7 +999,7 @@ namespace FileSystem.Path
                 }
                 catch (ArgumentException)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0} is not a supported encoding name.", this.TextEncoding));
                     return;
                 }
             }
@@ -1048,7 +1053,7 @@ namespace FileSystem.Path
                     break;
 
                 case GetTempFileNameTaskAction:
-                    this.LogTaskMessage("Getting temp file name");
+                    this.Log.LogTaskMessage("Getting temp file name");
                     this.Path = new TaskItem(System.IO.Path.GetTempFileName());
                     break;
 
@@ -1074,7 +1079,7 @@ namespace FileSystem.Path
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

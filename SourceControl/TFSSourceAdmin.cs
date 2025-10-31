@@ -21,6 +21,11 @@ namespace SourceControl
     using System.Globalization;
     using System.IO;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -81,12 +86,12 @@ namespace SourceControl
             if (string.IsNullOrEmpty(this.WorkingDirectory) == false)
             {
                 this.shellWrapper.WorkingDirectory = this.WorkingDirectory;
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "WorkingDirectory set to: {0}", this.WorkingDirectory));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "WorkingDirectory set to: {0}", this.WorkingDirectory));
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} with {1}", this.shellWrapper.Executable, arguments));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} with {1}", this.shellWrapper.Executable, arguments));
             this.ExitCode = this.shellWrapper.Execute();
-            this.LogTaskMessage(MessageImportance.Low, this.shellWrapper.StandardOutput);
+            this.Log.LogTaskMessage(MessageImportance.Low, this.shellWrapper.StandardOutput);
             this.SwitchReturnValue(this.shellWrapper.StandardError.Trim());
         }
 
@@ -98,7 +103,7 @@ namespace SourceControl
 
         private void ResolveExePath()
         {
-            this.LogTaskMessage(MessageImportance.Low, "Resolve TF.exe path");
+            this.Log.LogTaskMessage(MessageImportance.Low, "Resolve TF.exe path");
 
             string vstools = string.Empty;
             switch (this.Version)
@@ -131,13 +136,13 @@ namespace SourceControl
             if (!string.IsNullOrEmpty(vstools))
             {
                 this.teamFoundationExe = Path.Combine(vstools, @"..\IDE\tf.exe");
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "TF.exe path resolved to: {0}", this.teamFoundationExe));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "TF.exe path resolved to: {0}", this.teamFoundationExe));
             }
 
             if (!File.Exists(this.teamFoundationExe))
             {
                 this.teamFoundationExe = "tf.exe";
-                this.LogTaskMessage("Unable to resolve TF.exe path. Assuming it is in the PATH environment variable.");
+                this.Log.LogTaskMessage("Unable to resolve TF.exe path. Assuming it is in the PATH environment variable.");
             }
         }
 
@@ -146,15 +151,15 @@ namespace SourceControl
             switch (this.ExitCode)
             {
                 case 1:
-                    this.LogTaskWarning("Exit Code 1. Partial success: " + error);
+                    this.Log.LogTaskWarning("Exit Code 1. Partial success: " + error);
                     break;
 
                 case 2:
-                    this.Log.LogError("Exit Code 2. Unrecognized command: " + error);
+                    this.Log.LogTaskError("Exit Code 2. Unrecognized command: " + error);
                     break;
 
                 case 100:
-                    this.Log.LogError("Exit Code 100. Nothing Succeeded: " + error);
+                    this.Log.LogTaskError("Exit Code 100. Nothing Succeeded: " + error);
                     break;
             }
         }
@@ -167,7 +172,7 @@ namespace SourceControl
             }
 
             this.ResolveExePath();
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "TF Operation: {0}", this.TaskAction));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "TF Operation: {0}", this.TaskAction));
             switch (this.TaskAction)
             {
                 case "Branch":
@@ -179,7 +184,7 @@ namespace SourceControl
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

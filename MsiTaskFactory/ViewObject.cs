@@ -6,8 +6,17 @@
 
     public class ViewObject : IMsiCom
     {
+        private bool disposedValue;
+
+        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        ~ViewObject()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
         protected ViewObject(string? name, OpenDatabaseMode mode)
-            : this(new DatabaseObject(name, mode))
+                            : this(new DatabaseObject(name, mode))
         {
         }
 
@@ -26,22 +35,6 @@
 
         protected InstallerObject? Installer { get; private set; }
 
-        public ViewObject(DatabaseObject database, string sql)
-            : this(database)
-        {
-            Instance = Database?.OpenView(sql);
-            ComType = Instance?.GetType();
-        }
-
-        private bool disposedValue;
-
-        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        ~ViewObject()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -59,6 +52,13 @@
                 Instance = null;
                 disposedValue = true;
             }
+        }
+
+        public ViewObject(DatabaseObject database, string sql)
+                    : this(database)
+        {
+            Instance = Database?.OpenView(sql);
+            ComType = Instance?.GetType();
         }
 
         public RecordObject? this[ColumnInfoResult infoResult]

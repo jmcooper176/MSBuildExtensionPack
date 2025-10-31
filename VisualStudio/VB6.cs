@@ -23,6 +23,11 @@ namespace VisualStudio
     using System.IO;
     using System.Linq;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para><i>Build</i> ( <b>Required:</b> Projects <b>Optional:</b> VB6Path, StopOnError)</para>
@@ -63,18 +68,18 @@ namespace VisualStudio
         {
             if (this.Projects is null)
             {
-                this.Log.LogError("The collection passed to Projects is empty");
+                this.Log.LogTaskError("The collection passed to Projects is empty");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Building Projects Collection: {0} projects", this.Projects.Length));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Building Projects Collection: {0} projects", this.Projects.Length));
             if (this.Projects.Any(project => !this.BuildProject(project) && this.StopOnError))
             {
-                this.LogTaskMessage("BuildVB6 Task Execution Failed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "] Stopped by StopOnError set on true");
+                this.Log.LogTaskMessage("BuildVB6 Task Execution Failed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "] Stopped by StopOnError set on true");
                 return;
             }
 
-            this.LogTaskMessage("BuildVB6 Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
+            this.Log.LogTaskMessage("BuildVB6 Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
         }
 
         private bool BuildProject(ITaskItem project)
@@ -83,7 +88,7 @@ namespace VisualStudio
             {
                 if (!string.IsNullOrEmpty(project.GetMetadata("ChgPropVBP")))
                 {
-                    this.LogTaskMessage("START - Changing Properties VBP");
+                    this.Log.LogTaskMessage("START - Changing Properties VBP");
 
                     VBPProject projectVBP = new VBPProject(project.ItemSpec);
                     if (projectVBP.Load())
@@ -103,7 +108,7 @@ namespace VisualStudio
 
                             if (!string.IsNullOrEmpty(keyProperty[index]) && !string.IsNullOrEmpty(valueProperty[index]))
                             {
-                                this.LogTaskMessage(keyProperty[index] + " -> New value: " + valueProperty[index]);
+                                this.Log.LogTaskMessage(keyProperty[index] + " -> New value: " + valueProperty[index]);
                                 projectVBP.SetProjectProperty(keyProperty[index], valueProperty[index], false);
                             }
                         }
@@ -111,35 +116,35 @@ namespace VisualStudio
                         projectVBP.Save();
                     }
 
-                    this.LogTaskMessage("END - Changing Properties VBP");
+                    this.Log.LogTaskMessage("END - Changing Properties VBP");
                 }
 
                 FileInfo artifactFileInfo = null;
                 if (this.IfModificationExists)
                 {
-                    this.LogTaskMessage("START - Checking for modified files");
+                    this.Log.LogTaskMessage("START - Checking for modified files");
                     bool doBuild = false;
                     VBPProject projectVBP = new VBPProject(project.ItemSpec);
                     if (projectVBP.Load())
                     {
                         FileInfo projectFileInfo = new FileInfo(projectVBP.ProjectFile);
                         artifactFileInfo = projectVBP.ArtifactFile;
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "artifactFile '{0}', LastWrite: {1}'", artifactFileInfo.FullName, artifactFileInfo.LastWriteTime));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "artifactFile '{0}', LastWrite: {1}'", artifactFileInfo.FullName, artifactFileInfo.LastWriteTime));
 
                         if (projectFileInfo.LastWriteTime > artifactFileInfo.LastWriteTime)
                         {
-                            this.LogTaskMessage(MessageImportance.High, $"File '{projectFileInfo.Name}' is newer then '{artifactFileInfo.Name}'");
+                            this.Log.LogTaskMessage(MessageImportance.High, $"File '{projectFileInfo.Name}' is newer then '{artifactFileInfo.Name}'");
                             doBuild = true;
                         }
                         else
                         {
                             foreach (var file in projectVBP.GetFiles())
                             {
-                                this.LogTaskMessage($"File '{file.FullName}', LastWrite: {file.LastWriteTime}'");
+                                this.Log.LogTaskMessage($"File '{file.FullName}', LastWrite: {file.LastWriteTime}'");
 
                                 if (file.LastWriteTime > artifactFileInfo.LastWriteTime)
                                 {
-                                    this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "File '{0}' is newer then '{1}'", file.Name, artifactFileInfo.Name));
+                                    this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "File '{0}' is newer then '{1}'", file.Name, artifactFileInfo.Name));
                                     doBuild = true;
                                     break;
                                 }
@@ -149,7 +154,7 @@ namespace VisualStudio
 
                     if (!doBuild)
                     {
-                        this.LogTaskMessage(MessageImportance.High, "Build skipped, because no modifications exists.");
+                        this.Log.LogTaskMessage(MessageImportance.High, "Build skipped, because no modifications exists.");
                         return true;
                     }
 
@@ -175,38 +180,38 @@ namespace VisualStudio
                 }
 
                 // start the process
-                this.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+                this.Log.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
 
                 proc.Start();
 
                 string outputStream = proc.StandardOutput.ReadToEnd();
                 if (outputStream.Length > 0)
                 {
-                    this.LogTaskMessage(outputStream);
+                    this.Log.LogTaskMessage(outputStream);
                 }
 
                 string errorStream = proc.StandardError.ReadToEnd();
                 if (errorStream.Length > 0)
                 {
-                    this.Log.LogError(errorStream);
+                    this.Log.LogTaskError(errorStream);
                 }
 
                 proc.WaitForExit();
                 if (proc.ExitCode != 0)
                 {
-                    this.Log.LogError("Non-zero exit code from VB6.exe: " + proc.ExitCode);
+                    this.Log.LogTaskError("Non-zero exit code from VB6.exe: " + proc.ExitCode);
                     try
                     {
                         using (FileStream myStreamFile = new FileStream(project.ItemSpec + ".log", FileMode.Open))
                         {
                             StreamReader myStream = new System.IO.StreamReader(myStreamFile);
                             string myBuffer = myStream.ReadToEnd();
-                            this.Log.LogError(myBuffer);
+                            this.Log.LogTaskError(myBuffer);
                         }
                     }
                     catch (Exception ex)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
                     }
 
                     return false;
@@ -235,7 +240,7 @@ namespace VisualStudio
                 string programFilePath = Environment.GetEnvironmentVariable("ProgramFiles");
                 if (string.IsNullOrEmpty(programFilePath))
                 {
-                    this.Log.LogError("Failed to read a value from the ProgramFiles Environment Variable");
+                    this.Log.LogTaskError("Failed to read a value from the ProgramFiles Environment Variable");
                     return;
                 }
 
@@ -245,7 +250,7 @@ namespace VisualStudio
                 }
                 else
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "VB6.exe was not found in the default location. Use VB6Path to specify it. Searched at: {0}", programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe"));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "VB6.exe was not found in the default location. Use VB6Path to specify it. Searched at: {0}", programFilePath + @"\Microsoft Visual Studio\VB98\VB6.exe"));
                     return;
                 }
             }
@@ -257,7 +262,7 @@ namespace VisualStudio
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

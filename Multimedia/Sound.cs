@@ -21,6 +21,9 @@ namespace Multimedia
     using System.IO;
     using System.Threading;
 
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para><i>Play</i> ( <b>Required:</b> SoundFile or SystemSound <b>Optional:</b> Repeat, Interval)</para>
@@ -65,19 +68,19 @@ namespace Multimedia
 
             if (this.Repeat < 1 || this.Repeat > 20)
             {
-                this.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "Invalid Repeat: {0}. Value must be between 1 and 20. Using default of 1.", this.Repeat));
+                this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "Invalid Repeat: {0}. Value must be between 1 and 20. Using default of 1.", this.Repeat));
                 this.Repeat = 1;
             }
 
             if (this.Interval < 10 || this.Interval > 5000)
             {
-                this.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "Invalid Interval: {0}. Value must be between 10 and 5000. Using default of 10.", this.Interval));
+                this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "Invalid Interval: {0}. Value must be between 10 and 5000. Using default of 10.", this.Interval));
                 this.Interval = 10;
             }
 
             if (!string.IsNullOrEmpty(this.SoundFile))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Playing Sound: {0}", this.SoundFile));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Playing Sound: {0}", this.SoundFile));
                 using (SoundPlayer player = new SoundPlayer())
                 {
                     player.LoadTimeout = 5000;
@@ -92,7 +95,7 @@ namespace Multimedia
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Playing Sound: {0}", this.SystemSound));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Playing Sound: {0}", this.SystemSound));
             switch (this.SystemSound)
             {
                 case "Asterisk":
@@ -134,7 +137,7 @@ namespace Multimedia
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

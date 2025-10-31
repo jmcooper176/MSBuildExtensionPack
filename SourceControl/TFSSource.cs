@@ -22,6 +22,13 @@ namespace SourceControl
     using System.IO;
     using System.Text;
 
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Enumeration;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -150,7 +157,7 @@ namespace SourceControl
         {
             if (string.IsNullOrEmpty(this.LabelName))
             {
-                this.Log.LogError("LabelName is required for AddLabel");
+                this.Log.LogTaskError("LabelName is required for AddLabel");
                 return;
             }
 
@@ -205,7 +212,7 @@ namespace SourceControl
         {
             if (string.IsNullOrEmpty(this.LabelName))
             {
-                this.Log.LogError("LabelName is required for DeleteLabel");
+                this.Log.LogTaskError("LabelName is required for DeleteLabel");
                 return;
             }
 
@@ -230,7 +237,7 @@ namespace SourceControl
             {
                 if (this.ItemCol is null)
                 {
-                    this.Log.LogError("ItemCol or ItemPath must be defined");
+                    this.Log.LogTaskError("ItemCol or ItemPath must be defined");
                     return false;
                 }
 
@@ -293,13 +300,13 @@ namespace SourceControl
             if (string.IsNullOrEmpty(this.WorkingDirectory) == false)
             {
                 this.shellWrapper.WorkingDirectory = this.WorkingDirectory;
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "WorkingDirectory set to: {0}", this.WorkingDirectory));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "WorkingDirectory set to: {0}", this.WorkingDirectory));
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} {1}", this.shellWrapper.Executable, this.shellWrapper.Arguments));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} {1}", this.shellWrapper.Executable, this.shellWrapper.Arguments));
             this.ExitCode = this.shellWrapper.Execute();
             this.returnOutput = this.shellWrapper.StandardOutput;
-            this.LogTaskMessage(MessageImportance.Low, this.returnOutput);
+            this.Log.LogTaskMessage(MessageImportance.Low, this.returnOutput);
             this.SwitchReturnValue(this.shellWrapper.StandardError.Trim());
         }
 
@@ -384,7 +391,7 @@ namespace SourceControl
         {
             if (string.IsNullOrEmpty(this.ItemPath))
             {
-                this.Log.LogError("ItemPath is required for Merge");
+                this.Log.LogTaskError("ItemPath is required for Merge");
                 return;
             }
 
@@ -411,7 +418,7 @@ namespace SourceControl
             }
             else
             {
-                this.Log.LogError("Destination is required for Merge");
+                this.Log.LogTaskError("Destination is required for Merge");
                 return;
             }
 
@@ -452,7 +459,7 @@ namespace SourceControl
 
         private void ResolveExePath()
         {
-            this.LogTaskMessage(MessageImportance.Low, "Resolve TF.exe path");
+            this.Log.LogTaskMessage(MessageImportance.Low, "Resolve TF.exe path");
 
             string vstools = string.Empty;
             switch (this.Version)
@@ -497,13 +504,13 @@ namespace SourceControl
             if (!string.IsNullOrEmpty(vstools))
             {
                 this.teamFoundationExe = Path.Combine(vstools, @"..\IDE\tf.exe");
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "TF.exe path resolved to: {0}", this.teamFoundationExe));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "TF.exe path resolved to: {0}", this.teamFoundationExe));
             }
 
             if (!File.Exists(this.teamFoundationExe))
             {
                 this.teamFoundationExe = "tf.exe";
-                this.LogTaskMessage(MessageImportance.Low, "Unable to resolve TF.exe path. Assuming it is in the PATH environment variable.");
+                this.Log.LogTaskMessage(MessageImportance.Low, "Unable to resolve TF.exe path. Assuming it is in the PATH environment variable.");
             }
         }
 
@@ -512,15 +519,15 @@ namespace SourceControl
             switch (this.ExitCode)
             {
                 case 1:
-                    this.LogTaskWarning("Exit Code 1. Partial success: " + error);
+                    this.Log.LogTaskWarning("Exit Code 1. Partial success: " + error);
                     break;
 
                 case 2:
-                    this.Log.LogError("Exit Code 2. Unrecognized command: " + error);
+                    this.Log.LogTaskError("Exit Code 2. Unrecognized command: " + error);
                     break;
 
                 case 100:
-                    this.Log.LogError("Exit Code 100. Nothing Succeeded: " + error);
+                    this.Log.LogTaskError("Exit Code 100. Nothing Succeeded: " + error);
                     break;
             }
         }
@@ -543,7 +550,7 @@ namespace SourceControl
             }
 
             this.ResolveExePath();
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "TF Operation: {0}", this.TaskAction));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "TF Operation: {0}", this.TaskAction));
             switch (this.TaskAction)
             {
                 case AddTaskAction:
@@ -603,7 +610,7 @@ namespace SourceControl
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

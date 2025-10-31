@@ -18,13 +18,19 @@
 
 // Ignore Spelling: Ruleset Xsl Gac Fx
 
-namespace CodeQuality
+namespace MSBuild.ExtensionPack.CodeQuality
 {
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Linq;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Enumeration;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// The FxCop task provides a basic wrapper over FxCopCmd.exe. See http://msdn.microsoft.com/en-gb/library/bb429449(VS.80).aspx

@@ -6,13 +6,6 @@
     {
         private bool disposedValue;
 
-        public Type? ComType { get; private set; }
-        public Guid IID => new("000C1097-0000-0000-C000-000000000046");
-
-        public object? Instance { get; private set; }
-
-        public string ProgId => string.Empty;
-
         // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         ~Components()
         {
@@ -39,6 +32,13 @@
         public Components()
         {
         }
+
+        public Type? ComType { get; private set; }
+        public Guid IID => new("000C1097-0000-0000-C000-000000000046");
+
+        public object? Instance { get; private set; }
+
+        public string ProgId => string.Empty;
 
         public object Clone() => throw new NotImplementedException();
 

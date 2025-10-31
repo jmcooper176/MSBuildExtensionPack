@@ -220,7 +220,7 @@ namespace Xml
             XmlSchemaSet schemas = new XmlSchemaSet();
             foreach (ITaskItem i in this.SchemaFiles)
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Loading SchemaFile: {0}", i.ItemSpec));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Loading SchemaFile: {0}", i.ItemSpec));
                 schemas.Add(this.TargetNamespace, i.ItemSpec);
             }
 
@@ -262,7 +262,7 @@ namespace Xml
             else if (!string.IsNullOrEmpty(this.Xml))
             {
                 // Load the Xml
-                this.LogTaskMessage(MessageImportance.Low, "Loading Xml");
+                this.Log.LogTaskMessage(MessageImportance.Low, "Loading Xml");
                 using (StringReader sr = new StringReader(this.Xml))
                 {
                     this.xmlDoc = XDocument.Load(sr);

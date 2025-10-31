@@ -19,7 +19,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-using MSBuild.ExtensionPack.Base.SystemAttribute;
+using MSBuild.ExtensionPack.ErrorMessage.AttributeAccess;
 
 namespace MSBuild.ExtensionPack.Base.Enumeration
 {

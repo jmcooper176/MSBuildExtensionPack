@@ -21,7 +21,11 @@ namespace SourceControl
     using System.Globalization;
     using System.IO;
 
+    using Microsoft.Build.Framework;
     using Microsoft.Win32;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// Please be aware that this is a very light wrapper for ss.exe
@@ -79,17 +83,17 @@ namespace SourceControl
             int returncode = this.shellWrapper.Execute();
             if (string.IsNullOrEmpty(this.shellWrapper.StandardOutput.Trim()) == false)
             {
-                this.LogTaskMessage(this.shellWrapper.StandardOutput);
+                this.Log.LogTaskMessage(this.shellWrapper.StandardOutput);
             }
 
             if (string.IsNullOrEmpty(this.shellWrapper.StandardError.Trim()) == false)
             {
-                this.LogTaskMessage(this.shellWrapper.StandardError);
+                this.Log.LogTaskMessage(this.shellWrapper.StandardError);
             }
 
             if (returncode != 0)
             {
-                this.Log.LogError(this.shellWrapper.StandardError + "(" + returncode + ")");
+                this.Log.LogTaskError(this.shellWrapper.StandardError + "(" + returncode + ")");
             }
         }
 
@@ -123,7 +127,7 @@ namespace SourceControl
                     break;
 
                 default:
-                    this.Log.LogError("Invalid SSVersion. Valid options are 6d or 2005");
+                    this.Log.LogTaskError("Invalid SSVersion. Valid options are 6d or 2005");
                     return false;
             }
 
@@ -145,7 +149,7 @@ namespace SourceControl
                 this.shellWrapper.EnvironmentVariables.Add("SSPWD", this.UserPassword);
             }
 
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Using UserName: {0} and Password: {1}", this.UserName, this.UserPassword));
+            this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Using UserName: {0} and Password: {1}", this.UserName, this.UserPassword));
             return true;
         }
 
@@ -175,7 +179,7 @@ namespace SourceControl
             }
 
             string args = string.Format(CultureInfo.CurrentCulture, "{0} \"{1}\" {2}", this.TaskAction, this.FilePath, this.Arguments);
-            this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Executing: {0} {1}", this.fileName, args));
+            this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Executing: {0} {1}", this.fileName, args));
             this.ExecuteVisualSourceSafe(args);
         }
 

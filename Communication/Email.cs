@@ -21,6 +21,11 @@ namespace Communication
     using System.Globalization;
     using System.Net.Mail;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -108,7 +113,7 @@ namespace Communication
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
-        protected override void InternalExecute()
+        protected void InternalExecute()
         {
             switch (this.TaskAction)
             {

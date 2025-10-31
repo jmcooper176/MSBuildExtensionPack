@@ -6,27 +6,6 @@
 
     public class SessionObject : IMsiCom
     {
-        protected SessionObject()
-        {
-            Installer = new();
-        }
-
-        public SessionObject(string packagePath, int options)
-            : this()
-        {
-            Instance = Installer?.OpenPackage(packagePath, options);
-            ComType = Instance?.GetType();
-            Database = ComType is not null ? (DatabaseObject?)ComUtility.InvokeComPropertyGet(ComType, "Database", Instance, null) : null;
-        }
-
-        public SessionObject(Guid productCode)
-            : this()
-        {
-            Instance = Installer?.OpenProduct(productCode);
-            ComType = Instance?.GetType();
-            Database = ComType is not null ? (DatabaseObject?)ComUtility.InvokeComPropertyGet(ComType, "Database", Instance, null) : null;
-        }
-
         private bool disposedValue;
 
         // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
@@ -34,6 +13,11 @@
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
+        }
+
+        protected SessionObject()
+        {
+            Installer = new();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -51,6 +35,22 @@
                 Instance = null;
                 disposedValue = true;
             }
+        }
+
+        public SessionObject(string packagePath, int options)
+                    : this()
+        {
+            Instance = Installer?.OpenPackage(packagePath, options);
+            ComType = Instance?.GetType();
+            Database = ComType is not null ? (DatabaseObject?)ComUtility.InvokeComPropertyGet(ComType, "Database", Instance, null) : null;
+        }
+
+        public SessionObject(Guid productCode)
+            : this()
+        {
+            Instance = Installer?.OpenProduct(productCode);
+            ComType = Instance?.GetType();
+            Database = ComType is not null ? (DatabaseObject?)ComUtility.InvokeComPropertyGet(ComType, "Database", Instance, null) : null;
         }
 
         public Type? ComType { get; private set; }

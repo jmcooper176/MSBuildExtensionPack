@@ -21,6 +21,8 @@ namespace FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public class Office : IVersionMethod, IComparable<Office>, IEquatable<Office>, IEqualityComparer<Office>
     {
         public string Caption { get; set; }

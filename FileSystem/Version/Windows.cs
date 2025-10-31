@@ -21,6 +21,8 @@ namespace FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public class Windows : IVersionMethod, IComparable<Windows>, IEquatable<Windows>, IEqualityComparer<Windows>
     {
         /// <inheritdoc/>

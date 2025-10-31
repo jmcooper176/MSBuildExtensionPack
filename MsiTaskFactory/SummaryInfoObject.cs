@@ -8,6 +8,13 @@
     {
         private bool disposedValue;
 
+        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        ~SummaryInfoObject()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -28,13 +35,6 @@
         public Guid IID => new("000C109B-0000-0000-C000-000000000046");
         public object? Instance { get; private set; }
         public string ProgId => string.Empty;
-
-        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        ~SummaryInfoObject()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-        }
 
         public void Dispose()
         {

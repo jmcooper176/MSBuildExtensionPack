@@ -19,6 +19,10 @@ namespace FileSystem.Tool
 {
     using System.IO;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+
     /// <summary>
     /// This task wraps RoboCopy. Successful non-zero exit codes from RoboCopy are set to zero to not break MSBuild. Use the
     /// ReturnCode property to access the exit code from RoboCopy
@@ -50,7 +54,7 @@ namespace FileSystem.Tool
     ///]]>
     /// </code>
     /// </example>
-    public class RoboCopy : ToolTask
+    public class RoboCopy : BaseToolTask
     {
         protected override string ToolName => "RoboCopy.exe";
 

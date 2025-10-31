@@ -19,8 +19,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-using MSBuild.ExtensionPack.Base.Enumeration;
-
 namespace MSBuild.ExtensionPack.Base.Cause
 {
     /// <summary>

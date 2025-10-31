@@ -7,18 +7,6 @@
     public class InstallerObject : IMsiCom
     {
         private bool disposedValue;
-        public Guid IID => new(" 000C1090-0000-0000-C000-000000000046");
-        public string ProgId => "WindowsInstaller.Installer";
-
-        public InstallerObject()
-        {
-            ComType = ComUtility.GetTypeFromProgId(ProgId);
-            Instance = ComUtility.CreateComInstance(ProgId);
-        }
-
-        public Type? ComType { get; private set; }
-        public object? Instance { get; private set; }
-        public RecordObject? LastError { get; private set; }
 
         ~InstallerObject()
         {
@@ -42,6 +30,22 @@
                 disposedValue = true;
             }
         }
+
+        public InstallerObject()
+        {
+            ComType = ComUtility.GetTypeFromProgId(ProgId);
+            Instance = ComUtility.CreateComInstance(ProgId);
+        }
+
+        public Type? ComType { get; private set; }
+        public Guid IID => new(" 000C1090-0000-0000-C000-000000000046");
+        public object? Instance { get; private set; }
+        public RecordObject? LastError { get; private set; }
+        public string ProgId => "WindowsInstaller.Installer";
+
+        public static object? ToInstance(InstallerObject? thick) => thick?.Instance;
+
+        public static InstallerObject? ToObject(object? thin) => new(thin);
 
         public RecordObject? CreateRecord(int count)
         {
@@ -96,9 +100,5 @@
         {
             return ComType is not null && Instance is not null ? (SessionObject?)ComUtility.InvokeComMethod(ComType, "OpenProduct", Instance, [productCode.ToString()], null) : null;
         }
-
-        public static object? ToInstance(InstallerObject? thick) => thick?.Instance;
-
-        public static InstallerObject? ToObject(object? thin) => new(thin);
     }
 }

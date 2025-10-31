@@ -21,6 +21,8 @@ namespace FileSystem.Version
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
+    using MSBuild.ExtensionPack.Base.Interface;
+
     public class TeX : IVersionMethod, IComparable<TeX>, IEquatable<TeX>, IEqualityComparer<TeX>
     {
         /// <inheritdoc/>

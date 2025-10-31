@@ -8,6 +8,12 @@
     {
         private bool disposedValue;
 
+        ~PatchObject()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -27,12 +33,6 @@
         public Guid IID { get; }
         public object? Instance { get; private set; }
         public string ProgId { get; }
-
-        ~PatchObject()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-        }
 
         public void Dispose()
         {

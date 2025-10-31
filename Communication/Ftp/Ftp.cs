@@ -22,6 +22,12 @@ namespace Communication.Ftp
     using System.IO;
     using System.Linq;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.Base.Cause;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
+
     /// <summary>
     /// <b>Valid TaskActions are:</b>
     /// <para>
@@ -94,13 +100,13 @@ namespace Communication.Ftp
         {
             if (string.IsNullOrEmpty(RemoteDirectoryName))
             {
-                Log.LogError("The required RemoteDirectoryName attribute has not been set for FTP.");
+                this.Log.LogError("The required RemoteDirectoryName attribute has not been set for FTP.");
                 return;
             }
 
             using FtpConnection ftpConnection = CreateFtpConnection();
             ftpConnection.LogOn();
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating Directory: {0}", RemoteDirectoryName));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Creating Directory: {0}", RemoteDirectoryName));
             try
             {
                 ftpConnection.CreateDirectory(RemoteDirectoryName);
@@ -112,7 +118,7 @@ namespace Communication.Ftp
                     return;
                 }
 
-                Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error creating ftp directory: {0}. The Error Details are \"{1}\" and error code is {2} ", RemoteDirectoryName, ex.Message, ex.ErrorCode));
+                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error creating ftp directory: {0}. The Error Details are \"{1}\" and error code is {2} ", RemoteDirectoryName, ex.Message, ex.ErrorCode));
             }
         }
 
@@ -122,7 +128,7 @@ namespace Communication.Ftp
         /// <returns>An initialised FTP Connection</returns>
         private FtpConnection CreateFtpConnection()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Connecting to FTP Host: {0}", Host));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Connecting to FTP Host: {0}", Host));
 
             if (!string.IsNullOrEmpty(UserName))
             {
@@ -139,13 +145,13 @@ namespace Communication.Ftp
         {
             if (string.IsNullOrEmpty(RemoteDirectoryName))
             {
-                Log.LogError("The required RemoteDirectoryName attribute has not been set for FTP.");
+                this.Log.LogTaskError("The required RemoteDirectoryName attribute has not been set for FTP.");
                 return;
             }
 
             using FtpConnection ftpConnection = CreateFtpConnection();
             ftpConnection.LogOn();
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Deleting Directory: {0}", RemoteDirectoryName));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Deleting Directory: {0}", RemoteDirectoryName));
             try
             {
                 ftpConnection.DeleteDirectory(RemoteDirectoryName);
@@ -157,7 +163,7 @@ namespace Communication.Ftp
                     return;
                 }
 
-                Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error deleting ftp directory: {0}. The Error Details are \"{1}\" and error code is {2} ", RemoteDirectoryName, ex.Message, ex.ErrorCode));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "There was an error deleting ftp directory: {0}. The Error Details are \"{1}\" and error code is {2} ", RemoteDirectoryName, ex.Message, ex.ErrorCode));
             }
         }
 
@@ -168,16 +174,16 @@ namespace Communication.Ftp
         {
             if (FileNames is null)
             {
-                Log.LogError("The required FileNames attribute has not been set for FTP.");
+                this.Log.LogTaskError("The required FileNames attribute has not been set for FTP.");
                 return;
             }
 
             using FtpConnection ftpConnection = CreateFtpConnection();
             ftpConnection.LogOn();
-            this.LogTaskMessage("Deleting Files");
+            this.Log.LogTaskMessage("Deleting Files");
             if (!string.IsNullOrEmpty(RemoteDirectoryName))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Current Directory: {0}", RemoteDirectoryName));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Current Directory: {0}", RemoteDirectoryName));
                 ftpConnection.SetCurrentDirectory(RemoteDirectoryName);
             }
 
@@ -185,7 +191,7 @@ namespace Communication.Ftp
             {
                 try
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Deleting: {0}", fileName));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Deleting: {0}", fileName));
                     ftpConnection.DeleteFile(fileName);
                 }
                 catch (FtpException ex)
@@ -195,7 +201,7 @@ namespace Communication.Ftp
                         continue;
                     }
 
-                    Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error in deleting file: {0}. The Error Details are \"{1}\" and error code is {2} ", fileName, ex.Message, ex.ErrorCode));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "There was an error in deleting file: {0}. The Error Details are \"{1}\" and error code is {2} ", fileName, ex.Message, ex.ErrorCode));
                 }
             }
         }
@@ -213,7 +219,7 @@ namespace Communication.Ftp
                     Directory.CreateDirectory(WorkingDirectory);
                 }
 
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Local Directory: {0}", WorkingDirectory));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Local Directory: {0}", WorkingDirectory));
 
                 FtpConnection.SetLocalDirectory(WorkingDirectory);
             }
@@ -225,13 +231,13 @@ namespace Communication.Ftp
                 ftpConnection.SetCurrentDirectory(RemoteDirectoryName);
             }
 
-            this.LogTaskMessage("Downloading Files");
+            this.Log.LogTaskMessage("Downloading Files");
             if (FileNames is null)
             {
                 FtpFileInfo[] filesToDownload = ftpConnection.GetFiles();
                 foreach (FtpFileInfo fileToDownload in filesToDownload)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Downloading: {0}", fileToDownload));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Downloading: {0}", fileToDownload));
                     ftpConnection.GetFile(fileToDownload.Name, false);
                 }
             }
@@ -241,12 +247,12 @@ namespace Communication.Ftp
                 {
                     try
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Downloading: {0}", fileName));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Downloading: {0}", fileName));
                         ftpConnection.GetFile(fileName, false);
                     }
                     catch (FtpException ex)
                     {
-                        Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error downloading file: {0}. The Error Details are \"{1}\" and error code is {2} ", fileName, ex.Message, ex.ErrorCode));
+                        Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "There was an error downloading file: {0}. The Error Details are \"{1}\" and error code is {2} ", fileName, ex.Message, ex.ErrorCode));
                     }
                 }
             }
@@ -259,15 +265,15 @@ namespace Communication.Ftp
         {
             if (FileNames is null)
             {
-                Log.LogError("The required fileNames attribute has not been set for FTP.");
+                this.Log.LogTaskError("The required fileNames attribute has not been set for FTP.");
                 return;
             }
 
             using FtpConnection ftpConnection = CreateFtpConnection();
-            this.LogTaskMessage("Uploading Files");
+            this.Log.LogTaskMessage("Uploading Files");
             if (!string.IsNullOrEmpty(WorkingDirectory))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Local Directory: {0}", WorkingDirectory));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Local Directory: {0}", WorkingDirectory));
                 FtpConnection.SetLocalDirectory(WorkingDirectory);
             }
 
@@ -275,7 +281,7 @@ namespace Communication.Ftp
 
             if (!string.IsNullOrEmpty(RemoteDirectoryName))
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Current Directory: {0}", RemoteDirectoryName));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Setting Current Directory: {0}", RemoteDirectoryName));
                 ftpConnection.SetCurrentDirectory(RemoteDirectoryName);
             }
 
@@ -302,17 +308,17 @@ namespace Communication.Ftp
                     {
                         if (!overwrite && files.Any(fi => fi.Name == fileName))
                         {
-                            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Skipped: {0}", fileName));
+                            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Skipped: {0}", fileName));
                             continue;
                         }
 
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Uploading: {0}", fileName));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Uploading: {0}", fileName));
                         ftpConnection.PutFile(fileName);
                     }
                 }
                 catch (FtpException ex)
                 {
-                    Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error uploading file: {0}. The Error Details are \"{1}\" and error code is {2} ", fileName, ex.Message, ex.ErrorCode));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "There was an error uploading file: {0}. The Error Details are \"{1}\" and error code is {2} ", fileName, ex.Message, ex.ErrorCode));
                 }
             }
         }
@@ -320,11 +326,11 @@ namespace Communication.Ftp
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
-        protected override void InternalExecute()
+        protected void InternalExecute()
         {
             if (string.IsNullOrEmpty(Host))
             {
-                Log.LogError("The required host attribute has not been set for FTP.");
+                this.Log.LogTaskError("The required host attribute has not been set for FTP.");
                 return;
             }
 
@@ -351,7 +357,7 @@ namespace Communication.Ftp
                     break;
 
                 default:
-                    Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid Task Action passed: {0}", TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid Task Action passed: {0}", TaskAction));
                     return;
             }
         }
