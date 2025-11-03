@@ -150,7 +150,7 @@ namespace MSBuild.ExtensionPack.Base
         {
             int retries = 6;
 
-            while (path is not null && path.Exists && !PreserveTempFiles)
+            while (path?.Exists == true && !PreserveTempFiles)
             {
                 try
                 {
@@ -643,15 +643,10 @@ namespace MSBuild.ExtensionPack.Base
 
                 // ensure the command line arguments string is not
                 // <see langref="null"/>
-                if (string.IsNullOrEmpty(commandLineCommands))
-                {
-                    commandLineCommands = string.Empty;
-                }
-                // add a leading space to the command line arguments (if any) to separate them from the tool path
-                else
-                {
-                    commandLineCommands = $" {commandLineCommands}";
-                }
+                commandLineCommands = string.IsNullOrEmpty(commandLineCommands)
+                    ? string.Empty
+                    // add a leading space to the command line arguments (if any) to separate them from the tool path
+                    : $" {commandLineCommands}";
 
                 // Initialize the host object. At this point, the task may elect to not proceed. Compiler tasks do this for purposes
                 // of up-to-date checking in the IDE.
@@ -669,7 +664,7 @@ namespace MSBuild.ExtensionPack.Base
 
                 string pathToTool = ComputePathToTool();
 
-                if (pathToTool is null)
+                if (string.IsNullOrEmpty(pathToTool))
                 {
                     // An appropriate error should have been logged already.
                     return false;
@@ -734,18 +729,7 @@ namespace MSBuild.ExtensionPack.Base
                 }
 
                 // Raise a comment event to notify that the process completed
-                if (ToolTaskProcess?.HasExited == true)
-                {
-                    return false;
-                }
-                else if (ExitCode != 0)
-                {
-                    return HandleTaskExecutionErrors();
-                }
-                else
-                {
-                    return true;
-                }
+                return ToolTaskProcess?.HasExited != true && (ExitCode == 0 || HandleTaskExecutionErrors());
             }
             catch (ArgumentException e)
             {
@@ -766,7 +750,7 @@ namespace MSBuild.ExtensionPack.Base
             finally
             {
                 // Clean up after ourselves.
-                if (TemporaryBatchFile is not null && TemporaryBatchFile.Exists)
+                if (TemporaryBatchFile?.Exists == true)
                 {
                     DeleteTempFile(TemporaryBatchFile);
                 }

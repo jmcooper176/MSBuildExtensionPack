@@ -44,7 +44,7 @@ namespace MSBuild.ExtensionPack.TaskFactory.PowerShell
     ///CDATA[
     ///$log.LogMessage([Microsoft.Build.Framework.MessageImportance]"High", "Hello from PowerShell!  Now adding {0} and {1}.", $first, $second)
     ///if ($first + $second -gt 100) {
-    ///$log.LogError("Oops!  I can't count that high. :(")
+    ///$log.LogTaskError("Oops!  I can't count that high. :(")
     ///}
     ///$sum = $first + $second
     ///]]

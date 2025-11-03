@@ -548,22 +548,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <inheritdoc/>
         public int CompareTo(SubRange? other)
         {
-            if (other is null)
-            {
-                return -1;
-            }
-            else if (this.Value > other.Value)
-            {
-                return 1;
-            }
-            else if (this.Value < other.Value)
-            {
-                return -1;
-            }
-            else
-            {
-                return 0;
-            }
+            return other is null ? -1 : this.Value > other.Value ? 1 : this.Value < other.Value ? -1 : 0;
         }
 
         /// <inheritdoc/>
@@ -575,7 +560,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
         /// <inheritdoc/>
         public bool Equals(SubRange? x, SubRange? y)
         {
-            return ReferenceEquals(x, y) ? true : x is null ^ y is null ? false : x!.Value == y!.Value;
+            return ReferenceEquals(x, y) || (!(x is null ^ y is null) && x!.Value == y!.Value);
         }
 
         /// <inheritdoc/>

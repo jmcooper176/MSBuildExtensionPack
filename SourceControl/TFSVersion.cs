@@ -81,7 +81,7 @@ namespace SourceControl
     /// </code>
     /// </example>
     /// <seealso cref="BaseTask"/>
-    public class TfsVersion : BaseTask
+    public partial class TfsVersion : BaseTask
     {
         private const string AppendAssemblyFileVersionFormat = "\n[assembly: System.Reflection.AssemblyFileVersion(\"{0}\")]";
         private const string AppendAssemblyVersionFormat = "\n[assembly: System.Reflection.AssemblyVersion(\"{0}\")]";
@@ -90,6 +90,9 @@ namespace SourceControl
         private Encoding fileEncoding = Encoding.UTF8;
         private Regex regexAssemblyVersion;
         private Regex regexExpression;
+
+        [GeneratedRegexAttribute(@"AssemblyVersion.*\(.*".* ".*\)", RegexOptions.Compiled)]
+        private static partial Regex AssemblyVersionRegex();
 
         private void GetVersion()
         {
@@ -121,8 +124,8 @@ namespace SourceControl
                 }
 
                 string buildstring = this.TfsBuildNumber.Replace(this.BuildName + "_", string.Empty);
-                string[] buildParts = buildstring.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                DateTime t = new DateTime(Convert.ToInt32(buildParts[0].Substring(0, 4), CultureInfo.CurrentCulture), Convert.ToInt32(buildParts[0].Substring(4, 2), CultureInfo.CurrentCulture), Convert.ToInt32(buildParts[0].Substring(6, 2), CultureInfo.InvariantCulture));
+                string[] buildParts = buildstring.Split(['.'], StringSplitOptions.RemoveEmptyEntries);
+                DateTime t = new DateTime(Convert.ToInt32(buildParts[0][..4], CultureInfo.CurrentCulture), Convert.ToInt32(buildParts[0].Substring(4, 2), CultureInfo.CurrentCulture), Convert.ToInt32(buildParts[0].Substring(6, 2), CultureInfo.InvariantCulture));
 
                 DateTime baseTimeToUse = DateTime.Now;
                 if (this.UseUtcDate)
@@ -183,7 +186,7 @@ namespace SourceControl
             if (!string.IsNullOrEmpty(this.VersionTemplateFormat))
             {
                 // get the current version number parts
-                int[] buildparts = this.Version.Split(char.Parse(this.Delimiter)).Select(s => int.Parse(s, CultureInfo.InvariantCulture)).ToArray();
+                int[] buildparts = [.. this.Version.Split(char.Parse(this.Delimiter)).Select(s => int.Parse(s, CultureInfo.InvariantCulture))];
 
                 // get the format parts
                 string[] formatparts = this.VersionTemplateFormat.Split(char.Parse(this.Delimiter));
@@ -221,10 +224,6 @@ namespace SourceControl
                     this.fileEncoding = System.Text.Encoding.Unicode;
                     break;
 
-                case "UTF7":
-                    this.fileEncoding = System.Text.Encoding.UTF7;
-                    break;
-
                 case "UTF8":
                     this.fileEncoding = System.Text.Encoding.UTF8;
                     break;
@@ -238,7 +237,7 @@ namespace SourceControl
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Encoding not supported: {0}", this.TextEncoding));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Encoding not supported: {0}", this.TextEncoding));
                     return false;
             }
 
@@ -259,7 +258,7 @@ namespace SourceControl
                 return;
             }
 
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("No Files specified. Pass an Item Collection of files to the Files property.");
                 return;
@@ -274,7 +273,7 @@ namespace SourceControl
             this.regexExpression = new Regex(@"AssemblyFileVersion.*\(.*""" + ".*" + @""".*\)", RegexOptions.Compiled);
             if (this.SetAssemblyVersion)
             {
-                this.regexAssemblyVersion = new Regex(@"AssemblyVersion.*\(.*""" + ".*" + @""".*\)", RegexOptions.Compiled);
+                this.regexAssemblyVersion = AssemblyVersionRegex();
             }
 
             foreach (ITaskItem file in this.Files)

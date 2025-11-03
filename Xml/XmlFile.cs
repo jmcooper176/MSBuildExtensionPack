@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Xml
+namespace MSBuild.ExtensionPack.Xml
 {
     using System;
     using System.Globalization;
@@ -210,7 +210,7 @@ namespace Xml
             else
             {
                 this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Set Attribute: {0}={1}", this.Key, this.Value));
-                if (this.elements is not null && this.elements.Count > 0)
+                if (this.elements?.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
                     {
@@ -282,7 +282,7 @@ namespace Xml
             else
             {
                 this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Add Element: {0}", this.XPath));
-                if (this.elements is not null && this.elements.Count > 0)
+                if (this.elements?.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
                     {
@@ -307,10 +307,9 @@ namespace Xml
 
         private XmlAttribute CreateAttribute()
         {
-            XmlAttribute xmlAttribute;
             if (string.IsNullOrEmpty(this.Prefix))
             {
-                xmlAttribute = this.xmlFileDoc.CreateAttribute(this.Key);
+                return this.xmlFileDoc.CreateAttribute(this.Key);
             }
             else
             {
@@ -321,10 +320,8 @@ namespace Xml
                     return null;
                 }
 
-                xmlAttribute = this.xmlFileDoc.CreateAttribute(this.Prefix, this.Key, prefixNamespace);
+                return this.xmlFileDoc.CreateAttribute(this.Prefix, this.Key, prefixNamespace);
             }
-
-            return xmlAttribute;
         }
 
         private XmlNode CreateElement()
@@ -381,7 +378,7 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.Log.LogError("XPath is Required");
+                this.Log.LogTaskError("XPath is Required");
                 return;
             }
 
@@ -397,7 +394,7 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.Log.LogError("XPath is Required");
+                this.Log.LogTaskError("XPath is Required");
                 return;
             }
 
@@ -413,7 +410,7 @@ namespace Xml
         {
             if (string.IsNullOrEmpty(this.XPath))
             {
-                this.Log.LogError("XPath is Required");
+                this.Log.LogTaskError("XPath is Required");
                 return;
             }
 
@@ -470,7 +467,7 @@ namespace Xml
             else
             {
                 this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Attribute: {0}", this.Key));
-                if (this.elements is not null && this.elements.Count > 0)
+                if (this.elements?.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
                     {
@@ -507,7 +504,7 @@ namespace Xml
             else
             {
                 this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Remove Element: {0}", this.XPath));
-                if (this.elements is not null && this.elements.Count > 0)
+                if (this.elements?.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
                     {
@@ -551,7 +548,7 @@ namespace Xml
                     }
                 }
 
-                if (saved != true)
+                if (!saved)
                 {
                     throw;
                 }
@@ -578,15 +575,12 @@ namespace Xml
             else
             {
                 this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Attribute: {0} @ {1}. Value: {2}", this.Key, this.XPath, this.Value));
-                if (this.elements is not null && this.elements.Count > 0)
+                if (this.elements?.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
                     {
                         XmlAttribute attNode = element.Attributes.GetNamedItem(this.Key) as XmlAttribute;
-                        if (attNode is not null)
-                        {
-                            attNode.Value = this.Value;
-                        }
+                        attNode?.Value = this.Value;
                     }
                 }
             }
@@ -605,7 +599,7 @@ namespace Xml
             if (string.IsNullOrEmpty(this.InnerXml))
             {
                 this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Element: {0}. InnerText: {1}", this.XPath, this.InnerText));
-                if (this.elements is not null && this.elements.Count > 0)
+                if (this.elements?.Count > 0)
                 {
                     foreach (XmlNode element in this.elements)
                     {
@@ -619,7 +613,7 @@ namespace Xml
             }
 
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Update Element: {0}. InnerXml: {1}", this.XPath, this.InnerXml));
-            if (this.elements is not null && this.elements.Count > 0)
+            if (this.elements?.Count > 0)
             {
                 foreach (XmlNode element in this.elements)
                 {
@@ -667,7 +661,7 @@ namespace Xml
                     }
                 }
 
-                if (loaded != true)
+                if (!loaded)
                 {
                     throw;
                 }

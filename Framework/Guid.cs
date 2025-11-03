@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System.Globalization;
     using System.Security.Cryptography;
@@ -79,11 +79,9 @@ namespace MSBuild.ExtensionPack
         {
             this.LogTaskMessage("Getting Cryptographically Secure GUID");
             byte[] data = new byte[16];
-            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(data);
-                this.internalGuid = new System.Guid(data);
-            }
+            using RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(data);
+            this.internalGuid = new System.Guid(data);
         }
 
         /// <summary>
@@ -107,7 +105,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -116,12 +114,12 @@ namespace MSBuild.ExtensionPack
         /// 32 digits separated by hyphens: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
         /// </summary>
         [Output]
-        public string[] FormattedGuidString => new[] { this.internalGuid.ToString("D", CultureInfo.CurrentCulture) };
+        public string[] FormattedGuidString => [this.internalGuid.ToString("D", CultureInfo.CurrentCulture)];
 
         /// <summary>
         /// 32 digits: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         /// </summary>
         [Output]
-        public string[] GuidString => new[] { this.internalGuid.ToString("N", CultureInfo.CurrentCulture) };
+        public string[] GuidString => [this.internalGuid.ToString("N", CultureInfo.CurrentCulture)];
     }
 }

@@ -15,13 +15,15 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Management;
 
+    using Microsoft.Build.Framework;
     using Microsoft.Win32;
 
     /// <summary>
@@ -266,8 +268,10 @@ namespace Computer
     [Flags]
     internal enum ServiceTypes
     {
+        Unknown = 0,
+
         /// <summary>
-        /// Kernel Driverr
+        /// Kernel Driver
         /// </summary>
         KernalDriver = 1,
 
@@ -415,12 +419,9 @@ namespace Computer
 
         private static string GetServiceStartupType(string startupType)
         {
-            if (string.IsNullOrEmpty(startupType) || (string.Compare(startupType, StartupTypeAutomaticDelayed, StringComparison.CurrentCultureIgnoreCase) == 0))
-            {
-                return StartupTypeAutomatic;
-            }
-
-            return startupType;
+            return string.IsNullOrEmpty(startupType) || (string.Equals(startupType, StartupTypeAutomaticDelayed, StringComparison.CurrentCultureIgnoreCase))
+                ? StartupTypeAutomatic
+                : startupType;
         }
 
         private void CheckExists(string serviceName, bool overrideSDN)
@@ -466,14 +467,14 @@ namespace Computer
                     int returnCode = Convert.ToInt32(result["ReturnValue"], CultureInfo.InvariantCulture);
                     if ((ServiceReturnCode)returnCode != ServiceReturnCode.Success)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Delete Service failed with return code '[{0}] {1}'", returnCode, (ServiceReturnCode)returnCode));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Delete Service failed with return code '[{0}] {1}'", returnCode, (ServiceReturnCode)returnCode));
                         noErrors = false;
                     }
                 }
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Delete Service [{0}on {1}] failed with error '{2}'", this.ServiceDisplayName, this.MachineName, ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Delete Service [{0}on {1}] failed with error '{2}'", this.ServiceDisplayName, this.MachineName, ex.Message));
                 throw;
             }
 
@@ -514,7 +515,7 @@ namespace Computer
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "An error occurred in GetServiceStartMode of {0} on '{1}'.  Message: {2}", serviceName, this.MachineName, ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "An error occurred in GetServiceStartMode of {0} on '{1}'.  Message: {2}", serviceName, this.MachineName, ex.Message));
                 throw;
             }
 
@@ -570,7 +571,7 @@ namespace Computer
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "An error occurred in GetState of {0} on '{1}'.  Message: {2}", displayName, this.MachineName, ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "An error occurred in GetState of {0} on '{1}'.  Message: {2}", displayName, this.MachineName, ex.Message));
                 throw;
             }
 
@@ -584,25 +585,25 @@ namespace Computer
             // check to see if the exe path has been provided
             if (this.ServicePath is null)
             {
-                this.Log.LogError("ServicePath was not provided.");
+                this.Log.LogTaskError("ServicePath was not provided.");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.User))
             {
-                this.Log.LogError("User was not provided.");
+                this.Log.LogTaskError("User was not provided.");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.ServiceName))
             {
-                this.Log.LogError("ServiceName was not provided.");
+                this.Log.LogTaskError("ServiceName was not provided.");
                 return;
             }
 
             if (this.ServiceDoesExist(this.ServiceName) && !this.Force)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Install Service failed with code: '{0}'", ServiceReturnCode.StatusServiceExists));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Install Service failed with code: '{0}'", ServiceReturnCode.StatusServiceExists));
                 return;
             }
 
@@ -615,9 +616,9 @@ namespace Computer
             }
 
             // check to see if the correct path has been provided
-            if (targetLocal && (System.IO.File.Exists(this.ServicePath.GetMetadata("FullPath")) == false))
+            if (targetLocal && !File.Exists(this.ServicePath.GetMetadata("FullPath"))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "ServicePath does not exist: {0}", this.ServicePath));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "ServicePath does not exist: {0}", this.ServicePath));
                 return;
             }
 
@@ -631,7 +632,7 @@ namespace Computer
             ServiceReturnCode ret = this.Install(this.MachineName, this.ServiceName, this.ServiceDisplayName, this.ServicePath.ToString(), serviceStartupType, this.User, this.Password, serviceDependencies.ToArray(), false, this.RemoteUser, this.RemoteUserPassword);
             if (ret != ServiceReturnCode.Success)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Install Service failed with code: '{0}'", ret));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Install Service failed with code: '{0}'", ret));
             }
             else
             {
@@ -713,7 +714,7 @@ namespace Computer
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Install Service [{0} on {1}] failed with error '{2}'", this.ServiceDisplayName, this.MachineName, ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Install Service [{0} on {1}] failed with error '{2}'", this.ServiceDisplayName, this.MachineName, ex.Message));
                 return ServiceReturnCode.UnknownFailure;
             }
         }
@@ -800,7 +801,7 @@ namespace Computer
             {
                 ManagementObject wmi = this.RetrieveManagementObject(this.ServiceName, targetLocal);
 
-                object[] paramList = new object[] { startup };
+                object[] paramList = [startup];
                 object result = wmi.InvokeMethod("ChangeStartMode", paramList);
                 int returnCode = Convert.ToInt32(result, CultureInfo.InvariantCulture);
                 if ((ServiceReturnCode)returnCode != ServiceReturnCode.Success)
@@ -817,7 +818,7 @@ namespace Computer
 
         private void Start()
         {
-            if (this.Services is null)
+            if (this.Services.Any())
             {
                 this.StartLogic(this.ServiceName, false);
                 return;
@@ -895,24 +896,24 @@ namespace Computer
             {
                 ManagementObject wmi = this.RetrieveManagementObject(serviceName, targetLocal);
 
-                object[] paramList = new object[] { };
+                object[] paramList = [];
                 object result = wmi.InvokeMethod("StartService", paramList);
                 int returnCode = Convert.ToInt32(result, CultureInfo.InvariantCulture);
                 if ((ServiceReturnCode)returnCode != ServiceReturnCode.Success)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Start Service failed with return code '[{0}] {1}'", returnCode, (ServiceReturnCode)returnCode));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Start Service failed with return code '[{0}] {1}'", returnCode, (ServiceReturnCode)returnCode));
                 }
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Start Service [{0} on {1}] failed with error '{2}'", displayName, this.MachineName, ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Start Service [{0} on {1}] failed with error '{2}'", displayName, this.MachineName, ex.Message));
                 throw;
             }
         }
 
         private bool Stop()
         {
-            if (this.Services is null)
+            if (!this.Services.Any())
             {
                 return this.StopLogic(this.ServiceName, false);
             }
@@ -972,7 +973,7 @@ namespace Computer
 
                     if (i == this.RetryAttempts)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Could not stop: {0} on '{1}'", displayName, this.MachineName));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Could not stop: {0} on '{1}'", displayName, this.MachineName));
                         return false;
                     }
 
@@ -981,7 +982,7 @@ namespace Computer
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0}", ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0}", ex.Message));
             }
 
             return true;
@@ -1002,20 +1003,20 @@ namespace Computer
             {
                 ManagementObject wmi = this.RetrieveManagementObject(serviceName, targetLocal);
 
-                object[] paramList = new object[] { };
+                object[] paramList = [];
 
                 // Execute the method and obtain the return values.
                 object result = wmi.InvokeMethod("StopService", paramList);
                 int returnCode = Convert.ToInt32(result, CultureInfo.InvariantCulture);
                 if ((ServiceReturnCode)returnCode != ServiceReturnCode.Success)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Stop Service failed with return code '[{0}] {1}'", returnCode, (ServiceReturnCode)returnCode));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Stop Service failed with return code '[{0}] {1}'", returnCode, (ServiceReturnCode)returnCode));
                     noErrors = false;
                 }
             }
             catch (Exception ex)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Stop Service [{0}on {1}] failed with error '{2}'", displayName, this.MachineName, ex.Message));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Stop Service [{0}on {1}] failed with error '{2}'", displayName, this.MachineName, ex.Message));
                 throw;
             }
 
@@ -1038,21 +1039,21 @@ namespace Computer
                 {
                     ManagementObject wmi = this.RetrieveManagementObject(this.ServiceName, targetLocal);
 
-                    object[] paramList = new object[] { };
+                    object[] paramList = [];
                     object result = wmi.InvokeMethod("Delete", paramList);
                     ServiceReturnCode returnCode = (ServiceReturnCode)Convert.ToInt32(result, CultureInfo.InvariantCulture);
                     if (returnCode != ServiceReturnCode.Success)
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Uninstall Service failed with code: '{0}'", returnCode));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Uninstall Service failed with code: '{0}'", returnCode));
                     }
                     else
                     {
-                        this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Uninstall Service succeeded for '{0}' on '{1}'", this.ServiceDisplayName, this.MachineName));
+                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Uninstall Service succeeded for '{0}' on '{1}'", this.ServiceDisplayName, this.MachineName));
                     }
                 }
                 catch (Exception ex)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Uninstall Service [{0} on {1}] failed with error '{2}'", this.ServiceDisplayName, this.MachineName, ex.Message));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Uninstall Service [{0} on {1}] failed with error '{2}'", this.ServiceDisplayName, this.MachineName, ex.Message));
                 }
             }
         }
@@ -1072,17 +1073,17 @@ namespace Computer
 
                 ManagementObject wmi = this.RetrieveManagementObject(this.ServiceName, targetLocal);
 
-                object[] paramList = new object[] { null, null, null, null, null, null, userName, this.Password };
+                object[] paramList = [null, null, null, null, null, null, userName, this.Password];
                 object result = wmi.InvokeMethod("Change", paramList);
                 int returnCode = Convert.ToInt32(result, CultureInfo.InvariantCulture);
                 if ((ServiceReturnCode)returnCode != ServiceReturnCode.Success)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Error changing service identity of {0} on '{1}' to '{2}'", this.ServiceDisplayName, this.MachineName, userName));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error changing service identity of {0} on '{1}' to '{2}'", this.ServiceDisplayName, this.MachineName, userName));
                 }
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Service: {0} does not exist on: {1}.", this.ServiceDisplayName, this.MachineName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Service: {0} does not exist on: {1}.", this.ServiceDisplayName, this.MachineName));
             }
         }
 
@@ -1096,16 +1097,16 @@ namespace Computer
                 this.LogTaskMessage(MessageImportance.Low, "No RemoteUser or RemoteUserPassword supplied. Attempting Integrated Security.");
             }
 
-            if (this.Services is null)
+            if (!this.Services.Any())
             {
                 if (string.IsNullOrEmpty(this.ServiceDisplayName))
                 {
                     this.ServiceDisplayName = this.ServiceName;
                 }
 
-                if (this.ServiceDoesExist(this.ServiceName) == false && this.TaskAction != InstallTaskAction && this.TaskAction != CheckExistsTaskAction && this.TaskAction != UninstallTaskAction && this.TaskAction != DeleteTaskAction)
+                if (!this.ServiceDoesExist(this.ServiceName) && this.TaskAction != InstallTaskAction && this.TaskAction != CheckExistsTaskAction && this.TaskAction != UninstallTaskAction && this.TaskAction != DeleteTaskAction)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Service does not exist: {0}", this.ServiceDisplayName));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Service does not exist: {0}", this.ServiceDisplayName));
                     return;
                 }
             }
@@ -1157,7 +1158,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

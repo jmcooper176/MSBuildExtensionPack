@@ -15,10 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -99,7 +101,7 @@ namespace Computer
                 }
                 else
                 {
-                    this.Log.LogError("The event source already exists. Use Force to delete and create.");
+                    this.Log.LogTaskError("The event source already exists. Use Force to delete and create.");
                 }
             }
         }
@@ -118,7 +120,7 @@ namespace Computer
             // Validation
             if (string.IsNullOrEmpty(this.EventId))
             {
-                this.Log.LogError("EventId must be specified");
+                this.Log.LogTaskError("EventId must be specified");
                 return;
             }
 
@@ -126,15 +128,13 @@ namespace Computer
 
             if (!System.Diagnostics.EventLog.SourceExists(this.Source, this.MachineName))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The EventSource does not exist: {0} on {1}", this.Source, this.MachineName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The EventSource does not exist: {0} on {1}", this.Source, this.MachineName));
             }
             else
             {
                 string logName = this.LogName ?? "Application";
-                using (System.Diagnostics.EventLog log = new System.Diagnostics.EventLog(logName, this.MachineName, this.Source))
-                {
-                    log.WriteEntry(this.Description, this.logType, int.Parse(this.EventId, CultureInfo.CurrentCulture));
-                }
+                using System.Diagnostics.EventLog log = new System.Diagnostics.EventLog(logName, this.MachineName, this.Source);
+                log.WriteEntry(this.Description, this.logType, int.Parse(this.EventId, CultureInfo.CurrentCulture));
             }
         }
 
@@ -162,7 +162,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
@@ -55,13 +55,13 @@ namespace Computer
         {
             if (string.IsNullOrEmpty(this.FilePath))
             {
-                this.Log.LogError("FilePath is requried.");
+                this.Log.LogTaskError("FilePath is requried.");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Name))
             {
-                this.Log.LogError("Name is requried.");
+                this.Log.LogTaskError("Name is requried.");
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace Computer
                 {
                     if (!System.IO.File.Exists(this.IconLocation))
                     {
-                        this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "IconLocation: {0} does not exist.", this.IconLocation));
+                        this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "IconLocation: {0} does not exist.", this.IconLocation));
                         return;
                     }
 
@@ -103,7 +103,7 @@ namespace Computer
                 {
                     if (!System.IO.Directory.Exists(this.WorkingDirectory))
                     {
-                        this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "WorkingDirectory: {0} does not exist.", this.WorkingDirectory));
+                        this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "WorkingDirectory: {0} does not exist.", this.WorkingDirectory));
                         return;
                     }
 
@@ -131,7 +131,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -162,7 +162,7 @@ namespace Computer
         public string Name { get; set; }
 
         /// <summary>
-        /// Sets the ShortcutPath. For CreateShortcut defaults defaults to Desktop of the current user
+        /// Sets the ShortcutPath. For CreateShortcut defaults to Desktop of the current user
         /// </summary>
         public string ShortcutPath { get; set; }
 

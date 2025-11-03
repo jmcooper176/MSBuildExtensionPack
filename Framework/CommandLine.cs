@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -222,15 +222,15 @@ namespace MSBuild.ExtensionPack
             while (match.Success)
             {
                 // Get match groups (not all exist for every match)
-                Group subCategory = match.Groups[@"SubCategory"];
-                Group errorCode = match.Groups[@"ErrorCode"];
-                Group helpKeyword = match.Groups[@"HelpKeyword"];
-                Group file = match.Groups[@"File"];
-                Group line = match.Groups[@"Line"];
-                Group column = match.Groups[@"Column"];
-                Group endLine = match.Groups[@"EndLine"];
-                Group endColumn = match.Groups[@"EndColumn"];
-                Group message = match.Groups[@"Message"];
+                Group subCategory = match.Groups["SubCategory"];
+                Group errorCode = match.Groups["ErrorCode"];
+                Group helpKeyword = match.Groups["HelpKeyword"];
+                Group file = match.Groups["File"];
+                Group line = match.Groups["Line"];
+                Group column = match.Groups["Column"];
+                Group endLine = match.Groups["EndLine"];
+                Group endColumn = match.Groups["EndColumn"];
+                Group message = match.Groups["Message"];
 
                 // Get start line number (if exists)
                 int lineInt = 0;
@@ -264,7 +264,7 @@ namespace MSBuild.ExtensionPack
                 {
                     // Record Fail
                     result = false;
-                    this.Log.LogError(
+                    this.Log.LogTaskError(
                         subCategory.Success ? subCategory.Value : string.Empty, // Sub-category
                         errorCode.Success ? errorCode.Value : string.Empty,     // Error code
                         helpKeyword.Success ? helpKeyword.Value : string.Empty, // Help keyword
@@ -416,7 +416,7 @@ namespace MSBuild.ExtensionPack
         public override bool Execute()
         {
             // Assemble warning regular expression list
-            this.WarningExpressionList = new List<string>();
+            this.WarningExpressionList = [];
             if (!this.IgnoreStandardErrorWarningFormat)
             {
                 this.WarningExpressionList.Add(StandardWarningFormat);
@@ -433,7 +433,7 @@ namespace MSBuild.ExtensionPack
             }
 
             // Assemble error regular expression list
-            this.ErrorExpressionList = new List<string>();
+            this.ErrorExpressionList = [];
             if (!this.IgnoreStandardErrorWarningFormat)
             {
                 this.ErrorExpressionList.Add(StandardErrorFormat);
@@ -450,7 +450,7 @@ namespace MSBuild.ExtensionPack
             }
 
             // Assemble command list
-            var tokens = this.Command.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = this.Command.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
             var commands = new List<string>(tokens.Length);
             foreach (string command in tokens.Select(token => token.Trim()).Where(command => !string.IsNullOrEmpty(command)))
             {
@@ -470,24 +470,22 @@ namespace MSBuild.ExtensionPack
             {
                 this.Log.LogMessage("Execute: {0}", command);
                 var startInfo = this.GetCommandLine(command, this.WorkingDirectory, this.StdErrEncoding, this.StdOutEncoding);
-                using (Process process = Process.Start(startInfo))
+                using Process process = Process.Start(startInfo);
+                this.Log.LogMessage("Collect Standard Output Stream");
+                while (process is not null && (!process.StandardOutput.EndOfStream || !process.HasExited))
                 {
-                    this.Log.LogMessage("Collect Standard Output Stream");
-                    while (process is not null && (!process.StandardOutput.EndOfStream || !process.HasExited))
-                    {
-                        this.CollectOutputLine(process.StandardOutput.ReadLine());
-                    }
+                    this.CollectOutputLine(process.StandardOutput.ReadLine());
+                }
 
-                    this.Log.LogMessage("Collect Standard Error Stream");
-                    while (process is not null && !process.StandardError.EndOfStream)
-                    {
-                        this.CollectOutputLine(process.StandardError.ReadLine());
-                    }
+                this.Log.LogMessage("Collect Standard Error Stream");
+                while (process?.StandardError.EndOfStream == false)
+                {
+                    this.CollectOutputLine(process.StandardError.ReadLine());
+                }
 
-                    if (process is not null)
-                    {
-                        this.ExitCode = process.ExitCode;
-                    }
+                if (process is not null)
+                {
+                    this.ExitCode = process.ExitCode;
                 }
             }
 

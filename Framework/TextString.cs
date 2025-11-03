@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Globalization;
@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -165,23 +166,23 @@ namespace MSBuild.ExtensionPack
         {
             if (string.IsNullOrEmpty(this.String1))
             {
-                this.Log.LogError("String1 is required");
+                this.Log.LogTaskError("String1 is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.String2))
             {
-                this.Log.LogError("String2 is required");
+                this.Log.LogTaskError("String2 is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Comparison))
             {
-                this.Log.LogError("Comparison is required");
+                this.Log.LogTaskError("Comparison is required");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Comparing String: {0} [{1}] {2}", this.String1, this.Comparison.ToUpperInvariant(), this.String2));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Comparing String: {0} [{1}] {2}", this.String1, this.Comparison.ToUpperInvariant(), this.String2));
             switch (this.Comparison.ToUpperInvariant())
             {
                 case "GREATERTHAN":
@@ -201,7 +202,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 case "EQUALS":
-                    this.Result = string.Compare(this.String1, this.String2, this.stringCom) == 0;
+                    this.Result = string.Equals(this.String1, this.String2, this.stringCom);
                     break;
 
                 case "CONTAINS":
@@ -217,28 +218,28 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid Comparison passed: {0}. Valid Comparisons are GREATERTHAN, LESSTHAN, GREATERTHANOREQUALS, LESSTHANOREQUALS, EQUALS, CONTAINS, STARTSWITH, ENDSWITH", this.Comparison.ToUpperInvariant()));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid Comparison passed: {0}. Valid Comparisons are GREATERTHAN, LESSTHAN, GREATERTHANOREQUALS, LESSTHANOREQUALS, EQUALS, CONTAINS, STARTSWITH, ENDSWITH", this.Comparison.ToUpperInvariant()));
                     return;
             }
         }
 
         private void SplitString()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Splitting String: {0} with {1}", this.String1, this.String2));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Splitting String: {0} with {1}", this.String1, this.String2));
 
             if (string.IsNullOrEmpty(this.String1))
             {
-                this.Log.LogError("String1 is required");
+                this.Log.LogTaskError("String1 is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.String2))
             {
-                this.Log.LogError("String2 is required");
+                this.Log.LogTaskError("String2 is required");
                 return;
             }
 
-            string[] arr = this.String1.Split(new[] { this.String2 }, StringSplitOptions.RemoveEmptyEntries);
+            string[] arr = this.String1.Split([this.String2], StringSplitOptions.RemoveEmptyEntries);
             this.Strings = new TaskItem[arr.Length];
             int i = 0;
             foreach (string s in arr)
@@ -280,72 +281,72 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 case EndsWithTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking whether: {0} ends with: {1}", this.String1, this.String2));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking whether: {0} ends with: {1}", this.String1, this.String2));
                     this.Result = this.String1.EndsWith(this.String2, this.stringCom);
                     break;
 
                 case FormatTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Formatting: {0}", this.String1));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Formatting: {0}", this.String1));
                     this.NewString = string.Format(CultureInfo.CurrentCulture, this.String1, this.Strings);
                     break;
 
                 case StartsWithTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking whether: {0} starts with: {1}", this.String1, this.String2));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking whether: {0} starts with: {1}", this.String1, this.String2));
                     this.Result = this.String1.StartsWith(this.String2, this.stringCom);
                     break;
 
                 case ReplaceTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Replacing String: {0}", this.OldString));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Replacing String: {0}", this.OldString));
                     this.NewString = this.OldString.Replace(this.OldValue, this.NewValue);
                     break;
 
                 case TrimTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Trimming String: {0}", this.OldString));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Trimming String: {0}", this.OldString));
                     this.NewString = this.OldString.Trim();
                     break;
 
                 case ToLowerTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Lower casing: {0}", this.OldString));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Lower casing: {0}", this.OldString));
                     this.NewString = this.OldString.ToLower(CultureInfo.CurrentUICulture);
                     break;
 
                 case ToUpperTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Upper casing: {0}", this.OldString));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Upper casing: {0}", this.OldString));
                     this.NewString = this.OldString.ToUpper(CultureInfo.CurrentUICulture);
                     break;
 
                 case RemoveTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing String: {0}", this.OldString));
-                    this.NewString = this.Count > 0 ? this.OldString.Remove(this.StartIndex, this.Count) : this.OldString.Remove(this.StartIndex);
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing String: {0}", this.OldString));
+                    this.NewString = this.Count > 0 ? this.OldString.Remove(this.StartIndex, this.Count) : this.OldString[..this.StartIndex];
                     break;
 
                 case GetLengthTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Get Length of: {0}", this.OldString));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Get Length of: {0}", this.OldString));
                     this.NewString = this.OldString.Length.ToString(CultureInfo.CurrentCulture);
                     break;
 
                 case InsertTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Inserting: {0} into: {1}", this.String1, this.OldString));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Inserting: {0} into: {1}", this.String1, this.OldString));
                     this.NewString = this.OldString.Insert(this.StartIndex, this.String1);
                     break;
 
                 case PadLeftTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Padding: {0} left with: {1}", this.OldString, this.String1[0]));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Padding: {0} left with: {1}", this.OldString, this.String1[0]));
                     this.NewString = this.OldString.PadLeft(this.Count, this.String1[0]);
                     break;
 
                 case PadRightTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Padding: {0} right with: {1}", this.OldString, this.String1[0]));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Padding: {0} right with: {1}", this.OldString, this.String1[0]));
                     this.NewString = this.OldString.PadRight(this.Count, this.String1[0]);
                     break;
 
                 case SubstringTaskAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Substring: {0}", this.OldString));
-                    this.NewString = this.Count > 0 ? this.OldString.Substring(this.StartIndex, this.Count) : this.OldString.Substring(this.StartIndex);
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Substring: {0}", this.OldString));
+                    this.NewString = this.Count > 0 ? this.OldString.Substring(this.StartIndex, this.Count) : this.OldString[this.StartIndex..];
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

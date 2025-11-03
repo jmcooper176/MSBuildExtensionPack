@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Communication.Ftp
+namespace MSBuild.ExtensionPack.Communication.Ftp
 {
     using System.Collections.Generic;
     using System.Globalization;
@@ -100,7 +100,7 @@ namespace Communication.Ftp
         {
             if (string.IsNullOrEmpty(RemoteDirectoryName))
             {
-                this.Log.LogError("The required RemoteDirectoryName attribute has not been set for FTP.");
+                this.Log.LogTaskError("The required RemoteDirectoryName attribute has not been set for FTP.");
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace Communication.Ftp
                     return;
                 }
 
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "There was an error creating ftp directory: {0}. The Error Details are \"{1}\" and error code is {2} ", RemoteDirectoryName, ex.Message, ex.ErrorCode));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "There was an error creating ftp directory: {0}. The Error Details are \"{1}\" and error code is {2} ", RemoteDirectoryName, ex.Message, ex.ErrorCode));
             }
         }
 
@@ -130,12 +130,9 @@ namespace Communication.Ftp
         {
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Connecting to FTP Host: {0}", Host));
 
-            if (!string.IsNullOrEmpty(UserName))
-            {
-                return Port != 0 ? new FtpConnection(Host, Port, UserName, UserPassword) : new FtpConnection(Host, UserName, UserPassword);
-            }
-
-            return Port != 0 ? new FtpConnection(Host, Port) : new FtpConnection(Host);
+            return !string.IsNullOrEmpty(UserName)
+                ? Port != 0 ? new FtpConnection(Host, Port, UserName, UserPassword) : new FtpConnection(Host, UserName, UserPassword)
+                : Port != 0 ? new FtpConnection(Host, Port) : new FtpConnection(Host);
         }
 
         /// <summary>
@@ -172,7 +169,7 @@ namespace Communication.Ftp
         /// </summary>
         private void DeleteFiles()
         {
-            if (FileNames is null)
+            if (!FileNames.Any())
             {
                 this.Log.LogTaskError("The required FileNames attribute has not been set for FTP.");
                 return;
@@ -232,9 +229,9 @@ namespace Communication.Ftp
             }
 
             this.Log.LogTaskMessage("Downloading Files");
-            if (FileNames is null)
+            if (!FileNames.Any())
             {
-                FtpFileInfo[] filesToDownload = ftpConnection.GetFiles();
+                FtpFileInfo[] filesToDownload = [.. ftpConnection.GetFiles()];
                 foreach (FtpFileInfo fileToDownload in filesToDownload)
                 {
                     this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Downloading: {0}", fileToDownload));
@@ -263,7 +260,7 @@ namespace Communication.Ftp
         /// </summary>
         private void UploadFiles()
         {
-            if (FileNames is null)
+            if (!FileNames.Any())
             {
                 this.Log.LogTaskError("The required fileNames attribute has not been set for FTP.");
                 return;

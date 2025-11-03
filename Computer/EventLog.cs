@@ -15,10 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System.Globalization;
     using System.IO;
+    using System.Management;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -127,18 +131,16 @@ namespace Computer
                 SelectQuery query = new SelectQuery("Select * from Win32_NTEventLogFile where LogFileName='" + this.LogName + "'");
 
                 // configure the searcher and execute a get
-                using (ManagementObjectSearcher search = new ManagementObjectSearcher(this.Scope, query))
+                using ManagementObjectSearcher search = new ManagementObjectSearcher(this.Scope, query);
+                foreach (ManagementObject obj in search.Get().Cast<ManagementObject>())
                 {
-                    foreach (ManagementObject obj in search.Get())
-                    {
-                        object[] path = { this.BackupPath };
-                        obj.InvokeMethod("BackupEventLog", path);
-                    }
+                    object[] path = [this.BackupPath];
+                    obj.InvokeMethod("BackupEventLog", path);
                 }
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid LogName Supplied: {0}", this.LogName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid LogName Supplied: {0}", this.LogName));
             }
         }
 
@@ -153,14 +155,12 @@ namespace Computer
             this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Clearing EventLog: {0}", this.LogName);
             if (System.Diagnostics.EventLog.Exists(this.LogName, this.MachineName))
             {
-                using (System.Diagnostics.EventLog targetLog = new System.Diagnostics.EventLog(this.LogName, this.MachineName))
-                {
-                    targetLog.Clear();
-                }
+                using System.Diagnostics.EventLog targetLog = new System.Diagnostics.EventLog(this.LogName, this.MachineName);
+                targetLog.Clear();
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid LogName Supplied: {0}", this.LogName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid LogName Supplied: {0}", this.LogName));
             }
         }
 
@@ -205,14 +205,12 @@ namespace Computer
 
                 System.Diagnostics.EventLog.CreateEventSource(ecd);
 
-                using (System.Diagnostics.EventLog el = new System.Diagnostics.EventLog(this.LogName, this.MachineName))
-                {
-                    this.ConfigureEventLog(el);
-                }
+                using System.Diagnostics.EventLog el = new System.Diagnostics.EventLog(this.LogName, this.MachineName);
+                this.ConfigureEventLog(el);
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "EventLog already exists: {0} on: {1}", this.LogName, this.MachineName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "EventLog already exists: {0} on: {1}", this.LogName, this.MachineName));
             }
         }
 
@@ -230,14 +228,12 @@ namespace Computer
             this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Modifying EventLog: {0} on {1}", this.LogName, this.MachineName);
             if (System.Diagnostics.EventLog.Exists(this.LogName, this.MachineName))
             {
-                using (System.Diagnostics.EventLog el = new System.Diagnostics.EventLog(this.LogName, this.MachineName))
-                {
-                    this.ConfigureEventLog(el);
-                }
+                using System.Diagnostics.EventLog el = new System.Diagnostics.EventLog(this.LogName, this.MachineName);
+                this.ConfigureEventLog(el);
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "EventLog does not exist: {0}", this.LogName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "EventLog does not exist: {0}", this.LogName));
             }
         }
 
@@ -273,7 +269,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

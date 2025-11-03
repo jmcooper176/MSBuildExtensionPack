@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace CodeQuality
+namespace MSBuild.ExtensionPack.CodeQuality
 {
     using System;
     using System.Globalization;
@@ -94,12 +94,7 @@ namespace CodeQuality
     {
         private static int GetAttributeInt32Value(string name, XmlNode node)
         {
-            if (node.Attributes?[name] is not null)
-            {
-                return Convert.ToInt32(node.Attributes[name].Value, CultureInfo.InvariantCulture);
-            }
-
-            return 0;
+            return node.Attributes?[name] is not null ? Convert.ToInt32(node.Attributes[name].Value, CultureInfo.InvariantCulture) : 0;
         }
 
         /// <summary>
@@ -122,14 +117,14 @@ namespace CodeQuality
                 }
                 catch (Exception ex)
                 {
-                    this.Log.LogError(ex.Message);
+                    this.Log.LogTaskError(ex.Message);
                     return;
                 }
 
                 XmlNode root = doc.DocumentElement;
                 if (root is null)
                 {
-                    this.Log.LogError("Failed to load the OutputXmlFile");
+                    this.Log.LogTaskError("Failed to load the OutputXmlFile");
                     return;
                 }
 
@@ -150,12 +145,7 @@ namespace CodeQuality
         {
             base.ExecuteTool(pathToTool, responseFileCommands, commandLineCommands);
             this.ProcessXmlResultsFile();
-            if (this.FailOnFailures && this.Failures > 0)
-            {
-                return 1;
-            }
-
-            return 0;
+            return this.FailOnFailures && this.Failures > 0 ? 1 : 0;
         }
 
         protected override string GenerateCommandLineCommands()

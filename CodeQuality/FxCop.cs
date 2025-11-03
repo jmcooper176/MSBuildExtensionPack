@@ -229,9 +229,9 @@ namespace MSBuild.ExtensionPack.CodeQuality
                 proc.StartInfo.ArgumentList.Add(this.Rules.Aggregate(string.Empty, (accumulator, i) => accumulator + (" /rule:\"" + i.ItemSpec + "\"")));
             }
 
-            if (string.IsNullOrEmpty(this.Project) && this.Files is null)
+            if (string.IsNullOrEmpty(this.Project) && !this.Files.Any())
             {
-                this.Log.LogError("A Project and / or Files collection must be passed.");
+                this.Log.LogTaskError("A Project and / or Files collection must be passed.");
                 return;
             }
 

@@ -1,4 +1,21 @@
-﻿namespace MSBuild.ExtensionPack.COMTaskFactory
+﻿// This file is part of MSBuildExtensionPack re-write to support .NET 9.0 and to modernize.
+//
+// Copyright (c) 2008-2025, John Merryweather Cooper. All Rights Reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+// (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// SPDX-License-Identifier: MIT
+namespace MSBuild.ExtensionPack.COMTaskFactory
 {
     using System;
     using System.Collections.Generic;
@@ -140,11 +157,10 @@
         /// to invoke.
         /// </param>
         /// <returns>
-        /// An <see cref="object"/> representing the new <c>COM</c> instance with <paramref name="progId"/>; otherwise, <see langref="null"/>.
+        /// An <see cref="object"/> representing the new <c>COM</c> instance; otherwise, <see langref="null"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">
-        /// Throws when the <c>COM</c> type derived from <paramref name="progId"/> is <see langref="null"/>; OR when <paramref
-        /// name="progId"/> is <see langref="null"/>, empty, or all whitespace.
+        /// Throws when the <c>COM</c> type is <see langref="null"/>.
         /// </exception>
         /// <exception cref="ArgumentException">
         /// Throws when the derived <c>COM</c> type is not a runtime type; or the derived <c>COM</c> type is an open generic type.
@@ -317,7 +333,7 @@
         {
             try
             {
-                return theType is not null ? theType.FindMembers(memberType, bindingAttr, filter, filterCriteria) : Array.Empty<MemberInfo>();
+                return theType is not null ? theType.FindMembers(memberType, bindingAttr, filter, filterCriteria) : [];
             }
             catch (ArgumentNullException ex)
             {
@@ -333,7 +349,7 @@
                 memberType: memberType,
                 bindingAttr: bindingAttr,
                 filter: (m, c) => filterPredicate.Invoke(m, (TCriteria?)c),
-                filterCriteria: filterCriteria) : Array.Empty<MemberInfo>();
+                filterCriteria: filterCriteria) : [];
         }
 
         public static int GetTypeArrayRank([DisallowNull] this Type theType)
@@ -376,12 +392,12 @@
 
         public static ConstructorInfo[] GetTypeConstructors([DisallowNull] this Type theType)
         {
-            return theType?.IsClass == true ? theType.GetConstructors() : Array.Empty<ConstructorInfo>();
+            return theType?.IsClass == true ? theType.GetConstructors() : [];
         }
 
         public static IEnumerable<CustomAttributeData> GetTypeCustomAttributes([DisallowNull] this Type theType)
         {
-            return theType?.CustomAttributes ?? Enumerable.Empty<CustomAttributeData>();
+            return theType?.CustomAttributes ?? [];
         }
 
         public static MethodBase? GetTypeDeclaringMethod([DisallowNull] this Type theType)
@@ -396,7 +412,7 @@
 
         public static MemberInfo[] GetTypeDefaultMembers([DisallowNull] this Type theType)
         {
-            return theType is not null ? theType.GetDefaultMembers() : Array.Empty<MemberInfo>();
+            return theType is not null ? theType.GetDefaultMembers() : [];
         }
 
         public static Type? GetTypeElementType([DisallowNull] this Type theType)
@@ -411,7 +427,7 @@
 
         public static string[] GetTypeEnumNames([DisallowNull] this Type theType)
         {
-            return theType?.IsEnum == true ? theType.GetEnumNames() : Array.Empty<string>();
+            return theType?.IsEnum == true ? theType.GetEnumNames() : [];
         }
 
         public static Type? GetTypeEnumUnderlyingType([DisallowNull] this Type theType)
@@ -575,7 +591,7 @@
         /// Gets the <see cref="Type"/> associated with <paramref name="progId"/>.
         /// </summary>
         /// <param name="progId">      Specifies the <c>ProgID</c> of the type to get.</param>
-        /// <param name="server">      
+        /// <param name="server">    
         /// Specifies the name of the remote server on which to get and activate the <c>COM</c> type. If <see langref="null"/>, the
         /// local server will automatically be used.
         /// </param>
@@ -641,7 +657,7 @@
 
         public static Type[] GetTypeGenericTypeArguments([DisallowNull] this Type theType)
         {
-            return theType is not null ? theType.GenericTypeArguments : Array.Empty<Type>();
+            return theType is not null ? theType.GenericTypeArguments : [];
         }
 
         public static Guid? GetTypeGuid([DisallowNull] this Type theType)
@@ -1185,12 +1201,12 @@
 
         public static bool TestTypeContextHostable([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsContextful;
+            return theType?.IsContextful == true;
         }
 
         public static bool TestTypeDefinition([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsTypeDefinition;
+            return theType?.IsTypeDefinition == true;
         }
 
         public static bool TestTypeElementType([DisallowNull] this Type theType)
@@ -1205,47 +1221,47 @@
 
         public static bool TestTypeExplicitLayout([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsExplicitLayout;
+            return theType?.IsExplicitLayout == true;
         }
 
         public static bool TestTypeFunctionPointer([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsFunctionPointer;
+            return theType?.IsFunctionPointer == true;
         }
 
         public static bool TestTypeGenericMethodParameter([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsGenericMethodParameter;
+            return theType?.IsGenericMethodParameter == true;
         }
 
         public static bool TestTypeGenericParameter([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsGenericParameter;
+            return theType?.IsGenericParameter == true;
         }
 
         public static bool TestTypeGenericType([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsGenericType;
+            return theType?.IsGenericType == true;
         }
 
         public static bool TestTypeGenericTypeDefinition([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsGenericTypeDefinition;
+            return theType?.IsGenericTypeDefinition == true;
         }
 
         public static bool TestTypeGenericTypeParameter([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsGenericTypeParameter;
+            return theType?.IsGenericTypeParameter == true;
         }
 
         public static bool TestTypeHasElementType([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.HasElementType;
+            return theType?.HasElementType == true;
         }
 
         public static bool TestTypeImported([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsImport;
+            return theType?.IsImport == true;
         }
 
         public static bool TestTypeInstanceOfType([DisallowNull] this Type theType, object? other)
@@ -1255,128 +1271,128 @@
 
         public static bool TestTypeInterface([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsInterface;
+            return theType?.IsInterface == true;
         }
 
         public static bool TestTypeIsEnum([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsEnum;
+            return theType?.IsEnum == true;
         }
 
         public static bool TestTypeLayoutSequential([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsLayoutSequential;
+            return theType?.IsLayoutSequential == true;
         }
 
         public static bool TestTypeMarshalByReference([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsMarshalByRef;
+            return theType?.IsMarshalByRef == true;
         }
 
         public static bool TestTypeNested([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsNested;
+            return theType?.IsNested == true;
         }
 
         public static bool TestTypeNestedAssembly([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsNestedAssembly;
+            return theType?.IsNestedAssembly == true;
         }
 
         public static bool TestTypeNestedFamilyOrAssembly([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsNestedFamORAssem;
+            return theType?.IsNestedFamORAssem == true;
         }
 
         public static bool TestTypeNestedPrivate([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsNestedPrivate;
+            return theType?.IsNestedPrivate == true;
         }
 
         public static bool TestTypeNestedPublic([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsNestedPublic;
+            return theType?.IsNestedPublic == true;
         }
 
         public static bool TestTypeNotPublic([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsNotPublic;
+            return theType?.IsNotPublic == true;
         }
 
         public static bool TestTypePointer([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsPointer;
+            return theType?.IsPointer == true;
         }
 
         public static bool TestTypePrimitive([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsPrimitive;
+            return theType?.IsPrimitive == true;
         }
 
         public static bool TestTypePublic([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsPublic;
+            return theType?.IsPublic == true;
         }
 
         public static bool TestTypeSealedClass([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsClass && theType.IsSealed;
+            return theType?.IsClass == true && theType.IsSealed;
         }
 
         public static bool TestTypeSecurityCritical([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsSecurityCritical;
+            return theType?.IsSecurityCritical == true;
         }
 
         public static bool TestTypeSecuritySafeCritical([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsSecuritySafeCritical;
+            return theType?.IsSecuritySafeCritical == true;
         }
 
         public static bool TestTypeSecurityTransparent([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsSecurityTransparent;
+            return theType?.IsSecurityTransparent == true;
         }
 
         [Obsolete("Binary Serialization is a Serious Security Risk", DiagnosticId = "SerializableType")]
         public static bool TestTypeSerializable([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsSerializable;
+            return theType?.IsSerializable == true;
         }
 
         public static bool TestTypeSingleDimensionAndZeroLowerBound([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsSZArray;
+            return theType?.IsSZArray == true;
         }
 
         public static bool TestTypeSpecialName([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsSpecialName;
+            return theType?.IsSpecialName == true;
         }
 
         public static bool TestTypeUnicodeClass([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsUnicodeClass;
+            return theType?.IsUnicodeClass == true;
         }
 
         public static bool TestTypeUnmanagedFunctionPointer([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsUnmanagedFunctionPointer;
+            return theType?.IsUnmanagedFunctionPointer == true;
         }
 
         public static bool TestTypeValueType([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsValueType;
+            return theType?.IsValueType == true;
         }
 
         public static bool TestTypeVariableBoundArray([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsVariableBoundArray;
+            return theType?.IsVariableBoundArray == true;
         }
 
         public static bool TestTypeVisible([DisallowNull] this Type theType)
         {
-            return theType is not null && theType.IsVisible;
+            return theType?.IsVisible == true;
         }
 
         public static object? TypeInvokeMember([DisallowNull] this Type theType, string name, BindingFlags bindingAttr, Binder? binder, object? target, object?[]? arguments, CultureInfo? culture)

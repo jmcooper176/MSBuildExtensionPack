@@ -15,13 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Management;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -107,37 +108,35 @@ namespace Computer
             {
                 this.GetManagementScope(@"\root\cimv2");
                 ObjectQuery query = new ObjectQuery("SELECT * FROM Win32_Volume");
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query))
+                using ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query);
+                ManagementObjectCollection moc = searcher.Get();
+                foreach (ManagementObject mo in moc.Cast<ManagementObject>())
                 {
-                    ManagementObjectCollection moc = searcher.Get();
-                    foreach (ManagementObject mo in moc)
+                    if (mo is null)
                     {
-                        if (mo is null)
+                        this.Log.LogTaskError("WMI Failed to get drives from: {0}", this.MachineName);
+                        return;
+                    }
+
+                    // only check fixed drives.
+                    if (mo["DriveType"]?.ToString() == "3")
+                    {
+                        if (mo["DriveLetter"] is null)
                         {
-                            this.Log.LogError("WMI Failed to get drives from: {0}", this.MachineName);
-                            return;
+                            this.Log.LogTaskWarning("WMI Failed to query the DriveLetter from: {0}", this.MachineName);
+                            break;
                         }
 
-                        // only check fixed drives.
-                        if (mo["DriveType"] is not null && mo["DriveType"].ToString() == "3")
+                        string? drive = mo["DriveLetter"].ToString();
+                        double freeSpace = Convert.ToDouble(mo["FreeSpace"], CultureInfo.CurrentCulture) / unitSize;
+
+                        if (freeSpace < this.MinSpace)
                         {
-                            if (mo["DriveLetter"] is null)
-                            {
-                                this.Log.LogTaskWarning("WMI Failed to query the DriveLetter from: {0}", this.MachineName);
-                                break;
-                            }
-
-                            string? drive = mo["DriveLetter"].ToString();
-                            double freeSpace = Convert.ToDouble(mo["FreeSpace"], CultureInfo.CurrentCulture) / unitSize;
-
-                            if (freeSpace < this.MinSpace)
-                            {
-                                this.Log.LogTaskError("Insufficient free space. Drive {0} has {1}{2}", drive ?? string.Empty, freeSpace, this.Unit);
-                            }
-                            else
-                            {
-                                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Free drive space on {0} is {1}{2}", drive ?? string.Empty, freeSpace, this.Unit);
-                            }
+                            this.Log.LogTaskError("Insufficient free space. Drive {0} has {1}{2}", drive ?? string.Empty, freeSpace, this.Unit);
+                        }
+                        else
+                        {
+                            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Free drive space on {0} is {1}{2}", drive ?? string.Empty, freeSpace, this.Unit);
                         }
                     }
                 }
@@ -153,7 +152,7 @@ namespace Computer
 
             long unitSize = this.ReadUnitSize();
 
-            this.drives = new List<ITaskItem>();
+            this.drives = [];
             if (this.MachineName == Environment.MachineName)
             {
                 foreach (string drive1 in Environment.GetLogicalDrives())
@@ -164,7 +163,7 @@ namespace Computer
                         skip = this.SkipDrives.Any(driveToSkip => driveToSkip.ItemSpec == drive1);
                     }
 
-                    if (skip == false)
+                    if (!skip)
                     {
                         DriveInfo driveInfo = new DriveInfo(drive1);
                         if (driveInfo.IsReady)
@@ -196,43 +195,41 @@ namespace Computer
             {
                 this.GetManagementScope(@"\root\cimv2");
                 ObjectQuery query = new ObjectQuery("SELECT * FROM Win32_Volume");
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query))
+                using ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query);
+                ManagementObjectCollection moc = searcher.Get();
+                foreach (ManagementObject mo in moc.Cast<ManagementObject>())
                 {
-                    ManagementObjectCollection moc = searcher.Get();
-                    foreach (ManagementObject mo in moc)
+                    if (mo is null)
                     {
-                        if (mo is null)
+                        this.Log.LogTaskError("WMI Failed to get drives from: {0}", this.MachineName);
+                        return;
+                    }
+
+                    // only check fixed drives.
+                    if (mo["DriveType"]?.ToString() == "3")
+                    {
+                        bool skip = false;
+                        string drive1 = mo["DriveLetter"].ToString();
+                        if (this.skipDrives is not null)
                         {
-                            this.Log.LogError("WMI Failed to get drives from: {0}", this.MachineName);
-                            return;
+                            skip = this.SkipDrives.Any(driveToSkip => driveToSkip.ItemSpec == drive1);
                         }
 
-                        // only check fixed drives.
-                        if (mo["DriveType"] is not null && mo["DriveType"].ToString() == "3")
+                        if (!skip)
                         {
-                            bool skip = false;
-                            string drive1 = mo["DriveLetter"].ToString();
-                            if (this.skipDrives is not null)
+                            ITaskItem item = new TaskItem(drive1);
+                            item.SetMetadata("DriveType", mo["DriveType"].ToString());
+                            if (mo["DriveType"].ToString() == "3" || mo["DriveType"].ToString() == "2")
                             {
-                                skip = this.SkipDrives.Any(driveToSkip => driveToSkip.ItemSpec == drive1);
+                                item.SetMetadata("Name", mo["Name"].ToString());
+                                item.SetMetadata("VolumeLabel", mo["Label"].ToString());
+                                item.SetMetadata("AvailableFreeSpace", mo["FreeSpace"].ToString());
+                                item.SetMetadata("DriveFormat", mo["FileSystem"].ToString());
+                                item.SetMetadata("TotalSize", mo["Capacity"].ToString());
+                                item.SetMetadata("TotalFreeSpace", mo["FreeSpace"].ToString());
                             }
 
-                            if (skip == false)
-                            {
-                                ITaskItem item = new TaskItem(drive1);
-                                item.SetMetadata("DriveType", mo["DriveType"].ToString());
-                                if (mo["DriveType"].ToString() == "3" || mo["DriveType"].ToString() == "2")
-                                {
-                                    item.SetMetadata("Name", mo["Name"].ToString());
-                                    item.SetMetadata("VolumeLabel", mo["Label"].ToString());
-                                    item.SetMetadata("AvailableFreeSpace", mo["FreeSpace"].ToString());
-                                    item.SetMetadata("DriveFormat", mo["FileSystem"].ToString());
-                                    item.SetMetadata("TotalSize", mo["Capacity"].ToString());
-                                    item.SetMetadata("TotalFreeSpace", mo["FreeSpace"].ToString());
-                                }
-
-                                this.drives.Add(item);
-                            }
+                            this.drives.Add(item);
                         }
                     }
                 }
@@ -246,27 +243,13 @@ namespace Computer
                 this.Unit = "Mb";
             }
 
-            long unitSize;
-
-            switch (this.Unit.ToUpperInvariant())
+            var unitSize = this.Unit.ToUpperInvariant() switch
             {
-                case "TB":
-                    unitSize = 1099511627776;
-                    break;
-
-                case "GB":
-                    unitSize = 1073741824;
-                    break;
-
-                case "KB":
-                    unitSize = 1024;
-                    break;
-
-                default:
-                    unitSize = 1048576;
-                    break;
-            }
-
+                "TB" => 1099511627776,
+                "GB" => 1073741824,
+                "KB" => 1024,
+                _ => 1048576,
+            };
             return unitSize;
         }
 
@@ -286,7 +269,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -307,8 +290,8 @@ namespace Computer
         [Output]
         public IEnumerable<ITaskItem> Drives
         {
-            get => this.drives.ToArray();
-            set => this.drives = new List<ITaskItem>(value);
+            get => [.. this.drives];
+            set => this.drives = [.. value];
         }
 
         /// <summary>
@@ -321,8 +304,8 @@ namespace Computer
         /// </summary>
         public IEnumerable<ITaskItem> SkipDrives
         {
-            get => this.skipDrives.ToArray();
-            set => this.skipDrives = new List<ITaskItem>(value);
+            get => [.. this.skipDrives];
+            set => this.skipDrives = [.. value];
         }
 
         /// <summary>

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Xml
+namespace MSBuild.ExtensionPack.Xml
 {
     using System;
     using System.Globalization;
@@ -25,6 +25,11 @@ namespace Xml
     using System.Xml.Linq;
     using System.Xml.Schema;
     using System.Xml.Xsl;
+
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -126,32 +131,30 @@ namespace Xml
 
         private void Transform()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Transforming: {0}", this.XmlFile));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Transforming: {0}", this.XmlFile));
             XDocument xslDoc;
             if (!string.IsNullOrEmpty(this.XslTransformFile) && !File.Exists(this.XslTransformFile))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "XslTransformFile not found: {0}", this.XslTransformFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "XslTransformFile not found: {0}", this.XslTransformFile));
                 return;
             }
 
             if (!string.IsNullOrEmpty(this.XslTransformFile))
             {
                 // Load the XslTransformFile
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Loading XslTransformFile: {0}", this.XslTransformFile));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Loading XslTransformFile: {0}", this.XslTransformFile));
                 xslDoc = XDocument.Load(this.XslTransformFile);
             }
             else if (!string.IsNullOrEmpty(this.XslTransform))
             {
                 // Load the XslTransform
-                this.LogTaskMessage(MessageImportance.Low, "Loading XslTransform");
-                using (StringReader sr = new StringReader(this.XslTransform))
-                {
-                    xslDoc = XDocument.Load(sr);
-                }
+                this.Log.LogTaskMessage(MessageImportance.Low, "Loading XslTransform");
+                using StringReader sr = new StringReader(this.XslTransform);
+                xslDoc = XDocument.Load(sr);
             }
             else
             {
-                this.Log.LogError("XslTransform or XslTransformFile must be specified");
+                this.Log.LogTaskError("XslTransform or XslTransformFile must be specified");
                 return;
             }
 
@@ -164,7 +167,7 @@ namespace Xml
                 StringBuilder builder = new StringBuilder();
                 using (XmlWriter writer = XmlWriter.Create(builder, xslt.OutputSettings))
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Running XslTransform");
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Running XslTransform");
 
                     // Execute the transform and output the results to a writer.
                     xslt.Transform(this.xmlDoc.CreateReader(), writer);
@@ -177,38 +180,23 @@ namespace Xml
             {
                 if (xslt.OutputSettings.OutputMethod == XmlOutputMethod.Text)
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Writing using text method");
-                    using (FileStream stream = new FileStream(this.OutputFile, FileMode.Create))
-                    {
-                        StreamWriter streamWriter = null;
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Writing using text method");
+                    using FileStream stream = new FileStream(this.OutputFile, FileMode.Create);
+                    using var streamWriter = new StreamWriter(stream, Encoding.Default);
 
-                        try
-                        {
-                            streamWriter = new StreamWriter(stream, Encoding.Default);
-
-                            // Output the results to a writer.
-                            streamWriter.Write(this.Output);
-                        }
-                        finally
-                        {
-                            streamWriter?.Close();
-                        }
-                    }
+                    // Output the results to a writer.
+                    streamWriter.Write(this.Output);
                 }
                 else
                 {
-                    this.LogTaskMessage(MessageImportance.Low, "Writing using XML method");
-                    using (StringReader sr = new StringReader(this.Output))
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Writing using XML method");
+                    using StringReader sr = new StringReader(this.Output);
+                    XDocument newxmlDoc = XDocument.Load(sr);
+                    if (!string.IsNullOrEmpty(this.OutputFile))
                     {
-                        XDocument newxmlDoc = XDocument.Load(sr);
-                        if (!string.IsNullOrEmpty(this.OutputFile))
-                        {
-                            XmlWriterSettings writerSettings = new XmlWriterSettings { ConformanceLevel = this.conformanceLevel, Encoding = this.fileEncoding, Indent = this.Indent, OmitXmlDeclaration = this.OmitXmlDeclaration, CloseOutput = true };
-                            using (XmlWriter xw = XmlWriter.Create(this.OutputFile, writerSettings))
-                            {
-                                newxmlDoc.WriteTo(xw);
-                            }
-                        }
+                        XmlWriterSettings writerSettings = new XmlWriterSettings { ConformanceLevel = this.conformanceLevel, Encoding = this.fileEncoding, Indent = this.Indent, OmitXmlDeclaration = this.OmitXmlDeclaration, CloseOutput = true };
+                        using XmlWriter xw = XmlWriter.Create(this.OutputFile, writerSettings);
+                        newxmlDoc.WriteTo(xw);
                     }
                 }
             }
@@ -216,7 +204,7 @@ namespace Xml
 
         private void Validate()
         {
-            this.LogTaskMessage(!string.IsNullOrEmpty(this.XmlFile) ? string.Format(CultureInfo.CurrentCulture, "Validating: {0}", this.XmlFile) : "Validating Xml");
+            this.Log.LogTaskMessage(!string.IsNullOrEmpty(this.XmlFile) ? string.Format(CultureInfo.CurrentCulture, "Validating: {0}", this.XmlFile) : "Validating Xml");
             XmlSchemaSet schemas = new XmlSchemaSet();
             foreach (ITaskItem i in this.SchemaFiles)
             {
@@ -230,7 +218,7 @@ namespace Xml
                 (o, e) =>
                 {
                     this.Output += e.Message;
-                    this.LogTaskWarning(string.Format(CultureInfo.InvariantCulture, "{0}", e.Message));
+                    this.Log.LogTaskWarning(string.Format(CultureInfo.InvariantCulture, "{0}", e.Message));
                     errorEncountered = true;
                 });
 
@@ -249,28 +237,26 @@ namespace Xml
 
             if (!string.IsNullOrEmpty(this.XmlFile) && !File.Exists(this.XmlFile))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "XmlFile not found: {0}", this.XmlFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "XmlFile not found: {0}", this.XmlFile));
                 return;
             }
 
             if (!string.IsNullOrEmpty(this.XmlFile))
             {
                 // Load the XmlFile
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Loading XmlFile: {0}", this.XmlFile));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Loading XmlFile: {0}", this.XmlFile));
                 this.xmlDoc = XDocument.Load(this.XmlFile);
             }
             else if (!string.IsNullOrEmpty(this.Xml))
             {
                 // Load the Xml
                 this.Log.LogTaskMessage(MessageImportance.Low, "Loading Xml");
-                using (StringReader sr = new StringReader(this.Xml))
-                {
-                    this.xmlDoc = XDocument.Load(sr);
-                }
+                using StringReader sr = new StringReader(this.Xml);
+                this.xmlDoc = XDocument.Load(sr);
             }
             else
             {
-                this.Log.LogError("Xml or XmlFile must be specified");
+                this.Log.LogTaskError("Xml or XmlFile must be specified");
                 return;
             }
 
@@ -285,7 +271,7 @@ namespace Xml
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

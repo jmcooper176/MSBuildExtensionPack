@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Configuration;
@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// Task used to work with the .NET framework web.config and machine config files <b>Valid TaskActions are:</b>
@@ -164,7 +165,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError("Task parameter ConfigurationFile has an unrecognized value.");
+                    this.Log.LogTaskError("Task parameter ConfigurationFile has an unrecognized value.");
                     return;
             }
 
@@ -187,21 +188,21 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 case ProtectConfigSectionAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Protecting section '{0}' in {1}.", this.Section, this.Config.FilePath));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Protecting section '{0}' in {1}.", this.Section, this.Config.FilePath));
                     ConfigurationSection cs = this.Config.Sections[this.Section];
                     cs.SectionInformation.ProtectSection(this.ProtectionProvider);
                     this.Save();
                     break;
 
                 case UnprotectConfigSectionAction:
-                    this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Unprotecting section '{0}' in {1}.", this.Section, this.Config.FilePath));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Unprotecting section '{0}' in {1}.", this.Section, this.Config.FilePath));
                     ConfigurationSection cs2 = this.Config.Sections[this.Section];
                     cs2.SectionInformation.UnprotectSection();
                     this.Save();
                     break;
 
                 default:
-                    this.Log.LogError("Invalid task action: {0}.", this.TaskAction);
+                    this.Log.LogTaskError("Invalid task action: {0}.", this.TaskAction);
                     break;
             }
         }

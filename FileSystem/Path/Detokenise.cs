@@ -149,29 +149,16 @@ namespace FileSystem.Path
 
         private static Encoding GetTextEncoding(string enc)
         {
-            switch (enc)
+            return enc switch
             {
-                case "DEFAULT":
-                    return Encoding.Default;
-
-                case "ASCII":
-                    return Encoding.ASCII;
-
-                case "Unicode":
-                    return Encoding.Unicode;
-
-                case "UTF8":
-                    return Encoding.UTF8;
-
-                case "UTF32":
-                    return Encoding.UTF32;
-
-                case "BigEndianUnicode":
-                    return Encoding.BigEndianUnicode;
-
-                default:
-                    return !string.IsNullOrEmpty(enc) ? Encoding.GetEncoding(enc) : null;
-            }
+                "DEFAULT" => Encoding.Default,
+                "ASCII" => Encoding.ASCII,
+                "Unicode" => Encoding.Unicode,
+                "UTF8" => Encoding.UTF8,
+                "UTF32" => Encoding.UTF32,
+                "BigEndianUnicode" => Encoding.BigEndianUnicode,
+                _ => !string.IsNullOrEmpty(enc) ? Encoding.GetEncoding(enc) : null,
+            };
         }
 
         private void DetokeniseFileProvided(string file, bool checkExists, Encoding enc)
@@ -187,7 +174,7 @@ namespace FileSystem.Path
             Encoding finalEncoding;
 
             // See if the file exists
-            if (checkExists && System.IO.File.Exists(file) == false)
+            if (checkExists && !System.IO.File.Exists(file))
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", file));
                 throw new ArgumentException("Review error log");
@@ -250,17 +237,17 @@ namespace FileSystem.Path
                 // if the ReplacementValues collection and the CommandLineValues are
                 // <see langref="null"/>
                 // , then we need to load the project file that called this task to get it's properties.
-                if (this.ReplacementValues is null && string.IsNullOrEmpty(this.CommandLineValues))
+                if (!this.ReplacementValues.Any() && string.IsNullOrEmpty(this.CommandLineValues))
                 {
                     this.collectionMode = false;
                 }
                 else if (!string.IsNullOrEmpty(this.CommandLineValues))
                 {
-                    string[] commandLineValuesArray = this.CommandLineValues.Split(new[] { this.Separator }, StringSplitOptions.RemoveEmptyEntries);
-                    this.commandLineDictionary = new Dictionary<string, string>();
+                    string[] commandLineValuesArray = this.CommandLineValues.Split([this.Separator], StringSplitOptions.RemoveEmptyEntries);
+                    this.commandLineDictionary = [];
                     foreach (string s in commandLineValuesArray)
                     {
-                        string[] temp = s.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] temp = s.Split(['='], StringSplitOptions.RemoveEmptyEntries);
                         this.commandLineDictionary.Add(temp[0], temp[1]);
                     }
                 }
@@ -295,7 +282,7 @@ namespace FileSystem.Path
                 this.parseRegex = new Regex(this.TokenPattern, RegexOptions.Compiled);
 
                 // Check to see if we are processing a file collection or a path
-                if (string.IsNullOrEmpty(this.TargetPath) != true)
+                if (!string.IsNullOrEmpty(this.TargetPath))
                 {
                     // we need to process a path
                     this.ProcessPath();
@@ -402,7 +389,7 @@ namespace FileSystem.Path
 
         private void ProcessCollection()
         {
-            if (this.TargetFiles is null)
+            if (!this.TargetFiles.Any())
             {
                 this.Log.LogTaskError("The collection passed to TargetFiles is empty");
                 throw new ArgumentException("Review error log");
@@ -523,7 +510,7 @@ namespace FileSystem.Path
                     return;
             }
 
-            this.tokenDictionary = new SortedDictionary<string, string>();
+            this.tokenDictionary = [];
             this.DoDetokenise();
 
             if (this.tokenDictionary.Count > 0 && this.report)
@@ -540,7 +527,7 @@ namespace FileSystem.Path
 
                 if (this.ReportUnusedTokens)
                 {
-                    this.unusedTokens = new SortedDictionary<string, string>();
+                    this.unusedTokens = [];
 
                     // Find unused tokens.
                     if (this.collectionMode)

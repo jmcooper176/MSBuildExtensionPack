@@ -15,13 +15,15 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -88,7 +90,7 @@ namespace Computer
         {
             if (string.IsNullOrEmpty(this.HostName))
             {
-                this.Log.LogError("HostName is required");
+                this.Log.LogTaskError("HostName is required");
                 return;
             }
 
@@ -124,13 +126,13 @@ namespace Computer
             }
 
             IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
-            if (hostEntry.AddressList is null || hostEntry.AddressList.Length <= 0)
+            if (hostEntry.AddressList?.Length == 0)
             {
                 this.Log.LogTaskWarning("Trying to determine internal IP addresses but address list is empty");
                 return;
             }
 
-            this.IP = new ITaskItem[hostEntry.AddressList.Length];
+            this.IP = new ITaskItem[hostEntry.AddressList!.Length];
             for (int i = 0; i < hostEntry.AddressList.Length; i++)
             {
                 ITaskItem newItem = new TaskItem(hostEntry.AddressList[i].ToString());
@@ -161,26 +163,24 @@ namespace Computer
                 buffer[i] = unchecked((byte)i);
             }
 
-            using (System.Net.NetworkInformation.Ping pinger = new System.Net.NetworkInformation.Ping())
+            using System.Net.NetworkInformation.Ping pinger = new System.Net.NetworkInformation.Ping();
+            PingOptions options = new PingOptions(TimeToLive, false);
+            for (int i = 0; i < this.PingCount; i++)
             {
-                PingOptions options = new PingOptions(TimeToLive, false);
-                for (int i = 0; i < this.PingCount; i++)
+                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Pinging {0}", this.HostName);
+                PingReply response = pinger.Send(this.HostName, this.Timeout, buffer, options);
+                if (response is not null && response.Status == IPStatus.Success)
                 {
-                    this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Pinging {0}", this.HostName);
-                    PingReply response = pinger.Send(this.HostName, this.Timeout, buffer, options);
-                    if (response is not null && response.Status == IPStatus.Success)
-                    {
-                        this.Exists = true;
-                        return;
-                    }
-
-                    this.Log.LogTaskMessage(() => response is not null, MessageImportance.Low, "Response Status {0}", response.Status);
-
-                    System.Threading.Thread.Sleep(1000);
+                    this.Exists = true;
+                    return;
                 }
 
-                this.Exists = false;
+                this.Log.LogTaskMessage(() => response is not null, MessageImportance.Low, "Response Status {0}", response.Status);
+
+                System.Threading.Thread.Sleep(1000);
             }
+
+            this.Exists = false;
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

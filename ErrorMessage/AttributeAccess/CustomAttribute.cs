@@ -795,12 +795,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
 
             Type element = value.GetType();
 
-            if (element.MemberType != MemberTypes.Field)
-            {
-                throw new NotSupportedException($"{element.FullName} : Field MemberType Type {element.MemberType} is not supported.");
-            }
-
-            return element.GetField(name);
+            return element.MemberType != MemberTypes.Field
+                ? throw new NotSupportedException($"{element.FullName} : Field MemberType Type {element.MemberType} is not supported.")
+                : element.GetField(name);
         }
 
         /// <summary>
@@ -845,17 +842,14 @@ namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
 
             Type element = value.GetType();
 
-            if (element.MemberType != MemberTypes.Constructor
+            return element.MemberType != MemberTypes.Constructor
                 && element.MemberType != MemberTypes.Method
                 && element.MemberType != MemberTypes.Property
                 && element.MemberType != MemberTypes.Event
                 && element.MemberType != MemberTypes.TypeInfo
-                && element.MemberType != MemberTypes.Field)
-            {
-                throw new NotSupportedException($"{element.Name} : Element Member Type {element.MemberType} is not supported.");
-            }
-
-            return element.GetMember(name).FirstOrDefault(m => m.GetCustomAttribute<TAttribute>(inherit) is not null && m.MemberType == element.MemberType && m.Name.Equals(name, StringComparison.Ordinal));
+                && element.MemberType != MemberTypes.Field
+                ? throw new NotSupportedException($"{element.Name} : Element Member Type {element.MemberType} is not supported.")
+                : element.GetMember(name).FirstOrDefault(m => m.GetCustomAttribute<TAttribute>(inherit) is not null && m.MemberType == element.MemberType && m.Name.Equals(name, StringComparison.Ordinal));
         }
 
         /// <summary>
@@ -899,17 +893,14 @@ namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
 
             Type element = value.GetType();
 
-            if (element.MemberType != MemberTypes.Constructor
+            return element.MemberType != MemberTypes.Constructor
                 && element.MemberType != MemberTypes.Method
                 && element.MemberType != MemberTypes.Property
                 && element.MemberType != MemberTypes.Event
                 && element.MemberType != MemberTypes.TypeInfo
-                && element.MemberType != MemberTypes.Field)
-            {
-                throw new NotSupportedException($"{element.Name} : Element Member Type {element.MemberType} is not supported.");
-            }
-
-            return element.GetMember(name);
+                && element.MemberType != MemberTypes.Field
+                ? throw new NotSupportedException($"{element.Name} : Element Member Type {element.MemberType} is not supported.")
+                : (IEnumerable<MemberInfo>)element.GetMember(name);
         }
 
         /// <summary>
@@ -1946,34 +1937,12 @@ namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
             CustomAttribute? xPrime = x as CustomAttribute;
             CustomAttribute? yPrime = y as CustomAttribute;
 
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
-            else if (x is null ^ y is null)
-            {
-                return false;
-            }
-            else if (!string.Equals(xPrime?.DiagnosticId, yPrime?.DiagnosticId, StringComparison.Ordinal))
-            {
-                return false;
-            }
-            else if (xPrime?.IsDefault != yPrime?.IsDefault)
-            {
-                return false;
-            }
-            else if (!string.Equals(xPrime?.Message, yPrime?.Message, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-            else if (!string.Equals(xPrime?.UrlFormat, yPrime?.UrlFormat, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return ReferenceEquals(x, y)
+                || (!(x is null ^ y is null)
+                    && (string.Equals(xPrime?.DiagnosticId, yPrime?.DiagnosticId, StringComparison.Ordinal)
+                                    && (xPrime?.IsDefault == yPrime?.IsDefault
+                                                    && (string.Equals(xPrime?.Message, yPrime?.Message, StringComparison.OrdinalIgnoreCase)
+                                                                    && string.Equals(xPrime?.UrlFormat, yPrime?.UrlFormat, StringComparison.OrdinalIgnoreCase)))));
         }
 
         /// <summary>
@@ -2022,14 +1991,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.AttributeAccess
         /// <returns>A string that represents the current object.</returns>
         public override string? ToString()
         {
-            if (this.IsDefaultAttribute())
-            {
-                return $"{this.GetType().FullName} : {DiagnosticId} : {Message}";
-            }
-            else
-            {
-                return $"{this.GetType().Name} : {DiagnosticId} {UrlFormat} : {Message}";
-            }
+            return this.IsDefaultAttribute()
+                ? $"{this.GetType().FullName} : {DiagnosticId} : {Message}"
+                : $"{this.GetType().Name} : {DiagnosticId} {UrlFormat} : {Message}";
         }
     }
 }

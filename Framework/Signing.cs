@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System.Diagnostics;
     using System.Globalization;
@@ -75,36 +75,34 @@ namespace MSBuild.ExtensionPack
             string fileName = this.ToolPath is not null ? System.IO.Path.Combine(this.ToolPath.GetMetadata("FullPath"), ToolName) : ToolName;
             if (!System.IO.File.Exists(fileName))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "sn.exe not found: {0}", fileName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "sn.exe not found: {0}", fileName));
                 return;
             }
 
-            using (Process proc = new Process())
+            using Process proc = new Process();
+            proc.StartInfo.FileName = fileName;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.Arguments = args;
+            this.LogTaskMessage(MessageImportance.Low, "Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+            proc.Start();
+            string outputStream = proc.StandardOutput.ReadToEnd();
+            if (outputStream.Length > 0)
             {
-                proc.StartInfo.FileName = fileName;
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.StartInfo.RedirectStandardError = true;
-                proc.StartInfo.Arguments = args;
-                this.LogTaskMessage(MessageImportance.Low, "Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
-                proc.Start();
-                string outputStream = proc.StandardOutput.ReadToEnd();
-                if (outputStream.Length > 0)
-                {
-                    this.LogTaskMessage(MessageImportance.Low, outputStream);
-                }
+                this.LogTaskMessage(MessageImportance.Low, outputStream);
+            }
 
-                string errorStream = proc.StandardError.ReadToEnd();
-                if (errorStream.Length > 0)
-                {
-                    this.Log.LogError(errorStream);
-                }
+            string errorStream = proc.StandardError.ReadToEnd();
+            if (errorStream.Length > 0)
+            {
+                this.Log.LogTaskError(errorStream);
+            }
 
-                proc.WaitForExit();
-                if (proc.ExitCode != 0)
-                {
-                    this.Log.LogError("Non-zero exit code from sn.exe: " + proc.ExitCode);
-                }
+            proc.WaitForExit();
+            if (proc.ExitCode != 0)
+            {
+                this.Log.LogTaskError("Non-zero exit code from sn.exe: " + proc.ExitCode);
             }
         }
 
@@ -112,19 +110,19 @@ namespace MSBuild.ExtensionPack
         {
             if (this.KeyFile is null)
             {
-                this.Log.LogError("KeyFile not supplied");
+                this.Log.LogTaskError("KeyFile not supplied");
                 return;
             }
 
             if (!System.IO.File.Exists(this.KeyFile.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "KeyFile not found: {0}", this.KeyFile.GetMetadata("FullPath")));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "KeyFile not found: {0}", this.KeyFile.GetMetadata("FullPath")));
                 return;
             }
 
-            if (this.Assemblies is null)
+            if (this.Assemblies.Length == 0)
             {
-                this.Log.LogError("Assemblies not supplied");
+                this.Log.LogTaskError("Assemblies not supplied");
                 return;
             }
 
@@ -147,7 +145,7 @@ namespace MSBuild.ExtensionPack
                 }
                 else
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Assembly not found: {0}", assembly.ItemSpec));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Assembly not found: {0}", assembly.ItemSpec));
                 }
             }
         }
@@ -156,7 +154,7 @@ namespace MSBuild.ExtensionPack
         {
             if (string.IsNullOrEmpty(this.PublicKeyToken))
             {
-                this.Log.LogError("PublicKeyToken is required");
+                this.Log.LogTaskError("PublicKeyToken is required");
             }
 
             this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Adding SkipVerification for: {0}", this.PublicKeyToken));
@@ -188,7 +186,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

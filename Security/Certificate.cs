@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Security
+namespace MSBuild.ExtensionPack.Security
 {
     using System;
     using System.Globalization;
@@ -307,7 +307,7 @@ namespace Security
         private static X509Certificate2 GetCertificateFromDistinguishedName(string distinguishedName, X509Store certificateStore)
         {
             // Iterate through each certificate trying to find the first unexpired certificate
-            return certificateStore.Certificates.Cast<X509Certificate2>().FirstOrDefault(certificate => string.Compare(certificate.Subject, distinguishedName, StringComparison.CurrentCultureIgnoreCase) == 0);
+            return certificateStore.Certificates.Cast<X509Certificate2>().FirstOrDefault(certificate => string.Equals(certificate.Subject, distinguishedName, StringComparison.CurrentCultureIgnoreCase));
         }
 
         /// <summary>
@@ -376,13 +376,13 @@ namespace Security
         {
             if (this.FileName is null)
             {
-                this.Log.LogError("FileName not provided");
+                this.Log.LogTaskError("FileName not provided");
                 return;
             }
 
-            if (System.IO.File.Exists(this.FileName.GetMetadata("FullPath")) == false)
+            if (!System.IO.File.Exists(this.FileName.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "FileName not found: {0}", this.FileName.GetMetadata("FullPath")));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "FileName not found: {0}", this.FileName.GetMetadata("FullPath")));
                 return;
             }
 
@@ -417,22 +417,22 @@ namespace Security
             try
             {
                 store.Open(OpenFlags.ReadOnly);
-                if (string.IsNullOrEmpty(this.Thumbprint) == false)
+                if (!string.IsNullOrEmpty(this.Thumbprint))
                 {
                     certificate = GetCertificateFromThumbprint(this.Thumbprint, store);
                 }
-                else if (string.IsNullOrEmpty(this.DistinguishedName) == false)
+                else if (!string.IsNullOrEmpty(this.DistinguishedName))
                 {
                     certificate = GetCertificateFromDistinguishedName(this.DistinguishedName, store);
                 }
 
                 if (certificate is null)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Error fetching base 64 encoded certificate string. Could not find the certificate in the certificate store"));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Error fetching base 64 encoded certificate string. Could not find the certificate in the certificate store"));
                 }
                 else
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Returning Expiry Date of Certificate: {0}", certificate.Thumbprint));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Returning Expiry Date of Certificate: {0}", certificate.Thumbprint));
                     this.Base64EncodedCertificate = Convert.ToBase64String(certificate.RawData);
                 }
             }
@@ -454,11 +454,11 @@ namespace Security
             try
             {
                 store.Open(OpenFlags.ReadOnly);
-                if (string.IsNullOrEmpty(this.Thumbprint) == false)
+                if (!string.IsNullOrEmpty(this.Thumbprint))
                 {
                     certificate = GetCertificateFromThumbprint(this.Thumbprint, store);
                 }
-                else if (string.IsNullOrEmpty(this.DistinguishedName) == false)
+                else if (!string.IsNullOrEmpty(this.DistinguishedName))
                 {
                     certificate = GetCertificateFromDistinguishedName(this.DistinguishedName, store);
                 }
@@ -491,13 +491,13 @@ namespace Security
                 var matches = store.Certificates.Find(X509FindType.FindByThumbprint, this.Thumbprint, false);
                 if (matches.Count > 1)
                 {
-                    this.Log.LogError("More than one certificate with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
+                    this.Log.LogTaskError("More than one certificate with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
                     return;
                 }
 
                 if (matches.Count == 0)
                 {
-                    this.Log.LogError("No certificates with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
+                    this.Log.LogTaskError("No certificates with Thumbprint '{0}' found in the {1} store.", this.Thumbprint, this.StoreName);
                     return;
                 }
 
@@ -508,13 +508,13 @@ namespace Security
                 var matches = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, this.SubjectDName, false);
                 if (matches.Count > 1)
                 {
-                    this.Log.LogError("More than one certificate with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
+                    this.Log.LogTaskError("More than one certificate with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
                     return;
                 }
 
                 if (matches.Count == 0)
                 {
-                    this.Log.LogError("No certificates with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
+                    this.Log.LogTaskError("No certificates with SubjectDName '{0}' found in the {1} store.", this.SubjectDName, this.StoreName);
                     return;
                 }
 
@@ -591,7 +591,7 @@ namespace Security
                 }
             }
 
-            this.Log.LogError("Unable to locate private key file directory");
+            this.Log.LogTaskError("Unable to locate private key file directory");
             return string.Empty;
         }
 
@@ -662,11 +662,11 @@ namespace Security
             try
             {
                 store.Open(OpenFlags.ReadOnly);
-                if (string.IsNullOrEmpty(this.Thumbprint) == false)
+                if (!string.IsNullOrEmpty(this.Thumbprint))
                 {
                     certificate = GetCertificateFromThumbprint(this.Thumbprint, store);
                 }
-                else if (string.IsNullOrEmpty(this.DistinguishedName) == false)
+                else if (!string.IsNullOrEmpty(this.DistinguishedName))
                 {
                     certificate = GetCertificateFromDistinguishedName(this.DistinguishedName, store);
                 }
@@ -752,7 +752,7 @@ namespace Security
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -793,7 +793,7 @@ namespace Security
         public string CertPassword { get; set; }
 
         /// <summary>
-        /// Gets the Distinguished Name for the certificate used to to uniquely identify certificate in further tasks. The
+        /// Gets the Distinguished Name for the certificate used to uniquely identify certificate in further tasks. The
         /// distinguished name can be used in place of thumbprint to identify a certificate
         /// </summary>
         [Output]

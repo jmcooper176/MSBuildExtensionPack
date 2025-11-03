@@ -645,38 +645,19 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// <inheritdoc/>
         public int CompareTo(QuickFixEngineering? other)
         {
-            if (ReferenceEquals(this, other))
-            {
-                return 0;
-            }
-            else if (other is null)
-            {
-                return 1;
-            }
-            if (this.ZeroDay != other.ZeroDay)
-            {
-                return this.ZeroDay.CompareTo(other.ZeroDay);
-            }
-            else if (this.Version != other.Version)
-            {
-                return this.Version.CompareTo(other.Version);
-            }
-            else if (this.HotFixId != other.HotFixId)
-            {
-                return string.Compare(this.HotFixId, other.HotFixId, StringComparison.OrdinalIgnoreCase);
-            }
-            else if (this.ServicePackInEffect != other.ServicePackInEffect)
-            {
-                return string.Compare(this.ServicePackInEffect, other.ServicePackInEffect, StringComparison.OrdinalIgnoreCase);
-            }
-            else if (this.Status != other.Status)
-            {
-                return this.Status.CompareTo(other.Status);
-            }
-            else
-            {
-                return 0;
-            }
+            return ReferenceEquals(this, other)
+                ? 0
+                : other is null
+                    ? 1
+                    : this.ZeroDay != other.ZeroDay
+                                    ? this.ZeroDay.CompareTo(other.ZeroDay)
+                                    : this.Version != other.Version
+                                                    ? this.Version.CompareTo(other.Version)
+                                                    : this.HotFixId != other.HotFixId
+                                                                    ? string.Compare(this.HotFixId, other.HotFixId, StringComparison.OrdinalIgnoreCase)
+                                                                    : this.ServicePackInEffect != other.ServicePackInEffect
+                                                                                    ? string.Compare(this.ServicePackInEffect, other.ServicePackInEffect, StringComparison.OrdinalIgnoreCase)
+                                                                                    : this.Status != other.Status ? this.Status.CompareTo(other.Status) : 0;
         }
 
         /// <summary>
@@ -694,38 +675,12 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// <inheritdoc/>
         public bool Equals(QuickFixEngineering? other)
         {
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-            else if (other is null)
-            {
-                return false;
-            }
-            else if (this.HotFixId != other.HotFixId)
-            {
-                return false;
-            }
-            else if (this.InstallDate != other.InstallDate)
-            {
-                return false;
-            }
-            else if (this.ServicePackInEffect != other.ServicePackInEffect)
-            {
-                return false;
-            }
-            else if (this.Status != other.Status)
-            {
-                return false;
-            }
-            else if (this.ZeroDay != other.ZeroDay)
-            {
-                return false;
-            }
-            else
-            {
-                return this.Version == other.Version;
-            }
+            return ReferenceEquals(this, other)
+                || (other is not null
+                    && (this.HotFixId == other.HotFixId
+                                    && (this.InstallDate == other.InstallDate
+                                                    && (this.ServicePackInEffect == other.ServicePackInEffect
+                                                                    && this.Status == other.Status && (this.ZeroDay == other.ZeroDay && this.Version == other.Version)))));
         }
 
         /// <inheritdoc/>

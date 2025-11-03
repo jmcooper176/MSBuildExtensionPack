@@ -202,12 +202,9 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
             ArgumentOutOfRangeException.ThrowIfNegative(revision, nameof(revision));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(revision, MAX_PATCH, nameof(revision));
 
-            if (releaseChar.Length != 1 || !char.IsAsciiLetterUpper(releaseChar[0]))
-            {
-                throw new ArgumentException($"Parameter {nameof(releaseChar)} must be a single ASCII upper case letter A-Z.");
-            }
-
-            return $"{buildMajor}{releaseChar}{revision}";
+            return releaseChar.Length != 1 || !char.IsAsciiLetterUpper(releaseChar[0])
+                ? throw new ArgumentException($"Parameter {nameof(releaseChar)} must be a single ASCII upper case letter A-Z.")
+                : $"{buildMajor}{releaseChar}{revision}";
         }
 
         public static string IncrementBuildNumber(string? buildNumber, AppleBuildNumberPart incrementMask = AppleBuildNumberPart.Revision)
@@ -296,12 +293,7 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
             releaseChar = match.Groups["releasechar"].Value;
 
-            if (!int.TryParse(match.Groups["revision"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out revision))
-            {
-                return false;
-            }
-
-            return true;
+            return int.TryParse(match.Groups["revision"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out revision);
         }
 
         public object Clone() => throw new NotImplementedException();
@@ -324,20 +316,13 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         public string ToString(int fieldCount)
         {
-            switch (fieldCount)
+            return fieldCount switch
             {
-                case 0:
-                    return string.Empty;
-
-                case 3:
-                    return $"{this.Version.ToString(3)}";
-
-                case 4:
-                    return $"{this.Version.ToString(3)} ({this.BuildNumber})";
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(fieldCount), fieldCount, $"Parameter {nameof(fieldCount)} must be between 0, 3, or 4.");
-            }
+                0 => string.Empty,
+                3 => $"{this.Version.ToString(3)}",
+                4 => $"{this.Version.ToString(3)} ({this.BuildNumber})",
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldCount), fieldCount, $"Parameter {nameof(fieldCount)} must be between 0, 3, or 4."),
+            };
         }
 
         public string ToString(string? format, IFormatProvider? formatProvider)

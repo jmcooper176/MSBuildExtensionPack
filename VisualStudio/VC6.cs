@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace VisualStudio
+namespace MSBuild.ExtensionPack.VisualStudio
 {
     using System;
     using System.Diagnostics;
@@ -23,6 +23,8 @@ namespace VisualStudio
     using System.IO;
     using System.Linq;
     using System.Text;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -74,20 +76,20 @@ namespace VisualStudio
 
         private void Build()
         {
-            if (this.Projects is null)
+            if (!this.Projects.Any())
             {
-                this.Log.LogError("The collection passed to Projects is empty");
+                this.Log.LogTaskError("The collection passed to Projects is empty");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Building Projects Collection: {0} projects", this.Projects.Length));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Building Projects Collection: {0} projects", this.Projects.Length));
             if (this.Projects.Any(project => !this.BuildProject(project) && this.StopOnError))
             {
-                this.LogTaskMessage("VC6 Task Execution Failed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]. Stopped by StopOnError set on true");
+                this.Log.LogTaskMessage("VC6 Task Execution Failed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]. Stopped by StopOnError set on true");
                 return;
             }
 
-            this.LogTaskMessage("VC6 Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
+            this.Log.LogTaskMessage("VC6 Task Execution Completed [" + DateTime.Now.ToString("HH:MM:ss", CultureInfo.CurrentCulture) + "]");
         }
 
         private bool BuildProject(ITaskItem project)
@@ -95,7 +97,7 @@ namespace VisualStudio
             string projectNames = project.GetMetadata(ProjectsMetadataName);
             if (string.IsNullOrEmpty(projectNames))
             {
-                this.Log.LogMessage(MessageImportance.Low, "No project names specified. Using 'ALL'.");
+                this.Log.LogTaskMessage(MessageImportance.Low, "No project names specified. Using 'ALL'.");
                 projectNames = "ALL";
             }
             else
@@ -106,91 +108,87 @@ namespace VisualStudio
             string platformName = project.GetMetadata(PlatformMetadataName);
             if (string.IsNullOrEmpty(platformName))
             {
-                this.Log.LogMessage(MessageImportance.Low, "No platform name specified. Using 'Win32'.");
+                this.Log.LogTaskMessage(MessageImportance.Low, "No platform name specified. Using 'Win32'.");
                 platformName = "Win32";
             }
             else
             {
-                this.Log.LogMessage(MessageImportance.Low, "Platform name '{0}'", platformName);
+                this.Log.LogTaskMessage(MessageImportance.Low, "Platform name '{0}'", platformName);
             }
 
             string configurationName = project.GetMetadata(ConfigurationMetadataName);
             if (string.IsNullOrEmpty(configurationName))
             {
-                this.Log.LogMessage(MessageImportance.Low, "No configuration name specified. Using 'Debug'.");
+                this.Log.LogTaskMessage(MessageImportance.Low, "No configuration name specified. Using 'Debug'.");
                 configurationName = "Debug";
             }
             else
             {
-                this.Log.LogMessage(MessageImportance.Low, "Configuration names '{0}'", configurationName);
+                this.Log.LogTaskMessage(MessageImportance.Low, "Configuration names '{0}'", configurationName);
             }
 
             bool allBuildsSucceeded = true;
             foreach (string projectName in projectNames.Split(Separator))
             {
-                using (Process proc = new Process())
+                using Process proc = new Process();
+                proc.StartInfo.FileName = this.MSDEVPath;
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+
+                StringBuilder argumentsBuilder = new System.Text.StringBuilder();
+                argumentsBuilder.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" /OUT \"{0}.log\" /MAKE ", project.ItemSpec);
+                argumentsBuilder.AppendFormat(CultureInfo.CurrentCulture, "\"{0} - {1} {2}\"", projectName, platformName, configurationName);
+
+                if (this.TaskAction == CleanTaskAction)
                 {
-                    proc.StartInfo.FileName = this.MSDEVPath;
-                    proc.StartInfo.UseShellExecute = false;
-                    proc.StartInfo.RedirectStandardOutput = true;
-                    proc.StartInfo.RedirectStandardError = true;
-
-                    StringBuilder argumentsBuilder = new System.Text.StringBuilder();
-                    argumentsBuilder.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" /OUT \"{0}.log\" /MAKE ", project.ItemSpec);
-                    argumentsBuilder.AppendFormat(CultureInfo.CurrentCulture, "\"{0} - {1} {2}\"", projectName, platformName, configurationName);
-
-                    if (this.TaskAction == CleanTaskAction)
-                    {
-                        argumentsBuilder.Append(" /CLEAN");
-                    }
-                    else if (this.TaskAction == RebuildTaskAction)
-                    {
-                        argumentsBuilder.Append(" /REBUILD");
-                    }
-
-                    proc.StartInfo.Arguments = argumentsBuilder.ToString();
-
-                    // start the process
-                    this.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
-
-                    proc.Start();
-                    proc.WaitForExit();
-
-                    string outputStream = proc.StandardOutput.ReadToEnd();
-                    if (outputStream.Length > 0)
-                    {
-                        this.LogTaskMessage(outputStream);
-                    }
-
-                    string errorStream = proc.StandardError.ReadToEnd();
-                    if (errorStream.Length > 0)
-                    {
-                        this.Log.LogError(errorStream);
-                    }
-
-                    proc.WaitForExit();
-                    if (proc.ExitCode == 0)
-                    {
-                        continue;
-                    }
-
-                    this.Log.LogError("Non-zero exit code from MSDEV.exe: " + proc.ExitCode);
-                    try
-                    {
-                        using (FileStream myStreamFile = new FileStream(project.ItemSpec + ".log", FileMode.Open))
-                        {
-                            StreamReader myStream = new System.IO.StreamReader(myStreamFile);
-                            string myBuffer = myStream.ReadToEnd();
-                            this.Log.LogError(myBuffer);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
-                    }
-
-                    allBuildsSucceeded = false;
+                    argumentsBuilder.Append(" /CLEAN");
                 }
+                else if (this.TaskAction == RebuildTaskAction)
+                {
+                    argumentsBuilder.Append(" /REBUILD");
+                }
+
+                proc.StartInfo.Arguments = argumentsBuilder.ToString();
+
+                // start the process
+                this.Log.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+
+                proc.Start();
+                proc.WaitForExit();
+
+                string outputStream = proc.StandardOutput.ReadToEnd();
+                if (outputStream.Length > 0)
+                {
+                    this.Log.LogTaskMessage(outputStream);
+                }
+
+                string errorStream = proc.StandardError.ReadToEnd();
+                if (errorStream.Length > 0)
+                {
+                    this.Log.LogTaskError(errorStream);
+                }
+
+                proc.WaitForExit();
+                if (proc.ExitCode == 0)
+                {
+                    continue;
+                }
+
+                this.Log.LogTaskError("Non-zero exit code from MSDEV.exe: " + proc.ExitCode);
+                try
+                {
+                    using FileStream myStreamFile = new FileStream(project.ItemSpec + ".log", FileMode.Open);
+                    StreamReader myStream = new System.IO.StreamReader(myStreamFile);
+                    string myBuffer = myStream.ReadToEnd();
+                    this.Log.LogTaskError(myBuffer);
+                }
+                catch (Exception ex)
+                {
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
+                }
+
+                allBuildsSucceeded = false;
             }
 
             return allBuildsSucceeded;
@@ -208,7 +206,7 @@ namespace VisualStudio
                 string programFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                 if (string.IsNullOrEmpty(programFilePath))
                 {
-                    this.Log.LogError("Failed to find the special folder 'ProgramFiles'");
+                    this.Log.LogTaskError("Failed to find the special folder 'ProgramFiles'");
                     return;
                 }
 
@@ -218,7 +216,7 @@ namespace VisualStudio
                 }
                 else
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "MSDEV.exe was not found in the default location. Use MSDEVPath to specify it. Searched at: {0}", programFilePath + DefaultMSDEVPath));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "MSDEV.exe was not found in the default location. Use MSDEVPath to specify it. Searched at: {0}", programFilePath + DefaultMSDEVPath));
                     return;
                 }
             }
@@ -232,7 +230,7 @@ namespace VisualStudio
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

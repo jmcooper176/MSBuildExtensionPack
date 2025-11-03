@@ -17,7 +17,7 @@
 // SPDX-License-Identifier: MIT
 #pragma warning disable 618
 
-namespace Compression
+namespace MSBuild.ExtensionPack.Compression
 {
     using System;
     using System.Collections.Generic;
@@ -107,7 +107,6 @@ namespace Compression
         private const string AddFilesTaskAction = "AddFiles";
         private const string CreateTaskAction = "Create";
         private const string ExtractTaskAction = "Extract";
-        private bool preserveAttributes = true;
         private Zip64Option useZip64WhenSaving = Zip64Option.Default;
 
         private void AddFiles()
@@ -135,7 +134,7 @@ namespace Compression
                         updatedEntry = zip.CreateEntry(f.GetMetadata("FullPath"));
                     }
 
-                    if (!this.preserveAttributes)
+                    if (!this.PreserveAttributes)
                     {
                         updatedEntry.Attributes = FileAttributes.Normal;
                     }
@@ -151,43 +150,41 @@ namespace Compression
             }
             else if (this.CompressPath is not null)
             {
-                using (ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.ItemSpec))
+                using ZipArchive zip = ZipFile.OpenRead(this.ZipFileName.ItemSpec);
+                zip.CompressionLevel = this.compressLevel;
+                if (!string.IsNullOrEmpty(this.Password))
                 {
-                    zip.CompressionLevel = this.compressLevel;
-                    if (!string.IsNullOrEmpty(this.Password))
-                    {
-                        zip.Password = this.Password;
-                    }
-
-                    ZipArchiveEntry archiveEntry;
-                    if (this.RemoveRoot is not null)
-                    {
-                        DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
-                        string location = d.FullName.Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
-                        archiveEntry = zip.CreateEntryFromFile(this.CompressPath.ItemSpec, location);
-                    }
-                    else
-                    {
-                        archiveEntry = zip.CreateEntry(this.CompressPath.ItemSpec);
-                    }
-
-                    if (!this.preserveAttributes)
-                    {
-                        archiveEntry.Attributes = FileAttributes.Normal;
-                    }
-
-                    if (this.MaxOutputSegmentSize > 0)
-                    {
-                        zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
-                    }
-
-                    zip.UseZip64WhenSaving = this.useZip64WhenSaving;
-                    zip.Save();
+                    zip.Password = this.Password;
                 }
+
+                ZipArchiveEntry archiveEntry;
+                if (this.RemoveRoot is not null)
+                {
+                    DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
+                    string location = d.FullName.Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
+                    archiveEntry = zip.CreateEntryFromFile(this.CompressPath.ItemSpec, location);
+                }
+                else
+                {
+                    archiveEntry = zip.CreateEntry(this.CompressPath.ItemSpec);
+                }
+
+                if (!this.PreserveAttributes)
+                {
+                    archiveEntry.Attributes = FileAttributes.Normal;
+                }
+
+                if (this.MaxOutputSegmentSize > 0)
+                {
+                    zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
+                }
+
+                zip.UseZip64WhenSaving = this.useZip64WhenSaving;
+                zip.Save();
             }
             else
             {
-                this.Log.LogError("CompressFiles or CompressPath must be specified");
+                this.Log.LogTaskError("CompressFiles or CompressPath must be specified");
             }
         }
 
@@ -196,82 +193,78 @@ namespace Compression
             this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Creating ZipFile: {0}", this.ZipFileName);
             if (this.CompressFiles is not null)
             {
-                using (ZipArchive zip = ZipFile.Open(this.ZipFileName.ItemSpec, ZipArchiveMode.Create))
+                using ZipArchive zip = ZipFile.Open(this.ZipFileName.ItemSpec, ZipArchiveMode.Create);
+                zip.CompressionLevel = this.compressLevel;
+                if (!string.IsNullOrEmpty(this.Password))
                 {
-                    zip.CompressionLevel = this.compressLevel;
-                    if (!string.IsNullOrEmpty(this.Password))
-                    {
-                        zip.Password = this.Password;
-                    }
-
-                    foreach (ITaskItem f in this.CompressFiles)
-                    {
-                        ZipArchiveEntry addedEntry;
-                        if (this.RemoveRoot is not null)
-                        {
-                            string location = (f.GetMetadata("RootDir") + f.GetMetadata("Directory")).Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
-                            addedEntry = zip.AddFile(f.GetMetadata("FullPath"), location);
-                        }
-                        else
-                        {
-                            addedEntry = zip.AddFile(f.GetMetadata("FullPath"));
-                        }
-
-                        if (!this.preserveAttributes)
-                        {
-                            addedEntry.Attributes = FileAttributes.Normal;
-                        }
-                    }
-
-                    if (this.MaxOutputSegmentSize > 0)
-                    {
-                        zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
-                    }
-
-                    zip.UseZip64WhenSaving = this.useZip64WhenSaving;
-                    zip.Save(this.ZipFileName.ItemSpec);
+                    zip.Password = this.Password;
                 }
-            }
-            else if (this.CompressPath is not null)
-            {
-                using (ZipArchive zip = ZipFile.Open(this.ZipFileName.ItemSpec, ZipArchiveMode.Create))
-                {
-                    zip.CompressionLevel = this.compressLevel;
-                    if (!string.IsNullOrEmpty(this.Password))
-                    {
-                        zip.Password = this.Password;
-                    }
 
-                    ZipArchiveEntry addedDirectory;
+                foreach (ITaskItem f in this.CompressFiles)
+                {
+                    ZipArchiveEntry addedEntry;
                     if (this.RemoveRoot is not null)
                     {
-                        DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
-                        string location = d.FullName.Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
-                        addedDirectory = zip.AddDirectory(this.CompressPath.ItemSpec, location);
+                        string location = (f.GetMetadata("RootDir") + f.GetMetadata("Directory")).Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
+                        addedEntry = zip.AddFile(f.GetMetadata("FullPath"), location);
                     }
                     else
                     {
-                        DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
-                        addedDirectory = zip.AddDirectory(this.CompressPath.ItemSpec, d.Name);
+                        addedEntry = zip.AddFile(f.GetMetadata("FullPath"));
                     }
 
-                    if (!this.preserveAttributes)
+                    if (!this.PreserveAttributes)
                     {
-                        addedDirectory.Attributes = FileAttributes.Normal;
+                        addedEntry.Attributes = FileAttributes.Normal;
                     }
-
-                    if (this.MaxOutputSegmentSize > 0)
-                    {
-                        zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
-                    }
-
-                    zip.UseZip64WhenSaving = this.useZip64WhenSaving;
-                    zip.Save(this.ZipFileName.ItemSpec);
                 }
+
+                if (this.MaxOutputSegmentSize > 0)
+                {
+                    zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
+                }
+
+                zip.UseZip64WhenSaving = this.useZip64WhenSaving;
+                zip.Save(this.ZipFileName.ItemSpec);
+            }
+            else if (this.CompressPath is not null)
+            {
+                using ZipArchive zip = ZipFile.Open(this.ZipFileName.ItemSpec, ZipArchiveMode.Create);
+                zip.CompressionLevel = this.compressLevel;
+                if (!string.IsNullOrEmpty(this.Password))
+                {
+                    zip.Password = this.Password;
+                }
+
+                ZipArchiveEntry addedDirectory;
+                if (this.RemoveRoot is not null)
+                {
+                    DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
+                    string location = d.FullName.Replace(this.RemoveRoot.GetMetadata("FullPath"), string.Empty, StringComparison.InvariantCulture);
+                    addedDirectory = zip.AddDirectory(this.CompressPath.ItemSpec, location);
+                }
+                else
+                {
+                    DirectoryInfo d = new DirectoryInfo(this.CompressPath.ItemSpec);
+                    addedDirectory = zip.AddDirectory(this.CompressPath.ItemSpec, d.Name);
+                }
+
+                if (!this.PreserveAttributes)
+                {
+                    addedDirectory.Attributes = FileAttributes.Normal;
+                }
+
+                if (this.MaxOutputSegmentSize > 0)
+                {
+                    zip.MaxOutputSegmentSize = this.MaxOutputSegmentSize;
+                }
+
+                zip.UseZip64WhenSaving = this.useZip64WhenSaving;
+                zip.Save(this.ZipFileName.ItemSpec);
             }
             else
             {
-                this.Log.LogError("CompressFiles or CompressPath must be specified");
+                this.Log.LogTaskError("CompressFiles or CompressPath must be specified");
             }
         }
 
@@ -279,13 +272,13 @@ namespace Compression
         {
             if (!File.Exists(this.ZipFileName.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "ZipFileName not found: {0}", this.ZipFileName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "ZipFileName not found: {0}", this.ZipFileName));
                 return;
             }
 
             if (string.IsNullOrEmpty(this.ExtractPath.GetMetadata("FullPath")))
             {
-                this.Log.LogError("ExtractPath is required");
+                this.Log.LogTaskError("ExtractPath is required");
                 return;
             }
 
@@ -328,7 +321,7 @@ namespace Compression
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -374,11 +367,7 @@ namespace Compression
         /// attributes like <i>Hidden</i> or <i>Read-only</i> should be left intact during adding to the archive. The default is
         /// <see langref="true"/>.
         /// </summary>
-        public bool PreserveAttributes
-        {
-            get => this.preserveAttributes;
-            set => this.preserveAttributes = value;
-        }
+        public bool PreserveAttributes { get; set; } = true;
 
         /// <summary>
         /// Sets the root to remove from the zip path. Note that this should be part of the file to compress path, not the target

@@ -156,18 +156,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(builder.Capacity + value.FullName.Length, builder.MaxCapacity, nameof(builder.Capacity));
 
-            if (value is FileInfo file)
-            {
-                return builder.Append(file.FullName);
-            }
-            else if (value is DirectoryInfo directory)
-            {
-                return builder.Append(directory.FullName);
-            }
-            else
-            {
-                return builder.Append(value);
-            }
+            return value is FileInfo file
+                ? builder.Append(file.FullName)
+                : value is DirectoryInfo directory ? builder.Append(directory.FullName) : builder.Append(value);
         }
 
         /// <summary>
@@ -239,7 +230,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            return builder.AsEnumerable().Cast<TResult>() ?? Enumerable.Empty<TResult>();
+            return builder.AsEnumerable().Cast<TResult>() ?? [];
         }
 
         /// <summary>
@@ -1144,12 +1135,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, value.Length, nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > value.Length)
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{value.Length}'.");
-            }
-
-            return new StringBuilder(value, startIndex, count, capacity);
+            return startIndex + count > value.Length
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{value.Length}'.")
+                : new StringBuilder(value, startIndex, count, capacity);
         }
 
         /// <summary>
@@ -1167,12 +1155,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length, nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > array.Length)
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{array.Length}'.");
-            }
-
-            return Create(new string(array, startIndex, count), capacity);
+            return startIndex + count > array.Length
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{array.Length}'.")
+                : Create(new string(array, startIndex, count), capacity);
         }
 
         /// <summary>
@@ -1308,12 +1293,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length, nameof(offset));
             ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
 
-            if (offset + length > array.Length)
-            {
-                throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.");
-            }
-
-            return Create(Convert.ToBase64String(array, offset, length, options));
+            return offset + length > array.Length
+                ? throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.")
+                : Create(Convert.ToBase64String(array, offset, length, options));
         }
 
         /// <summary>
@@ -1453,12 +1435,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length, nameof(offset));
             ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
 
-            if (offset + length > array.Length)
-            {
-                throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.");
-            }
-
-            return Create(Convert.ToHexString(array, offset, length));
+            return offset + length > array.Length
+                ? throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.")
+                : Create(Convert.ToHexString(array, offset, length));
         }
 
         /// <summary>
@@ -1506,12 +1485,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length, nameof(offset));
             ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
 
-            if (offset + length > array.Length)
-            {
-                throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.");
-            }
-
-            return Create(Convert.ToHexString(array, offset, length));
+            return offset + length > array.Length
+                ? throw new ArgumentException($"Offset '{offset}' plus Length '{length}' is greater than Length '{array.Length}'.")
+                : Create(Convert.ToHexString(array, offset, length));
         }
 
         /// <summary>
@@ -1567,12 +1543,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfNegative(index.Value, nameof(index));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(index.Value, builder.Count(), nameof(index));
 
-            if (ExceptionExtension.IsOutOfRange(index, 0..^builder.Count()))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, $"Parameter {nameof(index)} {index} is out of range.");
-            }
-
-            return builder[index];
+            return ExceptionExtension.IsOutOfRange(index, 0..^builder.Count())
+                ? throw new ArgumentOutOfRangeException(nameof(index), index, $"Parameter {nameof(index)} {index} is out of range.")
+                : builder[index];
         }
 
         /// <summary>
@@ -1587,12 +1560,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfNegative(index, nameof(index));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(index, builder.Count(), nameof(index));
 
-            if (ExceptionExtension.IsOutOfRange(index, 0..^builder.Count()))
-            {
-                return char.MinValue;
-            }
-
-            return builder![index];
+            return ExceptionExtension.IsOutOfRange(index, 0..^builder.Count()) ? char.MinValue : builder![index];
         }
 
         /// <summary>
@@ -1607,12 +1575,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfNegative(index.Value, nameof(index));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(index.Value, builder.Count(), nameof(index));
 
-            if (!ExceptionExtension.IsInRange(index, 0..^builder.Count()))
-            {
-                return char.MinValue;
-            }
-
-            return builder![index];
+            return !ExceptionExtension.IsInRange(index, 0..^builder.Count()) ? char.MinValue : builder![index];
         }
 
         /// <summary>
@@ -1632,22 +1595,8 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         /// <returns></returns>
         public static bool Equals(StringBuilder? left, StringBuilder? right)
         {
-            if (ReferenceEquals(left, right))
-            {
-                return true;
-            }
-            else if (left is null ^ right is null)
-            {
-                return false;
-            }
-            else if (left.Count() != right.Count())
-            {
-                return false;
-            }
-            else
-            {
-                return left!.Equals(right);
-            }
+            return ReferenceEquals(left, right)
+                || (!(left is null ^ right is null) && left.Count() == right.Count() && left!.Equals(right));
         }
 
         /// <summary>
@@ -1660,12 +1609,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() < 1)
-            {
-                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
-            }
-
-            return builder.ElementAt(0);
+            return builder.Count() < 1 ? throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.") : builder.ElementAt(0);
         }
 
         /// <summary>
@@ -1905,12 +1849,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (Assert.IsNullOrEmpty(builder))
-            {
-                return -1;
-            }
-
-            return builder.IndexByIndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), startIndex: 0);
+            return Assert.IsNullOrEmpty(builder) ? (Index)(-1) : builder.IndexByIndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), startIndex: 0);
         }
 
         /// <summary>
@@ -1968,17 +1907,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex.Value, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
 
-            if (startIndex.Value + length > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
-            }
-
-            if (Assert.IsNullOrEmpty(builder))
-            {
-                return -1;
-            }
-
-            return builder.IndexByIndexOf(value, startIndex, length, StringComparison.Ordinal);
+            return startIndex.Value + length > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.")
+                : Assert.IsNullOrEmpty(builder) ? (Index)(-1) : builder.IndexByIndexOf(value, startIndex, length, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -2108,12 +2039,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (Assert.IsNullOrEmpty(builder))
-            {
-                return -1;
-            }
-
-            return builder.IndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
+            return Assert.IsNullOrEmpty(builder) ? -1 : builder.IndexOf(value: new ReadOnlySpan<char>(value.ToCharArray()), 0);
         }
 
         /// <summary>
@@ -2171,17 +2097,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
 
-            if (startIndex + length > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.");
-            }
-
-            if (Assert.IsNullOrEmpty(builder))
-            {
-                return -1;
-            }
-
-            return builder.IndexOf(value, startIndex, length, StringComparison.Ordinal);
+            return startIndex + length > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Length '{length}' is greater than Length '{builder.Count()}'.")
+                : Assert.IsNullOrEmpty(builder) ? -1 : builder.IndexOf(value, startIndex, length, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -2300,12 +2218,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return builder.Insert(index, value.Slice(startIndex, count));
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : builder.Insert(index, value.Slice(startIndex, count));
         }
 
         /// <summary>
@@ -2354,12 +2269,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return builder.Count() > 0 && builder.Slice(startIndex, count).IsMatch(pattern);
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : builder.Count() > 0 && builder.Slice(startIndex, count).IsMatch(pattern);
         }
 
         /// <summary>
@@ -2372,12 +2284,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() <= 0)
-            {
-                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
-            }
-
-            return builder.ElementAt(^0);
+            return builder.Count() <= 0 ? throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.") : builder.ElementAt(^0);
         }
 
         /// <summary>
@@ -2475,12 +2382,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() <= 0)
-            {
-                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
-            }
-
-            return pattern.Matches(builder!.ToString());
+            return builder.Count() <= 0
+                ? throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.")
+                : pattern.Matches(builder!.ToString());
         }
 
         /// <summary>
@@ -2497,12 +2401,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfNegative(startIndex, nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
 
-            if (builder.Count() <= 0)
-            {
-                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
-            }
-
-            return builder.Slice(startIndex).Matches(pattern);
+            return builder.Count() <= 0
+                ? throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.")
+                : builder.Slice(startIndex).Matches(pattern);
         }
 
         /// <summary>
@@ -2523,17 +2424,11 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            if (builder.Count() <= 0)
-            {
-                throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.");
-            }
-
-            return builder.Slice(startIndex, count).Matches(pattern);
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : builder.Count() <= 0
+                ? throw new InvalidOperationException($"Parameter {nameof(builder)} is empty.")
+                : builder.Slice(startIndex, count).Matches(pattern);
         }
 
         /// <summary>
@@ -2579,14 +2474,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             else
             {
                 // converting to ToUpper() is stable; but, converting to ToLower() is not stable with Unicode
-                if (caseInsensitive)
-                {
-                    return builder.Order((l, r) => char.ToUpper(l, culture ?? CultureInfo.InvariantCulture).CompareTo(char.ToUpper(r, culture ?? CultureInfo.InvariantCulture)));
-                }
-                else
-                {
-                    return builder.Order((l, r) => l.CompareTo(r));
-                }
+                return caseInsensitive
+                    ? builder.Order((l, r) => char.ToUpper(l, culture ?? CultureInfo.InvariantCulture).CompareTo(char.ToUpper(r, culture ?? CultureInfo.InvariantCulture)))
+                    : builder.Order((l, r) => l.CompareTo(r));
             }
         }
 
@@ -2650,7 +2540,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
                 return Empty();
             }
 
-            List<char> list = builder.ToCharArray().ToList();
+            List<char> list = [.. builder.ToCharArray()];
             list.Sort(startIndex, count, comparer);
             return Create(list);
         }
@@ -2682,7 +2572,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
                 return Empty();
             }
 
-            List<char> list = builder.ToCharArray(startIndex, count).ToList();
+            List<char> list = [.. builder.ToCharArray(startIndex, count)];
             return Create(list.OrderDescending(comparer));
         }
 
@@ -2708,12 +2598,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() <= 0)
-            {
-                return Empty();
-            }
-
-            return builder.OrderDescending(null, caseInsensitive);
+            return builder.Count() <= 0 ? Empty() : builder.OrderDescending(null, caseInsensitive);
         }
 
         /// <summary>
@@ -2734,14 +2619,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             else
             {
                 // converting to ToUpper() is stable; but, converting to ToLower() is not stable with Unicode
-                if (caseInsensitive)
-                {
-                    return builder.OrderDescending((l, r) => char.ToUpper(l, culture ?? CultureInfo.InvariantCulture).CompareTo(char.ToUpper(r, culture ?? CultureInfo.InvariantCulture)));
-                }
-                else
-                {
-                    return builder.OrderDescending((l, r) => l.CompareTo(r));
-                }
+                return caseInsensitive
+                    ? builder.OrderDescending((l, r) => char.ToUpper(l, culture ?? CultureInfo.InvariantCulture).CompareTo(char.ToUpper(r, culture ?? CultureInfo.InvariantCulture)))
+                    : builder.OrderDescending((l, r) => l.CompareTo(r));
             }
         }
 
@@ -2755,12 +2635,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() <= 0)
-            {
-                return Empty();
-            }
-
-            return builder.OrderDescending((x, y) => comparison.Invoke(x, y));
+            return builder.Count() <= 0 ? Empty() : builder.OrderDescending((x, y) => comparison.Invoke(x, y));
         }
 
         /// <summary>
@@ -2792,18 +2667,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (value is FileInfo file)
-            {
-                return builder.Insert(0, file.FullName);
-            }
-            else if (value is DirectoryInfo directory)
-            {
-                return builder.Insert(0, directory.FullName);
-            }
-            else
-            {
-                return builder.Insert(0, value);
-            }
+            return value is FileInfo file
+                ? builder.Insert(0, file.FullName)
+                : value is DirectoryInfo directory ? builder.Insert(0, directory.FullName) : builder.Insert(0, value);
         }
 
         /// <summary>
@@ -2888,12 +2754,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToArray());
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToArray());
         }
 
         /// <summary>
@@ -2913,12 +2776,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToString());
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : builder.Prepend(value?.Skip(startIndex + 1).Take(count).ToString());
         }
 
         /// <summary>
@@ -3122,12 +2982,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return value.Slice(startIndex, count).Append(builder);
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : value.Slice(startIndex, count).Append(builder);
         }
 
         /// <summary>
@@ -3469,14 +3326,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() != 1)
-            {
-                throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
-            }
-            else
-            {
-                return builder.First();
-            }
+            return builder.Count() != 1
+                ? throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.")
+                : builder.First();
         }
 
         /// <summary>
@@ -3491,14 +3343,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
             ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
 
-            if (builder.Count() != 1)
-            {
-                throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
-            }
-            else
-            {
-                return builder.First(predicate);
-            }
+            return builder.Count() != 1
+                ? throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.")
+                : builder.First(predicate);
         }
 
         /// <summary>
@@ -3511,14 +3358,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-            if (builder.Count() != 1)
-            {
-                throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.");
-            }
-            else
-            {
-                return builder.ElementAtOrDefault(0);
-            }
+            return builder.Count() != 1
+                ? throw new InvalidOperationException($"StringBuilder {nameof(builder)} is not a singleton.")
+                : builder.ElementAtOrDefault(0);
         }
 
         /// <summary>
@@ -3643,12 +3485,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return Create(builder?.ToString(startIndex, count));
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : Create(builder?.ToString(startIndex, count));
         }
 
         /// <summary>
@@ -3773,12 +3612,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return [.. builder.ToList(startIndex, count).Cast<TElement>()];
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : [.. builder.ToList(startIndex, count).Cast<TElement>()];
         }
 
         /// <summary>
@@ -3823,12 +3659,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return builder.ToArray<char>(startIndex, count);
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : builder.ToArray<char>(startIndex, count);
         }
 
         /// <summary>
@@ -3958,12 +3791,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, builder.Count(), nameof(startIndex));
             ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-            if (startIndex + count > builder.Count())
-            {
-                throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.");
-            }
-
-            return [.. builder.ToCharArray(startIndex, count)];
+            return startIndex + count > builder.Count()
+                ? throw new ArgumentException($"Start Index '{startIndex}' plus Count '{count}' is greater than Length '{builder.Count()}'.")
+                : [.. builder.ToCharArray(startIndex, count)];
         }
 
         /// <summary>

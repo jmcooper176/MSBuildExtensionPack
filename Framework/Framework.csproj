@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
-    <AssemblyName>MSBuild.ExtensionPack</AssemblyName>
+    <AssemblyName>MSBuild.ExtensionPack.Framework</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>MSBuild.ExtensionPack</RootNamespace>
+    <RootNamespace>MSBuild.ExtensionPack.Framework</RootNamespace>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <AnalysisLevel>latest-recommended</AnalysisLevel>

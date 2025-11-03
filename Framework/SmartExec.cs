@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -50,7 +50,7 @@ namespace MSBuild.ExtensionPack
     ///]]>
     /// </code>
     /// </example>
-    public class SmartExec : BaseAppDomainIsolatedTask
+    public partial class SmartExec : BaseAppDomainIsolatedTask
     {
         private Process process;
 
@@ -96,7 +96,7 @@ namespace MSBuild.ExtensionPack
         private static bool HasCommandArguments(string command)
         {
             string result = string.Empty;
-            Regex regex = new Regex(@"(?imnx-s:^((\""[^\""]+\"")|([^\ ]+))(?<Arguments>.*))");
+            Regex regex = ArgumentsRegex();
             if (regex.IsMatch(command))
             {
                 result = regex.Match(command).Groups["Arguments"].Value.Trim();
@@ -115,7 +115,7 @@ namespace MSBuild.ExtensionPack
                 string str;
                 while ((str = this.process.StandardError.ReadLine()) is not null)
                 {
-                    this.Log.LogError(str);
+                    this.Log.LogTaskError(str);
                 }
             }
             catch (IOException)
@@ -151,8 +151,8 @@ namespace MSBuild.ExtensionPack
 
         protected override void InternalExecute()
         {
-            string[] tokens = this.Command.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            List<string> commands = new List<string>();
+            string[] tokens = this.Command.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
+            List<string> commands = [];
             foreach (string command in tokens.Select(token => token.Trim()).Where(command => !string.IsNullOrEmpty(command)))
             {
                 commands.Add(command);
@@ -170,34 +170,32 @@ namespace MSBuild.ExtensionPack
             {
                 this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Execute: {0}", fileName));
                 ProcessStartInfo startInfo = GetCommandLine(fileName);
-                using (BackgroundWorker worker = new BackgroundWorker())
+                using BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
                 {
-                    worker.DoWork += (s, e) =>
-                    {
-                        this.process = Process.Start(startInfo);
+                    this.process = Process.Start(startInfo);
 
-                        // Invoke stdOut and stdErr readers - each has its own thread to guarantee that they aren't blocked by, or
-                        // cause a block to, the actual process running (or the gui).
-                        DataReceivedHandler stdOutHandler = this.ReadStdOut;
-                        stdOutHandler.BeginInvoke(null, null);
-                        DataReceivedHandler stdErrHandler = this.ReadStdErr;
-                        stdErrHandler.BeginInvoke(null, null);
+                    // Invoke stdOut and stdErr readers - each has its own thread to guarantee that they aren't blocked by, or
+                    // cause a block to, the actual process running (or the gui).
+                    DataReceivedHandler stdOutHandler = this.ReadStdOut;
+                    stdOutHandler.BeginInvoke(null, null);
+                    DataReceivedHandler stdErrHandler = this.ReadStdErr;
+                    stdErrHandler.BeginInvoke(null, null);
 
-                        this.process.WaitForExit();
-                    };
-                    worker.RunWorkerAsync();
-                    while (worker.IsBusy)
-                    {
-                        Application.DoEvents();
-                    }
+                    this.process.WaitForExit();
+                };
+                worker.RunWorkerAsync();
+                while (worker.IsBusy)
+                {
+                    Application.DoEvents();
+                }
 
-                    int exitCode = this.process.ExitCode;
-                    this.process.Close();
-                    if (!(this.IgnoreExitCode || (exitCode == this.SuccessExitCode)))
-                    {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0} failed with exit code: {1}", fileName, exitCode));
-                        break;
-                    }
+                int exitCode = this.process.ExitCode;
+                this.process.Close();
+                if (!(this.IgnoreExitCode || (exitCode == this.SuccessExitCode)))
+                {
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0} failed with exit code: {1}", fileName, exitCode));
+                    break;
                 }
             }
         }
@@ -223,5 +221,8 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         /// <remarks>No Exec Equivalent</remarks>
         public int SuccessExitCode { get; set; }
+
+        [GeneratedRegex(@"(?imnx-s:^((\""[^\""]+\"")|([^\ ]+))(?<Arguments>.*))", RegexOptions.None, "en-US")]
+        private static partial Regex ArgumentsRegex();
     }
 }

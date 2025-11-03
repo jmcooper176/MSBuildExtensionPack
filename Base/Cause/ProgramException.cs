@@ -126,9 +126,8 @@ namespace MSBuild.ExtensionPack.Base.Cause
             Timeout = TimeSpan.FromSeconds(5.0);
             Thrown = DateTime.UtcNow;
 
-            if (IsPersonCritical)
-            {
-                Message = string.Format(
+            Message = IsPersonCritical
+                ? string.Format(
                     CultureInfo.InvariantCulture,
                     "[{0}] {1} : Un-caught Exception '{2}' in MAN-CRITICAL Program '{3}'.  {4}.  {5}.",
                     Thrown,
@@ -136,11 +135,8 @@ namespace MSBuild.ExtensionPack.Base.Cause
                     this.GetType().FullName,
                     Application,
                     message ?? "No message",
-                    RecommendedAction);
-            }
-            else
-            {
-                Message = string.Format(
+                    RecommendedAction)
+                : string.Format(
                     CultureInfo.InvariantCulture,
                     "[{0}] {1} : Un-caught Exception '{2}' in Program '{3}'.  {4}.",
                     Thrown,
@@ -148,7 +144,6 @@ namespace MSBuild.ExtensionPack.Base.Cause
                     this.GetType().FullName,
                     Application,
                     RecommendedAction);
-            }
         }
 
         public ProgramException(string? message, Exception? innerException)

@@ -15,11 +15,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -94,7 +97,7 @@ namespace Computer
         private void Add()
         {
             this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Adding Performance Counter Category: {0}", this.CategoryName);
-            CounterCreationDataCollection colCounterCreationData = new();
+            CounterCreationDataCollection colCounterCreationData = [];
             colCounterCreationData.Clear();
             if (PerformanceCounterCategory.Exists(this.CategoryName))
             {
@@ -144,7 +147,7 @@ namespace Computer
         {
             if (string.IsNullOrEmpty(this.CounterName))
             {
-                this.Log.LogError("CounterName is required");
+                this.Log.LogTaskError("CounterName is required");
                 return false;
             }
 
@@ -180,10 +183,6 @@ namespace Computer
         private void IncludeExistingCounters(ref CounterCreationDataCollection colCounterCreationData)
         {
             var category = PerformanceCounterCategory.GetCategories().FirstOrDefault(x => x.CategoryName == this.CategoryName);
-            if (category is null)
-            {
-                return;
-            }
 
             foreach (CounterCreationData objCreateCounter in category.GetCounters().Select(counter => new CounterCreationData(counter.CounterName, counter.CounterHelp, counter.CounterType)))
             {
@@ -233,7 +232,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

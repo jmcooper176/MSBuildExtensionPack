@@ -311,7 +311,7 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
 
         public static bool operator ==(Semantic? left, Semantic? right) => left is not null ? left.Equals(right) : right is null;
 
-        public static bool operator >(Semantic? left, Semantic? right) => left is not null && left.CompareTo(right) > 0;
+        public static bool operator >(Semantic? left, Semantic? right) => left?.CompareTo(right) > 0;
 
         public static bool operator >=(Semantic? left, Semantic? right) => left is null ? right is null : left.CompareTo(right) >= 0;
 
@@ -326,46 +326,23 @@ namespace MSBuild.ExtensionPack.FileSystem.Version
         /// <inheritdoc/>
         public int CompareTo(Semantic? other)
         {
-            if (other is null)
-            {
-                return 1;
-            }
-            else if (ReferenceEquals(this, other))
-            {
-                return 0;
-            }
-            else if (this.ZeroDay != other.ZeroDay)
-            {
-                return this.ZeroDay.CompareTo(other.ZeroDay);
-            }
-            else if (this.SemanticVersion == other.SemanticVersion && this.Version == other.Version)
-            {
-                return 0;
-            }
-            else if (this.SemanticVersion != other.SemanticVersion)
-            {
-                return this.SemanticVersion.CompareTo(other.SemanticVersion);
-            }
-            else if (this.Version != other.Version)
-            {
-                return this.Version.CompareTo(other.Version);
-            }
-            else if (this.HotFixId != other.HotFixId)
-            {
-                return string.Compare(this.HotFixId, other.HotFixId, StringComparison.OrdinalIgnoreCase);
-            }
-            else if (this.ServicePackInEffect != other.ServicePackInEffect)
-            {
-                return string.Compare(this.ServicePackInEffect, other.ServicePackInEffect, StringComparison.OrdinalIgnoreCase);
-            }
-            else if (this.Status != other.Status)
-            {
-                return this.Status.CompareTo(other.Status);
-            }
-            else
-            {
-                return 0;
-            }
+            return other is null
+                ? 1
+                : ReferenceEquals(this, other)
+                    ? 0
+                    : this.ZeroDay != other.ZeroDay
+                                    ? this.ZeroDay.CompareTo(other.ZeroDay)
+                                    : this.SemanticVersion == other.SemanticVersion && this.Version == other.Version
+                                                    ? 0
+                                                    : this.SemanticVersion != other.SemanticVersion
+                                                                    ? this.SemanticVersion.CompareTo(other.SemanticVersion)
+                                                                    : this.Version != other.Version
+                                                                                    ? this.Version.CompareTo(other.Version)
+                                                                                    : this.HotFixId != other.HotFixId
+                                                                                                    ? string.Compare(this.HotFixId, other.HotFixId, StringComparison.OrdinalIgnoreCase)
+                                                                                                    : this.ServicePackInEffect != other.ServicePackInEffect
+                                                                                                                    ? string.Compare(this.ServicePackInEffect, other.ServicePackInEffect, StringComparison.OrdinalIgnoreCase)
+                                                                                                                    : this.Status != other.Status ? this.Status.CompareTo(other.Status) : 0;
         }
 
         /// <inheritdoc/>

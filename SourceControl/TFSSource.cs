@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace SourceControl
+namespace MSBuild.ExtensionPack.SourceControl
 {
     using System;
     using System.Globalization;
@@ -170,7 +170,7 @@ namespace SourceControl
 
             if (!string.IsNullOrEmpty(this.VersionSpec))
             {
-                args += " /version:" + "\"" + this.VersionSpec + "\"";
+                args += " /version:\"" + this.VersionSpec + "\"";
             }
 
             if (!string.IsNullOrEmpty(this.Comments))
@@ -225,7 +225,7 @@ namespace SourceControl
 
             if (!string.IsNullOrEmpty(this.VersionSpec))
             {
-                args += " /version:" + "\"" + this.VersionSpec + "\"";
+                args += " /version:\"" + this.VersionSpec + "\"";
             }
 
             this.ExecuteCommand("label /delete " + this.LabelName, args, "/noprompt");
@@ -235,7 +235,7 @@ namespace SourceControl
         {
             if (string.IsNullOrEmpty(this.ItemPath))
             {
-                if (this.ItemCol is null)
+                if (!this.ItemCol.Any())
                 {
                     this.Log.LogTaskError("ItemCol or ItemPath must be defined");
                     return false;
@@ -269,7 +269,7 @@ namespace SourceControl
             }
 
             string arguments = string.Format(CultureInfo.CurrentCulture, "{0} {1} {2}", action, this.itemSpec, options);
-            if (string.IsNullOrEmpty(this.OverrideText) == false)
+            if (!string.IsNullOrEmpty(this.OverrideText))
             {
                 arguments += " /override:\"" + this.OverrideText + "\"";
             }
@@ -279,12 +279,12 @@ namespace SourceControl
                 arguments += " /bypass";
             }
 
-            if (string.IsNullOrEmpty(this.Server) == false)
+            if (!string.IsNullOrEmpty(this.Server))
             {
                 arguments += " /s:" + this.Server;
             }
 
-            if (string.IsNullOrEmpty(this.Login) == false)
+            if (!string.IsNullOrEmpty(this.Login))
             {
                 arguments += " /login:" + this.Login;
             }
@@ -297,7 +297,7 @@ namespace SourceControl
             arguments += " " + lastOptions;
 
             this.shellWrapper = new ShellWrapper(this.teamFoundationExe, arguments);
-            if (string.IsNullOrEmpty(this.WorkingDirectory) == false)
+            if (!string.IsNullOrEmpty(this.WorkingDirectory))
             {
                 this.shellWrapper.WorkingDirectory = this.WorkingDirectory;
                 this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "WorkingDirectory set to: {0}", this.WorkingDirectory));
@@ -323,7 +323,7 @@ namespace SourceControl
 
             if (this.returnOutput.StartsWith("Changeset:", StringComparison.OrdinalIgnoreCase))
             {
-                this.Changeset = this.returnOutput.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)[0].Replace("Changeset:", string.Empty).Trim();
+                this.Changeset = this.returnOutput.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)[0].Replace("Changeset:", string.Empty).Trim();
             }
         }
 
@@ -333,7 +333,7 @@ namespace SourceControl
 
             if (!string.IsNullOrEmpty(this.VersionSpec))
             {
-                args += " /version:" + "\"" + this.VersionSpec + "\"";
+                args += " /version:\"" + this.VersionSpec + "\"";
             }
 
             if (this.Force)
@@ -383,7 +383,7 @@ namespace SourceControl
 
             if (this.returnOutput.StartsWith("Changeset", StringComparison.OrdinalIgnoreCase))
             {
-                this.Changeset = this.returnOutput.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)[2].Split(new[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries)[0];
+                this.Changeset = this.returnOutput.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)[2].Split(["\t", " "], StringSplitOptions.RemoveEmptyEntries)[0];
             }
         }
 
@@ -399,7 +399,7 @@ namespace SourceControl
 
             if (!string.IsNullOrEmpty(this.VersionSpec))
             {
-                args += " /version:" + "\"" + this.VersionSpec + "\"";
+                args += " /version:\"" + this.VersionSpec + "\"";
             }
 
             if (this.Force)
@@ -437,7 +437,7 @@ namespace SourceControl
                 }
                 catch (ArgumentException)
                 {
-                    this.Log.LogError("Auto is restricted to these values: AcceptMerge, AcceptTheirs, AcceptYours, OverwriteLocal, DeleteConflict, AcceptYoursRenameTheirs");
+                    this.Log.LogTaskError("Auto is restricted to these values: AcceptMerge, AcceptTheirs, AcceptYours, OverwriteLocal, DeleteConflict, AcceptYoursRenameTheirs");
                     return;
                 }
 
@@ -446,7 +446,7 @@ namespace SourceControl
                 {
                     if (string.IsNullOrEmpty(this.NewName))
                     {
-                        this.Log.LogError("ItemPath is required for Merge");
+                        this.Log.LogTaskError("ItemPath is required for Merge");
                         return;
                     }
 

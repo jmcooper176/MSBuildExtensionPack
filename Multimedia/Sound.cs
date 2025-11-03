@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Multimedia
+namespace MSBuild.ExtensionPack.Multimedia
 {
     using System.Globalization;
     using System.IO;
@@ -62,7 +62,7 @@ namespace Multimedia
         {
             if (!string.IsNullOrEmpty(this.SoundFile) && !File.Exists(this.SoundFile))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid File passed: {0}", this.SoundFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid File passed: {0}", this.SoundFile));
                 return;
             }
 
@@ -81,15 +81,13 @@ namespace Multimedia
             if (!string.IsNullOrEmpty(this.SoundFile))
             {
                 this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Playing Sound: {0}", this.SoundFile));
-                using (SoundPlayer player = new SoundPlayer())
+                using SoundPlayer player = new SoundPlayer();
+                player.LoadTimeout = 5000;
+                player.SoundLocation = this.SoundFile;
+                for (int i = 1; i <= this.Repeat; i++)
                 {
-                    player.LoadTimeout = 5000;
-                    player.SoundLocation = this.SoundFile;
-                    for (int i = 1; i <= this.Repeat; i++)
-                    {
-                        player.PlaySync();
-                        Thread.Sleep(this.Interval);
-                    }
+                    player.PlaySync();
+                    Thread.Sleep(this.Interval);
                 }
 
                 return;

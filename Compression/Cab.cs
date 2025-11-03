@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Compression
+namespace MSBuild.ExtensionPack.Compression
 {
     using System;
     using System.Diagnostics;
@@ -104,7 +104,7 @@ namespace Compression
             }
             else
             {
-                this.Log.LogError("Failed to create temp folder: {0}", dirInfo.FullName);
+                this.Log.LogTaskError("Failed to create temp folder: {0}", dirInfo.FullName);
                 return;
             }
 
@@ -160,12 +160,12 @@ namespace Compression
             {
                 if (Convert.ToInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.CurrentCulture) != 0)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Directory deletion error: ReturnValue: {0}", outParams.Properties["ReturnValue"].Value));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Directory deletion error: ReturnValue: {0}", outParams.Properties["ReturnValue"].Value));
                 }
             }
             else
             {
-                this.Log.LogError("The ManagementObject call to invoke Delete returned null.");
+                this.Log.LogTaskError("The ManagementObject call to invoke Delete returned null.");
             }
         }
 
@@ -177,71 +177,69 @@ namespace Compression
             // Validation
             if (!File.Exists(this.CabExePath.GetMetadata("FullPath")))
             {
-                this.Log.LogError("Executable not found: {0}", this.CabExePath.GetMetadata("FullPath"));
+                this.Log.LogTaskError("Executable not found: {0}", this.CabExePath.GetMetadata("FullPath"));
                 return;
             }
 
-            using (Process cabProcess = new())
+            using Process cabProcess = new();
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Creating Cab: {0}", this.CabFile.GetMetadata("FullPath"));
+            cabProcess.StartInfo.FileName = this.CabExePath.GetMetadata("FullPath");
+            cabProcess.StartInfo.UseShellExecute = false;
+            cabProcess.StartInfo.RedirectStandardOutput = true;
+
+            StringBuilder options = new();
+            if (this.PreservePaths)
             {
-                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Creating Cab: {0}", this.CabFile.GetMetadata("FullPath"));
-                cabProcess.StartInfo.FileName = this.CabExePath.GetMetadata("FullPath");
-                cabProcess.StartInfo.UseShellExecute = false;
-                cabProcess.StartInfo.RedirectStandardOutput = true;
-
-                StringBuilder options = new();
-                if (this.PreservePaths)
-                {
-                    options.Append("-p");
-                }
-
-                if (this.PathToCab is not null && this.Recursive)
-                {
-                    options.Append(" -r ");
-                }
-
-                // Could be more than one prefix to strip...
-                if (string.IsNullOrEmpty(this.StripPrefixes) == false)
-                {
-                    string[] prefixes = this.StripPrefixes.Split(';');
-                    foreach (string prefix in prefixes)
-                    {
-                        options.AppendFormat(CultureInfo.CurrentCulture, " -P {0}", prefix);
-                    }
-                }
-
-                string files = string.Empty;
-                if ((this.FilesToCab is null || this.FilesToCab.Count() == 0) && this.PathToCab is null)
-                {
-                    this.Log.LogError("FilesToCab or PathToCab must be supplied");
-                    return;
-                }
-
-                if (this.PathToCab is not null)
-                {
-                    files = this.PathToCab.GetMetadata("FullPath");
-                    if (!files.EndsWith(@"\*", StringComparison.OrdinalIgnoreCase))
-                    {
-                        files += @"\*";
-                    }
-                }
-                else
-                {
-                    files = this.FilesToCab.Aggregate(files, (current, file) => current + ("\"" + file.ItemSpec + "\"" + " "));
-                }
-
-                cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"{0} N ""{1}"" ""{2}""", options, this.CabFile.GetMetadata("FullPath"), files);
-                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Calling {0} with {1}", this.CabExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments);
-
-                // start the process
-                cabProcess.Start();
-
-                // Read any messages from CABARC...and log them
-                string output = cabProcess.StandardOutput.ReadToEnd();
-                cabProcess.WaitForExit();
-
-                this.Log.LogTaskMessage(() => output.Contains("Completed successfully"), MessageImportance.Low, output);
-                this.Log.LogTaskError(() => !output.Contains("Completed successfully"), output);
+                options.Append("-p");
             }
+
+            if (this.PathToCab is not null && this.Recursive)
+            {
+                options.Append(" -r ");
+            }
+
+            // Could be more than one prefix to strip...
+            if (!string.IsNullOrEmpty(this.StripPrefixes))
+            {
+                string[] prefixes = this.StripPrefixes.Split(';');
+                foreach (string prefix in prefixes)
+                {
+                    options.AppendFormat(CultureInfo.CurrentCulture, " -P {0}", prefix);
+                }
+            }
+
+            string files = string.Empty;
+            if (!this.FilesToCab.Any() && this.PathToCab is null)
+            {
+                this.Log.LogTaskError("FilesToCab or PathToCab must be supplied");
+                return;
+            }
+
+            if (this.PathToCab is not null)
+            {
+                files = this.PathToCab.GetMetadata("FullPath");
+                if (!files.EndsWith(@"\*", StringComparison.OrdinalIgnoreCase))
+                {
+                    files += @"\*";
+                }
+            }
+            else
+            {
+                files = this.FilesToCab.Aggregate(files, (current, file) => current + ("\"" + file.ItemSpec + "\" "));
+            }
+
+            cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"{0} N ""{1}"" ""{2}""", options, this.CabFile.GetMetadata("FullPath"), files);
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Calling {0} with {1}", this.CabExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments);
+
+            // start the process
+            cabProcess.Start();
+
+            // Read any messages from CABARC...and log them
+            string output = cabProcess.StandardOutput.ReadToEnd();
+            cabProcess.WaitForExit();
+
+            this.Log.LogTaskMessage(() => output.Contains("Completed successfully"), MessageImportance.Low, output);
+            this.Log.LogTaskError(() => !output.Contains("Completed successfully"), output);
         }
 
         /// <summary>
@@ -250,28 +248,26 @@ namespace Compression
         private void Extract()
         {
             // Validation
-            if (this.ValidateExtract() == false)
+            if (!this.ValidateExtract())
             {
                 return;
             }
 
             if (this.ExtractTo is null)
             {
-                this.Log.LogError("ExtractTo required.");
+                this.Log.LogTaskError("ExtractTo required.");
                 return;
             }
 
             // configure the process we need to run
-            using (Process cabProcess = new Process())
-            {
-                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Extracting Cab: {0}", this.CabFile.GetMetadata("FullPath"));
-                cabProcess.StartInfo.FileName = this.ExtractExePath.GetMetadata("FullPath");
-                cabProcess.StartInfo.UseShellExecute = true;
-                cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"/Y /L ""{0}"" ""{1}"" ""{2}""", this.ExtractTo.GetMetadata("FullPath"), this.CabFile.GetMetadata("FullPath"), this.ExtractFile);
-                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Calling {0} with {1}", this.ExtractExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments);
-                cabProcess.Start();
-                cabProcess.WaitForExit();
-            }
+            using Process cabProcess = new Process();
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Extracting Cab: {0}", this.CabFile.GetMetadata("FullPath"));
+            cabProcess.StartInfo.FileName = this.ExtractExePath.GetMetadata("FullPath");
+            cabProcess.StartInfo.UseShellExecute = true;
+            cabProcess.StartInfo.Arguments = string.Format(CultureInfo.CurrentCulture, @"/Y /L ""{0}"" ""{1}"" ""{2}""", this.ExtractTo.GetMetadata("FullPath"), this.CabFile.GetMetadata("FullPath"), this.ExtractFile);
+            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Calling {0} with {1}", this.ExtractExePath.GetMetadata("FullPath"), cabProcess.StartInfo.Arguments);
+            cabProcess.Start();
+            cabProcess.WaitForExit();
         }
 
         /// <summary>
@@ -281,9 +277,9 @@ namespace Compression
         private bool ValidateExtract()
         {
             // Validation
-            if (System.IO.File.Exists(this.CabFile.GetMetadata("FullPath")) == false)
+            if (!System.IO.File.Exists(this.CabFile.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "CAB file not found: {0}", this.CabFile.GetMetadata("FullPath")));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "CAB file not found: {0}", this.CabFile.GetMetadata("FullPath")));
                 return false;
             }
 
@@ -296,15 +292,15 @@ namespace Compression
                 }
                 else
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Executable not found: {0}", this.ExtractExePath.GetMetadata("FullPath")));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Executable not found: {0}", this.ExtractExePath.GetMetadata("FullPath")));
                     return false;
                 }
             }
             else
             {
-                if (System.IO.File.Exists(this.ExtractExePath.GetMetadata("FullPath")) == false)
+                if (!System.IO.File.Exists(this.ExtractExePath.GetMetadata("FullPath")))
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Executable not found: {0}", this.ExtractExePath.GetMetadata("FullPath")));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Executable not found: {0}", this.ExtractExePath.GetMetadata("FullPath")));
                     return false;
                 }
             }
@@ -338,7 +334,7 @@ namespace Compression
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

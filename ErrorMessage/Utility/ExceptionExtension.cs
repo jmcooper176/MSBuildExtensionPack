@@ -563,9 +563,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             [CallerFilePath] string? path = null,
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null,
-            [CallerArgumentExpression("paramName")] string? paramNameArgument = null,
-            [CallerArgumentExpression("actualValue")] string? actualValueArgument = null,
-            [CallerArgumentExpression("message")] string? messageArgument = null) where TException : Exception
+            [CallerArgumentExpression(nameof(paramName))] string? paramNameArgument = null,
+            [CallerArgumentExpression(nameof(actualValue))] string? actualValueArgument = null,
+            [CallerArgumentExpression(nameof(message))] string? messageArgument = null) where TException : Exception
         {
             Dictionary<string, object?> data = new()
             {
@@ -576,25 +576,13 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
 
             Console.Error.WriteLine(FormatMessage(null, exception, message, showDetail, showStackTrace));
 
-            TException? constructedException = null;
-
-            if (typeof(TException).BaseType == typeof(ArgumentNullException))
-            {
-                constructedException = (TException?)Activator.CreateInstance(typeof(TException), paramName, message);
-            }
-            else if (typeof(TException).BaseType == typeof(ArgumentOutOfRangeException))
-            {
-                constructedException = (TException?)Activator.CreateInstance(typeof(TException), paramName, actualValue, message);
-            }
-            else if (typeof(TException).BaseType == typeof(ArgumentException))
-            {
-                constructedException = (TException?)Activator.CreateInstance(typeof(TException), message, paramName);
-            }
-            else
-            {
-                constructedException = (TException?)Activator.CreateInstance(typeof(TException), message, null);
-            }
-
+            TException? constructedException = typeof(TException).BaseType == typeof(ArgumentNullException)
+                ? (TException?)Activator.CreateInstance(typeof(TException), paramName, message)
+                : typeof(TException).BaseType == typeof(ArgumentOutOfRangeException)
+                    ? (TException?)Activator.CreateInstance(typeof(TException), paramName, actualValue, message)
+                    : typeof(TException).BaseType == typeof(ArgumentException)
+                    ? (TException?)Activator.CreateInstance(typeof(TException), message, paramName)
+                    : (TException?)Activator.CreateInstance(typeof(TException), message, null);
             if (constructedException is not null)
             {
                 constructedException = constructedException.SetData(data, path, lineNumber, memberName);
@@ -617,8 +605,8 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             [CallerFilePath] string? path = null,
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null,
-            [CallerArgumentExpression("message")] string? messageArgument = null,
-            [CallerArgumentExpression("innerException")] string? innerExceptionArgument = null) where TException : Exception
+            [CallerArgumentExpression(nameof(message))] string? messageArgument = null,
+            [CallerArgumentExpression(nameof(innerException))] string? innerExceptionArgument = null) where TException : Exception
         {
             Dictionary<string, object?> data = new()
             {
@@ -692,17 +680,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             params object?[]? arguments)
             where TException : Exception
         {
-            TException? exception;
-
-            if (arguments?.Length < 1 || arguments?.All(a => a is null || (a.GetType() == typeof(string) && string.IsNullOrWhiteSpace(a.ToString()))) == true)
-            {
-                exception = Activator.CreateInstance<TException>();
-            }
-            else
-            {
-                exception = (TException?)Activator.CreateInstance(typeof(TException), arguments);
-            }
-
+            TException? exception = arguments?.Length < 1 || arguments?.All(a => a is null || (a.GetType() == typeof(string) && string.IsNullOrWhiteSpace(a.ToString()))) == true
+                ? Activator.CreateInstance<TException>()
+                : (TException?)Activator.CreateInstance(typeof(TException), arguments);
             Contract.Ensures(exception is not null, $"Exception instance of type {typeof(TException).FullName} could not be created.");
 
             return exception?.SetData(data, filePath, lineNumber, memberName);
@@ -729,14 +709,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             [CallerLineNumber] int lineNumber = 0,
             [CallerMemberName] string? memberName = null)
         {
-            if (string.IsNullOrWhiteSpace(paramName))
-            {
-                return NewException<ArgumentException>(message: message, innerException: innerException, data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName);
-            }
-            else
-            {
-                return NewException<ArgumentException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [message, paramName, innerException]);
-            }
+            return string.IsNullOrWhiteSpace(paramName)
+                ? NewException<ArgumentException>(message: message, innerException: innerException, data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName)
+                : NewException<ArgumentException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [message, paramName, innerException]);
         }
 
         public static ArgumentException? NewException(
@@ -788,18 +763,11 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(paramName, nameof(paramName));
 
-            if (actualValue is null && string.IsNullOrWhiteSpace(message))
-            {
-                return NewException<ArgumentOutOfRangeException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, message]);
-            }
-            else if (actualValue is null)
-            {
-                return NewException<ArgumentOutOfRangeException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, message]);
-            }
-            else
-            {
-                return NewException<ArgumentOutOfRangeException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, actualValue, message]);
-            }
+            return actualValue is null && string.IsNullOrWhiteSpace(message)
+                ? NewException<ArgumentOutOfRangeException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, message])
+                : actualValue is null
+                    ? NewException<ArgumentOutOfRangeException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, message])
+                    : NewException<ArgumentOutOfRangeException>(data: data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, actualValue, message]);
         }
 
         public static ArgumentOutOfRangeException? NewException(
@@ -848,14 +816,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(paramName, nameof(paramName));
 
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                return NewException<ArgumentNullException>(data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName]);
-            }
-            else
-            {
-                return NewException<ArgumentNullException>(data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, message]);
-            }
+            return string.IsNullOrWhiteSpace(message)
+                ? NewException<ArgumentNullException>(data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName])
+                : NewException<ArgumentNullException>(data, filePath: filePath, lineNumber: lineNumber, memberName: memberName, arguments: [paramName, message]);
         }
 
         /// <summary>

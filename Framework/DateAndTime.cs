@@ -15,12 +15,15 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Globalization;
 
     using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -236,59 +239,54 @@ namespace MSBuild.ExtensionPack
         private static DateTime GetDefaultOrUserStartTime(DateTime startTime)
         {
             // Default to current time if caller did not specify a time.
-            if (startTime == Convert.ToDateTime("01/01/0001 00:00:00", CultureInfo.CurrentCulture))
-            {
-                return DateTime.Now;
-            }
-
-            return startTime;
+            return startTime == Convert.ToDateTime("01/01/0001 00:00:00", CultureInfo.CurrentCulture) ? DateTime.Now : startTime;
         }
 
         private void AddDays()
         {
-            this.LogTaskMessage("Add Days");
+            this.Log.LogTaskMessage("Add Days");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddDays(this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddHours()
         {
-            this.LogTaskMessage("Add Hours");
+            this.Log.LogTaskMessage("Add Hours");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddHours(this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddMilliseconds()
         {
-            this.LogTaskMessage("Add Milliseconds");
+            this.Log.LogTaskMessage("Add Milliseconds");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddMilliseconds(this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddMinutes()
         {
-            this.LogTaskMessage("Add Minutes");
+            this.Log.LogTaskMessage("Add Minutes");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddMinutes(this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddMonths()
         {
-            this.LogTaskMessage("Add Months");
+            this.Log.LogTaskMessage("Add Months");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddMonths((int)this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddSeconds()
         {
-            this.LogTaskMessage("Add Seconds");
+            this.Log.LogTaskMessage("Add Seconds");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddSeconds(this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddTicks()
         {
-            this.LogTaskMessage("Add Ticks");
+            this.Log.LogTaskMessage("Add Ticks");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddTicks((long)this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
         private void AddYears()
         {
-            this.LogTaskMessage("Add Years");
+            this.Log.LogTaskMessage("Add Years");
             this.Result = GetDefaultOrUserStartTime(this.Start).AddYears((int)this.Value).ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
@@ -296,24 +294,24 @@ namespace MSBuild.ExtensionPack
         {
             if (this.Start == Convert.ToDateTime("01/01/0001 00:00:00", CultureInfo.CurrentCulture))
             {
-                this.Log.LogError("Start must be specified");
+                this.Log.LogTaskError("Start must be specified");
                 return;
             }
 
             if (this.End == Convert.ToDateTime("01/01/0001 00:00:00", CultureInfo.CurrentCulture))
             {
-                this.Log.LogError("End must be specified");
+                this.Log.LogTaskError("End must be specified");
                 return;
             }
 
             if (this.UseUtc)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is between: {1} and: {2}", DateTime.UtcNow.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.End.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is between: {1} and: {2}", DateTime.UtcNow.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.End.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
                 this.BoolResult = DateTime.UtcNow > this.Start && DateTime.UtcNow < this.End;
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is between: {1} and: {2}", DateTime.Now.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.End.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is between: {1} and: {2}", DateTime.Now.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.End.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
                 this.BoolResult = DateTime.Now > this.Start && DateTime.Now < this.End;
             }
         }
@@ -322,25 +320,25 @@ namespace MSBuild.ExtensionPack
         {
             if (this.Start == Convert.ToDateTime("01/01/0001 00:00:00", CultureInfo.CurrentCulture))
             {
-                this.Log.LogError("Start must be specified");
+                this.Log.LogTaskError("Start must be specified");
                 return;
             }
 
             if (this.UseUtc)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is later than: {1}", DateTime.UtcNow.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is later than: {1}", DateTime.UtcNow.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
                 this.BoolResult = DateTime.UtcNow > this.Start;
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is later than: {1}", DateTime.Now.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Checking if: {0} is later than: {1}", DateTime.Now.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture), this.Start.ToString("dd MMM yyyy HH:mm:ss", CultureInfo.CurrentCulture)));
                 this.BoolResult = DateTime.Now > this.Start;
             }
         }
 
         private void GetDate()
         {
-            this.LogTaskMessage("Getting Date / Time");
+            this.Log.LogTaskMessage("Getting Date / Time");
             this.Result = this.UseUtc ? DateTime.UtcNow.ToString(this.Format, CultureInfo.CurrentCulture) : DateTime.Now.ToString(this.Format, CultureInfo.CurrentCulture);
         }
 
@@ -348,7 +346,7 @@ namespace MSBuild.ExtensionPack
         {
             if (this.Start == Convert.ToDateTime("01/01/0001 00:00:00", CultureInfo.CurrentCulture))
             {
-                this.Log.LogError("Start must be specified");
+                this.Log.LogTaskError("Start must be specified");
                 return;
             }
 
@@ -387,7 +385,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError("Format must be specified");
+                    this.Log.LogTaskError("Format must be specified");
                     return;
             }
         }
@@ -450,7 +448,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

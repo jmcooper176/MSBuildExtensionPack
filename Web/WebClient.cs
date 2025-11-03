@@ -15,10 +15,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Web
+namespace MSBuild.ExtensionPack.Web
 {
     using System.Globalization;
     using System.IO;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -57,38 +59,32 @@ namespace Web
 
         private void DownloadFile()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Downloading: {0} to {1}", this.Url, this.FileName));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Downloading: {0} to {1}", this.Url, this.FileName));
 
-            using (System.Net.WebClient client = new System.Net.WebClient())
+            using System.Net.WebClient client = new System.Net.WebClient();
+            if (!string.IsNullOrEmpty(this.Proxy))
             {
-                if (!string.IsNullOrEmpty(this.Proxy))
-                {
-                    client.Proxy = new System.Net.WebProxy(this.Proxy, this.BypassOnLocal);
-                }
-
-                client.DownloadFile(this.Url, this.FileName.ItemSpec);
+                client.Proxy = new System.Net.WebProxy(this.Proxy, this.BypassOnLocal);
             }
+
+            client.DownloadFile(this.Url, this.FileName.ItemSpec);
         }
 
         private void OpenRead()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Reading: {0}", this.Url));
-            using (System.Net.WebClient client = new System.Net.WebClient())
+            this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Reading: {0}", this.Url));
+            using System.Net.WebClient client = new System.Net.WebClient();
+            if (!string.IsNullOrEmpty(this.Proxy))
             {
-                if (!string.IsNullOrEmpty(this.Proxy))
-                {
-                    client.Proxy = new System.Net.WebProxy(this.Proxy, this.BypassOnLocal);
-                }
+                client.Proxy = new System.Net.WebProxy(this.Proxy, this.BypassOnLocal);
+            }
 
-                Stream myStream = client.OpenRead(this.Url);
-                using (StreamReader sr = new StreamReader(myStream))
-                {
-                    this.Data = sr.ReadToEnd();
-                    if (this.DisplayToConsole)
-                    {
-                        this.LogTaskMessage(MessageImportance.Normal, this.Data);
-                    }
-                }
+            Stream myStream = client.OpenRead(this.Url);
+            using StreamReader sr = new StreamReader(myStream);
+            this.Data = sr.ReadToEnd();
+            if (this.DisplayToConsole)
+            {
+                this.Log.LogTaskMessage(MessageImportance.Normal, this.Data);
             }
         }
 
@@ -108,7 +104,7 @@ namespace Web
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

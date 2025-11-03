@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
@@ -97,15 +97,13 @@ namespace Computer
             {
                 this.GetManagementScope(@"\root\cimv2");
                 ObjectQuery query = new ObjectQuery(string.Format(CultureInfo.CurrentCulture, "SELECT * FROM Win32_Environment WHERE Name = '{0}'", this.Variable));
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query))
+                using ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query);
+                ManagementObjectCollection moc = searcher.Get();
+                foreach (ManagementObject mo in moc)
                 {
-                    ManagementObjectCollection moc = searcher.Get();
-                    foreach (ManagementObject mo in moc)
+                    if (mo["VariableValue"] is not null)
                     {
-                        if (mo["VariableValue"] is not null)
-                        {
-                            this.Value = mo["VariableValue"].ToString().Split(';');
-                        }
+                        this.Value = mo["VariableValue"].ToString().Split(';');
                     }
                 }
             }
@@ -116,7 +114,7 @@ namespace Computer
         /// </summary>
         private void Set()
         {
-            if (this.Value is null)
+            if (!this.Value.Any())
             {
                 this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Removing Environment Variable: \"{0}\" for target \"{1}\" to \"{2}\".", this.Variable, this.target, string.Empty);
                 Environment.SetEnvironmentVariable(this.Variable, string.Empty, this.target);
@@ -130,7 +128,7 @@ namespace Computer
                 }
 
                 string newValue = s.ToString();
-                newValue = newValue.Remove(newValue.Length - 1, 1);
+                newValue = newValue[..^1];
                 this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "Setting Environment Variable: \"{0}\" for target \"{1}\" to \"{2}\".", this.Variable, this.target, newValue);
                 Environment.SetEnvironmentVariable(this.Variable, newValue, this.target);
             }
@@ -152,7 +150,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -175,7 +173,7 @@ namespace Computer
                 }
                 else
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The value '{0}' is not in the EnvironmentVariableTarget Enum. Use Process, User or Machine.", value));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The value '{0}' is not in the EnvironmentVariableTarget Enum. Use Process, User or Machine.", value));
                 }
             }
         }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace FileSystem.Path
+namespace MSBuild.ExtensionPack.Base.Path
 {
     using System;
     using System.Collections.Generic;
@@ -31,6 +31,7 @@ namespace FileSystem.Path
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -258,15 +259,15 @@ namespace FileSystem.Path
         /// </summary>
         private void AnyContentHasMatch()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
-                this.Log.LogError("Files is required");
+                this.Log.LogTaskError("Files is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.RegexPattern))
             {
-                this.Log.LogError("RegexPattern is required.");
+                this.Log.LogTaskError("RegexPattern is required.");
                 return;
             }
 
@@ -301,7 +302,7 @@ namespace FileSystem.Path
         {
             this.Log.LogTaskMessage("Concatenating Files");
 
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
@@ -315,23 +316,19 @@ namespace FileSystem.Path
 
             if (this.TargetPath is not null)
             {
-                using (Stream output = System.IO.File.OpenWrite(this.TargetPath.ItemSpec))
+                using Stream output = System.IO.File.OpenWrite(this.TargetPath.ItemSpec);
+                foreach (ITaskItem file in this.Files)
                 {
-                    foreach (ITaskItem file in this.Files)
-                    {
-                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Reading File: {0}", file.ItemSpec));
-                        using (Stream input = System.IO.File.OpenRead(file.ItemSpec))
-                        {
-                            input.CopyTo(output);
-                        }
-                    }
+                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Reading File: {0}", file.ItemSpec));
+                    using Stream input = System.IO.File.OpenRead(file.ItemSpec);
+                    input.CopyTo(output);
                 }
             }
         }
 
         private void CountLines()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
@@ -339,8 +336,8 @@ namespace FileSystem.Path
 
             this.Log.LogTaskMessage("Counting Lines");
             DateTime start = DateTime.Now;
-            this.excludedFiles = new List<ITaskItem>();
-            this.includedFiles = new List<ITaskItem>();
+            this.excludedFiles = [];
+            this.includedFiles = [];
 
             foreach (ITaskItem f in this.Files)
             {
@@ -362,30 +359,28 @@ namespace FileSystem.Path
 
                 this.IncludedFilecount++;
                 this.includedFiles.Add(f);
-                using (StreamReader re = System.IO.File.OpenText(f.ItemSpec))
+                using StreamReader re = System.IO.File.OpenText(f.ItemSpec);
+                string input;
+                while ((input = re.ReadLine()) is not null)
                 {
-                    string input;
-                    while ((input = re.ReadLine()) is not null)
-                    {
-                        input = input.Trim();
+                    input = input.Trim();
 
-                        if (string.IsNullOrEmpty(input))
+                    if (string.IsNullOrEmpty(input))
+                    {
+                        this.EmptyLinecount++;
+                    }
+                    else if (this.commentIdentifiers is not null)
+                    {
+                        foreach (string s in this.commentIdentifiers)
                         {
-                            this.EmptyLinecount++;
-                        }
-                        else if (this.commentIdentifiers is not null)
-                        {
-                            foreach (string s in this.commentIdentifiers)
+                            if (input.StartsWith(s, StringComparison.OrdinalIgnoreCase))
                             {
-                                if (input.StartsWith(s, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    this.CommentLinecount++;
-                                }
+                                this.CommentLinecount++;
                             }
                         }
-
-                        this.TotalLinecount++;
                     }
+
+                    this.TotalLinecount++;
                 }
             }
 
@@ -402,7 +397,7 @@ namespace FileSystem.Path
 
         private void Create()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
@@ -417,7 +412,7 @@ namespace FileSystem.Path
 
         private void FilterByContent()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
@@ -431,8 +426,8 @@ namespace FileSystem.Path
 
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Filter file collection by content: {0}", this.RegexPattern));
 
-            this.includedFiles = new List<ITaskItem>();
-            this.excludedFiles = new List<ITaskItem>();
+            this.includedFiles = [];
+            this.excludedFiles = [];
             foreach (ITaskItem f in this.Files)
             {
                 string entireFile;
@@ -506,7 +501,7 @@ namespace FileSystem.Path
         private void ParseAndReplaceFile(string parseFile, bool checkExists)
         {
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Processing File: {0}", parseFile));
-            if (checkExists && System.IO.File.Exists(parseFile) == false)
+            if (checkExists && !System.IO.File.Exists(parseFile))
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
                 return;
@@ -518,10 +513,7 @@ namespace FileSystem.Path
             using (StreamReader streamReader = new StreamReader(parseFile, this.fileEncoding, true))
             {
                 entireFile = streamReader.ReadToEnd();
-                if (this.fileEncoding is null)
-                {
-                    this.fileEncoding = streamReader.CurrentEncoding;
-                }
+                this.fileEncoding ??= streamReader.CurrentEncoding;
             }
 
             // Parse the entire file.
@@ -542,7 +534,7 @@ namespace FileSystem.Path
                 }
 
                 // Set TextEncoding if it was specified.
-                if (string.IsNullOrEmpty(this.TextEncoding) == false)
+                if (!string.IsNullOrEmpty(this.TextEncoding))
                 {
                     try
                     {
@@ -571,13 +563,13 @@ namespace FileSystem.Path
 
         private void ProcessCollection()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("No file collection has been passed");
                 return;
             }
 
-            this.LogTaskMessage("Processing File Collection");
+            this.Log.LogTaskMessage("Processing File Collection");
 
             foreach (ITaskItem file in this.Files)
             {
@@ -612,12 +604,12 @@ namespace FileSystem.Path
             bool recursive = false;
             if (this.Path.ItemSpec.EndsWith("*", StringComparison.OrdinalIgnoreCase))
             {
-                this.Path.ItemSpec = this.Path.ItemSpec.Remove(this.Path.ItemSpec.Length - 1, 1);
+                this.Path.ItemSpec = this.Path.ItemSpec[..^1];
                 recursive = true;
             }
 
             // Validation
-            if (Directory.Exists(this.Path.ItemSpec) == false)
+            if (!Directory.Exists(this.Path.ItemSpec))
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Path not found: {0}", this.Path.ItemSpec));
                 return;
@@ -663,7 +655,7 @@ namespace FileSystem.Path
         private void RemoveLines(string parseFile, bool checkExists)
         {
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing Lines from File: {0}", parseFile));
-            if (checkExists && System.IO.File.Exists(parseFile) == false)
+            if (checkExists && !System.IO.File.Exists(parseFile))
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
                 return;
@@ -684,14 +676,11 @@ namespace FileSystem.Path
             using (StreamReader streamReader = new StreamReader(parseFile, this.fileEncoding, true))
             {
                 streamReader.Read();
-                if (this.fileEncoding is null)
-                {
-                    this.fileEncoding = streamReader.CurrentEncoding;
-                }
+                this.fileEncoding ??= streamReader.CurrentEncoding;
             }
 
-            List<string> fileLineList = System.IO.File.ReadAllLines(parseFile).ToList();
-            List<string> newlines = new List<string>();
+            List<string> fileLineList = [.. System.IO.File.ReadAllLines(parseFile)];
+            List<string> newlines = [];
             bool linesRemoved = false;
 
             if (this.AvoidRegex)
@@ -740,7 +729,7 @@ namespace FileSystem.Path
 
             if (linesRemoved)
             {
-                System.IO.File.WriteAllLines(parseFile, newlines.ToArray(), this.fileEncoding);
+                System.IO.File.WriteAllLines(parseFile, [.. newlines], this.fileEncoding);
             }
 
             if (changedAttribute)
@@ -752,13 +741,13 @@ namespace FileSystem.Path
 
         private void RemoveLinesFromFile()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
             }
 
-            if (this.Lines is null)
+            if (!this.Lines.Any())
             {
                 this.Log.LogTaskError("Lines is required");
                 return;
@@ -822,7 +811,7 @@ namespace FileSystem.Path
 
         private void SetAttributes()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
@@ -834,7 +823,7 @@ namespace FileSystem.Path
                     this.Log.LogTaskMessage("Setting file attributes");
                     foreach (ITaskItem f in this.Files)
                     {
-                        FileInfo afile = new FileInfo(f.ItemSpec) { Attributes = SetAttributes(f.GetMetadata("Attributes").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) };
+                        _ = new FileInfo(f.ItemSpec) { Attributes = SetAttributes(f.GetMetadata("Attributes").Split([';'], StringSplitOptions.RemoveEmptyEntries)) };
                     }
 
                     break;
@@ -844,7 +833,7 @@ namespace FileSystem.Path
                     foreach (ITaskItem f in this.Files)
                     {
                         FileInfo file = new FileInfo(f.ItemSpec);
-                        file.Attributes = file.Attributes | SetAttributes(f.GetMetadata("Attributes").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+                        file.Attributes |= SetAttributes(f.GetMetadata("Attributes").Split([';'], StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     break;
@@ -854,7 +843,7 @@ namespace FileSystem.Path
                     foreach (ITaskItem f in this.Files)
                     {
                         FileInfo file = new FileInfo(f.ItemSpec);
-                        file.Attributes = file.Attributes & ~SetAttributes(f.GetMetadata("Attributes").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+                        file.Attributes &= ~SetAttributes(f.GetMetadata("Attributes").Split([';'], StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     break;
@@ -863,15 +852,15 @@ namespace FileSystem.Path
 
         private void SetSecurity()
         {
-            var files = (this.Path is null) ? this.Files : new[] { this.Path };
+            var files = (this.Path is null) ? this.Files : [this.Path];
 
-            if (files is null || files.Length == 0)
+            if (!files.Any())
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Please supply a value for either the Path or Files property."));
                 return;
             }
 
-            if (this.Users is null || this.Users.Length == 0)
+            if (this.Users?.Any() == false)
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Please supply a value for the Users property."));
                 return;
@@ -881,7 +870,7 @@ namespace FileSystem.Path
             {
                 var fileInfo = new FileInfo(fileTaskItem.GetMetadata("FullPath"));
 
-                if (System.IO.File.Exists(fileInfo.FullName) == false)
+                if (!System.IO.File.Exists(fileInfo.FullName))
                 {
                     this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", fileInfo.FullName));
                     return;
@@ -893,7 +882,7 @@ namespace FileSystem.Path
                 {
                     string userName = user.ItemSpec;
 
-                    string[] permissions = string.IsNullOrEmpty(this.Permission) ? user.GetMetadata("Permission").Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries) : this.Permission.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] permissions = string.IsNullOrEmpty(this.Permission) ? user.GetMetadata("Permission").Split([","], StringSplitOptions.RemoveEmptyEntries) : this.Permission.Split([","], StringSplitOptions.RemoveEmptyEntries);
                     FileSystemRights userRights = permissions.Aggregate(new FileSystemRights(), (current, s) => current | (FileSystemRights)Enum.Parse(typeof(FileSystemRights), s));
 
                     var accessRule = new FileSystemAccessRule(userName, userRights, InheritanceFlags.None, PropagationFlags.None, this.accessType);
@@ -924,7 +913,7 @@ namespace FileSystem.Path
         private void WriteLines(string parseFile, bool checkExists)
         {
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Writing Lines to File: {0}", parseFile));
-            if (checkExists && System.IO.File.Exists(parseFile) == false)
+            if (checkExists && !System.IO.File.Exists(parseFile))
             {
                 this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The file does not exist: {0}", parseFile));
                 return;
@@ -934,18 +923,15 @@ namespace FileSystem.Path
             using (StreamReader streamReader = new StreamReader(parseFile, this.fileEncoding, true))
             {
                 streamReader.Read();
-                if (this.fileEncoding is null)
-                {
-                    this.fileEncoding = streamReader.CurrentEncoding;
-                }
+                this.fileEncoding ??= streamReader.CurrentEncoding;
             }
 
-            List<string> fileLineList = System.IO.File.ReadAllLines(parseFile).ToList();
+            List<string> fileLineList = [.. System.IO.File.ReadAllLines(parseFile)];
             List<string> newlines = fileLineList;
             bool linesAdded = false;
             foreach (ITaskItem line in this.Lines)
             {
-                bool match = fileLineList.Any(fileLine => string.Compare(fileLine, line.ItemSpec, StringComparison.OrdinalIgnoreCase) == 0);
+                bool match = fileLineList.Any(fileLine => string.Equals(fileLine, line.ItemSpec, StringComparison.OrdinalIgnoreCase));
 
                 if (!match)
                 {
@@ -968,7 +954,7 @@ namespace FileSystem.Path
                     changedAttribute = true;
                 }
 
-                System.IO.File.WriteAllLines(parseFile, newlines.ToArray(), this.fileEncoding);
+                System.IO.File.WriteAllLines(parseFile, [.. newlines], this.fileEncoding);
                 if (changedAttribute)
                 {
                     this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
@@ -979,13 +965,13 @@ namespace FileSystem.Path
 
         private void WriteLinesToFile()
         {
-            if (this.Files is null)
+            if (!this.Files.Any())
             {
                 this.Log.LogTaskError("Files is required");
                 return;
             }
 
-            if (this.Lines is null)
+            if (!this.Lines.Any())
             {
                 this.Log.LogTaskError("Lines is required");
                 return;
@@ -1115,7 +1101,7 @@ namespace FileSystem.Path
         /// </summary>
         public string CommentIdentifiers
         {
-            set => this.commentIdentifiers = value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            set => this.commentIdentifiers = value.Split([';'], StringSplitOptions.RemoveEmptyEntries);
         }
 
         /// <summary>
@@ -1149,7 +1135,7 @@ namespace FileSystem.Path
         public IEnumerable<ITaskItem> ExcludedFiles
         {
             get => this.excludedFiles?.ToArray();
-            set => this.excludedFiles = new List<ITaskItem>(value);
+            set => this.excludedFiles = [.. value];
         }
 
         /// <summary>
@@ -1171,7 +1157,7 @@ namespace FileSystem.Path
         public IEnumerable<ITaskItem> IncludedFiles
         {
             get => this.includedFiles?.ToArray();
-            set => this.includedFiles = new List<ITaskItem>(value);
+            set => this.includedFiles = [.. value];
         }
 
         /// <summary>

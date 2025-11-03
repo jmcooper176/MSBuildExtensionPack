@@ -278,22 +278,11 @@ namespace MSBuild.ExtensionPack.Base.Extension
             // Since inner text of <Win32Icon> is a command line for CSC.EXE, without quoting, the project could, for example,
             // overwrite the system notepad.exe. THEREFORE, spaces in parameters require quoting such parameters.
 
-            if (string.IsNullOrEmpty(parameter))
-            {
-                return false;
-            }
-            else if (DefinitelyNeedQuotes.IsMatch(parameter))
-            {
-                return true;
-            }
-            else if (AllowedUnquoted.IsMatch(parameter))
-            {
-                return false;
-            }
-            else
-            {
-                throw new InvalidOperationException("AllowedUnquoted and DefinitelyNeedQuote are mutually exclusive.");
-            }
+            return !string.IsNullOrEmpty(parameter)
+                && (DefinitelyNeedQuotes.IsMatch(parameter)
+                    || (AllowedUnquoted.IsMatch(parameter)
+                                    ? false
+                                    : throw new InvalidOperationException("AllowedUnquoted and DefinitelyNeedQuote are mutually exclusive.")));
         }
 
         /// <summary>
@@ -488,14 +477,9 @@ namespace MSBuild.ExtensionPack.Base.Extension
             DateTime utc = DateTime.UtcNow;
             Span<char> destination = new("XXXXXXXX".ToCharArray());
 
-            if (Convert.TryToHexString(BitConverter.GetBytes(utc.Ticks), destination, out int charsWritten) && charsWritten >= 6)
-            {
-                return string.IsNullOrEmpty(extension) ? string.Concat(baseName, destination) : string.Concat(baseName, destination, extension);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Could not parse UTC ticks to a Span with at least six characters.");
-            }
+            return Convert.TryToHexString(BitConverter.GetBytes(utc.Ticks), destination, out int charsWritten) && charsWritten >= 6
+                ? string.IsNullOrEmpty(extension) ? string.Concat(baseName, destination) : string.Concat(baseName, destination, extension)
+                : throw new InvalidOperationException("Could not parse UTC ticks to a Span with at least six characters.");
         }
 
         internal static FileInfo? MakeSecureTempPath(string baseName, string leaf = ".tmp", string? extension = ".tmp", int maxRetry = 1000)
@@ -559,14 +543,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             {
                 DirectoryInfo normal = new(path);
 
-                if (Path.EndsInDirectorySeparator(normal.FullName))
-                {
-                    return normal.FullName;
-                }
-                else
-                {
-                    return string.Concat(normal.FullName, Path.DirectorySeparatorChar);
-                }
+                return Path.EndsInDirectorySeparator(normal.FullName) ? normal.FullName : string.Concat(normal.FullName, Path.DirectorySeparatorChar);
             }
             catch (SecurityException sex)
             {
@@ -600,14 +577,7 @@ namespace MSBuild.ExtensionPack.Base.Extension
             {
                 FileInfo normal = new(fileName);
 
-                if (normal.Name.StartsWith('-'))
-                {
-                    return $".{Path.DirectorySeparatorChar}{normal.Name}";
-                }
-                else
-                {
-                    return normal.Name;
-                }
+                return normal.Name.StartsWith('-') ? $".{Path.DirectorySeparatorChar}{normal.Name}" : normal.Name;
             }
             catch (SecurityException sex)
             {

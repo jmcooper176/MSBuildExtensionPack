@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer.HostsFile
+namespace MSBuild.ExtensionPack.Computer.HostsFile
 {
     using System;
     using System.Collections.Generic;
@@ -23,6 +23,8 @@ namespace Computer.HostsFile
     using System.IO;
     using System.Linq;
     using System.Net;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -82,7 +84,7 @@ namespace Computer.HostsFile
 
             if (string.IsNullOrEmpty(hostName))
             {
-                Log.LogError("HostName is null or empty.");
+                this.Log.LogTaskError("HostName is null or empty.");
                 return false;
             }
 
@@ -92,8 +94,7 @@ namespace Computer.HostsFile
                 return false;
             }
 
-            IPAddress parsedIPAddress;
-            if (!System.Net.IPAddress.TryParse(ipAddress, out parsedIPAddress))
+            if (!System.Net.IPAddress.TryParse(ipAddress, out IPAddress parsedIPAddress))
             {
                 this.Log.LogTaskError("Invalid IP address ({0}) for hostname '{1}'.", ipAddress, hostName);
                 return false;
@@ -125,13 +126,13 @@ namespace Computer.HostsFile
             switch (TaskAction)
             {
                 case UpdateTaskAction:
-                    if (HostEntries is null || HostEntries.Count() == 0)
+                    if (!HostEntries.Any())
                     {
-                        Log.LogError("HostsEntries property is empty or missing.");
+                        this.Log.LogTaskError("HostsEntries property is empty or missing.");
                         return;
                     }
 
-                    hostEntries = new List<ITaskItem>(HostEntries);
+                    hostEntries = [.. HostEntries];
                     break;
 
                 case SetHostEntryTaskAction:
@@ -148,7 +149,7 @@ namespace Computer.HostsFile
                     break;
 
                 default:
-                    Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", TaskAction));
                     return;
             }
 

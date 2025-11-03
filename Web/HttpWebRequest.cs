@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Web
+namespace MSBuild.ExtensionPack.Web
 {
     using System;
     using System.Globalization;
@@ -104,8 +104,7 @@ namespace Web
         private System.Net.HttpWebRequest CreateRequest()
         {
             System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-            var request = WebRequest.Create(new Uri(this.Url)) as System.Net.HttpWebRequest;
-            if (request is null)
+            if (WebRequest.Create(new Uri(this.Url)) is not System.Net.HttpWebRequest request)
             {
                 return null;
             }
@@ -127,7 +126,7 @@ namespace Web
 
             if (this.SkipSslCertificateValidation)
             {
-                ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
             }
 
             return request;
@@ -135,7 +134,7 @@ namespace Web
 
         private void GetResponse(Func<System.Net.HttpWebRequest> createRequestMethod)
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} HttpRequest against: {1}", this.TaskAction.Replace("TaskAction", string.Empty), this.Url));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} HttpRequest against: {1}", this.TaskAction.Replace("TaskAction", string.Empty), this.Url));
             var tries = 0;
             while (tries <= this.Retries)
             {
@@ -143,27 +142,25 @@ namespace Web
                 var request = createRequestMethod();
                 if (request is null)
                 {
-                    this.Log.LogError("Failed to create request against: {0}.", this.Url);
+                    this.Log.LogTaskError("Failed to create request against: {0}.", this.Url);
                     return;
                 }
 
                 try
                 {
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    {
-                        int code = (int)response.StatusCode;
-                        StreamReader responseReader = new StreamReader(response.GetResponseStream());
-                        this.Response = new TaskItem(this.Url);
-                        this.Response.SetMetadata("ResponseText", responseReader.ReadToEnd());
-                        this.Status = response.StatusDescription;
-                        this.Response.SetMetadata("StatusDescription", response.StatusDescription);
-                        this.Response.SetMetadata("StatusCode", code.ToString(CultureInfo.CurrentCulture));
-                        this.Response.SetMetadata("CharacterSet", response.CharacterSet);
-                        this.Response.SetMetadata("ProtocolVersion", response.ProtocolVersion.ToString());
-                        this.Response.SetMetadata("ResponseUri", response.ResponseUri.ToString());
-                        this.Response.SetMetadata("Server", response.Server);
-                        return;
-                    }
+                    using HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    int code = (int)response.StatusCode;
+                    StreamReader responseReader = new StreamReader(response.GetResponseStream());
+                    this.Response = new TaskItem(this.Url);
+                    this.Response.SetMetadata("ResponseText", responseReader.ReadToEnd());
+                    this.Status = response.StatusDescription;
+                    this.Response.SetMetadata("StatusDescription", response.StatusDescription);
+                    this.Response.SetMetadata("StatusCode", code.ToString(CultureInfo.CurrentCulture));
+                    this.Response.SetMetadata("CharacterSet", response.CharacterSet);
+                    this.Response.SetMetadata("ProtocolVersion", response.ProtocolVersion.ToString());
+                    this.Response.SetMetadata("ResponseUri", response.ResponseUri.ToString());
+                    this.Response.SetMetadata("Server", response.Server);
+                    return;
                 }
                 catch (WebException ex)
                 {
@@ -171,10 +168,8 @@ namespace Web
                     var responseBody = new StringBuilder();
                     if (ex.Response is not null)
                     {
-                        using (var responseReader = new StreamReader(ex.Response.GetResponseStream()))
-                        {
-                            responseBody.Append(responseReader.ReadToEnd());
-                        }
+                        using var responseReader = new StreamReader(ex.Response.GetResponseStream());
+                        responseBody.Append(responseReader.ReadToEnd());
                     }
 
                     if (tries < this.Retries)
@@ -189,7 +184,7 @@ namespace Web
                     }
                     else
                     {
-                        this.Log.LogError(failureMessage);
+                        this.Log.LogTaskError(failureMessage);
                         if (responseBody.Length > 0)
                         {
                             this.Log.LogTaskError(responseBody.ToString());

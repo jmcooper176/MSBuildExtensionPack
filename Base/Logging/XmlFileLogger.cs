@@ -239,11 +239,6 @@ namespace MSBuild.ExtensionPack.Base.Logging
 
         private void SetAttribute(string name, object value)
         {
-            if (value is null)
-            {
-                return;
-            }
-
             Type t = value.GetType();
             if (t == typeof(int))
             {

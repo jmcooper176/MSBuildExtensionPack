@@ -144,11 +144,9 @@ namespace MSBuild.ExtensionPack.SdkProject
     /// <seealso cref="BaseTask"/>
     public class AssemblyInfo : BaseTask
     {
-        private AssemblyVersionSettings assemblyFileVersionSettings;
-        private AssemblyVersionSettings assemblyVersionSettings;
+        private readonly AssemblyVersionSettings assemblyFileVersionSettings;
+        private readonly AssemblyVersionSettings assemblyVersionSettings;
         private Encoding fileEncoding = Encoding.UTF8;
-        private string? maxAssemblyFileVersion;
-        private string? maxAssemblyVersion;
 
         private static Encoding? GetTextEncoding(string enc)
         {
@@ -179,32 +177,32 @@ namespace MSBuild.ExtensionPack.SdkProject
             }
             catch (ArgumentNullException anex)
             {
-                Log.LogTaskError("Unable to create temporary file: {0}", anex.Message);
+                this.Log.LogTaskError("Unable to create temporary file: {0}", anex.Message);
                 return null;
             }
             catch (SecurityException sex)
             {
-                Log.LogTaskError("Unable to create temporary file: {0}", sex.Message);
+                this.Log.LogTaskError("Unable to create temporary file: {0}", sex.Message);
                 return null;
             }
             catch (ArgumentException aex)
             {
-                Log.LogTaskError("Unable to create temporary file: {0}", aex.Message);
+                this.Log.LogTaskError("Unable to create temporary file: {0}", aex.Message);
                 return null;
             }
             catch (PathTooLongException ptlex)
             {
-                Log.LogTaskError("Unable to create temporary file: {0}", ptlex.Message);
+                this.Log.LogTaskError("Unable to create temporary file: {0}", ptlex.Message);
                 return null;
             }
             catch (NotSupportedException nsex)
             {
-                Log.LogTaskError("Unable to create temporary file: {0}", nsex.Message);
+                this.Log.LogTaskError("Unable to create temporary file: {0}", nsex.Message);
                 return null;
             }
             catch (IOException ioex)
             {
-                Log.LogTaskError("Unable to create temporary file: {0}", ioex.Message);
+                this.Log.LogTaskError("Unable to create temporary file: {0}", ioex.Message);
                 return null;
             }
 
@@ -218,16 +216,15 @@ namespace MSBuild.ExtensionPack.SdkProject
             string enumNames = string.Join(", ", Enum.GetNames<IncrementMethod>());
 
             // Handle AssemblyBuildNumberType
-            if (AssemblyBuildNumberType is null)
+            if (string.IsNullOrEmpty(AssemblyBuildNumberType))
             {
                 assemblyVersionSettings.BuildNumberType = IncrementMethod.NoIncrement;
             }
             else
             {
-                if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyBuildNumberType))
+                if (!Enum.IsDefined<IncrementMethod>((IncrementMethod)Enum.ToObject(typeof(IncrementMethod), AssemblyBuildNumberType)))
                 {
-                    Log.LogTaskError("The value specified for AssemblyBuildNumberType is invalid. It must be one of: {0}", enumNames);
-
+                    this.Log.LogTaskError("The value specified for AssemblyBuildNumberType is invalid. It must be one of: {0}", enumNames);
                     return false;
                 }
 
@@ -235,7 +232,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             }
 
             // Handle AssemblyRevisionNumberType
-            if (AssemblyRevisionType is null)
+            if (string.IsNullOrEmpty(AssemblyRevisionType))
             {
                 assemblyVersionSettings.RevisionType = IncrementMethod.NoIncrement;
             }
@@ -243,7 +240,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyRevisionType))
                 {
-                    Log.LogTaskError("The value specified for AssemblyRevisionType is invalid. It must be one of: {0}", enumNames);
+                    this.Log.LogTaskError("The value specified for AssemblyRevisionType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -252,7 +249,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             }
 
             // Handle AssemblyRevisionRevisionReset
-            if (AssemblyRevisionReset is null)
+            if (string.IsNullOrEmpty(AssemblyRevisionReset))
             {
                 assemblyVersionSettings.RevisionReset = true;
             }
@@ -260,14 +257,14 @@ namespace MSBuild.ExtensionPack.SdkProject
             {
                 if (!bool.TryParse(AssemblyRevisionReset, out assemblyVersionSettings.RevisionReset))
                 {
-                    Log.LogTaskError("The value specified for AssemblyRevisionReset is invalid. It must be a string representation of a boolean value");
+                    this.Log.LogTaskError("The value specified for AssemblyRevisionReset is invalid. It must be a string representation of a boolean value");
 
                     return false;
                 }
             }
 
             // Handle AssemblyFileBuildNumberType
-            if (AssemblyFileBuildNumberType is null)
+            if (string.IsNullOrEmpty(AssemblyFileBuildNumberType))
             {
                 assemblyFileVersionSettings.BuildNumberType = IncrementMethod.NoIncrement;
             }
@@ -275,7 +272,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyFileBuildNumberType))
                 {
-                    Log.LogTaskError("The value specified for AssemblyFileBuildNumberType is invalid. It must be one of: {0}", enumNames);
+                    this.Log.LogTaskError("The value specified for AssemblyFileBuildNumberType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -284,7 +281,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             }
 
             // Handle AssemblyFileRevisionReset
-            if (AssemblyFileRevisionReset is null)
+            if (string.IsNullOrEmpty(AssemblyFileRevisionReset))
             {
                 assemblyFileVersionSettings.RevisionReset = true;
             }
@@ -292,14 +289,14 @@ namespace MSBuild.ExtensionPack.SdkProject
             {
                 if (!bool.TryParse(AssemblyFileRevisionReset, out assemblyFileVersionSettings))
                 {
-                    Log.LogTaskError("The value specified for AssemblyFileRevisionReset is invalid. It must be a string representation of a boolean value");
+                    this.Log.LogTaskError("The value specified for AssemblyFileRevisionReset is invalid. It must be a string representation of a boolean value");
 
                     return false;
                 }
             }
 
             // Handle AssemblyFileRevisionType
-            if (AssemblyFileRevisionType is null)
+            if (string.IsNullOrEmpty(AssemblyFileRevisionType))
             {
                 assemblyFileVersionSettings.RevisionType = IncrementMethod.NoIncrement;
             }
@@ -307,7 +304,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             {
                 if (!Enum.IsDefined(typeof(IncrementMethod), AssemblyFileRevisionType))
                 {
-                    Log.LogTaskError("The value specified for AssemblyFileRevisionType is invalid. It must be one of: {0}", enumNames);
+                    this.Log.LogTaskError("The value specified for AssemblyFileRevisionType is invalid. It must be one of: {0}", enumNames);
 
                     return false;
                 }
@@ -323,25 +320,25 @@ namespace MSBuild.ExtensionPack.SdkProject
             // The string version of the assembly goes first, so the others can override it.
             if (requestedVersion.Version is not null)
             {
-                Log.LogTaskMessage(MessageImportance.Low, "\tUpdating assembly version to {0}", requestedVersion.Version);
-                versionToUpdate.VersionString = requestedVersion.Version.ToString();
+                this.Log.LogTaskMessage(MessageImportance.Low, "\tUpdating assembly version to {0}", requestedVersion.Version);
+                versionToUpdate = new(requestedVersion.Version);
             }
 
-            if (requestedVersion.MajorVersion is not null)
+            if (requestedVersion.MajorVersion >= 0)
             {
-                Log.LogTaskMessage(MessageImportance.Low, "\tUpdating major version to {0}", requestedVersion.MajorVersion);
+                this.Log.LogTaskMessage(MessageImportance.Low, "\tUpdating major version to {0}", requestedVersion.MajorVersion);
                 versionToUpdate.MajorVersion = requestedVersion.MajorVersion;
             }
 
-            if (requestedVersion.MinorVersion is not null)
+            if (requestedVersion.MinorVersion >= 0)
             {
-                Log.LogTaskMessage(MessageImportance.Low, "\tUpdating minor version to {0}", requestedVersion.MinorVersion);
+                this.Log.LogTaskMessage(MessageImportance.Low, "\tUpdating minor version to {0}", requestedVersion.MinorVersion);
                 versionToUpdate.MinorVersion = requestedVersion.MinorVersion;
             }
 
             // The BuildNumber and Revision updates are closely related when the BuildNumber updates daily and the Revision updates
             // on every build. It's important to ensure that the Revision resets to 0 when the BuildNumber flips across to a new day.
-            string originalBuildNumber = string.Empty;
+            int originalBuildNumber = 0;
             bool handleSpecialInteraction = (requestedVersion.BuildNumberType == IncrementMethod.DateString || requestedVersion.BuildNumberType == IncrementMethod.Julian) &&
                                             requestedVersion.RevisionType == IncrementMethod.AutoIncrement;
             handleSpecialInteraction = handleSpecialInteraction && requestedVersion.RevisionReset;
@@ -360,11 +357,11 @@ namespace MSBuild.ExtensionPack.SdkProject
             // the value will become 0.
             if (handleSpecialInteraction && originalBuildNumber != versionToUpdate.BuildNumber)
             {
-                versionToUpdate.Revision = "-1";
+                versionToUpdate.Revision = 0;
             }
 
             versionToUpdate.Revision = UpdateVersionProperty(versionToUpdate.Revision, requestedVersion.RevisionType, requestedVersion.Revision, requestedVersion.RevisionFormat, "\tUpdating revision number to {0}");
-            Log.LogTaskMessage(MessageImportance.Low, "\tFinal assembly version is {0}", versionToUpdate.ToString());
+            this.Log.LogTaskMessage(MessageImportance.Low, "\tFinal assembly version is {0}", versionToUpdate.ToString());
         }
 
         private void UpdateProperty(AssemblyInfo.AssemblyInfoWrapper assemblyInfo, string propertyName)
@@ -378,14 +375,14 @@ namespace MSBuild.ExtensionPack.SdkProject
                 if (value is not null)
                 {
                     assemblyInfo[propertyName] = value;
-                    Log.LogTaskMessage(MessageImportance.Low, "\tUpdating {0} to \"{1}\"", propertyName, value);
+                    this.Log.LogTaskMessage(MessageImportance.Low, "\tUpdating {0} to \"{1}\"", propertyName, value);
                 }
             }
         }
 
-        private string UpdateVersionProperty(string versionNumber, IncrementMethod method, string value, string format, string logMessage)
+        private int UpdateVersionProperty(string versionNumber, IncrementMethod method, int value, string format, string logMessage)
         {
-            Log.LogTaskMessage(MessageImportance.Low, "\tUpdate method is {0}", method.ToString());
+            this.Log.LogTaskMessage(MessageImportance.Low, "\tUpdate method is {0}", method.ToString());
             if (string.IsNullOrEmpty(format))
             {
                 format = "0";
@@ -394,46 +391,46 @@ namespace MSBuild.ExtensionPack.SdkProject
             switch (method)
             {
                 case IncrementMethod.NoIncrement:
-                    if (value is null)
+                    if (string.IsNullOrEmpty(value))
                     {
                         return versionNumber;
                     }
 
-                    Log.LogTaskMessage(MessageImportance.Low, logMessage, value);
+                    this.Log.LogTaskMessage(MessageImportance.Low, logMessage, value);
                     return value;
 
                 case IncrementMethod.AutoIncrement:
                     int newVersionNumber = int.Parse(versionNumber, CultureInfo.InvariantCulture);
                     newVersionNumber++;
-                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber.ToString(format, CultureInfo.InvariantCulture));
-                    return newVersionNumber.ToString(format, CultureInfo.InvariantCulture);
+                    this.Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber.ToString(format, CultureInfo.InvariantCulture));
+                    return newVersionNumber;
 
                 case IncrementMethod.DateString:
-                    string newVersionNumber1 = UseUtc ? DateTime.UtcNow.ToString(format, CultureInfo.InvariantCulture) : DateTime.Now.ToString(format, CultureInfo.InvariantCulture);
-                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber1);
+                    int newVersionNumber1 = UseUtc ? DateTime.UtcNow : DateTime.Now;
+                    this.Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber1);
                     return newVersionNumber1;
 
                 case IncrementMethod.Julian:
-                    string newVersionNumber2 = UseUtc ? DateTime.UtcNow.ToString("yy", CultureInfo.InvariantCulture) : DateTime.Now.ToString("yy", CultureInfo.InvariantCulture);
-                    newVersionNumber2 += DateTime.Now.DayOfYear.ToString("000", CultureInfo.InvariantCulture);
-                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber2);
+                    int newVersionNumber2 = UseUtc ? DateTime.UtcNow : DateTime.Now;
+                    newVersionNumber2 += DateTime.Now.DayOfYear;
+                    this.Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber2);
                     return newVersionNumber2;
 
                 case IncrementMethod.YearWeekDay:
                     DateTime now = UseUtc ? DateTime.UtcNow : DateTime.Now;
-                    string newVersionNumber3 = now.ToString("yy", CultureInfo.InvariantCulture);
-                    newVersionNumber3 += CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(now, CalendarWeekRule.FirstDay, Enum.Parse<DayOfWeek>(FirstDayOfWeek)).ToString("D2", CultureInfo.InvariantCulture);
-                    newVersionNumber3 += ((int)now.DayOfWeek).ToString(CultureInfo.InvariantCulture);
-                    Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber3);
+                    int newVersionNumber3 = now;
+                    newVersionNumber3 += CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(now, CalendarWeekRule.FirstDay, Enum.Parse<DayOfWeek>(FirstDayOfWeek));
+                    newVersionNumber3 += ((int)now.DayOfWeek);
+                    this.Log.LogTaskMessage(MessageImportance.Low, logMessage, newVersionNumber3);
                     return newVersionNumber3;
 
                 case IncrementMethod.ElapsedDays:
                     DateTime now2 = UseUtc ? DateTime.UtcNow : DateTime.Now;
                     TimeSpan elapsed = now2 - Convert.ToDateTime(StartDate);
-                    return elapsed.Days.ToString(CultureInfo.CurrentCulture).PadLeft(PaddingCount, PaddingDigit);
+                    return elapsed.Days;
 
                 default:
-                    return string.Empty;
+                    return 0;
             }
         }
 
@@ -449,7 +446,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                  AssemblyMinorVersion is not null) &&
                 assemblyInfo["AssemblyVersion"] is null)
             {
-                Log.LogTaskError("Unable to update the AssemblyVersion for {0}: No stub entry for AssemblyVersion was found in the AssemblyInfo file.", fileName);
+                this.Log.LogTaskError("Unable to update the AssemblyVersion for {0}: No stub entry for AssemblyVersion was found in the AssemblyInfo file.", fileName);
                 return false;
             }
 
@@ -459,7 +456,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                  AssemblyFileMinorVersion is not null) &&
                 assemblyInfo["AssemblyFileVersion"] is null)
             {
-                Log.LogTaskError("Unable to update the AssemblyFileVersion for {0}: No stub entry for AssemblyFileVersion was found in the AssemblyInfo file.", fileName);
+                this.Log.LogTaskError("Unable to update the AssemblyFileVersion for {0}: No stub entry for AssemblyFileVersion was found in the AssemblyInfo file.", fileName);
                 return false;
             }
 
@@ -530,7 +527,7 @@ namespace MSBuild.ExtensionPack.SdkProject
         {
             if (taskAttributeValue is not null && assemblyInfo[fileAttribute] is null)
             {
-                Log.LogError("Unable to update the {0} for {1}: No stub entry for {0} was found in the AssemblyInfo file.", fileAttribute, fileName);
+                this.Log.LogTaskError("Unable to update the {0} for {1}: No stub entry for {0} was found in the AssemblyInfo file.", fileAttribute, fileName);
                 return false;
             }
 
@@ -539,27 +536,27 @@ namespace MSBuild.ExtensionPack.SdkProject
 
         private bool ValidateIncrementProperties()
         {
-            if (assemblyVersionSettings.BuildNumberType == IncrementMethod.DateString && assemblyVersionSettings.BuildNumberFormat is null)
+            if (assemblyVersionSettings.BuildNumberType == IncrementMethod.DateString && string.IsNullOrEmpty(assemblyVersionSettings.BuildNumberFormat))
             {
-                Log.LogError("The version increment method for AssemblyBuildNumber was set to DateString, but AssemblyBuildNumberFormat was not specified. Both properties must be set to use a date string as a build number.");
+                this.Log.LogTaskError("The version increment method for AssemblyBuildNumber was set to DateString, but AssemblyBuildNumberFormat was not specified. Both properties must be set to use a date string as a build number.");
                 return false;
             }
 
-            if (assemblyVersionSettings.RevisionType == IncrementMethod.DateString && assemblyVersionSettings.RevisionFormat is null)
+            if (assemblyVersionSettings.RevisionType == IncrementMethod.DateString && string.IsNullOrEmpty(assemblyVersionSettings.RevisionFormat))
             {
-                Log.LogError("The version increment method for AssemblyRevision was set to DateString, but AssemblyRevisionFormat was not specified. Both properties must be set to use a date string as a revision.");
+                this.Log.LogTaskError("The version increment method for AssemblyRevision was set to DateString, but AssemblyRevisionFormat was not specified. Both properties must be set to use a date string as a revision.");
                 return false;
             }
 
-            if (assemblyFileVersionSettings.BuildNumberType == IncrementMethod.DateString && AssemblyFileBuildNumberFormat is null)
+            if (assemblyFileVersionSettings.BuildNumberType == IncrementMethod.DateString && string.IsNullOrEmpty(AssemblyFileBuildNumberFormat))
             {
-                Log.LogError("The version increment method for AssemblyFileBuildNumber was set to DateString, but AssemblyFileBuildNumberFormat was not specified. Both properties must be set to use a date string as a build number.");
+                this.Log.LogTaskError("The version increment method for AssemblyFileBuildNumber was set to DateString, but AssemblyFileBuildNumberFormat was not specified. Both properties must be set to use a date string as a build number.");
                 return false;
             }
 
-            if (assemblyFileVersionSettings.RevisionType == IncrementMethod.DateString && AssemblyFileRevisionFormat is null)
+            if (assemblyFileVersionSettings.RevisionType == IncrementMethod.DateString && string.IsNullOrEmpty(AssemblyFileRevisionFormat))
             {
-                Log.LogError("The version increment method for AssemblyFileRevision was set to DateString, but AssemblyFileRevisionFormat was not specified. Both properties must be set to use a date string as a revision.");
+                this.Log.LogTaskError("The version increment method for AssemblyFileRevision was set to DateString, but AssemblyFileRevisionFormat was not specified. Both properties must be set to use a date string as a revision.");
                 return false;
             }
 
@@ -1388,6 +1385,9 @@ namespace MSBuild.ExtensionPack.SdkProject
         [Output]
         public System.Version? MaxAssemblyFileVersion { get; set; }
 
+        [Output]
+        public System.Management.Automation.SemanticVersion? MaxAssemblyInformationalVersion { get; set; }
+
         /// <summary>
         /// Returns the largest assembly version set by the task.
         /// </summary>
@@ -1404,9 +1404,6 @@ namespace MSBuild.ExtensionPack.SdkProject
         /// </remarks>
         [Output]
         public System.Version? MaxAssemblyVersion { get; set; }
-
-        [Output]
-        public System.Management.Automation.SemanticVersion? MaxAssemblyInformationalVersion { get; set; }
 
         /// <summary>
         /// Sets the number of padding digits to use, e.g. 4
@@ -1471,7 +1468,7 @@ namespace MSBuild.ExtensionPack.SdkProject
             {
                 if (!File.Exists(item.ItemSpec))
                 {
-                    Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", item.ItemSpec));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", item.ItemSpec));
                     return false;
                 }
 
@@ -1483,7 +1480,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                     return false;
                 }
 
-                Log.LogTaskMessage(MessageImportance.Low, "Updating assembly info for {0}", item.ItemSpec);
+                this.Log.LogTaskMessage(MessageImportance.Low, "Updating assembly info for {0}", item.ItemSpec);
                 if (!SkipVersioning)
                 {
                     AssemblyVersion versionToUpdate;
@@ -1493,7 +1490,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                     }
                     catch (Exception ex)
                     {
-                        Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to read current AssemblyVersion from file {0}: {1}", item.ItemSpec, ex.Message));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to read current AssemblyVersion from file {0}: {1}", item.ItemSpec, ex.Message));
                         return false;
                     }
 
@@ -1517,7 +1514,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                     }
                     catch (ArgumentException)
                     {
-                        Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "File {0} contains a verbatim AssemblyFileVersion - skipping", item.ItemSpec));
+                        this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "File {0} contains a verbatim AssemblyFileVersion - skipping", item.ItemSpec));
                     }
                 }
 
@@ -1551,7 +1548,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                         }
                         catch (ArgumentException)
                         {
-                            Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error, {0} is not a supported encoding name.", TextEncoding));
+                            this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error, {0} is not a supported encoding name.", TextEncoding));
                             return false;
                         }
                     }
@@ -1569,7 +1566,7 @@ namespace MSBuild.ExtensionPack.SdkProject
                     // If readonly attribute is set, reset it.
                     if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                     {
-                        Log.LogTaskMessage(MessageImportance.Low, "Making file writable");
+                        this.Log.LogTaskMessage(MessageImportance.Low, "Making file writable");
                         File.SetAttributes(item.ItemSpec, fileAttributes ^ FileAttributes.ReadOnly);
                         changedAttribute = true;
                     }
@@ -1578,7 +1575,7 @@ namespace MSBuild.ExtensionPack.SdkProject
 
                     if (changedAttribute)
                     {
-                        Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
+                        this.Log.LogTaskMessage(MessageImportance.Low, "Making file readonly");
                         File.SetAttributes(item.ItemSpec, FileAttributes.ReadOnly);
                     }
                 }

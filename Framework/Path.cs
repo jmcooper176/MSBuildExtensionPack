@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System.Globalization;
 
@@ -169,14 +169,14 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.LogError("Invalid TaskAction passed: {0}", this.TaskAction);
+                    this.LogTaskError("Invalid TaskAction passed: {0}", this.TaskAction);
                     return;
             }
         }
 
-        protected virtual void LogError(string format, params object[] args)
+        protected virtual void LogTaskError(string format, params object[] args)
         {
-            this.Log.LogError(string.Format(CultureInfo.CurrentCulture, format, args));
+            this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, format, args));
         }
 
         public const string ChangeExtensionTaskAction = "ChangeExtension";

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace CodeQuality
+namespace MSBuild.ExtensionPack.CodeQuality
 {
     using System;
     using System.Globalization;
@@ -95,12 +95,7 @@ namespace CodeQuality
     {
         private static int GetAttributeInt32Value(string name, XmlNode node)
         {
-            if (node.Attributes?[name] is not null)
-            {
-                return Convert.ToInt32(node.Attributes[name].Value, CultureInfo.InvariantCulture);
-            }
-
-            return 0;
+            return node.Attributes?[name] is not null ? Convert.ToInt32(node.Attributes[name].Value, CultureInfo.InvariantCulture) : 0;
         }
 
         /// <summary>
@@ -125,42 +120,42 @@ namespace CodeQuality
                 }
                 catch (XmlException xex)
                 {
-                    this.Log.LogError(xex.Message);
+                    this.Log.LogTaskError(xex.Message);
                     return;
                 }
                 catch (PathTooLongException ptlex)
                 {
-                    this.Log.LogError(ptlex.Message);
+                    this.Log.LogTaskError(ptlex.Message);
                     return;
                 }
                 catch (DirectoryNotFoundException dnfex)
                 {
-                    this.Log.LogError(dnfex.Message);
+                    this.Log.LogTaskError(dnfex.Message);
                     return;
                 }
                 catch (UnauthorizedAccessException uaex)
                 {
-                    this.Log.LogError(uaex.Message);
+                    this.Log.LogTaskError(uaex.Message);
                     return;
                 }
                 catch (FileNotFoundException fnfex)
                 {
-                    this.Log.LogError(fnfex.Message);
+                    this.Log.LogTaskError(fnfex.Message);
                     return;
                 }
                 catch (IOException ioex)
                 {
-                    this.Log.LogError(ioex.Message);
+                    this.Log.LogTaskError(ioex.Message);
                     return;
                 }
                 catch (NotSupportedException nsex)
                 {
-                    this.Log.LogError(nsex.Message);
+                    this.Log.LogTaskError(nsex.Message);
                     return;
                 }
                 catch (SecurityException sex)
                 {
-                    this.Log.LogError(sex.Message);
+                    this.Log.LogTaskError(sex.Message);
                     return;
                 }
 
@@ -168,7 +163,7 @@ namespace CodeQuality
 
                 if (root is null)
                 {
-                    this.Log.LogError("Failed to load the OutputXmlFile");
+                    this.Log.LogTaskError("Failed to load the OutputXmlFile");
                     return;
                 }
 
@@ -189,12 +184,7 @@ namespace CodeQuality
         {
             base.ExecuteTool(pathToTool, responseFileCommands, commandLineCommands);
             this.ProcessXmlResultsFile();
-            if (this.FailOnFailures && this.Failures > 0)
-            {
-                return 1;
-            }
-
-            return 0;
+            return this.FailOnFailures && this.Failures > 0 ? 1 : 0;
         }
 
         protected override string GenerateCommandLineCommands()

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace FileSystem.Directory
+namespace MSBuild.ExtensionPack.Base.Directory
 {
     using System;
     using System.Collections.Generic;
@@ -123,7 +123,7 @@ namespace FileSystem.Directory
             this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Removing all Folders from: {0} that match: {1}", this.Path, this.Match));
             if (string.IsNullOrEmpty(this.Match))
             {
-                this.Log.LogError("Match must be specified.");
+                this.Log.LogTaskError("Match must be specified.");
                 return;
             }
 
@@ -179,7 +179,7 @@ namespace FileSystem.Directory
                         }
                     }
 
-                    if (deleted != true)
+                    if (!deleted)
                     {
                         throw;
                     }
@@ -214,7 +214,7 @@ namespace FileSystem.Directory
                         }
                     }
 
-                    if (deleted != true)
+                    if (!deleted)
                     {
                         throw;
                     }
@@ -232,7 +232,7 @@ namespace FileSystem.Directory
 
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting Folders from: {0}", this.Path));
             DirectoryInfo dirInfo = new DirectoryInfo(this.Path.GetMetadata("FullPath"));
-            this.foldersFound = new List<string>();
+            this.foldersFound = [];
             this.ProcessGetAll(dirInfo);
             this.Folders = new ITaskItem[this.foldersFound.Count];
             int i = 0;
@@ -257,7 +257,7 @@ namespace FileSystem.Directory
 
             // If the TargetPath has multiple folders, then we need to create the parent
             DirectoryInfo f = new DirectoryInfo(this.TargetPath.GetMetadata("FullPath"));
-            if (f.Parent is not null && !f.Parent.Exists)
+            if (f.Parent?.Exists == false)
             {
                 Directory.CreateDirectory(f.Parent.FullName);
             }
@@ -303,7 +303,7 @@ namespace FileSystem.Directory
                             }
                         }
 
-                        if (deleted != true)
+                        if (!deleted)
                         {
                             throw;
                         }
@@ -358,28 +358,26 @@ namespace FileSystem.Directory
                     if (this.Force)
                     {
                         // if its a folder path we can use WMI for a quick delete
-                        if (info.FullName.Contains(@"\\") == false)
+                        if (!info.FullName.Contains(@"\\"))
                         {
                             string dirObject = string.Format(CultureInfo.CurrentCulture, "win32_Directory.Name='{0}'", info.FullName);
-                            using (ManagementObject mdir = new ManagementObject(dirObject))
-                            {
-                                mdir.Get();
-                                ManagementBaseObject outParams = mdir.InvokeMethod("Delete", null, null);
+                            using ManagementObject mdir = new ManagementObject(dirObject);
+                            mdir.Get();
+                            ManagementBaseObject outParams = mdir.InvokeMethod("Delete", null, null);
 
-                                // ReturnValue should be 0, else failure
-                                if (outParams is not null)
+                            // ReturnValue should be 0, else failure
+                            if (outParams is not null)
+                            {
+                                if (Convert.ToInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.CurrentCulture) != 0)
                                 {
-                                    if (Convert.ToInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.CurrentCulture) != 0)
-                                    {
-                                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Directory deletion error: ReturnValue: {0}", outParams.Properties["ReturnValue"].Value));
-                                        return;
-                                    }
-                                }
-                                else
-                                {
-                                    this.Log.LogTaskError("The ManagementObject call to invoke Delete returned null.");
+                                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Directory deletion error: ReturnValue: {0}", outParams.Properties["ReturnValue"].Value));
                                     return;
                                 }
+                            }
+                            else
+                            {
+                                this.Log.LogTaskError("The ManagementObject call to invoke Delete returned null.");
+                                return;
                             }
                         }
                         else
@@ -415,7 +413,7 @@ namespace FileSystem.Directory
                                     }
                                 }
 
-                                if (deleted != true)
+                                if (!deleted)
                                 {
                                     throw;
                                 }
@@ -453,7 +451,7 @@ namespace FileSystem.Directory
                                 }
                             }
 
-                            if (deleted != true)
+                            if (!deleted)
                             {
                                 throw;
                             }
@@ -506,7 +504,7 @@ namespace FileSystem.Directory
                             }
                         }
 
-                        if (deleted != true)
+                        if (!deleted)
                         {
                             throw;
                         }
@@ -525,8 +523,8 @@ namespace FileSystem.Directory
                 foreach (ITaskItem user in this.Users)
                 {
                     string userName = user.ItemSpec;
-                    string[] permissions = string.IsNullOrEmpty(this.Permission) ? user.GetMetadata("Permission").Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries) : this.Permission.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                    FileSystemRights userRights = permissions.Aggregate(new FileSystemRights(), (current, s) => current | (FileSystemRights)Enum.Parse(typeof(FileSystemRights), s));
+                    string[] permissions = string.IsNullOrEmpty(this.Permission) ? user.GetMetadata("Permission").Split([","], StringSplitOptions.RemoveEmptyEntries) : this.Permission.Split([","], StringSplitOptions.RemoveEmptyEntries);
+                    FileSystemRights userRights = permissions.Aggregate(new FileSystemRights(), (current, s) => current | Enum.Parse<FileSystemRights>(s));
 
                     if (action == "Add")
                     {
@@ -555,7 +553,7 @@ namespace FileSystem.Directory
         /// <summary>
         /// Performs the action of this task.
         /// </summary>
-        /// <remarks>LogError should be thrown in the event of errors</remarks>
+        /// <remarks>LogTaskError should be thrown in the event of errors</remarks>
         protected override void InternalExecute()
         {
             if (!this.TargetingLocalMachine())

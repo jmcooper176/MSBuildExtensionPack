@@ -119,12 +119,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         /// <exception cref="ArgumentException">Throws if <paramref name="enumType"/> is not an <see cref="Enum"/><see cref="Type"/>.</exception>
         public static object GetValue(Type enumType, [DisallowNull] object value)
         {
-            if (!IsEnum(enumType))
-            {
-                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
-            }
-
-            return Enum.ToObject(enumType, value);
+            return !IsEnum(enumType)
+                ? throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType))
+                : Enum.ToObject(enumType, value);
         }
 
         /// <summary>
@@ -139,12 +136,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 
-            if (!IsEnum(enumType))
-            {
-                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
-            }
-
-            return Enum.ToObject(enumType, name);
+            return !IsEnum(enumType)
+                ? throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType))
+                : Enum.ToObject(enumType, name);
         }
 
         /// <summary>
@@ -176,12 +170,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
 
         public static object GetValueAsUnderlyingType(Type enumType, object? value)
         {
-            if (!IsEnum(enumType))
-            {
-                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
-            }
-
-            return ToUnderlyingType(enumType, value);
+            return !IsEnum(enumType)
+                ? throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType))
+                : ToUnderlyingType(enumType, value);
         }
 
         /// <summary>
@@ -266,12 +257,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             IEnumerable<object> values = GetValuesAsUnderlyingTypeAsEnumerable<TEnum>();
             IQueryable<string> keys = GetNamesAsQueryable<TEnum>();
 
-            if (values.Count() != keys.Count())
-            {
-                throw new InvalidOperationException($"Count 'values' [{values.Count()}] does not match Length 'keys' [{keys.Count()}].");
-            }
-
-            return keys.Zip<string, object>(values).ToDictionary(t => t.First, t => t.Second);
+            return values.Count() != keys.Count()
+                ? throw new InvalidOperationException($"Count 'values' [{values.Count()}] does not match Length 'keys' [{keys.Count()}].")
+                : (IDictionary<string, object>)keys.Zip<string, object>(values).ToDictionary(t => t.First, t => t.Second);
         }
 
         /// <summary>
@@ -336,12 +324,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 
-            if (!IsEnum(enumType))
-            {
-                throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType));
-            }
-
-            return ToUnderlyingType(enumType, Enum.ToObject(enumType, name));
+            return !IsEnum(enumType)
+                ? throw new ArgumentException($"Parameter {nameof(enumType)} of Type '{enumType.FullName}' is not an Enum.", nameof(enumType))
+                : ToUnderlyingType(enumType, Enum.ToObject(enumType, name));
         }
 
         public static object ToUnderlyingType(Type enumType, object? value)

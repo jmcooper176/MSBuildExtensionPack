@@ -771,7 +771,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Message
         /// <returns><c>true</c> if the specified <see cref="Nullable{T}"/><paramref name="nullable"/> is null; otherwise, <c>false</c>.</returns>
         public static bool IsNull<T>(T? nullable) where T : struct
         {
-            return nullable is null;
+            return !nullable.HasValue;
         }
 
         public static bool IsNullOrAll(StringBuilder? builder, Func<char, bool> predicate)

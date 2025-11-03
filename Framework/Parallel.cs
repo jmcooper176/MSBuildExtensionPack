@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Globalization;
@@ -26,6 +26,7 @@ namespace MSBuild.ExtensionPack
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -124,7 +125,7 @@ namespace MSBuild.ExtensionPack
             {
                 foreach (var ex in ae.InnerExceptions)
                 {
-                    this.Log.LogError(ex.Message);
+                    this.Log.LogTaskError(ex.Message);
                 }
             }
         }
@@ -134,7 +135,7 @@ namespace MSBuild.ExtensionPack
             try
             {
                 string targets = this.Targets.Aggregate(string.Empty, (current, t) => current + (t.ItemSpec + ";"));
-                this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "Building Targets: {0}", targets.Remove(targets.Length - 1, 1)));
+                this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "Building Targets: {0}", targets[..^1]));
 
                 Task[] tasks = new Task[this.Targets.Length];
                 for (int i = 0; i < this.Targets.Length; i++)
@@ -158,7 +159,7 @@ namespace MSBuild.ExtensionPack
             {
                 foreach (var ex in ae.InnerExceptions)
                 {
-                    this.Log.LogError(ex.Message);
+                    this.Log.LogTaskError(ex.Message);
                 }
             }
         }
@@ -207,23 +208,17 @@ namespace MSBuild.ExtensionPack
             }
 
             var exec = new ShellWrapper("msbuild.exe", "\"" + projectFile + "\" /v:" + this.MultiLogResponseVerbosity + " /t:" + item.ItemSpec + properties + this.multiprocparameter + " /nr:" + this.NodeReuse + " " + logginginfo);
-            if (string.IsNullOrEmpty(this.WorkingDirectory) == false)
+            if (!string.IsNullOrEmpty(this.WorkingDirectory))
             {
                 exec.WorkingDirectory = this.WorkingDirectory;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} {1}", exec.Executable, exec.Arguments));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} {1}", exec.Executable, exec.Arguments));
 
             // stderr is logged as errors
-            exec.ErrorDataReceived += (sender, e) =>
-                                          {
-                                              if (e.Data is not null)
-                                              {
-                                                  this.Log.LogError(e.Data);
-                                              }
-                                          };
+            exec.ErrorDataReceived += (_, e) => { if (e.Data is not null) { this.Log.LogTaskError(e.Data); } };
 
-            exec.OutputDataReceived += (sender, e) =>
+            exec.OutputDataReceived += (_, e) =>
                 {
                     if (e.Data is null)
                     {
@@ -234,7 +229,7 @@ namespace MSBuild.ExtensionPack
                     {
                         try
                         {
-                            this.Log.LogMessage(MessageImportance.Normal, e.Data);
+                            this.Log.LogTaskMessage(MessageImportance.Normal, e.Data);
                         }
                         catch
                         {
@@ -255,7 +250,7 @@ namespace MSBuild.ExtensionPack
                     errorFile = "Additional information may be found in: " + logfileName;
                 }
 
-                this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Error Code: {0}. {1}", exitCode, errorFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Error Code: {0}. {1}", exitCode, errorFile));
 
                 if (this.MultiLog && this.MultiLogOpenOnFailure)
                 {
@@ -270,7 +265,7 @@ namespace MSBuild.ExtensionPack
             string resolvedtargets = item.GetMetadata("Targets");
             if (resolvedtargets.EndsWith(";", StringComparison.OrdinalIgnoreCase))
             {
-                resolvedtargets = resolvedtargets.Remove(resolvedtargets.Length - 1, 1);
+                resolvedtargets = resolvedtargets[..^1];
             }
 
             this.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "Building Target Set: {0} - {1}", item.ItemSpec, resolvedtargets));
@@ -321,7 +316,7 @@ namespace MSBuild.ExtensionPack
             }
 
             var exec = new ShellWrapper("msbuild.exe", "\"" + projectFile + "\" /v:" + this.MultiLogResponseVerbosity + " /t:" + resolvedtargets + properties + this.multiprocparameter + " /nr:" + this.NodeReuse + " " + logginginfo);
-            if (string.IsNullOrEmpty(this.WorkingDirectory) == false)
+            if (!string.IsNullOrEmpty(this.WorkingDirectory))
             {
                 exec.WorkingDirectory = this.WorkingDirectory;
             }
@@ -329,15 +324,15 @@ namespace MSBuild.ExtensionPack
             this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Executing {0} {1}", exec.Executable, exec.Arguments));
 
             // stderr is logged as errors
-            exec.ErrorDataReceived += (sender, e) =>
+            exec.ErrorDataReceived += (_, e) =>
                                           {
                                               if (e.Data is not null)
                                               {
-                                                  this.Log.LogError(e.Data);
+                                                  this.Log.LogTaskError(e.Data);
                                               }
                                           };
 
-            exec.OutputDataReceived += (sender, e) =>
+            exec.OutputDataReceived += (_, e) =>
                 {
                     if (e.Data is not null)
                     {
@@ -366,7 +361,7 @@ namespace MSBuild.ExtensionPack
                     errorFile = "Additional information may be found in: " + logfileName;
                 }
 
-                this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Error Code: {0}. {1}", exitCode, errorFile));
+                this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Error Code: {0}. {1}", exitCode, errorFile));
 
                 if (this.MultiLog && this.MultiLogOpenOnFailure)
                 {
@@ -409,7 +404,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

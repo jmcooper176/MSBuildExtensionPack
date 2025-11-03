@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace FileSystem
+namespace MSBuild.ExtensionPack.Base
 {
     using System;
     using System.Collections.Generic;
@@ -118,7 +118,7 @@ namespace FileSystem
             {
                 string permissions = user.GetMetadata("Permission");
 
-                if (string.IsNullOrEmpty(permissions) | permissions.IndexOf("Full", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (string.IsNullOrEmpty(permissions) || permissions.IndexOf("Full", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     // apply all permissions
                     this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Setting Full permission for: {0}", user.ItemSpec));
@@ -155,7 +155,7 @@ namespace FileSystem
 
         private ManagementObject[] BuildAccessControlList()
         {
-            List<ManagementObject> acl = new List<ManagementObject>();
+            List<ManagementObject> acl = [];
 
             if (this.AllowUsers is not null)
             {
@@ -178,7 +178,7 @@ namespace FileSystem
             }
 
             this.newPermissionCount = acl.Count;
-            return acl.ToArray();
+            return [.. acl];
         }
 
         private ManagementObject BuildTrustee(string userName)
@@ -215,18 +215,16 @@ namespace FileSystem
             this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Checking whether share: {0} exists on: {1}", this.ShareName, this.MachineName));
             this.GetManagementScope(@"\root\cimv2");
             ManagementPath fullSharePath = new ManagementPath("Win32_Share.Name='" + this.ShareName + "'");
-            using (ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null))
+            using ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null);
+            // try bind to the share to see if it exists
+            try
             {
-                // try bind to the share to see if it exists
-                try
-                {
-                    shareObject.Get();
-                    this.Exists = true;
-                }
-                catch
-                {
-                    this.Exists = false;
-                }
+                shareObject.Get();
+                this.Exists = true;
+            }
+            catch
+            {
+                this.Exists = false;
             }
         }
 
@@ -239,39 +237,37 @@ namespace FileSystem
             if (!this.TargetingLocalMachine(true))
             {
                 // we need to operate remotely
-                string fullQuery = @"Select * From Win32_Directory Where Name = '" + this.SharePath.Replace("\\", "\\\\") + "'";
+                string fullQuery = "Select * From Win32_Directory Where Name = '" + this.SharePath.Replace("\\", "\\\\") + "'";
                 ObjectQuery query1 = new ObjectQuery(fullQuery);
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query1))
+                using ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query1);
+                ManagementObjectCollection queryCollection = searcher.Get();
+                if (queryCollection.Count == 0)
                 {
-                    ManagementObjectCollection queryCollection = searcher.Get();
-                    if (queryCollection.Count == 0)
+                    if (this.CreateSharePath)
                     {
-                        if (this.CreateSharePath)
+                        this.Log.LogTaskMessage(MessageImportance.Low, "Attempting to create remote folder for share");
+                        ManagementPath path2 = new ManagementPath("Win32_Process");
+                        ManagementClass managementClass2 = new ManagementClass(this.Scope, path2, null);
+
+                        ManagementBaseObject inParams1 = managementClass2.GetMethodParameters("Create");
+                        string tex = "cmd.exe /c md \"" + this.SharePath + "\"";
+                        inParams1["CommandLine"] = tex;
+
+                        ManagementBaseObject outParams1 = managementClass2.InvokeMethod("Create", inParams1, null);
+                        uint rc = Convert.ToUInt32(outParams1.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
+                        if (rc != 0)
                         {
-                            this.LogTaskMessage(MessageImportance.Low, "Attempting to create remote folder for share");
-                            ManagementPath path2 = new ManagementPath("Win32_Process");
-                            ManagementClass managementClass2 = new ManagementClass(this.Scope, path2, null);
-
-                            ManagementBaseObject inParams1 = managementClass2.GetMethodParameters("Create");
-                            string tex = "cmd.exe /c md \"" + this.SharePath + "\"";
-                            inParams1["CommandLine"] = tex;
-
-                            ManagementBaseObject outParams1 = managementClass2.InvokeMethod("Create", inParams1, null);
-                            uint rc = Convert.ToUInt32(outParams1.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
-                            if (rc != 0)
-                            {
-                                this.Log.LogError(string.Format(CultureInfo.InvariantCulture, "Non-zero return code attempting to create remote share location: {0}", rc));
-                                return;
-                            }
-
-                            // adding a sleep as it may take a while to register.
-                            System.Threading.Thread.Sleep(1000);
-                        }
-                        else
-                        {
-                            this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "SharePath not found: {0}. Set CreateSharePath to true to create a SharePath that does not exist.", this.SharePath));
+                            this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Non-zero return code attempting to create remote share location: {0}", rc));
                             return;
                         }
+
+                        // adding a sleep as it may take a while to register.
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else
+                    {
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "SharePath not found: {0}. Set CreateSharePath to true to create a SharePath that does not exist.", this.SharePath));
+                        return;
                     }
                 }
             }
@@ -288,77 +284,75 @@ namespace FileSystem
                     }
                     else
                     {
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "SharePath not found: {0}. Set CreateSharePath to true to create a SharePath that does not exist.", this.SharePath));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "SharePath not found: {0}. Set CreateSharePath to true to create a SharePath that does not exist.", this.SharePath));
                         return;
                     }
                 }
             }
 
-            using (ManagementClass managementClass = new ManagementClass(this.Scope, path, null))
+            using ManagementClass managementClass = new ManagementClass(this.Scope, path, null);
+            // Set the input parameters
+            ManagementBaseObject inParams = managementClass.GetMethodParameters("Create");
+            inParams["Description"] = this.Description;
+            inParams["Name"] = this.ShareName;
+            inParams["Path"] = this.SharePath;
+
+            // build the access permissions
+            if (this.AllowUsers is not null || this.DenyUsers is not null)
             {
-                // Set the input parameters
-                ManagementBaseObject inParams = managementClass.GetMethodParameters("Create");
-                inParams["Description"] = this.Description;
-                inParams["Name"] = this.ShareName;
-                inParams["Path"] = this.SharePath;
+                inParams["Access"] = this.SetAccessPermissions();
+            }
 
-                // build the access permissions
-                if (this.AllowUsers is not null | this.DenyUsers is not null)
-                {
-                    inParams["Access"] = this.SetAccessPermissions();
-                }
+            // Disk Drive
+            inParams["Type"] = 0x0;
 
-                // Disk Drive
-                inParams["Type"] = 0x0;
+            if (this.MaximumAllowed > 0)
+            {
+                inParams["MaximumAllowed"] = this.MaximumAllowed;
+            }
 
-                if (this.MaximumAllowed > 0)
-                {
-                    inParams["MaximumAllowed"] = this.MaximumAllowed;
-                }
+            ManagementBaseObject outParams = managementClass.InvokeMethod("Create", inParams, null);
+            ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
+            switch (returnCode)
+            {
+                case ReturnCode.Success:
+                    break;
 
-                ManagementBaseObject outParams = managementClass.InvokeMethod("Create", inParams, null);
-                ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
-                switch (returnCode)
-                {
-                    case ReturnCode.Success:
-                        break;
+                case ReturnCode.AccessDenied:
+                    this.Log.LogTaskError("Access Denied");
+                    break;
 
-                    case ReturnCode.AccessDenied:
-                        this.Log.LogTaskError("Access Denied");
-                        break;
+                case ReturnCode.UnknownFailure:
+                    this.Log.LogTaskError("Unknown Failure");
+                    break;
 
-                    case ReturnCode.UnknownFailure:
-                        this.Log.LogTaskError("Unknown Failure");
-                        break;
+                case ReturnCode.InvalidName:
+                    this.Log.LogTaskError("Invalid Name");
+                    break;
 
-                    case ReturnCode.InvalidName:
-                        this.Log.LogTaskError("Invalid Name");
-                        break;
+                case ReturnCode.InvalidLevel:
+                    this.Log.LogTaskError("Invalid Level");
+                    break;
 
-                    case ReturnCode.InvalidLevel:
-                        this.Log.LogError("Invalid Level");
-                        break;
+                case ReturnCode.InvalidParameter:
+                    this.Log.LogTaskError("Invalid Parameter");
+                    break;
 
-                    case ReturnCode.InvalidParameter:
-                        this.Log.LogTaskError("Invalid Parameter");
-                        break;
+                case ReturnCode.RedirectedPath:
+                    this.Log.LogTaskError("Redirected Path");
+                    break;
 
-                    case ReturnCode.RedirectedPath:
-                        this.Log.LogTaskError("Redirected Path");
-                        break;
+                case ReturnCode.UnknownDeviceOrDirectory:
+                    this.Log.LogTaskError("Unknown Device or Directory");
+                    break;
 
-                    case ReturnCode.UnknownDeviceOrDirectory:
-                        this.Log.LogTaskError("Unknown Device or Directory");
-                        break;
+                case ReturnCode.NetNameNotFound:
+                    this.Log.LogTaskError("Net name not found");
+                    break;
 
-                    case ReturnCode.NetNameNotFound:
-                        this.Log.LogTaskError("Net name not found");
-                        break;
-
-                    case ReturnCode.ShareAlreadyExists:
-                        this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "The share already exists: {0}", this.ShareName));
-                        break;
-                }
+                case ReturnCode.ShareAlreadyExists:
+                    this.Log.LogTaskWarning(string.Format(CultureInfo.CurrentCulture, "The share already exists: {0}", this.ShareName));
+                    break;
             }
         }
 
@@ -367,26 +361,24 @@ namespace FileSystem
             this.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Deleting share: {0} on: {1}", this.ShareName, this.MachineName));
             this.GetManagementScope(@"\root\cimv2");
             ManagementPath fullSharePath = new ManagementPath("Win32_Share.Name='" + this.ShareName + "'");
-            using (ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null))
+            using ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null);
+            // try bind to the share to see if it exists
+            try
             {
-                // try bind to the share to see if it exists
-                try
-                {
-                    shareObject.Get();
-                }
-                catch
-                {
-                    this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
-                    return;
-                }
+                shareObject.Get();
+            }
+            catch
+            {
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
+                return;
+            }
 
-                // execute the method and check the return code
-                ManagementBaseObject outputParams = shareObject.InvokeMethod("Delete", null, null);
-                ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outputParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
-                if (returnCode != ReturnCode.Success)
-                {
-                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Failed to delete the share. ReturnCode: {0}.", returnCode));
-                }
+            // execute the method and check the return code
+            ManagementBaseObject outputParams = shareObject.InvokeMethod("Delete", null, null);
+            ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outputParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
+            if (returnCode != ReturnCode.Success)
+            {
+                this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Failed to delete the share. ReturnCode: {0}.", returnCode));
             }
         }
 
@@ -397,7 +389,7 @@ namespace FileSystem
             ObjectQuery query = new ObjectQuery(queryString);
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query))
             {
-                foreach (ManagementObject returnedAccount in searcher.Get())
+                foreach (ManagementObject returnedAccount in searcher.Get().Cast<ManagementObject>())
                 {
                     return returnedAccount;
                 }
@@ -453,9 +445,8 @@ namespace FileSystem
             ManagementBaseObject[] newaccessControlList = this.BuildAccessControlList();
             ManagementBaseObject securityDescriptor = securityDescriptorObject.Properties["Descriptor"].Value as ManagementBaseObject;
             int existingAcessControlEntriesCount = 0;
-            ManagementBaseObject[] accessControlList = securityDescriptor.Properties["DACL"].Value as ManagementBaseObject[];
 
-            if (accessControlList is null)
+            if (securityDescriptor.Properties["DACL"].Value is not ManagementBaseObject[] accessControlList)
             {
                 accessControlList = new ManagementBaseObject[this.newPermissionCount];
             }
@@ -497,30 +488,28 @@ namespace FileSystem
             this.Log.LogTaskMessage(string.Format(CultureInfo.InvariantCulture, "Set Permissions for share: {0} on: {1}", this.ShareName, this.MachineName));
             this.GetManagementScope(@"\root\cimv2");
             ManagementPath fullSharePath = new ManagementPath("Win32_Share.Name='" + this.ShareName + "'");
-            using (ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null))
+            using ManagementObject shareObject = new ManagementObject(this.Scope, fullSharePath, null);
+            // try bind to the share to see if it exists
+            try
             {
-                // try bind to the share to see if it exists
-                try
-                {
-                    shareObject.Get();
-                }
-                catch
-                {
-                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
-                    return;
-                }
+                shareObject.Get();
+            }
+            catch
+            {
+                this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Did not find share: {0} on: {1}", this.ShareName, this.MachineName));
+                return;
+            }
 
-                // Set the input parameters
-                ManagementBaseObject inParams = shareObject.GetMethodParameters("SetShareInfo");
-                inParams["Access"] = this.SetAccessPermissions();
+            // Set the input parameters
+            ManagementBaseObject inParams = shareObject.GetMethodParameters("SetShareInfo");
+            inParams["Access"] = this.SetAccessPermissions();
 
-                // execute the method and check the return code
-                ManagementBaseObject outputParams = shareObject.InvokeMethod("SetShareInfo", inParams, null);
-                ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outputParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
-                if (returnCode != ReturnCode.Success)
-                {
-                    this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Failed to set the share permissions. ReturnCode: {0}.", returnCode));
-                }
+            // execute the method and check the return code
+            ManagementBaseObject outputParams = shareObject.InvokeMethod("SetShareInfo", inParams, null);
+            ReturnCode returnCode = (ReturnCode)Convert.ToUInt32(outputParams.Properties["ReturnValue"].Value, CultureInfo.InvariantCulture);
+            if (returnCode != ReturnCode.Success)
+            {
+                this.Log.LogTaskError(string.Format(CultureInfo.InvariantCulture, "Failed to set the share permissions. ReturnCode: {0}.", returnCode));
             }
         }
 

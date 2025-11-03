@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace NuGet
+namespace MSBuild.ExtensionPack.NuGet
 {
     using System;
     using System.Collections.Generic;
@@ -75,7 +75,7 @@ namespace NuGet
     /// </code>
     /// </example>
     /// <seealso cref="BaseTask"/>
-    public class Packager : BaseTask
+    public partial class Packager : BaseTask
     {
         private const string PackTaskAction = "pack";
 
@@ -128,7 +128,7 @@ namespace NuGet
         /// <returns>True if the version number is valid. False otherwise</returns>
         private static bool IsValidVersionNumber(string version)
         {
-            Regex regex = new Regex(@"\d+(?:\.\d+)+");
+            Regex regex = ValidateVersionRegex();
             return regex.Match(version).Success;
         }
 
@@ -140,7 +140,7 @@ namespace NuGet
         /// <param name="items">               The item group to read the files.</param>
         private static void PopulateFolder(string folderName, string packageDirectoryPath, IEnumerable<ITaskItem> items)
         {
-            if (items is null)
+            if (!items.Any())
             {
                 return;
             }
@@ -229,7 +229,7 @@ namespace NuGet
         {
             if (!IsValidVersionNumber(this.Version))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid version number {0}. Examples of valid version numbers are 1.0, 1.2.3. 2.3.1909.7", this.Version));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid version number {0}. Examples of valid version numbers are 1.0, 1.2.3. 2.3.1909.7", this.Version));
                 return;
             }
 
@@ -258,7 +258,7 @@ namespace NuGet
             string executionDirectory = Path.GetDirectoryName(nugetSpecificationFile);
 
             // Default to Resources directory so behavior is consistent with previous versions (when NuGetExeDir is not specified).
-            this.NuGetExeDir = this.NuGetExeDir ?? Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\");
+            this.NuGetExeDir ??= Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\");
             string nugetFilePath = Path.Combine(this.NuGetExeDir, "NuGet.exe");
 
             var processStartInfo = new ProcessStartInfo()
@@ -270,21 +270,19 @@ namespace NuGet
                 FileName = nugetFilePath
             };
 
-            using (var process = Process.Start(processStartInfo))
+            using var process = Process.Start(processStartInfo);
+            process.WaitForExit(20000);
+            if (process.ExitCode != 0)
             {
-                process.WaitForExit(20000);
-                if (process.ExitCode != 0)
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Nuget Package could not be created. Exit Code: {0}.", process.ExitCode));
+            }
+            else
+            {
+                var files = Directory.GetFiles(executionDirectory, this.Id + "." + this.Version + "*.nupkg");
+                if (files.Any())
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Nuget Package could not be created. Exit Code: {0}.", process.ExitCode));
-                }
-                else
-                {
-                    var files = Directory.GetFiles(executionDirectory, this.Id + "." + this.Version + "*.nupkg");
-                    if (files.Any())
-                    {
-                        File.Copy(files[0], this.OutputFile, true);
-                        this.LogTaskMessage(MessageImportance.Normal, string.Format(CultureInfo.CurrentCulture, "NuGet Package {0} created successfully.", this.OutputFile));
-                    }
+                    File.Copy(files[0], this.OutputFile, true);
+                    this.LogTaskMessage(MessageImportance.Normal, string.Format(CultureInfo.CurrentCulture, "NuGet Package {0} created successfully.", this.OutputFile));
                 }
             }
         }
@@ -301,7 +299,7 @@ namespace NuGet
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid Task Action passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid Task Action passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -504,5 +502,8 @@ namespace NuGet
         /// </summary>
         [Required]
         public string Version { get; set; }
+
+        [GeneratedRegex(@"\d+(?:\.\d+)+")]
+        private static partial Regex ValidateVersionRegex();
     }
 }

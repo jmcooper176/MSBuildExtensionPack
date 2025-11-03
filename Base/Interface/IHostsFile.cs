@@ -27,8 +27,8 @@ namespace MSBuild.ExtensionPack.Base.Interface
     {
         private const string Separator = "   ";
 
-        private static readonly string[] Pads = new[]
-                                                    {
+        private static readonly string[] Pads =
+                                                    [
                                                         string.Empty,
                                                         " ",
                                                         "  ",
@@ -45,10 +45,10 @@ namespace MSBuild.ExtensionPack.Base.Interface
                                                         "             ",
                                                         "              ",
                                                         "               "
-                                                    };
+                                                    ];
 
         private readonly Dictionary<string, HostsEntry> hosts;
-        private readonly Regex hostsEntryRegex = new Regex(@"^((\d{1,3}\.){3}\d{1,3})\s+(?<HostName>[^\s#]+)(?<Tail>.*)$");
+        private readonly Regex hostsEntryRegex = new(@"^((\d{1,3}\.){3}\d{1,3})\s+(?<HostName>[^\s#]+)(?<Tail>.*)$");
         private readonly List<string> hostsFileLines;
 
         private static string PadIPAddress(string ipAddress)
@@ -58,20 +58,13 @@ namespace MSBuild.ExtensionPack.Base.Interface
             return ipAddress + Pads[numSpaces];
         }
 
-        private sealed class HostsEntry
+        private sealed class HostsEntry(int lineNumber, string hostName, string tail)
         {
-            public HostsEntry(int lineNumber, string hostName, string tail)
-            {
-                LineNumber = lineNumber;
-                HostName = hostName;
-                Tail = tail;
-            }
+            public string HostName { get; } = hostName;
 
-            public string HostName { get; }
+            public int LineNumber { get; } = lineNumber;
 
-            public int LineNumber { get; }
-
-            public string Tail { get; }
+            public string Tail { get; } = tail;
         }
 
         internal HostsFileEntries(string[] hostEntries) : this(hostEntries, false)
@@ -80,16 +73,16 @@ namespace MSBuild.ExtensionPack.Base.Interface
 
         internal HostsFileEntries(string[] hostEntries, bool truncate)
         {
-            if (hostEntries is null)
+            if (hostEntries.Length > 0)
             {
-                hostEntries = new string[0];
+                hostEntries = [];
             }
 
             hosts = new Dictionary<string, HostsEntry>(hostEntries.Length);
 
             if (truncate)
             {
-                hostsFileLines = new List<string>();
+                hostsFileLines = [];
                 foreach (var line in hostEntries)
                 {
                     if (line.StartsWith("#", StringComparison.OrdinalIgnoreCase))
@@ -107,7 +100,7 @@ namespace MSBuild.ExtensionPack.Base.Interface
                 return;
             }
 
-            hostsFileLines = new List<string>(hostEntries);
+            hostsFileLines = [.. hostEntries];
             var lineNum = 0;
             foreach (var line in hostsFileLines)
             {

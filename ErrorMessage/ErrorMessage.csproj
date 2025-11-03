@@ -38,4 +38,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="17.14.40264" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Base\Base.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -47,10 +47,7 @@ namespace MSBuild.ExtensionPack.Base.Shared
                 // in that can't be converted to a string, FormatResourceString calls ToString() which returns the full name of the
                 // <see cref="Type"/>
                 // !
-                if (args is null || args.Length < 1)
-                {
-                    throw new ArgumentNullException(nameof(args));
-                }
+                ArgumentNullException.ThrowIfNull(args, nameof(args));
 
                 foreach (object? param in args)
                 {

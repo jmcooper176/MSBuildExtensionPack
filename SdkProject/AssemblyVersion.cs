@@ -232,12 +232,12 @@ namespace MSBuild.ExtensionPack.SdkProject
 
         public override bool Equals(object? obj)
         {
-            return obj is AssemblyVersion other ? this.TheVersion.Equals(other.TheVersion) : false;
+            return obj is AssemblyVersion other && this.TheVersion.Equals(other.TheVersion);
         }
 
         public bool Equals(AssemblyVersion? other)
         {
-            return other is null ? false : this.TheVersion.Equals(other.TheVersion);
+            return other is not null && this.TheVersion.Equals(other.TheVersion);
         }
 
         public bool Equals(AssemblyVersion? x, AssemblyVersion? y) => DefaultComparer.Equals(x, y);

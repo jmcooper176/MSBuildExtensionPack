@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Collections;
@@ -30,6 +30,7 @@ namespace MSBuild.ExtensionPack
     using Microsoft.Build.Utilities;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -218,32 +219,32 @@ namespace MSBuild.ExtensionPack
         {
             if (string.IsNullOrEmpty(this.InString))
             {
-                this.Log.LogError("InString is required");
+                this.Log.LogTaskError("InString is required");
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Escaping string: {0}", this.InString));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Escaping string: {0}", this.InString));
             this.OutString = Microsoft.Build.BuildEngine.Utilities.Escape(this.InString);
         }
 
         private void FilterItems()
         {
-            this.LogTaskMessage("Filtering Items");
-            if (this.inputItems1 is null)
+            this.Log.LogTaskMessage("Filtering Items");
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.RegexPattern))
             {
-                this.Log.LogError("RegexPattern is required");
+                this.Log.LogTaskError("RegexPattern is required");
                 return;
             }
 
             // Load the regex to use
             Regex parseRegex = new Regex(this.RegexPattern, RegexOptions.Compiled);
-            this.outputItems = new List<ITaskItem>();
+            this.outputItems = [];
 
             foreach (ITaskItem item in this.InputItems1)
             {
@@ -260,37 +261,36 @@ namespace MSBuild.ExtensionPack
 
         private void FilterItemsOnMetadata()
         {
-            this.LogTaskMessage("Filtering Items on metadata");
-            if (this.InputItems1 is null)
+            this.Log.LogTaskMessage("Filtering Items on metadata");
+            if (!this.InputItems1.Any())
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
-            if (this.inputItems2 is null)
+            if (this.inputItems2.Count < 1)
             {
-                this.Log.LogError("InputItems2 is required");
+                this.Log.LogTaskError("InputItems2 is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Separator))
             {
-                this.Log.LogError("Separator is required");
+                this.Log.LogTaskError("Separator is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Metadata))
             {
-                this.Log.LogError("Metadata is required");
+                this.Log.LogTaskError("Metadata is required");
                 return;
             }
 
-            this.outputItems = new List<ITaskItem>();
+            this.outputItems = [];
             foreach (ITaskItem item in this.InputItems1)
             {
-                string[] filters1 = item.GetMetadata(this.Metadata).Split(new[] { this.Separator }, StringSplitOptions.RemoveEmptyEntries);
-                List<string> filters1List = new List<string>(filters1.Length);
-                filters1List.AddRange(filters1);
+                string[] filters1 = item.GetMetadata(this.Metadata).Split([this.Separator], StringSplitOptions.RemoveEmptyEntries);
+                List<string> filters1List = [.. filters1];
                 if (this.InputItems2.Any(item2 => filters1List.Contains(item2.ItemSpec)))
                 {
                     this.outputItems.Add(item);
@@ -301,16 +301,16 @@ namespace MSBuild.ExtensionPack
         private void GetCommonItems()
         {
             this.LogTaskMessage("Getting Common Items");
-            this.outputItems = new List<ITaskItem>();
-            if (this.inputItems1 is null)
+            this.outputItems = [];
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
-            if (this.inputItems2 is null)
+            if (this.inputItems2.Count < 1)
             {
-                this.Log.LogError("InputItems2 is required");
+                this.Log.LogTaskError("InputItems2 is required");
                 return;
             }
 
@@ -350,16 +350,16 @@ namespace MSBuild.ExtensionPack
         private void GetDistinctItems()
         {
             this.LogTaskMessage("Getting Distinct Items");
-            this.outputItems = new List<ITaskItem>();
-            if (this.inputItems1 is null)
+            this.outputItems = [];
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
-            if (this.inputItems2 is null)
+            if (this.inputItems2.Count < 1)
             {
-                this.Log.LogError("InputItems2 is required");
+                this.Log.LogTaskError("InputItems2 is required");
                 return;
             }
 
@@ -407,44 +407,44 @@ namespace MSBuild.ExtensionPack
         private void GetItem()
         {
             this.LogTaskMessage("Getting Item");
-            if (this.inputItems1 is null)
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
             if (this.Position > this.InputItems1.Length - 1)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Position: {0} is outside the size of the item collection: {1}", this.Position, this.InputItems1.Length));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Position: {0} is outside the size of the item collection: {1}", this.Position, this.InputItems1.Length));
             }
 
-            this.outputItems = new List<ITaskItem> { this.inputItems1[this.Position] };
+            this.outputItems = [this.inputItems1[this.Position]];
         }
 
         private void GetItemCount()
         {
-            this.LogTaskMessage("Getting Item Count");
+            this.Log.LogTaskMessage("Getting Item Count");
             this.ItemCount = this.inputItems1?.Count ?? 0;
         }
 
         private void GetLastItem()
         {
-            this.LogTaskMessage("Getting Last Item");
-            if (this.inputItems1 is null)
+            this.Log.LogTaskMessage("Getting Last Item");
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
-            this.outputItems = new List<ITaskItem> { this.inputItems1[this.inputItems1.Count - 1] };
+            this.outputItems = [this.inputItems1[^1]];
         }
 
         private void ItemColToString()
         {
-            this.LogTaskMessage("Converting Item Collection to String");
-            if (this.inputItems1 is null)
+            this.Log.LogTaskMessage("Converting Item Collection to String");
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
@@ -459,20 +459,20 @@ namespace MSBuild.ExtensionPack
                 stringToReturn.AppendFormat(CultureInfo.CurrentCulture, "{0}{1}", t.ItemSpec, this.Separator);
             }
 
-            this.OutString = stringToReturn.ToString().Substring(0, stringToReturn.Length - this.Separator.Length);
+            this.OutString = stringToReturn.ToString()[..(stringToReturn.Length - this.Separator.Length)];
         }
 
         private void RemoveDuplicateFiles()
         {
-            this.LogTaskMessage("Removing Duplicates");
-            if (this.inputItems1 is null)
+            this.Log.LogTaskMessage("Removing Duplicates");
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
-            this.outputItems = new List<ITaskItem>();
-            ArrayList names = new ArrayList();
+            this.outputItems = [];
+            ArrayList names = [];
 
             foreach (ITaskItem item in this.InputItems1)
             {
@@ -489,14 +489,14 @@ namespace MSBuild.ExtensionPack
 
         private void Sort()
         {
-            this.LogTaskMessage("Sorting Items");
-            if (this.inputItems1 is null)
+            this.Log.LogTaskMessage("Sorting Items");
+            if (this.inputItems1.Count < 1)
             {
-                this.Log.LogError("InputItems1 is required");
+                this.Log.LogTaskError("InputItems1 is required");
                 return;
             }
 
-            this.outputItems = new List<ITaskItem>();
+            this.outputItems = [];
             ArrayList sortedItems = new ArrayList(this.InputItems1.Length);
 
             foreach (ITaskItem item in this.InputItems1)
@@ -524,18 +524,18 @@ namespace MSBuild.ExtensionPack
 
             if (string.IsNullOrEmpty(this.ItemString))
             {
-                this.Log.LogError("ItemString is required");
+                this.Log.LogTaskError("ItemString is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Separator))
             {
-                this.Log.LogError("Separator is required");
+                this.Log.LogTaskError("Separator is required");
                 return;
             }
 
-            this.outputItems = new List<ITaskItem>();
-            string[] s = this.ItemString.Split(new[] { this.Separator }, StringSplitOptions.RemoveEmptyEntries);
+            this.outputItems = [];
+            string[] s = this.ItemString.Split([this.Separator], StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string newItem in s)
             {
@@ -548,12 +548,12 @@ namespace MSBuild.ExtensionPack
         private void UpdateMetadata()
         {
             // We need to filter out reserved metadata as it can't be updated
-            List<string> reservedMetadata = new List<string> { "FullPath", "RootDir", "Filename", "Extension", "RelativeDir", "Directory", "RecursiveDir", "Identity", "ModifiedTime", "CreatedTime", "AccessedTime" };
+            List<string> reservedMetadata = ["FullPath", "RootDir", "Filename", "Extension", "RelativeDir", "Directory", "RecursiveDir", "Identity", "ModifiedTime", "CreatedTime", "AccessedTime"];
 
             // Validate input
-            if ((this.InputItems1 is null) || (this.InputItems2 is null))
+            if (!this.InputItems1.Any() || !this.InputItems2.Any())
             {
-                this.Log.LogError("InputItems1 and InputItems2 are mandatory", null);
+                this.Log.LogTaskError("InputItems1 and InputItems2 are mandatory", null);
                 return;
             }
 
@@ -584,7 +584,7 @@ namespace MSBuild.ExtensionPack
                     }
                 }
 
-                sourceIndex += 1;
+                sourceIndex++;
             }
         }
 
@@ -654,7 +654,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -670,8 +670,8 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         public IEnumerable<ITaskItem> InputItems1
         {
-            get => this.inputItems1.ToArray();
-            set => this.inputItems1 = new List<ITaskItem>(value);
+            get => [.. this.inputItems1];
+            set => this.inputItems1 = [.. value];
         }
 
         /// <summary>
@@ -679,8 +679,8 @@ namespace MSBuild.ExtensionPack
         /// </summary>
         public IEnumerable<ITaskItem> InputItems2
         {
-            get => this.inputItems2.ToArray();
-            set => this.inputItems2 = new List<ITaskItem>(value);
+            get => [.. this.inputItems2];
+            set => this.inputItems2 = [.. value];
         }
 
         /// <summary>
@@ -711,7 +711,7 @@ namespace MSBuild.ExtensionPack
         public IEnumerable<ITaskItem> OutputItems
         {
             get => this.outputItems?.ToArray();
-            set => this.outputItems = new List<ITaskItem>(value);
+            set => this.outputItems = [.. value];
         }
 
         /// <summary>

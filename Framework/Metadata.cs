@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -64,17 +64,17 @@ namespace MSBuild.ExtensionPack
 
         private static void AddToParameters(IDictionary<string, string> parametersBag, string name, string value)
         {
-            if (parametersBag is null)
+            if (!parametersBag.Any())
             {
                 throw new ArgumentNullException(nameof(parametersBag));
             }
 
-            if (name is null)
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if (value is null)
+            if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -94,13 +94,13 @@ namespace MSBuild.ExtensionPack
         /// <returns>IDictionary</returns>
         private static IDictionary<string, string> ParseParameters(string parameters)
         {
-            if (parameters is null)
+            if (string.IsNullOrEmpty(parameters))
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
 
             IDictionary<string, string> paramaterBag = new Dictionary<string, string>();
-            if (parameters.Length <= 0)
+            if (parameters.Length == 0)
             {
                 return paramaterBag;
             }
@@ -121,26 +121,26 @@ namespace MSBuild.ExtensionPack
 
         protected override void InternalExecute()
         {
-            if (string.Compare(this.TaskAction, AddTaskAction, StringComparison.OrdinalIgnoreCase) != 0)
+            if (!string.Equals(this.TaskAction, AddTaskAction, StringComparison.OrdinalIgnoreCase))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                 return;
             }
 
-            if (this.Items is null || this.Items.Length <= 0)
+            if (!this.Items.Any())
             {
-                this.LogTaskWarning("No items to attach metadata to");
+                this.Log.LogTaskWarning("No items to attach metadata to");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.NewMetadata))
             {
-                this.LogTaskWarning("No metadata to attach to items");
+                this.Log.LogTaskWarning("No metadata to attach to items");
                 return;
             }
 
             IDictionary<string, string> metadataBag = ParseParameters(this.NewMetadata);
-            if (metadataBag.Count <= 0)
+            if (metadataBag.Count == 0)
             {
                 this.LogTaskWarning("No metadata to attach to items");
                 return;

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
@@ -111,13 +111,13 @@ namespace Computer
             var v = subkey.GetValue(value);
             if (v is null)
             {
-                return null;
+                return string.Empty;
             }
 
             RegistryValueKind valueKind = subkey.GetValueKind(value);
-            if (valueKind == RegistryValueKind.Binary && v is byte[])
+            if (valueKind == RegistryValueKind.Binary && v is byte[] v2)
             {
-                byte[] valueBytes = (byte[])v;
+                byte[] valueBytes = v2;
                 StringBuilder bytes = new StringBuilder(valueBytes.Length * 2);
                 foreach (byte b in valueBytes)
                 {
@@ -128,10 +128,10 @@ namespace Computer
                 return bytes.ToString(0, bytes.Length - 1);
             }
 
-            if (valueKind == RegistryValueKind.MultiString && v is string[])
+            if (valueKind == RegistryValueKind.MultiString && v is string[] v1)
             {
                 var itemList = new StringBuilder();
-                foreach (string item in (string[])v)
+                foreach (string item in v1)
                 {
                     itemList.Append(item);
                     itemList.Append(',');
@@ -156,18 +156,11 @@ namespace Computer
             RegistryKey? subKey = this.registryKey.OpenSubKey(this.Key, true);
             if (subKey is not null)
             {
-                if (subKey.SubKeyCount <= 0)
-                {
-                    this.Empty = subKey.ValueCount <= 0;
-                }
-                else
-                {
-                    this.Empty = false;
-                }
+                this.Empty = subKey.SubKeyCount <= 0 && subKey.ValueCount <= 0;
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Registry Key: {0} not found in Hive: {1}, View: {2} on: {3}", this.Key, this.RegistryHive, this.RegistryView, this.MachineName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Registry Key: {0} not found in Hive: {1}, View: {2} on: {3}", this.Key, this.RegistryHive, this.RegistryView, this.MachineName));
             }
         }
 
@@ -284,8 +277,8 @@ namespace Computer
                     }
                     else
                     {
-                        // assumption that ',' is separator for binary and multistring value types.
-                        char[] separator = { ',' };
+                        // assumption that ',' is separator for binary and multi-string value types.
+                        char[] separator = [','];
                         object registryValue;
 
                         RegistryValueKind valueKind = Enum.Parse<RegistryValueKind>(this.DataType, true);
@@ -330,7 +323,7 @@ namespace Computer
             }
             else
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Registry Key: {0} not found in Hive: {1}, View: {2} on: {3}", this.Key, this.RegistryHive, this.RegistryView, this.MachineName));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Registry Key: {0} not found in Hive: {1}, View: {2} on: {3}", this.Key, this.RegistryHive, this.RegistryView, this.MachineName));
             }
 
             if (changed)
@@ -356,7 +349,7 @@ namespace Computer
             }
             catch (System.ArgumentException)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The Registry Hive provided is not valid: {0}", this.RegistryHive));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The Registry Hive provided is not valid: {0}", this.RegistryHive));
                 return;
             }
 
@@ -395,7 +388,7 @@ namespace Computer
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

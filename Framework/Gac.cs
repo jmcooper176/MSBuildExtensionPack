@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Globalization;
@@ -24,6 +24,7 @@ namespace MSBuild.ExtensionPack
     using Microsoft.Build.Framework;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -65,58 +66,56 @@ namespace MSBuild.ExtensionPack
     {
         private void AddAssembly()
         {
-            if (System.IO.File.Exists(this.AssemblyPath.GetMetadata("FullPath")) == false)
+            if (!System.IO.File.Exists(this.AssemblyPath.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "The AssemblyPath was not found: {0}", this.AssemblyPath.GetMetadata("FullPath")));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "The AssemblyPath was not found: {0}", this.AssemblyPath.GetMetadata("FullPath")));
             }
             else
             {
                 if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "GAC Assembly: {0}", this.AssemblyPath.GetMetadata("FullPath")));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "GAC Assembly: {0}", this.AssemblyPath.GetMetadata("FullPath")));
                     this.Install(this.AssemblyPath.GetMetadata("FullPath"), this.Force);
                 }
                 else
                 {
                     if (string.IsNullOrEmpty(this.RemoteAssemblyPath))
                     {
-                        this.Log.LogError("RemoteAssemblyPath is Required");
+                        this.Log.LogTaskError("RemoteAssemblyPath is Required");
                         return;
                     }
 
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "GAC Assembly: {0} on Remote Server: {1}", this.RemoteAssemblyPath, this.MachineName));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "GAC Assembly: {0} on Remote Server: {1}", this.RemoteAssemblyPath, this.MachineName));
 
                     // the assembly needs to be copied to the remote server for gaccing.
                     if (System.IO.File.Exists(this.RemoteAssemblyPath))
                     {
-                        this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Deleting old Remote Assembly: {0}", this.RemoteAssemblyPath));
+                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Deleting old Remote Assembly: {0}", this.RemoteAssemblyPath));
                         System.IO.File.Delete(this.RemoteAssemblyPath);
                     }
 
                     this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Copying Assembly from: {0} to: {1}", this.AssemblyPath.GetMetadata("FullPath"), this.RemoteAssemblyPath));
                     System.IO.File.Copy(this.AssemblyPath.GetMetadata("FullPath"), this.RemoteAssemblyPath);
                     this.GetManagementScope(@"\root\cimv2");
-                    using (ManagementClass m = new ManagementClass(this.Scope, new ManagementPath("Win32_Process"), new ObjectGetOptions(null, System.TimeSpan.MaxValue, true)))
+                    using ManagementClass m = new ManagementClass(this.Scope, new ManagementPath("Win32_Process"), new ObjectGetOptions(null, System.TimeSpan.MaxValue, true));
+                    ManagementBaseObject methodParameters = m.GetMethodParameters("Create");
+                    methodParameters["CommandLine"] = "gacutil.exe /i \"" + this.RemoteAssemblyPath + "\"";
+                    ManagementBaseObject outParams = m.InvokeMethod("Create", methodParameters, null);
+
+                    if (outParams is not null)
                     {
-                        ManagementBaseObject methodParameters = m.GetMethodParameters("Create");
-                        methodParameters["CommandLine"] = @"gacutil.exe /i " + "\"" + this.RemoteAssemblyPath + "\"";
-                        ManagementBaseObject outParams = m.InvokeMethod("Create", methodParameters, null);
-
-                        if (outParams is not null)
+                        if (int.Parse(outParams["returnValue"].ToString(), CultureInfo.InvariantCulture) != 0)
                         {
-                            if (int.Parse(outParams["returnValue"].ToString(), CultureInfo.InvariantCulture) != 0)
-                            {
-                                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Remote AddAssembly returned non-zero returnValue: {0}", outParams["returnValue"]));
-                                return;
-                            }
+                            this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Remote AddAssembly returned non-zero returnValue: {0}", outParams["returnValue"]));
+                            return;
+                        }
 
-                            this.LogTaskMessage(MessageImportance.Low, "Process ReturnValue: " + outParams["returnValue"]);
-                            this.LogTaskMessage(MessageImportance.Low, "Process ID: " + outParams["processId"]);
-                        }
-                        else
-                        {
-                            this.Log.LogError("Remote Create returned null");
-                        }
+                        this.Log.LogTaskMessage(MessageImportance.Low, "Process ReturnValue: " + outParams["returnValue"]);
+                        this.Log.LogTaskMessage(MessageImportance.Low, "Process ID: " + outParams["processId"]);
+                    }
+                    else
+                    {
+                        this.Log.LogTaskError("Remote Create returned null");
                     }
                 }
             }
@@ -135,13 +134,12 @@ namespace MSBuild.ExtensionPack
         private NativeMethods.IAssemblyCache GetIAssemblyCache()
         {
             // Get the IAssemblyCache interface
-            NativeMethods.IAssemblyCache assemblyCache;
-            int result = NativeMethods.CreateAssemblyCache(out assemblyCache, 0);
+            int result = NativeMethods.CreateAssemblyCache(out NativeMethods.IAssemblyCache assemblyCache, 0);
 
             // If the result is not zero throw an exception
             if (result != 0)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Failed to get the IAssemblyCache interface. Result Code: {0}", result));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Failed to get the IAssemblyCache interface. Result Code: {0}", result));
                 return null;
             }
 
@@ -163,7 +161,7 @@ namespace MSBuild.ExtensionPack
             // If the result is not zero throw an exception
             if (result != 0)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Failed to install assembly into the global assembly cache. Result Code: {0}", result));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Failed to install assembly into the global assembly cache. Result Code: {0}", result));
             }
         }
 
@@ -171,28 +169,26 @@ namespace MSBuild.ExtensionPack
         {
             if (string.Compare(this.MachineName, Environment.MachineName, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "UnGAC Assembly: {0}", this.AssemblyName));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "UnGAC Assembly: {0}", this.AssemblyName));
                 this.Uninstall(this.AssemblyName);
             }
             else
             {
-                this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "UnGAC Assembly: {0} on Remote Server: {1}", this.AssemblyName, this.MachineName));
+                this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "UnGAC Assembly: {0} on Remote Server: {1}", this.AssemblyName, this.MachineName));
                 this.GetManagementScope(@"\root\cimv2");
-                using (ManagementClass m = new ManagementClass(this.Scope, new ManagementPath("Win32_Process"), new ObjectGetOptions(null, System.TimeSpan.MaxValue, true)))
-                {
-                    ManagementBaseObject methodParameters = m.GetMethodParameters("Create");
-                    methodParameters["CommandLine"] = @"gacutil.exe /u " + "\"" + this.AssemblyName + "\"";
-                    ManagementBaseObject outParams = m.InvokeMethod("Create", methodParameters, null);
+                using ManagementClass m = new ManagementClass(this.Scope, new ManagementPath("Win32_Process"), new ObjectGetOptions(null, System.TimeSpan.MaxValue, true));
+                ManagementBaseObject methodParameters = m.GetMethodParameters("Create");
+                methodParameters["CommandLine"] = "gacutil.exe /u \"" + this.AssemblyName + "\"";
+                ManagementBaseObject outParams = m.InvokeMethod("Create", methodParameters, null);
 
-                    if (outParams is not null)
-                    {
-                        this.LogTaskMessage(MessageImportance.Low, "Process returned: " + outParams["returnValue"]);
-                        this.LogTaskMessage(MessageImportance.Low, "Process ID: " + outParams["processId"]);
-                    }
-                    else
-                    {
-                        this.Log.LogError("Remote Remove returned null");
-                    }
+                if (outParams is not null)
+                {
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Process returned: " + outParams["returnValue"]);
+                    this.Log.LogTaskMessage(MessageImportance.Low, "Process ID: " + outParams["processId"]);
+                }
+                else
+                {
+                    this.Log.LogTaskError("Remote Remove returned null");
                 }
             }
         }
@@ -203,8 +199,7 @@ namespace MSBuild.ExtensionPack
             NativeMethods.IAssemblyCache assemblyCache = this.GetIAssemblyCache();
 
             // Uninstall the assembly from the cache
-            int disposition;
-            int result = assemblyCache.UninstallAssembly(0, name, IntPtr.Zero, out disposition);
+            int result = assemblyCache.UninstallAssembly(0, name, IntPtr.Zero, out int disposition);
 
             // If the result is not zero or the disposition is not 1 then throw an exception
             if (result != 0)
@@ -218,7 +213,7 @@ namespace MSBuild.ExtensionPack
                         break;
 
                     case 2:
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "An application is using: {0} so it could not be uninstalled.", name));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "An application is using: {0} so it could not be uninstalled.", name));
                         return;
 
                     case 3:
@@ -230,7 +225,7 @@ namespace MSBuild.ExtensionPack
                         break;
 
                     case 5:
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "{0} was not uninstalled from the GAC because another reference exists to it.", name));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "{0} was not uninstalled from the GAC because another reference exists to it.", name));
                         return;
 
                     case 6:
@@ -239,7 +234,7 @@ namespace MSBuild.ExtensionPack
                         break;
 
                     default:
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Failed to uninstall: {0} from the GAC.", name));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Failed to uninstall: {0} from the GAC.", name));
                         return;
                 }
             }
@@ -265,7 +260,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }

@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -26,6 +26,9 @@ namespace MSBuild.ExtensionPack
 
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+
+    using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -97,7 +100,7 @@ namespace MSBuild.ExtensionPack
     ///]]>
     /// </code>
     /// </example>
-    public class Assembly : BaseAppDomainIsolatedTask
+    public class Assembly : BaseTask
     {
         private System.Reflection.Assembly loadedAssembly;
         private List<ITaskItem> outputItems;
@@ -106,7 +109,7 @@ namespace MSBuild.ExtensionPack
         {
             if (this.loadedAssembly is not null)
             {
-                this.outputItems = new List<ITaskItem>();
+                this.outputItems = [];
                 ITaskItem t = new TaskItem(this.NetAssembly.GetMetadata("FileName"));
 
                 // get the PublicKeyToken
@@ -135,18 +138,18 @@ namespace MSBuild.ExtensionPack
 
         private void GetMethodInfo()
         {
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting MethodInfo for: {0}", this.NetAssembly.GetMetadata("FullPath")));
-            this.outputItems = new List<ITaskItem>();
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Getting MethodInfo for: {0}", this.NetAssembly.GetMetadata("FullPath")));
+            this.outputItems = [];
             foreach (Type type in this.loadedAssembly.GetTypes())
             {
-                this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Found Type: {0}", this.NetClass));
+                this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Found Type: {0}", this.NetClass));
                 ITaskItem t = new TaskItem(type.Name);
                 string paras = string.Empty;
                 foreach (MethodInfo mi in type.GetMethods())
                 {
                     foreach (ParameterInfo pi in mi.GetParameters())
                     {
-                        this.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Found Parameter: {0}", pi.Name));
+                        this.Log.LogTaskMessage(MessageImportance.Low, string.Format(CultureInfo.CurrentCulture, "Found Parameter: {0}", pi.Name));
                         paras += string.Format(CultureInfo.CurrentCulture, "[{0}] {1} | ", pi.ParameterType, pi.Name);
                     }
 
@@ -187,7 +190,7 @@ namespace MSBuild.ExtensionPack
                     return Convert.ToDateTime(it.ItemSpec, CultureInfo.CurrentCulture);
 
                 default:
-                    this.Log.LogError("Invalid Type supplied");
+                    this.Log.LogTaskError("Invalid Type supplied");
                     break;
             }
 
@@ -201,9 +204,9 @@ namespace MSBuild.ExtensionPack
             {
                 if (type.IsClass && type.Name == this.NetClass)
                 {
-                    this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Found Type: {0}", this.NetClass));
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Found Type: {0}", this.NetClass));
                     typeFound = true;
-                    object[] arguments = new object[0];
+                    object[] arguments = [];
                     if (this.NetArguments is not null)
                     {
                         arguments = new object[this.NetArguments.Length];
@@ -218,24 +221,24 @@ namespace MSBuild.ExtensionPack
 
                     this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Invoking: {0}", this.NetMethod));
 
-                    if (this.NetMethod is null)
+                    if (string.IsNullOrEmpty(this.NetMethod))
                     {
                         // allows call to the default constructor
                         this.NetMethod = string.Empty;
                     }
 
-                    object result = type.InvokeMember(this.NetMethod, BindingFlags.Default | BindingFlags.InvokeMethod, null, Activator.CreateInstance(type), arguments, CultureInfo.CurrentCulture);
+                    object? result = type.InvokeMember(this.NetMethod, BindingFlags.Default | BindingFlags.InvokeMethod, null, Activator.CreateInstance(type), arguments, CultureInfo.CurrentCulture);
 
                     if (result is not null)
                     {
-                        this.Result = result.ToString();
+                        this.Result = result.ToString() ?? string.Empty;
                     }
                 }
             }
 
             if (!typeFound)
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Type not Found: {0}", this.NetClass));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Type not Found: {0}", this.NetClass));
             }
         }
 
@@ -248,16 +251,16 @@ namespace MSBuild.ExtensionPack
 
             if (!System.IO.File.Exists(this.NetAssembly.GetMetadata("FullPath")))
             {
-                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", this.NetAssembly.GetMetadata("FullPath")));
+                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "File not found: {0}", this.NetAssembly.GetMetadata("FullPath")));
 
                 // set the OutputItems so we dont get a
                 // <see langref="null"/>
                 // ref exception.
-                this.OutputItems = new ITaskItem[0];
+                this.OutputItems = [];
                 return;
             }
 
-            this.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Loading Assembly: {0}", this.NetAssembly.GetMetadata("FullPath")));
+            this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Loading Assembly: {0}", this.NetAssembly.GetMetadata("FullPath")));
             this.loadedAssembly = System.Reflection.Assembly.LoadFrom(this.NetAssembly.GetMetadata("FullPath"));
 
             switch (this.TaskAction)
@@ -275,7 +278,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                     return;
             }
         }
@@ -302,7 +305,7 @@ namespace MSBuild.ExtensionPack
         public string NetMethod { get; set; }
 
         /// <summary>
-        /// Gets the outputitems.
+        /// Gets the output items.
         /// <para/>
         /// For a call to GetMethodInfo, OutputItems provides the following metadata: Parameters
         /// <para/>
@@ -312,8 +315,8 @@ namespace MSBuild.ExtensionPack
         [Output]
         public IEnumerable<ITaskItem> OutputItems
         {
-            get => this.outputItems.ToArray();
-            set => this.outputItems = new List<ITaskItem>(value);
+            get => [.. this.outputItems];
+            set => this.outputItems = [.. value];
         }
 
         /// <summary>

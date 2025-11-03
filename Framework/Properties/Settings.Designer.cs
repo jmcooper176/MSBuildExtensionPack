@@ -26,7 +26,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MSBuild.ExtensionPack.Properties {
+namespace MSBuild.ExtensionPack.Framework.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

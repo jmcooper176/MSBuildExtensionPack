@@ -66,7 +66,7 @@ namespace VisualStudio
 
         private void Build()
         {
-            if (this.Projects is null)
+            if (!this.Projects.Any())
             {
                 this.Log.LogTaskError("The collection passed to Projects is empty");
                 return;
@@ -84,148 +84,144 @@ namespace VisualStudio
 
         private bool BuildProject(ITaskItem project)
         {
-            using (Process proc = new Process())
+            using Process proc = new Process();
+            if (!string.IsNullOrEmpty(project.GetMetadata("ChgPropVBP")))
             {
-                if (!string.IsNullOrEmpty(project.GetMetadata("ChgPropVBP")))
+                this.Log.LogTaskMessage("START - Changing Properties VBP");
+
+                VBPProject projectVBP = new VBPProject(project.ItemSpec);
+                if (projectVBP.Load())
                 {
-                    this.Log.LogTaskMessage("START - Changing Properties VBP");
+                    string[] linesProperty = project.GetMetadata("ChgPropVBP").Split(Separator);
+                    string[] keyProperty = new string[linesProperty.Length];
+                    string[] valueProperty = new string[linesProperty.Length];
+                    int index;
 
-                    VBPProject projectVBP = new VBPProject(project.ItemSpec);
-                    if (projectVBP.Load())
+                    for (index = 0; index <= linesProperty.Length - 1; index++)
                     {
-                        string[] linesProperty = project.GetMetadata("ChgPropVBP").Split(Separator);
-                        string[] keyProperty = new string[linesProperty.Length];
-                        string[] valueProperty = new string[linesProperty.Length];
-                        int index;
-
-                        for (index = 0; index <= linesProperty.Length - 1; index++)
+                        if (linesProperty[index].IndexOf("=", StringComparison.OrdinalIgnoreCase) != -1)
                         {
-                            if (linesProperty[index].IndexOf("=", StringComparison.OrdinalIgnoreCase) != -1)
-                            {
-                                keyProperty[index] = linesProperty[index].Substring(0, linesProperty[index].IndexOf("=", StringComparison.OrdinalIgnoreCase));
-                                valueProperty[index] = linesProperty[index].Substring(linesProperty[index].IndexOf("=", StringComparison.OrdinalIgnoreCase) + 1);
-                            }
-
-                            if (!string.IsNullOrEmpty(keyProperty[index]) && !string.IsNullOrEmpty(valueProperty[index]))
-                            {
-                                this.Log.LogTaskMessage(keyProperty[index] + " -> New value: " + valueProperty[index]);
-                                projectVBP.SetProjectProperty(keyProperty[index], valueProperty[index], false);
-                            }
+                            keyProperty[index] = linesProperty[index][..linesProperty[index].IndexOf("=", StringComparison.OrdinalIgnoreCase)];
+                            valueProperty[index] = linesProperty[index][(linesProperty[index].IndexOf("=", StringComparison.OrdinalIgnoreCase) + 1)..];
                         }
 
-                        projectVBP.Save();
-                    }
-
-                    this.Log.LogTaskMessage("END - Changing Properties VBP");
-                }
-
-                FileInfo artifactFileInfo = null;
-                if (this.IfModificationExists)
-                {
-                    this.Log.LogTaskMessage("START - Checking for modified files");
-                    bool doBuild = false;
-                    VBPProject projectVBP = new VBPProject(project.ItemSpec);
-                    if (projectVBP.Load())
-                    {
-                        FileInfo projectFileInfo = new FileInfo(projectVBP.ProjectFile);
-                        artifactFileInfo = projectVBP.ArtifactFile;
-                        this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "artifactFile '{0}', LastWrite: {1}'", artifactFileInfo.FullName, artifactFileInfo.LastWriteTime));
-
-                        if (projectFileInfo.LastWriteTime > artifactFileInfo.LastWriteTime)
+                        if (!string.IsNullOrEmpty(keyProperty[index]) && !string.IsNullOrEmpty(valueProperty[index]))
                         {
-                            this.Log.LogTaskMessage(MessageImportance.High, $"File '{projectFileInfo.Name}' is newer then '{artifactFileInfo.Name}'");
-                            doBuild = true;
-                        }
-                        else
-                        {
-                            foreach (var file in projectVBP.GetFiles())
-                            {
-                                this.Log.LogTaskMessage($"File '{file.FullName}', LastWrite: {file.LastWriteTime}'");
-
-                                if (file.LastWriteTime > artifactFileInfo.LastWriteTime)
-                                {
-                                    this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "File '{0}' is newer then '{1}'", file.Name, artifactFileInfo.Name));
-                                    doBuild = true;
-                                    break;
-                                }
-                            }
+                            this.Log.LogTaskMessage(keyProperty[index] + " -> New value: " + valueProperty[index]);
+                            projectVBP.SetProjectProperty(keyProperty[index], valueProperty[index], false);
                         }
                     }
 
-                    if (!doBuild)
-                    {
-                        this.Log.LogTaskMessage(MessageImportance.High, "Build skipped, because no modifications exists.");
-                        return true;
-                    }
-
-                    this.LogTaskMessage("END - Checking for modified files");
+                    projectVBP.Save();
                 }
 
-                proc.StartInfo.FileName = this.VB6Path;
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.StartInfo.RedirectStandardError = true;
-                if (string.IsNullOrEmpty(project.GetMetadata("OutDir")))
-                {
-                    proc.StartInfo.Arguments = @"/MAKE /OUT " + @"""" + project.ItemSpec + ".log" + @""" " + @"""" + project.ItemSpec + @"""";
-                }
-                else
-                {
-                    if (!Directory.Exists(project.GetMetadata("OutDir")))
-                    {
-                        Directory.CreateDirectory(project.GetMetadata("OutDir"));
-                    }
-
-                    proc.StartInfo.Arguments = @"/MAKE /OUT " + @"""" + project.ItemSpec + ".log" + @""" " + @"""" + project.ItemSpec + @"""" + " /outdir " + @"""" + project.GetMetadata("OutDir") + @"""";
-                }
-
-                // start the process
-                this.Log.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
-
-                proc.Start();
-
-                string outputStream = proc.StandardOutput.ReadToEnd();
-                if (outputStream.Length > 0)
-                {
-                    this.Log.LogTaskMessage(outputStream);
-                }
-
-                string errorStream = proc.StandardError.ReadToEnd();
-                if (errorStream.Length > 0)
-                {
-                    this.Log.LogTaskError(errorStream);
-                }
-
-                proc.WaitForExit();
-                if (proc.ExitCode != 0)
-                {
-                    this.Log.LogTaskError("Non-zero exit code from VB6.exe: " + proc.ExitCode);
-                    try
-                    {
-                        using (FileStream myStreamFile = new FileStream(project.ItemSpec + ".log", FileMode.Open))
-                        {
-                            StreamReader myStream = new System.IO.StreamReader(myStreamFile);
-                            string myBuffer = myStream.ReadToEnd();
-                            this.Log.LogTaskError(myBuffer);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
-                    }
-
-                    return false;
-                }
-
-                if (artifactFileInfo is not null)
-                {
-                    var myNow = DateTime.Now;
-                    artifactFileInfo.LastWriteTime = myNow;
-                    artifactFileInfo.LastAccessTime = myNow;
-                }
-
-                return true;
+                this.Log.LogTaskMessage("END - Changing Properties VBP");
             }
+
+            FileInfo artifactFileInfo = null;
+            if (this.IfModificationExists)
+            {
+                this.Log.LogTaskMessage("START - Checking for modified files");
+                bool doBuild = false;
+                VBPProject projectVBP = new VBPProject(project.ItemSpec);
+                if (projectVBP.Load())
+                {
+                    FileInfo projectFileInfo = new FileInfo(projectVBP.ProjectFile);
+                    artifactFileInfo = projectVBP.ArtifactFile;
+                    this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "artifactFile '{0}', LastWrite: {1}'", artifactFileInfo.FullName, artifactFileInfo.LastWriteTime));
+
+                    if (projectFileInfo.LastWriteTime > artifactFileInfo.LastWriteTime)
+                    {
+                        this.Log.LogTaskMessage(MessageImportance.High, $"File '{projectFileInfo.Name}' is newer then '{artifactFileInfo.Name}'");
+                        doBuild = true;
+                    }
+                    else
+                    {
+                        foreach (var file in projectVBP.GetFiles())
+                        {
+                            this.Log.LogTaskMessage($"File '{file.FullName}', LastWrite: {file.LastWriteTime}'");
+
+                            if (file.LastWriteTime > artifactFileInfo.LastWriteTime)
+                            {
+                                this.Log.LogTaskMessage(MessageImportance.High, string.Format(CultureInfo.CurrentCulture, "File '{0}' is newer then '{1}'", file.Name, artifactFileInfo.Name));
+                                doBuild = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!doBuild)
+                {
+                    this.Log.LogTaskMessage(MessageImportance.High, "Build skipped, because no modifications exists.");
+                    return true;
+                }
+
+                this.LogTaskMessage("END - Checking for modified files");
+            }
+
+            proc.StartInfo.FileName = this.VB6Path;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            if (string.IsNullOrEmpty(project.GetMetadata("OutDir")))
+            {
+                proc.StartInfo.Arguments = "/MAKE /OUT " + @"""" + project.ItemSpec + ".log" + @""" """ + project.ItemSpec + @"""";
+            }
+            else
+            {
+                if (!Directory.Exists(project.GetMetadata("OutDir")))
+                {
+                    Directory.CreateDirectory(project.GetMetadata("OutDir"));
+                }
+
+                proc.StartInfo.Arguments = "/MAKE /OUT " + @"""" + project.ItemSpec + ".log" + @""" """ + project.ItemSpec + @"""" + " /outdir " + @"""" + project.GetMetadata("OutDir") + @"""";
+            }
+
+            // start the process
+            this.Log.LogTaskMessage("Running " + proc.StartInfo.FileName + " " + proc.StartInfo.Arguments);
+
+            proc.Start();
+
+            string outputStream = proc.StandardOutput.ReadToEnd();
+            if (outputStream.Length > 0)
+            {
+                this.Log.LogTaskMessage(outputStream);
+            }
+
+            string errorStream = proc.StandardError.ReadToEnd();
+            if (errorStream.Length > 0)
+            {
+                this.Log.LogTaskError(errorStream);
+            }
+
+            proc.WaitForExit();
+            if (proc.ExitCode != 0)
+            {
+                this.Log.LogTaskError("Non-zero exit code from VB6.exe: " + proc.ExitCode);
+                try
+                {
+                    using FileStream myStreamFile = new FileStream(project.ItemSpec + ".log", FileMode.Open);
+                    using StreamReader myStream = new System.IO.StreamReader(myStreamFile);
+                    string myBuffer = myStream.ReadToEnd();
+                    this.Log.LogTaskError(myBuffer);
+                }
+                catch (Exception ex)
+                {
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Unable to open log file: '{0}'. Exception: {1}", project.ItemSpec + ".log", ex.Message));
+                }
+
+                return false;
+            }
+
+            if (artifactFileInfo is not null)
+            {
+                var myNow = DateTime.Now;
+                artifactFileInfo.LastWriteTime = myNow;
+                artifactFileInfo.LastAccessTime = myNow;
+            }
+
+            return true;
         }
 
         protected override void InternalExecute()

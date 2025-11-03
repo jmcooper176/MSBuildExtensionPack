@@ -232,14 +232,7 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
         {
             this.TemporaryDirectory = directory;
 
-            if (this.TemporaryDirectory.Parent is null)
-            {
-                this.ParentDirectory = OperatingSystem.IsWindows() ? new(TempDirectory.GetCurrentDrive().Name) : new(new string(Path.DirectorySeparatorChar, 1));
-            }
-            else
-            {
-                this.ParentDirectory = this.TemporaryDirectory.Parent;
-            }
+            this.ParentDirectory = (DirectoryInfo?)this.TemporaryDirectory.Parent ?? (OperatingSystem.IsWindows() ? new(TempDirectory.GetCurrentDrive().Name) : new(new string(Path.DirectorySeparatorChar, 1)));
 
             this.TemporaryDirectory = this.TemporaryDirectory.CreateSubdirectory(Guid.NewGuid().ToString()).CreateSubdirectory(leaf);
 
@@ -462,26 +455,16 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
 
         public static bool Equals(DirectoryInfo? x, FileInfo? y)
         {
-            if (OperatingSystem.IsWindows())
-            {
-                return string.Equals(x?.FullName, y?.DirectoryName, StringComparison.OrdinalIgnoreCase);
-            }
-            else
-            {
-                return string.Equals(x?.FullName, y?.DirectoryName, StringComparison.Ordinal);
-            }
+            return OperatingSystem.IsWindows()
+                ? string.Equals(x?.FullName, y?.DirectoryName, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(x?.FullName, y?.DirectoryName, StringComparison.Ordinal);
         }
 
         public static bool Equals(FileInfo? x, DirectoryInfo? y)
         {
-            if (OperatingSystem.IsWindows())
-            {
-                return string.Equals(x?.DirectoryName, y?.FullName, StringComparison.OrdinalIgnoreCase);
-            }
-            else
-            {
-                return string.Equals(x?.DirectoryName, y?.FullName, StringComparison.Ordinal);
-            }
+            return OperatingSystem.IsWindows()
+                ? string.Equals(x?.DirectoryName, y?.FullName, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(x?.DirectoryName, y?.FullName, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -567,14 +550,9 @@ namespace MSBuild.ExtensionPack.Base.SecureFile
 
         public bool Equals(DirectoryInfo? x, DirectoryInfo? y)
         {
-            if (OperatingSystem.IsWindows())
-            {
-                return string.Equals(x?.FullName, y?.FullName, StringComparison.OrdinalIgnoreCase);
-            }
-            else
-            {
-                return string.Equals(x?.FullName, y?.FullName, StringComparison.Ordinal);
-            }
+            return OperatingSystem.IsWindows()
+                ? string.Equals(x?.FullName, y?.FullName, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(x?.FullName, y?.FullName, StringComparison.Ordinal);
         }
 
         public bool Equals(string? x, string? y)

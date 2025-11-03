@@ -15,7 +15,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace MSBuild.ExtensionPack
+namespace MSBuild.ExtensionPack.Framework
 {
     using System;
     using System.CodeDom.Compiler;
@@ -30,6 +30,7 @@ namespace MSBuild.ExtensionPack
     using Microsoft.CSharp;
 
     using MSBuild.ExtensionPack.Base;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     // TODO: Possible future extensions: Advanced conversions (supporting more user-defined types via IFormattable, constructors,
     // ToString, TypeConverter/TypeDescriptor, or Reflection/AssignableFrom) Languages other than C# (not too hard if we convert to
@@ -648,12 +649,12 @@ namespace MSBuild.ExtensionPack
         /// <summary>
         /// The shared collection of closure instances. Created closures may be destroyed at a later time.
         /// </summary>
-        private static readonly Dictionary<string, Closure> Closures = new Dictionary<string, Closure>();
+        private static readonly Dictionary<string, Closure> Closures = [];
 
         /// <summary>
         /// The shared collection of method definitions. Once defined, a method is never undefined.
         /// </summary>
-        private static readonly Dictionary<string, MethodDefinition> Methods = new Dictionary<string, MethodDefinition>();
+        private static readonly Dictionary<string, MethodDefinition> Methods = [];
 
         /// <summary>
         /// Converts an MSBuild input value into a method input value.
@@ -661,14 +662,14 @@ namespace MSBuild.ExtensionPack
         /// <param name="type"> The input <see cref="Type"/> that the method is expecting.</param>
         /// <param name="value">The MSBuild input value.</param>
         /// <returns>A method input value.</returns>
-        private static object ConvertArgument(Type type, ITaskItem[] value)
+        private static object? ConvertArgument(Type type, ITaskItem[] value)
         {
             if (type == typeof(ITaskItem[]))
             {
                 return value;
             }
 
-            if (value is null || value.Length == 0)
+            if (value?.Length < 1)
             {
                 return null;
             }
@@ -684,17 +685,9 @@ namespace MSBuild.ExtensionPack
                 return ret;
             }
 
-            if (value.Length != 1)
-            {
-                throw new ArgumentException("Attempted to pass a vector value as a scalar argument");
-            }
-
-            if (type == typeof(ITaskItem))
-            {
-                return value[0];
-            }
-
-            return ConvertScalarArgument(type, value[0]);
+            return value.Length != 1
+                ? throw new ArgumentException("Attempted to pass a vector value as a scalar argument")
+                : type == typeof(ITaskItem) ? value[0] : ConvertScalarArgument(type, value[0]);
         }
 
         /// <summary>
@@ -711,7 +704,7 @@ namespace MSBuild.ExtensionPack
             // object references
             if (value is null)
             {
-                return new ITaskItem[0];
+                return [];
             }
 
             Type type = value.GetType();
@@ -722,7 +715,7 @@ namespace MSBuild.ExtensionPack
 
             if (type == typeof(ITaskItem) || type == typeof(TaskItem))
             {
-                return new[] { (ITaskItem)value };
+                return [(ITaskItem)value];
             }
 
             if (type.IsArray)
@@ -737,7 +730,7 @@ namespace MSBuild.ExtensionPack
                 return ret;
             }
 
-            return new[] { ConvertScalarResult(value) };
+            return [ConvertScalarResult(value)];
         }
 
         /// <summary>
@@ -762,7 +755,7 @@ namespace MSBuild.ExtensionPack
                 if (val.StartsWith("!", StringComparison.OrdinalIgnoreCase))
                 {
                     invert = true;
-                    val = val.Substring(1);
+                    val = val[1..];
                 }
 
                 if (string.Equals(val, "true", StringComparison.OrdinalIgnoreCase))
@@ -797,12 +790,7 @@ namespace MSBuild.ExtensionPack
 
                 if (boolVal is not null)
                 {
-                    if (invert)
-                    {
-                        return !boolVal.Value;
-                    }
-
-                    return boolVal.Value;
+                    return invert ? !boolVal.Value : boolVal.Value;
                 }
             }
 
@@ -879,12 +867,9 @@ namespace MSBuild.ExtensionPack
         {
             lock (Methods)
             {
-                if (!Closures.ContainsKey(closureId))
-                {
-                    throw new KeyNotFoundException("Unknown DynamicExecute closure id: " + closureId);
-                }
-
-                return Closures[closureId];
+                return !Closures.ContainsKey(closureId)
+                    ? throw new KeyNotFoundException("Unknown DynamicExecute closure id: " + closureId)
+                    : Closures[closureId];
             }
         }
 
@@ -897,12 +882,9 @@ namespace MSBuild.ExtensionPack
         {
             lock (Methods)
             {
-                if (!Methods.ContainsKey(methodId))
-                {
-                    throw new KeyNotFoundException("Unknown DynamicExecute method id: " + methodId);
-                }
-
-                return Methods[methodId];
+                return !Methods.ContainsKey(methodId)
+                    ? throw new KeyNotFoundException("Unknown DynamicExecute method id: " + methodId)
+                    : Methods[methodId];
             }
         }
 
@@ -924,7 +906,7 @@ namespace MSBuild.ExtensionPack
         private static IEnumerable<NameAndType> ParseInputsOutputs(IEnumerable<ITaskItem> inputsOutputs)
         {
             // If no inputs or outputs are defined, then yield an empty sequence.
-            if (inputsOutputs is null || inputsOutputs.Length == 0)
+            if (!inputsOutputs.Any())
             {
                 yield break;
             }
@@ -953,14 +935,9 @@ namespace MSBuild.ExtensionPack
             // in its metadata
             foreach (ITaskItem x in inputsOutputs)
             {
-                if (x.ItemSpec.Contains(" "))
-                {
-                    yield return ParseTypeAndName(x.ItemSpec);
-                }
-                else
-                {
-                    yield return new NameAndType { Name = NameOrIdentity(x), Type = x.GetMetadata("Type") };
-                }
+                yield return x.ItemSpec.Contains(" ")
+                    ? ParseTypeAndName(x.ItemSpec)
+                    : new NameAndType { Name = NameOrIdentity(x), Type = x.GetMetadata("Type") };
             }
         }
 
@@ -971,13 +948,10 @@ namespace MSBuild.ExtensionPack
         /// <returns>An object containing the split string.</returns>
         private static NameAndType ParseTypeAndName(string typeAndName)
         {
-            string[] typeandname = typeAndName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (typeandname.Length != 2)
-            {
-                throw new ArgumentException("Inputs/Outputs definition not valid: \"" + typeAndName + "\" is not a valid Type/Name pair");
-            }
-
-            return new NameAndType { Type = typeandname[0], Name = typeandname[1] };
+            string[] typeandname = typeAndName.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+            return typeandname.Length != 2
+                ? throw new ArgumentException("Inputs/Outputs definition not valid: \"" + typeAndName + "\" is not a valid Type/Name pair")
+                : new NameAndType { Type = typeandname[0], Name = typeandname[1] };
         }
 
         /// <summary>
@@ -994,7 +968,7 @@ namespace MSBuild.ExtensionPack
             }
             catch (Exception ex)
             {
-                this.Log.LogError("Uncaught exception from DynamicExecute method: [" + ex.GetType().Name + "] " + ex.Message);
+                this.Log.LogTaskError("Uncaught exception from DynamicExecute method: [" + ex.GetType().Name + "] " + ex.Message);
                 throw;
             }
         }
@@ -1110,38 +1084,36 @@ namespace MSBuild.ExtensionPack
                 }
             }
 
-            using (CSharpCodeProvider provider = new CSharpCodeProvider())
+            using CSharpCodeProvider provider = new CSharpCodeProvider();
+            // Compile it
+            CompilerResults results = provider.CompileAssemblyFromSource(parameters, code.ToString());
+            if (results.Errors.Count != 0)
             {
-                // Compile it
-                CompilerResults results = provider.CompileAssemblyFromSource(parameters, code.ToString());
-                if (results.Errors.Count != 0)
+                bool onlyWarnings = true;
+                foreach (CompilerError error in results.Errors)
                 {
-                    bool onlyWarnings = true;
-                    foreach (CompilerError error in results.Errors)
+                    if (error.IsWarning)
                     {
-                        if (error.IsWarning)
-                        {
-                            this.LogTaskWarning(error.ErrorNumber + ": " + error.ErrorText);
-                        }
-                        else
-                        {
-                            this.Log.LogError(error.ErrorNumber + ": " + error.ErrorText);
-                            onlyWarnings = false;
-                        }
+                        this.Log.LogTaskWarning(error.ErrorNumber + ": " + error.ErrorText);
                     }
-
-                    if (!onlyWarnings)
+                    else
                     {
-                        throw new InvalidProgramException("Compilation of DynamicExecute method failed");
+                        this.Log.LogTaskError(error.ErrorNumber + ": " + error.ErrorText);
+                        onlyWarnings = false;
                     }
                 }
 
-                // Load the compiled method
-                System.Reflection.Assembly result = results.CompiledAssembly;
-                Type type = result.GetType("MSBuild.ExtensionPack.Framework.T");
-                MethodInfo method = type.GetMethod("Go");
-                this.OutputMethodId = DefineMethod(method, inputs.Select(x => x.Name), outputs.Select(x => x.Name), this.NumberOfDefaultParameters());
+                if (!onlyWarnings)
+                {
+                    throw new InvalidProgramException("Compilation of DynamicExecute method failed");
+                }
             }
+
+            // Load the compiled method
+            System.Reflection.Assembly result = results.CompiledAssembly;
+            Type type = result.GetType("MSBuild.ExtensionPack.Framework.T");
+            MethodInfo method = type.GetMethod("Go");
+            this.OutputMethodId = DefineMethod(method, inputs.Select(x => x.Name), outputs.Select(x => x.Name), this.NumberOfDefaultParameters());
         }
 
         /// <summary>
@@ -1212,7 +1184,7 @@ namespace MSBuild.ExtensionPack
                 case DefineTaskAction:
                     if (string.IsNullOrEmpty(this.Code))
                     {
-                        this.Log.LogError("DynamicExecute.Code is not optional for TaskAction=Define");
+                        this.Log.LogTaskError("DynamicExecute.Code is not optional for TaskAction=Define");
                         return;
                     }
 
@@ -1222,7 +1194,7 @@ namespace MSBuild.ExtensionPack
                 case CreateTaskAction:
                     if (string.IsNullOrEmpty(this.MethodId))
                     {
-                        this.Log.LogError("DynamicExecute.MethodId is not optional for TaskAction=Create");
+                        this.Log.LogTaskError("DynamicExecute.MethodId is not optional for TaskAction=Create");
                         return;
                     }
 
@@ -1232,19 +1204,19 @@ namespace MSBuild.ExtensionPack
                 case SetInputTaskAction:
                     if (string.IsNullOrEmpty(this.ClosureId))
                     {
-                        this.Log.LogError("DynamicExecute.ClosureId is not optional for TaskAction=SetInput");
+                        this.Log.LogTaskError("DynamicExecute.ClosureId is not optional for TaskAction=SetInput");
                         return;
                     }
 
                     if (string.IsNullOrEmpty(this.Name))
                     {
-                        this.Log.LogError("DynamicExecute.Name is not optional for TaskAction=SetInput");
+                        this.Log.LogTaskError("DynamicExecute.Name is not optional for TaskAction=SetInput");
                         return;
                     }
 
-                    if (this.InputValue is null)
+                    if (!this.InputValue.Any())
                     {
-                        this.Log.LogError("DynamicExecute.InputValue is not optional for TaskAction=SetInput");
+                        this.Log.LogTaskError("DynamicExecute.InputValue is not optional for TaskAction=SetInput");
                         return;
                     }
 
@@ -1254,7 +1226,7 @@ namespace MSBuild.ExtensionPack
                 case InvokeTaskAction:
                     if (string.IsNullOrEmpty(this.ClosureId))
                     {
-                        this.Log.LogError("DynamicExecute.ClosureId is not optional for TaskAction=Invoke");
+                        this.Log.LogTaskError("DynamicExecute.ClosureId is not optional for TaskAction=Invoke");
                         return;
                     }
 
@@ -1264,13 +1236,13 @@ namespace MSBuild.ExtensionPack
                 case GetOutputTaskAction:
                     if (string.IsNullOrEmpty(this.ClosureId))
                     {
-                        this.Log.LogError("DynamicExecute.ClosureId is not optional for TaskAction=GetOutput");
+                        this.Log.LogTaskError("DynamicExecute.ClosureId is not optional for TaskAction=GetOutput");
                         return;
                     }
 
                     if (string.IsNullOrEmpty(this.Name))
                     {
-                        this.Log.LogError("DynamicExecute.Name is not optional for TaskAction=GetOutput");
+                        this.Log.LogTaskError("DynamicExecute.Name is not optional for TaskAction=GetOutput");
                         return;
                     }
 
@@ -1280,7 +1252,7 @@ namespace MSBuild.ExtensionPack
                 case DestroyTaskAction:
                     if (string.IsNullOrEmpty(this.ClosureId))
                     {
-                        this.Log.LogError("DynamicExecute.ClosureId is not optional for TaskAction=Destroy");
+                        this.Log.LogTaskError("DynamicExecute.ClosureId is not optional for TaskAction=Destroy");
                         return;
                     }
 
@@ -1290,7 +1262,7 @@ namespace MSBuild.ExtensionPack
                 case CallTaskAction:
                     if (string.IsNullOrEmpty(this.MethodId))
                     {
-                        this.Log.LogError("DynamicExecute.MethodId is not optional for TaskAction=Call");
+                        this.Log.LogTaskError("DynamicExecute.MethodId is not optional for TaskAction=Call");
                         return;
                     }
 
@@ -1300,7 +1272,7 @@ namespace MSBuild.ExtensionPack
                 case RunTaskAction:
                     if (string.IsNullOrEmpty(this.Code))
                     {
-                        this.Log.LogError("DynamicExecute.Code is not optional for TaskAction=Run");
+                        this.Log.LogTaskError("DynamicExecute.Code is not optional for TaskAction=Run");
                         return;
                     }
 
@@ -1308,7 +1280,7 @@ namespace MSBuild.ExtensionPack
                     break;
 
                 default:
-                    this.Log.LogError("Unknown TaskAction \"" + (this.TaskAction ?? "<null>") + "\" for DynamicExecute");
+                    this.Log.LogTaskError("Unknown TaskAction \"" + (this.TaskAction ?? "<null>") + "\" for DynamicExecute");
                     return;
             }
         }

@@ -15,18 +15,24 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.DirectoryServices;
+    using System.DirectoryServices.AccountManagement;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
 
+    using Microsoft.Build.Framework;
+
+    using MSBuild.ExtensionPack.Base;
     using MSBuild.ExtensionPack.Computer.Extended;
+    using MSBuild.ExtensionPack.ErrorMessage.Message;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -164,7 +170,6 @@ namespace Computer
         private DirectoryEntry activeDirEntry;
         private ContextOptions bindingContextOptions = ContextOptions.Negotiate;
         private ContextType contextType = ContextType.Domain;
-        private string domain;
         private ADGroupType groupType;
         private int passwordExpired;
         private PrivilegeType privilege;
@@ -173,7 +178,7 @@ namespace Computer
         private static LSA_UNICODE_STRING CreateLsaString(string inputString)
         {
             LSA_UNICODE_STRING lsaString = new LSA_UNICODE_STRING();
-            if (inputString is null)
+            if (string.IsNullOrEmpty(inputString))
             {
                 lsaString.Buffer = IntPtr.Zero;
                 lsaString.Length = 0;
@@ -253,12 +258,10 @@ namespace Computer
             object groups = entity.Invoke("Groups");
             foreach (object group in (IEnumerable)groups)
             {
-                using (DirectoryEntry groupEntry = new DirectoryEntry(group))
+                using DirectoryEntry groupEntry = new DirectoryEntry(group);
+                if (groupEntry.Name == name)
                 {
-                    if (groupEntry.Name == name)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -272,9 +275,9 @@ namespace Computer
 
         private void AddGroup()
         {
-            if (this.Group is null)
+            if (!this.Group.Any())
             {
-                this.Log.LogError("Group is required");
+                this.Log.LogTaskError("Group is required");
                 return;
             }
 
@@ -299,9 +302,9 @@ namespace Computer
 
         private void AddUser()
         {
-            if (this.User is null)
+            if (this.User.Any())
             {
-                this.Log.LogError("User is required");
+                this.Log.LogTaskError("User is required");
                 return;
             }
 
@@ -377,15 +380,15 @@ namespace Computer
 
         private void AddUserToGroup()
         {
-            if (this.User is null)
+            if (!this.User.Any())
             {
-                this.Log.LogError("User is required");
+                this.Log.LogTaskError("User is required");
                 return;
             }
 
-            if (this.Group is null)
+            if (!this.Group.Any())
             {
-                this.Log.LogError("Group is required");
+                this.Log.LogTaskError("Group is required");
                 return;
             }
 
@@ -401,8 +404,8 @@ namespace Computer
                 }
                 else if (username.Contains(@"\"))
                 {
-                    var userDomain = username.Substring(0, username.IndexOf(@"\", StringComparison.OrdinalIgnoreCase));
-                    username = username.Substring(username.IndexOf(@"\", StringComparison.OrdinalIgnoreCase) + 1);
+                    var userDomain = username[..username.IndexOf(@"\", StringComparison.OrdinalIgnoreCase)];
+                    username = username[(username.IndexOf(@"\", StringComparison.OrdinalIgnoreCase) + 1)..];
                     userAdEntry = new DirectoryEntry("WinNT://" + userDomain + ",domain");
                 }
 
@@ -426,7 +429,7 @@ namespace Computer
                         }
                         catch (Exception)
                         {
-                            this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "User not found: {0} in: {1}", u.ItemSpec, userAdEntry.Path));
+                            this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "User not found: {0} in: {1}", u.ItemSpec, userAdEntry.Path));
                             return;
                         }
                     }
@@ -443,7 +446,7 @@ namespace Computer
                             }
                             catch
                             {
-                                this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
+                                this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
                                 return;
                             }
                         }
@@ -456,7 +459,7 @@ namespace Computer
                         }
                         catch
                         {
-                            this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
+                            this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
                             return;
                         }
                     }
@@ -482,10 +485,8 @@ namespace Computer
         {
             try
             {
-                using (DirectoryEntry entity = this.activeDirEntry.Children.Find(name, type))
-                {
-                    this.Exists = true;
-                }
+                using DirectoryEntry entity = this.activeDirEntry.Children.Find(name, type);
+                this.Exists = true;
             }
             catch
             {
@@ -514,15 +515,15 @@ namespace Computer
 
         private void CheckUserPassword()
         {
-            if (this.User is null)
+            if (!this.User.Any())
             {
-                this.Log.LogError("User is required");
+                this.Log.LogTaskError("User is required");
                 return;
             }
 
             if (string.IsNullOrEmpty(this.Password))
             {
-                this.Log.LogError("Password is required");
+                this.Log.LogTaskError("Password is required");
                 return;
             }
 
@@ -620,9 +621,9 @@ namespace Computer
 
         private void GetGroupMembers()
         {
-            if (this.Group is null)
+            if (!this.Group.Any())
             {
-                this.Log.LogError("Group is required");
+                this.Log.LogTaskError("Group is required");
                 return;
             }
 
@@ -636,54 +637,50 @@ namespace Computer
                 }
                 catch
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
                     return;
                 }
 
                 object members = grp.Invoke("members", null);
                 foreach (object groupMember in (IEnumerable)members)
                 {
-                    using (DirectoryEntry member = new DirectoryEntry(groupMember))
-                    {
-                        TaskItem memberGroup = this.GetFullMemberName ? new TaskItem(member.Parent.Name + @"\" + member.Name) : new TaskItem(member.Name);
-                        taskItems.Add(memberGroup);
-                    }
+                    using DirectoryEntry member = new DirectoryEntry(groupMember);
+                    TaskItem memberGroup = this.GetFullMemberName ? new TaskItem(member.Parent.Name + @"\" + member.Name) : new TaskItem(member.Name);
+                    taskItems.Add(memberGroup);
                 }
             }
 
-            this.Members = taskItems.ToArray();
+            this.Members = [.. taskItems];
         }
 
         private void GetUserPassword()
         {
-            using (GetPasswordForm form = new(this.User[0].ItemSpec, this.Domain, this.contextType, this.bindingContextOptions))
+            using GetPasswordForm form = new(this.User[0].ItemSpec, this.Domain, this.contextType, this.bindingContextOptions);
+            form.ShowDialog();
+            this.Password = form.Password;
+
+            if (form.UserCanceled && this.ErrorOnCancel)
             {
-                form.ShowDialog();
-                this.Password = form.Password;
+                this.Log.LogTaskError("User Cancelled");
+            }
 
-                if (form.UserCanceled && this.ErrorOnCancel)
-                {
-                    this.Log.LogError("User Cancelled");
-                }
-
-                if (form.Exception is not null)
-                {
-                    this.Log.LogErrorFromException(form.Exception, this.LogExceptionStack, true, null);
-                }
+            if (form.Exception is not null)
+            {
+                this.Log.LogErrorFromException(form.Exception, this.LogExceptionStack, true, null);
             }
         }
 
         private void GrantUserPrivilege()
         {
-            if (this.User is null)
+            if (!this.User.Any())
             {
-                this.Log.LogError("User is required");
+                this.Log.LogTaskError("User is required");
                 return;
             }
 
-            if (this.Privilege is null)
+            if (string.IsNullOrEmpty(this.Privilege))
             {
-                this.Log.LogError("Privilege is required");
+                this.Log.LogTaskError("Privilege is required");
                 return;
             }
 
@@ -693,7 +690,7 @@ namespace Computer
             IntPtr sid = IntPtr.Zero;
             int domainNameInt = 0;
             int use = 0;
-            IntPtr policyHandle = new IntPtr();
+            IntPtr policyHandle = new();
 
             try
             {
@@ -704,7 +701,7 @@ namespace Computer
                 int returnValue = ActiveDirectoryNativeMethods.LookupAccountName(this.MachineName, this.User[0].ItemSpec, sid, ref sidInt, domainNameInternal, ref domainNameInt, ref use);
                 if (returnValue == 0)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Error looking up account name: {0}", returnValue));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error looking up account name: {0}", returnValue));
                     return;
                 }
 
@@ -713,7 +710,7 @@ namespace Computer
                 uint result = ActiveDirectoryNativeMethods.LsaOpenPolicy(ref machineNameLSA, ref objectAttributes, ActiveDirectoryNativeMethods.POLICY_CREATE_SECRET, out policyHandle);
                 if (result != 0)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Error running LsaOpenPolicy: {0}", returnValue));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error running LsaOpenPolicy: {0}", returnValue));
                     return;
                 }
 
@@ -721,7 +718,7 @@ namespace Computer
                 result = ActiveDirectoryNativeMethods.LsaAddAccountRights(policyHandle, sid, ref privilegeString, 1);
                 if (result != 0)
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Error running LsaAddAccountRights: {0}", returnValue));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Error running LsaAddAccountRights: {0}", returnValue));
                 }
             }
             finally
@@ -733,22 +730,22 @@ namespace Computer
 
         private void GroupGroup()
         {
-            if (this.Group is null)
+            if (!this.Group.Any())
             {
-                this.Log.LogError("Group is required");
+                this.Log.LogTaskError("Group is required");
                 return;
             }
 
-            if (this.ParentGroup is null)
+            if (string.IsNullOrEmpty(this.ParentGroup))
             {
-                this.Log.LogError("ParentGroup is required");
+                this.Log.LogTaskError("ParentGroup is required");
                 return;
             }
 
             this.CheckExists("group", this.ParentGroup);
             if (!this.Exists)
             {
-                this.Log.LogError("Parent Group not found");
+                this.Log.LogTaskError("Parent Group not found");
                 return;
             }
 
@@ -761,7 +758,7 @@ namespace Computer
                 }
                 catch
                 {
-                    this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
+                    this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Group not found: {0}", g.ItemSpec));
                     return;
                 }
 
@@ -815,7 +812,7 @@ namespace Computer
                     this.groupType = ADGroupType.Global;
                 }
 
-                this.target = this.domain;
+                this.target = this.Domain;
             }
 
             using (this.activeDirEntry = new DirectoryEntry(path))
@@ -880,7 +877,7 @@ namespace Computer
                         break;
 
                     default:
-                        this.Log.LogError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
+                        this.Log.LogTaskError(string.Format(CultureInfo.CurrentCulture, "Invalid TaskAction passed: {0}", this.TaskAction));
                         return;
                 }
             }
@@ -911,11 +908,7 @@ namespace Computer
         /// <summary>
         /// Sets the domain to operate against.
         /// </summary>
-        public string Domain
-        {
-            get => this.domain;
-            set => this.domain = value;
-        }
+        public string Domain { get; set; }
 
         /// <summary>
         /// Set to true to raise an error if the user clicks cancel on GetPassword form.

@@ -22,8 +22,6 @@ namespace MSBuild.ExtensionPack.Framework.Tests
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using MSBuild.ExtensionPack;
-
     /// <summary>
     /// Unit Tests for TestString Task
     /// </summary>

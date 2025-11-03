@@ -87,12 +87,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             string format,
             params object?[] arguments)
         {
-            if (string.IsNullOrEmpty(format) || arguments is null)
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments));
+            return string.IsNullOrEmpty(format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments));
         }
 
         /// <summary>
@@ -112,12 +109,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             string format,
             object? argument)
         {
-            if (string.IsNullOrEmpty(format) || argument is null)
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, argument));
+            return string.IsNullOrEmpty(format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, argument));
         }
 
         /// <summary>
@@ -139,12 +133,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             object? first,
             object? second)
         {
-            if (string.IsNullOrEmpty(format) || (first is null && second is null))
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second));
+            return string.IsNullOrEmpty(format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second));
         }
 
         /// <summary>
@@ -168,12 +159,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             object? second,
             object? third)
         {
-            if (string.IsNullOrEmpty(format) || (first is null && second is null && third is null))
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second, third));
+            return string.IsNullOrEmpty(format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second, third));
         }
 
         /// <summary>
@@ -193,11 +181,6 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             CompositeFormat format,
             params object?[] arguments)
         {
-            if (arguments is null || arguments.Length < 1)
-            {
-                return originalValue ?? string.Empty;
-            }
-
             return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, arguments));
         }
 
@@ -219,12 +202,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             CompositeFormat format,
             TArg argument)
         {
-            if (format is null || string.IsNullOrEmpty(format.Format))
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, argument));
+            return format is null || string.IsNullOrEmpty(format.Format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, argument));
         }
 
         /// <summary> Appends the format. </summary> <typeparam name="TFirst">The <see cref="Type"/> of the first.</typeparam>
@@ -240,12 +220,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             TFirst first,
             TSecond second)
         {
-            if (format is null || string.IsNullOrEmpty(format.Format))
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second));
+            return format is null || string.IsNullOrEmpty(format.Format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second));
         }
 
         /// <summary> Appends the format. </summary> <typeparam name="TFirst">The <see cref="Type"/> of the first.</typeparam>
@@ -264,12 +241,9 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
             TSecond second,
             TThird third)
         {
-            if (format is null || string.IsNullOrEmpty(format.Format))
-            {
-                return originalValue ?? string.Empty;
-            }
-
-            return originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second, third));
+            return format is null || string.IsNullOrEmpty(format.Format)
+                ? originalValue ?? string.Empty
+                : originalValue.Append(string.Format(provider ?? CultureInfo.CurrentCulture, format, first, second, third));
         }
 
         /// <summary> Appends the format. </summary> <param name="originalValue">The original value.</param> <param
@@ -388,12 +362,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         /// </returns>
         public static string AppendJoin(this string?[] originalArray, char separator)
         {
-            if (originalArray is null || originalArray.Length < 1)
-            {
-                return string.Empty;
-            }
-
-            return string.Join(separator, originalArray);
+            return originalArray?.Length == 0 ? string.Empty : string.Join(separator, originalArray!);
         }
 
         /// <summary>
@@ -406,12 +375,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         /// </returns>
         public static string AppendJoin(this object?[] originalArray, char separator)
         {
-            if (originalArray is null || originalArray.Length < 1)
-            {
-                return string.Empty;
-            }
-
-            return string.Join(separator, originalArray);
+            return originalArray?.Length == 0 ? string.Empty : string.Join(separator, originalArray!);
         }
 
         /// <summary>
@@ -424,12 +388,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         /// </returns>
         public static string AppendJoin(this object?[] originalArray, string? separator)
         {
-            if (originalArray is null || originalArray.Length < 1)
-            {
-                return string.Empty;
-            }
-
-            return string.Join(separator ?? string.Empty, originalArray);
+            return originalArray?.Length == 0 ? string.Empty : string.Join(separator ?? string.Empty, originalArray!);
         }
 
         /// <summary>
@@ -442,12 +401,7 @@ namespace MSBuild.ExtensionPack.ErrorMessage.Utility
         /// </returns>
         public static string AppendJoin(this string?[] originalArray, string? separator)
         {
-            if (originalArray is null || originalArray.Length < 1)
-            {
-                return string.Empty;
-            }
-
-            return string.Join(separator ?? string.Empty, originalArray);
+            return originalArray?.Length == 0 ? string.Empty : string.Join(separator ?? string.Empty, originalArray!);
         }
 
         /// <summary>

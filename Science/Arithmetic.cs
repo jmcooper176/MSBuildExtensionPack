@@ -233,11 +233,9 @@ namespace Science
         private void Evaluate()
         {
             this.Log.LogTaskMessage(string.Format(CultureInfo.CurrentCulture, "Evaluating Expression: {0}", this.Expression));
-            using (DataTable dt = new DataTable())
-            {
-                dt.Locale = CultureInfo.CurrentCulture;
-                this.total = DecimalToSglDbl(Convert.ToDecimal(dt.Compute(this.Expression, string.Empty).ToString(), CultureInfo.CurrentCulture));
-            }
+            using DataTable dt = new DataTable();
+            dt.Locale = CultureInfo.CurrentCulture;
+            this.total = DecimalToSglDbl(Convert.ToDecimal(dt.Compute(this.Expression, string.Empty).ToString(), CultureInfo.CurrentCulture));
         }
 
         private void LeftShift()

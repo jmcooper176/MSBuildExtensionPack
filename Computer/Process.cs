@@ -15,12 +15,15 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // SPDX-License-Identifier: MIT
-namespace Computer
+namespace MSBuild.ExtensionPack.Computer
 {
     using System;
     using System.Globalization;
     using System.Linq;
+    using System.Management;
     using System.Text.RegularExpressions;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// <b>Valid TaskActions are:</b>
@@ -94,33 +97,31 @@ namespace Computer
 
         private void Create()
         {
-            if (this.Parameters is null)
+            if (!this.Parameters.Any())
             {
-                this.Log.LogError("Parameters is required");
+                this.Log.LogTaskError("Parameters is required");
                 return;
             }
 
-            using (ManagementClass mgmtClass = new ManagementClass(this.Scope, new ManagementPath("Win32_Process"), null))
+            using ManagementClass mgmtClass = new ManagementClass(this.Scope, new ManagementPath("Win32_Process"), null);
+            // Obtain in-parameters for the method
+            ManagementBaseObject inParams = mgmtClass.GetMethodParameters("Create");
+            if (this.Parameters is not null)
             {
-                // Obtain in-parameters for the method
-                ManagementBaseObject inParams = mgmtClass.GetMethodParameters("Create");
-                if (this.Parameters is not null)
+                // Add the input parameters.
+                foreach (string[] data in this.Parameters.Select(param => param.ItemSpec.Split(["#~#"], StringSplitOptions.RemoveEmptyEntries)))
                 {
-                    // Add the input parameters.
-                    foreach (string[] data in this.Parameters.Select(param => param.ItemSpec.Split(["#~#"], StringSplitOptions.RemoveEmptyEntries)))
-                    {
-                        this.Log.LogTaskMessage(() => true, MessageImportance.Low, "Param: {0}. Value: {1}", data[0], data[1]);
-                        inParams[data[0]] = data[1];
-                    }
+                    this.Log.LogTaskMessage(() => true, MessageImportance.Low, "Param: {0}. Value: {1}", data[0], data[1]);
+                    inParams[data[0]] = data[1];
                 }
+            }
 
-                // Execute the method and obtain the return values.
-                ManagementBaseObject outParams = mgmtClass.InvokeMethod("Create", inParams, null);
-                if (outParams is not null)
-                {
-                    this.ReturnValue = outParams["ReturnValue"].ToString();
-                    this.ProcessId = Convert.ToInt32(outParams["ProcessId"], CultureInfo.CurrentCulture);
-                }
+            // Execute the method and obtain the return values.
+            ManagementBaseObject outParams = mgmtClass.InvokeMethod("Create", inParams, null);
+            if (outParams is not null)
+            {
+                this.ReturnValue = outParams["ReturnValue"].ToString();
+                this.ProcessId = Convert.ToInt32(outParams["ProcessId"], CultureInfo.CurrentCulture);
             }
         }
 
@@ -209,50 +210,48 @@ namespace Computer
         {
             if (this.ProcessName == ".*" && this.ProcessId == 0)
             {
-                this.Log.LogError("ProcessName or ProcessId is required");
+                this.Log.LogTaskError("ProcessName or ProcessId is required");
                 return;
             }
 
             ObjectQuery query = this.ProcessName != ".*" ? new ObjectQuery("SELECT * FROM Win32_Process WHERE Name ='" + this.ProcessName + "'") : new ObjectQuery("SELECT * FROM Win32_Process WHERE Handle ='" + this.ProcessId + "'");
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query, null))
+            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(this.Scope, query, null);
+            foreach (ManagementObject returnedProcess in searcher.Get().Cast<ManagementObject>())
             {
-                foreach (ManagementObject returnedProcess in searcher.Get())
+                this.Log.LogTaskMessage(() => this.ProcessName != ".*", MessageImportance.Normal, "Terminating: {0}", this.ProcessName);
+                this.Log.LogTaskMessage(() => this.ProcessName == ".*", MessageImportance.Normal, "Terminating: {0}", this.ProcessId);
+
+                ManagementBaseObject inParams = returnedProcess.GetMethodParameters("Terminate");
+                ManagementBaseObject outParams = returnedProcess.InvokeMethod("Terminate", inParams, null);
+
+                // ReturnValue should be 0, else failure
+                if (outParams is not null)
                 {
-                    this.Log.LogTaskMessage(() => this.ProcessName != ".*", MessageImportance.Normal, "Terminating: {0}", this.ProcessName);
-                    this.Log.LogTaskMessage(() => this.ProcessName == ".*", MessageImportance.Normal, "Terminating: {0}", this.ProcessId);
-
-                    ManagementBaseObject inParams = returnedProcess.GetMethodParameters("Terminate");
-                    ManagementBaseObject outParams = returnedProcess.InvokeMethod("Terminate", inParams, null);
-
-                    // ReturnValue should be 0, else failure
-                    if (outParams is not null)
+                    switch (Convert.ToInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.CurrentCulture))
                     {
-                        switch (Convert.ToInt32(outParams.Properties["ReturnValue"].Value, CultureInfo.CurrentCulture))
-                        {
-                            case 0:
-                                this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "...Process Terminated");
-                                break;
+                        case 0:
+                            this.Log.LogTaskMessage(() => true, MessageImportance.Normal, "...Process Terminated");
+                            break;
 
-                            case 2:
-                                this.Log.LogTaskError("...Access Denied");
-                                break;
+                        case 2:
+                            this.Log.LogTaskError("...Access Denied");
+                            break;
 
-                            case 3:
-                                this.Log.LogTaskError("...Insufficient Privilege");
-                                break;
+                        case 3:
+                            this.Log.LogTaskError("...Insufficient Privilege");
+                            break;
 
-                            case 8:
-                                this.Log.LogTaskError("...Unknown Failure");
-                                break;
+                        case 8:
+                            this.Log.LogTaskError("...Unknown Failure");
+                            break;
 
-                            case 9:
-                                this.Log.LogTaskError("...Path Not Found");
-                                break;
+                        case 9:
+                            this.Log.LogTaskError("...Path Not Found");
+                            break;
 
-                            case 21:
-                                this.Log.LogTaskError("...Invalid Parameter");
-                                break;
-                        }
+                        case 21:
+                            this.Log.LogTaskError("...Invalid Parameter");
+                            break;
                     }
                 }
             }
